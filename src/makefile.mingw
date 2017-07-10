@@ -1,0 +1,12 @@
+CC = gcc
+CFLAGS = $(GLOBAL_CFLAGS) $(APP_CFLAGS) $(MINGW_CFLAGS) -mwindows
+LIB_SUFFIX = .dll
+PLATFORM_OBJECTS = t3f/menu.o icon.o $(MINGW_PLATFORM_OBJECTS)
+PLATFORM_LIBS = -lallegro_dialog$(LIB_SUFFIX) $(MINGW_PLATFORM_LIBS)
+DEL_COMMAND = del /q
+DEL_FOLDER_COMMAND = rmdir /q
+
+include makefile.common
+
+icon.o : ../icons/windows_icon.ico ../win32/icon.rc
+	windres -o icon.o ../win32/icon.rc

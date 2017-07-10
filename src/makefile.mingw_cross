@@ -1,0 +1,57 @@
+CC = i586-mingw32msvc-gcc
+CFLAGS = $(GLOBAL_CFLAGS) $(APP_CFLAGS) $(MINGW_CROSS_CFLAGS)
+LFLAGS = -mwindows
+LIB_SUFFIX = -static
+PLATFORM_OBJECTS = t3f/menu.o icon.o $(MINGW_CROSS_PLATFORM_OBJECTS)
+PLATFORM_LIBS = -lallegro_dialog$(LIB_SUFFIX) $(MINGW_CROSS_PLATFORM_LIBS)
+DEPEND_LIBS = $(MINGW_CROSS_DEPEND_LIBS) -luuid -lkernel32 -lwinmm -lpsapi\
+              -lopengl32 -lglu32 -luser32 -lcomdlg32 -lgdi32 -lshell32 -lole32\
+              -ladvapi32 -lws2_32 -lshlwapi -lvorbisfile -lvorbis -logg -ldumb\
+              -lfreetype -lpng -lz -ld3d9 -ldsound -lstdc++
+DEL_COMMAND = rm -f
+DEL_FOLDER_COMMAND = rm -rf
+SED_COMMAND = sed -i
+EXE_SUFFIX = .exe
+
+include makefile.common
+
+icon.o : ../icons/windows_icon.ico ../win32/icon.rc
+	i586-mingw32msvc-windres --include-dir=../icons -o icon.o ../win32/icon.rc
+
+../win32/info_fixer: ../win32/info_fixer.o
+	$(CC) $(GLOBAL_CFLAGS) ../win32/info_fixer.o -o ../win32/info_fixer
+
+#making a Windows package automatically requires adding some extra variables through the command line
+#DLLS_DIR is the location of the DLLs that are to be included in the installer
+#INNO_SETUP_COMPILER is the path to the compiler executable
+windows_package: $(APP_EXE_NAME) ../win32/info_fixer
+ifndef INNO_SETUP_COMPILER
+	@echo Usage: "make windows_package INNO_SETUP_COMPILER=path_to_compiler"
+else
+	@cp ../win32/installer.iss installer_final.iss
+	@sed -i "s|T3F_APP_NAME|$(APP_TITLE)|" installer_final.iss
+	@sed -i "s|T3F_APP_VERSION|$(APP_VERSION)|" installer_final.iss
+	@sed -i "s|T3F_APP_COPYRIGHT|$(APP_COPYRIGHT)|" installer_final.iss
+	@sed -i "s|T3F_APP_PUBLISHER|$(APP_PUBLISHER)|" installer_final.iss
+	@sed -i "s|T3F_APP_URL|$(APP_URL)|" installer_final.iss
+	@../win32/info_fixer ../docs/copyright ../win32/copyright
+	@../win32/info_fixer ../docs/README ../win32/README
+	@sed -i "s|T3F_APP_LICENSE_FILE|../win32/copyright|" installer_final.iss
+	@sed -i "s|T3F_APP_README_FILE|../win32/README|" installer_final.iss
+	@sed -i "s|T3F_APP_INSTALLER_DIR|../|" installer_final.iss
+	@sed -i "s|T3F_APP_INSTALLER_NAME|$(APP_PACKAGE_NAME)-installer|" installer_final.iss
+	@sed -i "s|T3F_APP_DATA_DIR|../bin/data|" installer_final.iss
+	@sed -i "s|T3F_APP_DOCS_DIR|../docs|" installer_final.iss
+	@sed -i "s|T3F_APP_LIBS_DIR|$(DLLS_DIR)|" installer_final.iss
+	@sed -i "s|T3F_APP_USER_LIBS_DIR|$(USER_DLLS_DIR)|" installer_final.iss
+	@sed -i "s|T3F_APP_EXECUTABLE|$(APP_NAME)$(EXE_SUFFIX)|" installer_final.iss
+	@wine $(INNO_SETUP_COMPILER) /cc installer_final.iss
+	@rm installer_final.iss
+	@rm ../win32/copyright
+	@rm ../win32/README
+	@rm ../win32/info_fixer
+endif
+
+windows_zip: $(APP_EXE_NAME)
+	@cd ../bin; zip -9 -r ../$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ..; cp -a docs win32; cd win32/docs; mv changelog history.txt; mv README readme.txt; mv copyright license.txt; cd ..; zip -9 -r ../$(APP_NAME)-$(APP_VERSION)-windows.zip docs; rm -rf docs
+	@echo Windows package created!

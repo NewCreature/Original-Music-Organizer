@@ -1,0 +1,49 @@
+CC = arm-angstrom-linux-gnueabi-gcc
+CFLAGS = -DPANDORA -DHAVE_GLES -O3 -pipe -march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=softfp -ftree-vectorize -ffast-math -fsingle-precision-constant -fsigned-char -I/mnt/utmp/vgolf/include
+
+AGUP_OFILES = modules/agup/aalg.o modules/agup/aase.o modules/agup/abeos.o  modules/agup/abitmap.o  modules/agup/agtk.o  modules/agup/agup.o  modules/agup/ans.o  modules/agup/aphoton.o  modules/agup/awin95.o
+
+GAME_OFILES = modules/gametime.o modules/g-idle.o modules/ncds.o modules/fx.o modules/t3net/t3net.o game/hyperlink.o game/newmenu.o game/main.o game/body.o game/poly.o game/hole.o game/course.o game/vfont.o game/profile.o game/commentary.o game/message.o game/credits.o game/avatar.o
+GAME_LFILES = -laldmb -ldumb -lcurl -lmxml -lalleg -L/mnt/utmp/vgolf/lib
+GAME_EXENAME = ../bin/vgolf
+
+AE_OFILES = $(AGUP_OFILES) modules/gametime.o modules/g-idle.o modules/ncdgui.o modules/wfsel.o modules/fx.o game/avatar.o avatar_editor/gui.o avatar_editor/guiproc.o avatar_editor/main.o avatar_editor/undo.o
+AE_LFILES =  -lalleg -L/mnt/utmp/vgolf/lib
+AE_EXENAME = ../bin/avatar_editor
+
+CE_OFILES = $(AGUP_OFILES) modules/gametime.o modules/g-idle.o modules/ncds.o modules/ncdgui.o modules/wfsel.o modules/fx.o game/commentary.o commentary_editor/gui.o commentary_editor/guiproc.o commentary_editor/main.o
+CE_LFILES = -laldmb -ldumb -lalleg -L/mnt/utmp/vgolf/lib
+CE_EXENAME = ../bin/commentary_editor
+
+CRSED_OFILES = $(AGUP_OFILES) modules/gametime.o modules/g-idle.o modules/ncdgui.o modules/wfsel.o modules/fx.o game/course.o game/hole.o game/poly.o course_editor/gui.o course_editor/guiproc.o course_editor/main.o
+CRSED_LFILES =  -lalleg -L/mnt/utmp/vgolf/lib
+CRSED_EXENAME = ../bin/course_editor
+
+all : $(GAME_EXENAME) $(AE_EXENAME) $(CE_EXENAME) $(CRSED_EXENAME)
+	@echo All targets built!
+
+$(GAME_EXENAME) : $(GAME_OFILES)
+	$(CC) $(GAME_OFILES) $(CFLAGS) $(GAME_LFILES) -o $(GAME_EXENAME) $(EXEFLAGS)
+	@echo vGolf executable built!
+
+$(AE_EXENAME) : $(AE_OFILES)
+	$(CC) $(AE_OFILES) $(CFLAGS) $(AE_LFILES) -o $(AE_EXENAME) $(EXEFLAGS)
+	@echo Avatar Editor executable built!
+
+$(CE_EXENAME) : $(CE_OFILES)
+	$(CC) $(CE_OFILES) $(CFLAGS) $(CE_LFILES) -o $(CE_EXENAME) $(EXEFLAGS)
+	@echo Commentary Editor executable built!
+
+$(CRSED_EXENAME) : $(CRSED_OFILES)
+	$(CC) $(CRSED_OFILES) $(CFLAGS) $(CRSED_LFILES) -o $(CRSED_EXENAME) $(EXEFLAGS)
+	@echo Course Editor executable built!
+
+clean:
+	@rm game/*.o
+	@rm modules/*.o
+	@rm modules/t3net/*.o
+	@rm modules/agup/*.o
+	@rm avatar_editor/*.o
+	@rm commentary_editor/*.o
+	@rm course_editor/*.o
+	@echo Cleanup complete!

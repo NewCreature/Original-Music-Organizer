@@ -1,0 +1,46 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	tools:context=".ExampleActivity" >
+
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="50dp"
+			android:id="@+id/editTitle"
+			android:text="Change This"/>
+
+		<EditText
+			android:layout_width="fill_parent"
+			android:layout_height="50dp"
+			android:layout_below="@+id/editTitle"
+			android:id="@+id/editInp"
+			android:hint=""
+			android:singleLine="true"/>
+
+		<LinearLayout
+
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/editInp"
+			android:orientation="horizontal"
+			android:padding="10dip" >
+
+			<Button
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:id="@+id/okBtn"
+				android:text="OK" />
+
+			<Button
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:id="@+id/cancelBtn"
+				android:text="Cancel" />
+
+		</LinearLayout>
+
+</RelativeLayout>
