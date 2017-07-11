@@ -25,6 +25,7 @@ platforms: MOD, S3M, XM, IT, WAV, OGG, and FLAC.
 Additional support for these formats is available on MacOS: MP2, MP3, MP4, M4A,
 AAC, and MID.
 
+Supported for more formats on all platforms will be added in the future.
 
 Description
 -----------
