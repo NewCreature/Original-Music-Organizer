@@ -3,6 +3,8 @@
 
 #include "player.h"
 
+static char player_filename[1024] = {0};
+
 bool omo_codec_mod_initialize(void)
 {
 	if(dumba5_init(DUMB_RQ_CUBIC))
@@ -12,9 +14,15 @@ bool omo_codec_mod_initialize(void)
 	return false;
 }
 
-bool omo_codec_mod_play(const char * fn)
+bool omo_codec_mod_load_file(const char * fn)
 {
-	if(dumba5_load_and_play_module(fn, 0, false, 44100, true))
+	strcpy(player_filename, fn);
+	return true;
+}
+
+bool omo_codec_mod_play(void)
+{
+	if(dumba5_load_and_play_module(player_filename, 0, false, 44100, true))
 	{
 		return true;
 	}
@@ -49,7 +57,8 @@ static OMO_PLAYER omo_mod_player;
 OMO_PLAYER * omo_codec_dumba5_get_player(void)
 {
 	omo_mod_player.initialize = omo_codec_mod_initialize;
-	omo_mod_player.play_file = omo_codec_mod_play;
+	omo_mod_player.load_file = omo_codec_mod_load_file;
+	omo_mod_player.play = omo_codec_mod_play;
 	omo_mod_player.pause = omo_codec_mod_pause;
 	omo_mod_player.stop = omo_codec_mod_stop;
 	omo_mod_player.seek = NULL;

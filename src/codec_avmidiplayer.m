@@ -8,15 +8,20 @@
 
 static AVMIDIPlayer * player = NULL;
 
-bool omo_codec_midi_play(const char * fn)
+bool omo_codec_midi_load_file(const char * fn)
 {
 	NSString * fnstring = [NSString stringWithUTF8String:fn];
 
 //	player = [[AVMIDIPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:@"data/test.mid"] soundBankURL:nil error:nil];
 	player = [[AVMIDIPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:fnstring] soundBankURL:nil error:nil];
 	[player prepareToPlay];
-	[player play:nil];
 
+	return true;
+}
+
+bool omo_codec_midi_play(void)
+{
+	[player play:nil];
 	return true;
 }
 
@@ -65,7 +70,8 @@ static OMO_PLAYER omo_midi_player;
 OMO_PLAYER * omo_codec_avmidiplayer_get_player(void)
 {
 	omo_midi_player.initialize = NULL;
-	omo_midi_player.play_file = omo_codec_midi_play;
+	omo_midi_player.load_file = omo_codec_midi_load_file;
+	omo_midi_player.play = omo_codec_midi_play;
 	omo_midi_player.pause = omo_codec_midi_pause;
 	omo_midi_player.stop = omo_codec_midi_stop;
 	omo_midi_player.seek = omo_codec_midi_seek;

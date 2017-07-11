@@ -15,6 +15,7 @@ typedef struct
 	int state;
 
 	OMO_PLAYER_REGISTRY player_registry;
+	OMO_PLAYER * player; // current player
 
 } APP_INSTANCE;
 

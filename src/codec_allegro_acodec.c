@@ -2,9 +2,17 @@
 
 #include "player.h"
 
-bool omo_codec_ogg_play(const char * fn)
+static char player_filename[1024] = {0};
+
+bool omo_codec_ogg_load_file(const char * fn)
 {
-	if(t3f_play_music(fn))
+	strcpy(player_filename, fn);
+	return true;
+}
+
+bool omo_codec_ogg_play(void)
+{
+	if(t3f_play_music(player_filename))
 	{
 		return true;
 	}
@@ -39,7 +47,8 @@ static OMO_PLAYER omo_ogg_player;
 OMO_PLAYER * omo_codec_allegro_acodec_get_player(void)
 {
 	omo_ogg_player.initialize = NULL;
-	omo_ogg_player.play_file = omo_codec_ogg_play;
+	omo_ogg_player.load_file = omo_codec_ogg_load_file;
+	omo_ogg_player.play = omo_codec_ogg_play;
 	omo_ogg_player.pause = omo_codec_ogg_pause;
 	omo_ogg_player.stop = omo_codec_ogg_stop;
 	omo_ogg_player.seek = NULL;

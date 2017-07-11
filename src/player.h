@@ -14,7 +14,8 @@ typedef struct
 
     /* playback functions */
     bool (*initialize)(void);
-    bool (*play_file)(const char * fn);
+    bool (*load_file)(const char * fn);
+    bool (*play)(void);
     bool (*pause)(bool paused);
     void (*stop)(void);
     bool (*seek)(float pos);

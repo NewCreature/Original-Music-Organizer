@@ -2,86 +2,40 @@
 #include "DUMBA5/dumba5.h"
 
 #include "instance.h"
+#include "player_registry.h"
 
 bool omo_play_file(void * data, const char * fn)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
-    ALLEGRO_PATH * path;
-    const char * extension;
-    int i, j;
 
-    path = al_create_path(fn);
-    if(path)
+    app->player = omo_get_player(&app->player_registry, fn);
+    if(app->player)
     {
-        extension = al_get_path_extension(path);
-        for(i = 0; i < app->player_registry.players; i++)
-        {
-            for(j = 0; j < app->player_registry.player[i].types; j++)
-            {
-                if(!strcasecmp(extension, app->player_registry.player[i].type[j]))
-                {
-                    app->player_registry.player[i].play_file(fn);
-                    al_destroy_path(path);
-                    return true;
-                }
-            }
-        }
-        al_destroy_path(path);
+        app->player->load_file(fn);
+        app->player->play();
     }
+
     return false;
 }
 
-void omo_stop_file(void * data, const char * fn)
+void omo_stop_file(void * data)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
-    ALLEGRO_PATH * path;
-    const char * extension;
-    int i, j;
 
-    path = al_create_path(fn);
-    if(path)
+    if(app->player)
     {
-        extension = al_get_path_extension(path);
-        for(i = 0; i < app->player_registry.players; i++)
-        {
-            for(j = 0; j < app->player_registry.player[i].types; j++)
-            {
-                if(!strcasecmp(extension, app->player_registry.player[i].type[j]))
-                {
-                    app->player_registry.player[i].stop();
-                    al_destroy_path(path);
-                    return;
-                }
-            }
-        }
-        al_destroy_path(path);
+        app->player->stop();
+        app->player = NULL;
     }
 }
 
-void omo_pause_file(void * data, const char * fn, bool paused)
+void omo_pause_file(void * data, bool paused)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
-    ALLEGRO_PATH * path;
-    const char * extension;
-    int i, j;
 
-    path = al_create_path(fn);
-    if(path)
+    if(app->player)
     {
-        extension = al_get_path_extension(path);
-        for(i = 0; i < app->player_registry.players; i++)
-        {
-            for(j = 0; j < app->player_registry.player[i].types; j++)
-            {
-                if(!strcasecmp(extension, app->player_registry.player[i].type[j]))
-                {
-                    app->player_registry.player[i].pause(paused);
-                    al_destroy_path(path);
-                    return;
-                }
-            }
-        }
-        al_destroy_path(path);
+        app->player->pause(paused);
     }
 }
 
@@ -125,7 +79,7 @@ int omo_menu_file_open(void * data)
 	{
 		goto fail;
 	}
-    omo_stop_file(data, app->last_music_filename);
+    omo_stop_file(data);
     path = al_create_path(al_get_native_file_dialog_path(fc, 0));
     if(path)
     {
@@ -158,16 +112,12 @@ int omo_menu_file_exit(void * data)
 
 int omo_menu_playback_play(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
-
-    omo_pause_file(data, app->last_music_filename, false);
+    omo_pause_file(data, false);
     return 1;
 }
 
 int omo_menu_playback_pause(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
-
-    omo_pause_file(data, app->last_music_filename, true);
+    omo_pause_file(data, true);
     return 1;
 }

@@ -8,14 +8,19 @@
 
 static AVAudioPlayer * player = NULL;
 
-bool omo_codec_av_play(const char * fn)
+bool omo_codec_av_load_file(const char * fn)
 {
 	NSString * fnstring = [NSString stringWithUTF8String:fn];
 
 	player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:fnstring] error:nil];
 	[player prepareToPlay];
-	[player play];
 
+	return true;
+}
+
+bool omo_codec_av_play(void)
+{
+	[player play];
 	return true;
 }
 
@@ -66,7 +71,8 @@ static OMO_PLAYER omo_av_player;
 OMO_PLAYER * omo_codec_avplayer_get_player(void)
 {
 	omo_av_player.initialize = NULL;
-	omo_av_player.play_file = omo_codec_av_play;
+	omo_av_player.load_file = omo_codec_av_load_file;
+	omo_av_player.play = omo_codec_av_play;
 	omo_av_player.pause = omo_codec_av_pause;
 	omo_av_player.stop = omo_codec_av_stop;
 	omo_av_player.seek = omo_codec_av_seek;

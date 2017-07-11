@@ -14,5 +14,6 @@ typedef struct
 } OMO_PLAYER_REGISTRY;
 
 bool omo_register_player(OMO_PLAYER_REGISTRY * rp, OMO_PLAYER * pp);
+OMO_PLAYER * omo_get_player(OMO_PLAYER_REGISTRY * rp, const char * fn);
 
 #endif
