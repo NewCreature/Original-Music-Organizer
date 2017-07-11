@@ -1,32 +1,63 @@
-Application Name
-----------------
+Original Music Organizer
+------------------------
+
+Note: this program is in early development. The current version is very minimal
+and is only able to do basic playback of files in supported formats (see below
+for a list of supported formats).
+
+To-do:
+
+    Implement playback queue.
+    Implement player UI.
+    Implement library.
+    Implement tag editor.
+    Implement tag scraper.
+    Add support for multiple songs in a single file/archive.
+    Add support for more formats.
 
 Description
 -----------
 
-Description of your application.
+The goal of this project is to provide a way to organize and play back your
+entire music collection. I grew up listening to music on a computer and have a
+large collection of music in various formats. In the past I had used Winamp for
+its extensive support for audio formats through input plugins.
+
+Since moving away from Windows several years ago, I've not really had a good
+way to play back a large portion of my music collection. I seek to change that
+situation with Original Music Organizer.
+
+My goal with Original Music Organizer is to provide a way for you to organize
+and play back your entire music collection. That music disk you downloaded from
+a BBS 25 years ago will live happily alongside that album you downloaded from
+Amazon last week.
+
+OMO will leverage the power of the Internet to help you organize your
+collection by pulling tags submitted by others. Tag your own untagged music and
+submit those tags so others don't have to duplicate the work.
+
+Currently supports playing .mod, .s3m, .xm, .it, .wav, .ogg, and FLAC formats on
+all platforms. Support for .mp2, .mp3, .mp4, .m4a, .aac, and .mid formats
+available on Mac OS X. Support for additional formats will be added on all
+platforms in the future.
 
 
 Installation
 ------------
 
-How to install.
+Instructions will be added once we get the project far enough along to be able
+to provide packages.
 
 
 Getting Started
 ---------------
 
-Basic instructions.
-
-
-Playing the Game
-----------------
-
-How to play the game.
+The current version only supports the ability to browse your files and select
+music. To play back a song, simply open it with the file select dialog. Once a
+song is playing, you can pause and resume it with the playback menu.
 
 
 Contacting Us
 -------------
 
-Contact information.
-
+E-Mail: todd@t3-i.com
