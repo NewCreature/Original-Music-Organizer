@@ -15,6 +15,17 @@ To-do:
     Add support for multiple songs in a single file/archive.
     Add support for more formats.
 
+
+Supported Formats
+-----------------
+
+OMO currently supports playing back files in these formats on all supported
+platforms: MOD, S3M, XM, IT, WAV, OGG, and FLAC.
+
+Additional support for these formats is available on MacOS: MP2, MP3, MP4, M4A,
+AAC, and MID.
+
+
 Description
 -----------
 
@@ -25,21 +36,13 @@ its extensive support for audio formats through input plugins.
 
 Since moving away from Windows several years ago, I've not really had a good
 way to play back a large portion of my music collection. I seek to change that
-situation with Original Music Organizer.
-
-My goal with Original Music Organizer is to provide a way for you to organize
-and play back your entire music collection. That music disk you downloaded from
-a BBS 25 years ago will live happily alongside that album you downloaded from
+situation with Original Music Organizer. That music disk I downloaded from a
+BBS 25 years ago will live happily alongside that album I downloaded from
 Amazon last week.
 
 OMO will leverage the power of the Internet to help you organize your
 collection by pulling tags submitted by others. Tag your own untagged music and
 submit those tags so others don't have to duplicate the work.
-
-Currently supports playing .mod, .s3m, .xm, .it, .wav, .ogg, and FLAC formats on
-all platforms. Support for .mp2, .mp3, .mp4, .m4a, .aac, and .mid formats
-available on Mac OS X. Support for additional formats will be added on all
-platforms in the future.
 
 
 Installation
