@@ -7,8 +7,9 @@
 #include "player.h"
 
 static AVMIDIPlayer * player = NULL;
+static OMO_PLAYER codec_player;
 
-bool omo_codec_midi_load_file(const char * fn)
+static bool codec_load_file(const char * fn)
 {
 	NSString * fnstring = [NSString stringWithUTF8String:fn];
 
@@ -19,13 +20,13 @@ bool omo_codec_midi_load_file(const char * fn)
 	return true;
 }
 
-bool omo_codec_midi_play(void)
+static bool codec_play(void)
 {
 	[player play:nil];
 	return true;
 }
 
-bool omo_codec_midi_pause(bool paused)
+static bool codec_pause(bool paused)
 {
 	if(paused)
 	{
@@ -38,7 +39,7 @@ bool omo_codec_midi_pause(bool paused)
 	return true;
 }
 
-void omo_codec_midi_stop(void)
+static void codec_stop(void)
 {
 	if(player)
 	{
@@ -48,37 +49,35 @@ void omo_codec_midi_stop(void)
 	}
 }
 
-bool omo_codec_midi_seek(float pos)
+static bool codec_seek(float pos)
 {
 	player.currentPosition = pos;
 	return true;
 //	[player currentPosition] = pos;
 }
 
-float omo_codec_midi_get_position(void)
+static float codec_get_position(void)
 {
 	return player.currentPosition;
 }
 
-float omo_codec_midi_get_length(void)
+static float codec_get_length(void)
 {
 	return player.duration;
 }
 
-static OMO_PLAYER omo_midi_player;
-
 OMO_PLAYER * omo_codec_avmidiplayer_get_player(void)
 {
-	omo_midi_player.initialize = NULL;
-	omo_midi_player.load_file = omo_codec_midi_load_file;
-	omo_midi_player.play = omo_codec_midi_play;
-	omo_midi_player.pause = omo_codec_midi_pause;
-	omo_midi_player.stop = omo_codec_midi_stop;
-	omo_midi_player.seek = omo_codec_midi_seek;
-	omo_midi_player.get_position = omo_codec_midi_get_position;
-	omo_midi_player.get_length = omo_codec_midi_get_length;
-	omo_midi_player.types = 0;
-	omo_player_add_type(&omo_midi_player, ".mid");
+	codec_player.initialize = NULL;
+	codec_player.load_file = codec_load_file;
+	codec_player.play = codec_play;
+	codec_player.pause = codec_pause;
+	codec_player.stop = codec_stop;
+	codec_player.seek = codec_seek;
+	codec_player.get_position = codec_get_position;
+	codec_player.get_length = codec_get_length;
+	codec_player.types = 0;
+	omo_player_add_type(&codec_player, ".mid");
 
-	return &omo_midi_player;
+	return &codec_player;
 }

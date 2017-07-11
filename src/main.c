@@ -4,13 +4,13 @@
 #include "instance.h"
 #include "ui_init.h"
 
-#include "codec_dumba5.h"
-#include "codec_allegro_acodec.h"
+#include "codecs/dumba5.h"
+#include "codecs/allegro_acodec.h"
 
 /* Mac OS X codecs */
 #ifdef ALLEGRO_MACOSX
-	#include "codec_avmidiplayer.h"
-	#include "codec_avplayer.h"
+	#include "codecs/avmidiplayer.h"
+	#include "codecs/avplayer.h"
 #endif
 
 /* main logic routine */

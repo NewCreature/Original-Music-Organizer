@@ -5,7 +5,7 @@
 
 static char player_filename[1024] = {0};
 
-bool omo_codec_mod_initialize(void)
+static bool codec_initialize(void)
 {
 	if(dumba5_init(DUMB_RQ_CUBIC))
 	{
@@ -14,13 +14,13 @@ bool omo_codec_mod_initialize(void)
 	return false;
 }
 
-bool omo_codec_mod_load_file(const char * fn)
+static bool codec_load_file(const char * fn)
 {
 	strcpy(player_filename, fn);
 	return true;
 }
 
-bool omo_codec_mod_play(void)
+static bool codec_play(void)
 {
 	if(dumba5_load_and_play_module(player_filename, 0, false, 44100, true))
 	{
@@ -29,7 +29,7 @@ bool omo_codec_mod_play(void)
 	return false;
 }
 
-bool omo_codec_mod_pause(bool paused)
+static bool codec_pause(bool paused)
 {
 	if(paused)
 	{
@@ -42,36 +42,36 @@ bool omo_codec_mod_pause(bool paused)
 	return true;
 }
 
-void omo_codec_mod_stop(void)
+static void codec_stop(void)
 {
 	dumba5_stop_module();
 }
 
-float omo_codec_mod_get_position(void)
+static float codec_get_position(void)
 {
 	return (float)dumba5_get_module_position() / 65536.0;
 }
 
-static OMO_PLAYER omo_mod_player;
+static OMO_PLAYER codec_player;
 
 OMO_PLAYER * omo_codec_dumba5_get_player(void)
 {
-	omo_mod_player.initialize = omo_codec_mod_initialize;
-	omo_mod_player.load_file = omo_codec_mod_load_file;
-	omo_mod_player.play = omo_codec_mod_play;
-	omo_mod_player.pause = omo_codec_mod_pause;
-	omo_mod_player.stop = omo_codec_mod_stop;
-	omo_mod_player.seek = NULL;
-	omo_mod_player.get_position = omo_codec_mod_get_position;
-	omo_mod_player.get_length = NULL;
-	omo_mod_player.types = 0;
-	omo_player_add_type(&omo_mod_player, ".mod");
-	omo_player_add_type(&omo_mod_player, ".s3m");
-	omo_player_add_type(&omo_mod_player, ".xm");
-	omo_player_add_type(&omo_mod_player, ".it");
-	if(omo_mod_player.initialize())
+	codec_player.initialize = codec_initialize;
+	codec_player.load_file = codec_load_file;
+	codec_player.play = codec_play;
+	codec_player.pause = codec_pause;
+	codec_player.stop = codec_stop;
+	codec_player.seek = NULL;
+	codec_player.get_position = codec_get_position;
+	codec_player.get_length = NULL;
+	codec_player.types = 0;
+	omo_player_add_type(&codec_player, ".mod");
+	omo_player_add_type(&codec_player, ".s3m");
+	omo_player_add_type(&codec_player, ".xm");
+	omo_player_add_type(&codec_player, ".it");
+	if(codec_player.initialize())
 	{
-		return &omo_mod_player;
+		return &codec_player;
 	}
 	return NULL;
 }
