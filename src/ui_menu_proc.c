@@ -90,7 +90,10 @@ int omo_menu_file_open(void * data)
     {
         for(i = 0; i < al_get_native_file_dialog_count(fc); i++)
         {
-            omo_add_file_to_queue(app->queue, al_get_native_file_dialog_path(fc, i));
+            if(omo_get_player(&app->player_registry, al_get_native_file_dialog_path(fc, i)))
+            {
+                omo_add_file_to_queue(app->queue, al_get_native_file_dialog_path(fc, i));
+            }
         }
         app->queue_pos = -1;
     }
