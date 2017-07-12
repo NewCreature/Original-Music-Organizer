@@ -30,7 +30,7 @@
 
 typedef struct DUMBA5_PLAYER DUMBA5_PLAYER;
 
-/* Initialize DUMBA5 with the specified resampler quality. 
+/* Initialize DUMBA5 with the specified resampler quality.
    Choose from DUMB_RQ_ALIASING, DUMB_RQ_LINEAR, and DUMB_RQ_CUBIC. */
 bool dumba5_init(int resampler);
 
@@ -71,6 +71,9 @@ float dumba5_get_module_volume(void);
 /* Get the position of the module. */
 long dumba5_get_module_position(void);
 
+/* Determine if the module has finished playing. */
+bool dumba5_module_playback_finished(void);
+
 
 /*********************
 * advanced functions *
@@ -105,6 +108,9 @@ float dumba5_get_player_volume(DUMBA5_PLAYER * pp);
 
 /* Get the position of the player. */
 long dumba5_get_player_position(DUMBA5_PLAYER * pp);
+
+/* Determine if music playback is finished. */
+bool dumba5_player_playback_finished(DUMBA5_PLAYER * pp);
 
 #ifdef __cplusplus
 	}

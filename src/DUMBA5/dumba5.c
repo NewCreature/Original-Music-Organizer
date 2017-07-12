@@ -39,6 +39,7 @@ struct DUMBA5_PLAYER
 	DUH_SIGRENDERER *sigrenderer; /* If this is NULL, stream is invalid. */
 	float volume;
 	int silentcount;
+	bool done_playing;
 
 	ALLEGRO_THREAD * thread;
 	ALLEGRO_MUTEX * mutex;
@@ -177,6 +178,7 @@ DUMBA5_PLAYER * dumba5_start_duh_x(DUH *duh, int n_channels, long pos, float vol
 
 	dp->volume = volume;
 	dp->silentcount = 0;
+	dp->done_playing = false;
 	dp->duh = duh;
 	al_start_thread(dp->thread);
 
@@ -247,6 +249,15 @@ float dumba5_get_player_volume(DUMBA5_PLAYER * pp)
 long dumba5_get_player_position(DUMBA5_PLAYER * pp)
 {
 	return pp ? duh_sigrenderer_get_position(pp->sigrenderer) : -1;
+}
+
+bool dumba5_player_playback_finished(DUMBA5_PLAYER * pp)
+{
+	if(pp)
+	{
+		return pp->done_playing;
+	}
+	return false;
 }
 
 DUMBA5_PLAYER * dumba5_encapsulate_sigrenderer(DUH_SIGRENDERER * sigrenderer, float volume, long bufsize, int freq)
@@ -350,6 +361,13 @@ DUH * dumba5_load_module(const char * fn)
 	return dp;
 }
 
+static int it_loop_callback(void * data)
+{
+	DUMBA5_PLAYER * pp = (DUMBA5_PLAYER *)data;
+	pp->done_playing = true;
+	return 1;
+}
+
 /* return the player so you can use more advanced features if you want
    you can safely ignore the return value if all you want is to play a mod */
 DUMBA5_PLAYER * dumba5_create_player(DUH * dp, int pattern, bool loop, int bufsize, int frequency, bool stereo)
@@ -385,7 +403,6 @@ DUMBA5_PLAYER * dumba5_create_player(DUH * dp, int pattern, bool loop, int bufsi
 	{
 		c_conf = ALLEGRO_CHANNEL_CONF_2;
 	}
-
 	player->stream = al_create_audio_stream(4, bufsize, frequency, ALLEGRO_AUDIO_DEPTH_INT16, c_conf);
 
 	if(!player->stream)
@@ -403,6 +420,12 @@ DUMBA5_PLAYER * dumba5_create_player(DUH * dp, int pattern, bool loop, int bufsi
 		free(player);
 		return NULL;
 	}
+	if(!loop)
+	{
+		dumb_it_set_loop_callback(duh_get_it_sigrenderer(player->sigrenderer), it_loop_callback, player);
+		dumb_it_set_xm_speed_zero_callback(duh_get_it_sigrenderer(player->sigrenderer), it_loop_callback, player);
+	}
+
 	player->mutex = al_create_mutex();
 	if(!player->mutex)
 	{
@@ -562,4 +585,9 @@ float dumba5_get_module_volume(void)
 long dumba5_get_module_position(void)
 {
 	return dumba5_get_player_position(dumba5_player);
+}
+
+bool dumba5_module_playback_finished(void)
+{
+	return dumba5_player_playback_finished(dumba5_player);
 }
