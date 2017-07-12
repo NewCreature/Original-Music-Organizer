@@ -27,6 +27,7 @@ void t3f_set_new_music_volume(float volume);
 float t3f_get_music_volume(void);
 void t3f_fade_out_music(float speed);
 int t3f_get_music_state(void);
+void t3f_disable_music_looping(void);
 
 #ifdef __cplusplus
 	}

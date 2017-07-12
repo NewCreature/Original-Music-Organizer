@@ -10,11 +10,17 @@ static float t3f_new_music_volume = 1.0;
 static float t3f_music_target_volume = 1.0;
 static float t3f_music_fade_speed = 0.0;
 static float t3f_music_gain = 1.0;
+static bool t3f_music_looping_disabled = false;
 
 static char t3f_music_thread_fn[4096] = {0};
 static const ALLEGRO_FILE_INTERFACE * t3f_music_thread_file_interface = NULL;
 
 ALLEGRO_DEBUG_CHANNEL("android");
+
+void t3f_disable_music_looping(void)
+{
+	t3f_music_looping_disabled = true;
+}
 
 static bool t3f_set_music_state(int state)
 {
@@ -124,7 +130,7 @@ static void * t3f_play_music_thread(void * arg)
 		al_destroy_path(path);
 	}
 
-	if(loop_disabled)
+	if(loop_disabled || t3f_music_looping_disabled)
 	{
 		al_set_audio_stream_playmode(t3f_stream, ALLEGRO_PLAYMODE_ONCE);
 	}
