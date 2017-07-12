@@ -64,6 +64,35 @@ void app_logic(void * data)
 					}
 				}
 			}
+			if(t3f_key[ALLEGRO_KEY_LEFT])
+			{
+				if(app->queue)
+				{
+					if(app->player)
+					{
+						app->player->stop();
+						app->player = NULL;
+					}
+					if(app->queue_pos > 0)
+					{
+						app->queue_pos -= 2;
+					}
+					else
+					{
+						app->queue_pos = -1;
+					}
+				}
+				t3f_key[ALLEGRO_KEY_LEFT] = 0;
+			}
+			if(t3f_key[ALLEGRO_KEY_RIGHT])
+			{
+				if(app->player)
+				{
+					app->player->stop();
+					app->player = NULL;
+				}
+				t3f_key[ALLEGRO_KEY_RIGHT] = 0;
+			}
 			/* insert logic here, as your project grows you can add more states
 			 * to deal with various parts of your app (logo, title screen, in-
 			 * game, etc.) */
