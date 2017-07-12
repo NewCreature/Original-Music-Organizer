@@ -21,6 +21,7 @@ typedef struct
     bool (*seek)(float pos);
     float (*get_position)(void);
     float (*get_length)(void);
+    bool (*done_playing)(void);
 
 } OMO_PLAYER;
 

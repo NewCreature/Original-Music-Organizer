@@ -5,6 +5,7 @@
 
 #include "defines.h"
 #include "player_registry.h"
+#include "queue.h"
 
 /* structure to hold all of our app-specific data */
 typedef struct
@@ -13,9 +14,12 @@ typedef struct
 	ALLEGRO_MENU * menu[OMO_MAX_MENUS];
 	char last_music_filename[1024];
 	int state;
+	ALLEGRO_FONT * font;
 
 	OMO_PLAYER_REGISTRY player_registry;
 	OMO_PLAYER * player; // current player
+	OMO_QUEUE * queue;
+	int queue_pos;
 
 } APP_INSTANCE;
 

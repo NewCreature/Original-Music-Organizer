@@ -7,6 +7,7 @@
 #include "player.h"
 
 static AVAudioPlayer * player = NULL;
+static double start_time;
 
 static bool codec_load_file(const char * fn)
 {
@@ -21,6 +22,7 @@ static bool codec_load_file(const char * fn)
 static bool codec_play(void)
 {
 	[player play];
+	start_time = al_get_time();
 	return true;
 }
 
@@ -66,10 +68,16 @@ static float codec_get_length(void)
 //	return player.duration;
 }
 
+static bool codec_done_playing(void)
+{
+	return al_get_time() - start_time >= player.duration;
+}
+
 static OMO_PLAYER codec_player;
 
 OMO_PLAYER * omo_codec_avplayer_get_player(void)
 {
+	memset(&codec_player, 0, sizeof(OMO_PLAYER));
 	codec_player.initialize = NULL;
 	codec_player.load_file = codec_load_file;
 	codec_player.play = codec_play;
@@ -78,6 +86,7 @@ OMO_PLAYER * omo_codec_avplayer_get_player(void)
 	codec_player.seek = codec_seek;
 	codec_player.get_position = codec_get_position;
 	codec_player.get_length = codec_get_length;
+	codec_player.done_playing = codec_done_playing;
 	codec_player.types = 0;
 	omo_player_add_type(&codec_player, ".mp2");
 	omo_player_add_type(&codec_player, ".mp3");

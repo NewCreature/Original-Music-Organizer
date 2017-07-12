@@ -52,10 +52,16 @@ static float codec_get_position(void)
 	return (float)dumba5_get_module_position() / 65536.0;
 }
 
+static bool codec_done_playing(void)
+{
+	return dumba5_module_playback_finished();
+}
+
 static OMO_PLAYER codec_player;
 
 OMO_PLAYER * omo_codec_dumba5_get_player(void)
 {
+	memset(&codec_player, 0, sizeof(OMO_PLAYER));
 	codec_player.initialize = codec_initialize;
 	codec_player.load_file = codec_load_file;
 	codec_player.play = codec_play;
@@ -64,6 +70,7 @@ OMO_PLAYER * omo_codec_dumba5_get_player(void)
 	codec_player.seek = NULL;
 	codec_player.get_position = codec_get_position;
 	codec_player.get_length = NULL;
+	codec_player.done_playing = codec_done_playing;
 	codec_player.types = 0;
 	omo_player_add_type(&codec_player, ".mod");
 	omo_player_add_type(&codec_player, ".s3m");

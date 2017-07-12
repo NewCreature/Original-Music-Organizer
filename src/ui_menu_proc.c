@@ -8,6 +8,7 @@ bool omo_play_file(void * data, const char * fn)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
 
+    printf("play: %s\n", fn);
     app->player = omo_get_player(&app->player_registry, fn);
     if(app->player)
     {
@@ -64,9 +65,9 @@ int omo_menu_file_open(void * data)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
     ALLEGRO_FILECHOOSER * fc;
-    ALLEGRO_PATH * path;
+    int i;
 
-	fc = al_create_native_file_dialog(app->last_music_filename, "Select music file.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST);
+	fc = al_create_native_file_dialog(app->last_music_filename, "Select music file.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE);
 	if(!fc)
 	{
 		goto fail;
@@ -80,18 +81,21 @@ int omo_menu_file_open(void * data)
 		goto fail;
 	}
     omo_stop_file(data);
-    path = al_create_path(al_get_native_file_dialog_path(fc, 0));
-    if(path)
+    if(app->queue)
     {
-        if(omo_play_file(data, al_path_cstr(path, '/')))
-        {
-            strcpy(app->last_music_filename, al_path_cstr(path, '/'));
-            al_set_window_title(t3f_display, al_get_path_filename(path));
-        }
-        al_destroy_path(path);
-        al_destroy_native_file_dialog(fc);
-        return 1;
+        omo_destroy_queue(app->queue);
     }
+    app->queue = omo_create_queue(al_get_native_file_dialog_count(fc));
+    if(app->queue)
+    {
+        for(i = 0; i < al_get_native_file_dialog_count(fc); i++)
+        {
+            omo_add_file_to_queue(app->queue, al_get_native_file_dialog_path(fc, i));
+        }
+        app->queue_pos = -1;
+    }
+    al_destroy_native_file_dialog(fc);
+    return 1;
 
 	fail:
 	{

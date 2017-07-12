@@ -17,11 +17,53 @@
 void app_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	bool next_file = false;
 
 	switch(app->state)
 	{
 		default:
 		{
+			if(app->queue)
+			{
+				if(app->player)
+				{
+					if(app->player->done_playing())
+					{
+						app->player->stop();
+						app->player = NULL;
+						next_file = true;
+					}
+				}
+				else
+				{
+					next_file = true;
+				}
+				if(next_file)
+				{
+					while(1)
+					{
+						app->queue_pos++;
+						if(app->queue_pos < app->queue->file_count)
+						{
+							app->player = omo_get_player(&app->player_registry, app->queue->file[app->queue_pos]);
+							if(app->player)
+							{
+								if(app->player->load_file(app->queue->file[app->queue_pos]))
+								{
+									if(app->player->play())
+									{
+										break;
+									}
+								}
+							}
+						}
+						else
+						{
+							break;
+						}
+					}
+				}
+			}
 			/* insert logic here, as your project grows you can add more states
 			 * to deal with various parts of your app (logo, title screen, in-
 			 * game, etc.) */
@@ -34,11 +76,29 @@ void app_logic(void * data)
 void app_render(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	ALLEGRO_COLOR color;
+	int i;
 
 	switch(app->state)
 	{
 		default:
 		{
+			al_clear_to_color(t3f_color_black);
+			if(app->queue)
+			{
+				for(i = 0; i < app->queue->file_count; i++)
+				{
+					if(i == app->queue_pos)
+					{
+						color = al_map_rgba_f(1.0, 1.0, 0.0, 1.0);
+					}
+					else
+					{
+						color = t3f_color_white;
+					}
+					al_draw_textf(app->font, color, 0, i * al_get_font_line_height(app->font), 0, "%3d. %s", i + 1, app->queue->file[i]);
+				}
+			}
 			/* insert rendering code here, see app_logic() for more info */
 			break;
 		}
@@ -52,6 +112,13 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	if(!t3f_initialize(T3F_APP_TITLE, 640, 480, 60.0, app_logic, app_render, T3F_DEFAULT | T3F_RESIZABLE, app))
 	{
 		printf("Error initializing T3F!\n");
+		return false;
+	}
+	memset(app, 0, sizeof(APP_INSTANCE));
+	app->font = al_create_builtin_font();
+	if(!app->font)
+	{
+		printf("Error loading font!\n");
 		return false;
 	}
 	app->player_registry.players = 0;

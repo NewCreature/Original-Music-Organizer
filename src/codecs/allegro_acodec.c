@@ -1,4 +1,5 @@
 #include "t3f/t3f.h"
+#include "t3f/music.h"
 
 #include "player.h"
 
@@ -13,6 +14,7 @@ static bool codec_load_file(const char * fn)
 
 static bool codec_play(void)
 {
+	t3f_disable_music_looping();
 	if(t3f_play_music(player_filename))
 	{
 		return true;
@@ -43,8 +45,18 @@ static float codec_get_position(void)
 	return al_get_audio_stream_position_secs(t3f_stream);
 }
 
+static bool codec_done_playing(void)
+{
+	if(t3f_stream)
+	{
+		return !al_get_audio_stream_playing(t3f_stream);
+	}
+	return false;
+}
+
 OMO_PLAYER * omo_codec_allegro_acodec_get_player(void)
 {
+	memset(&codec_player, 0, sizeof(OMO_PLAYER));
 	codec_player.initialize = NULL;
 	codec_player.load_file = codec_load_file;
 	codec_player.play = codec_play;
@@ -53,6 +65,7 @@ OMO_PLAYER * omo_codec_allegro_acodec_get_player(void)
 	codec_player.seek = NULL;
 	codec_player.get_position = codec_get_position;
 	codec_player.get_length = NULL;
+	codec_player.done_playing = codec_done_playing;
 	codec_player.types = 0;
 	omo_player_add_type(&codec_player, ".ogg");
 	omo_player_add_type(&codec_player, ".flac");
