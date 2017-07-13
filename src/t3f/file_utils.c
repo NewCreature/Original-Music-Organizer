@@ -44,7 +44,6 @@ bool t3f_scan_files(const char * path, bool (*process_file)(const char * fn, voi
 //		name = al_path_to_string(al_get_entry_name(fp), '/');
 		if(al_get_fs_entry_mode(fp) & ALLEGRO_FILEMODE_ISDIR)
 		{
-            printf("tbreak: %lu\n", data);
 			t3f_scan_files(al_get_fs_entry_name(fp), process_file, true, data);
 		}
 		else
