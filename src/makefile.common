@@ -27,14 +27,14 @@ $(APP_EXE_NAME) : $(PROJECT_OBJECTS) update_changelog
 	@echo Executable built!
 
 #Unix way of updating the changelog, will be overwritten by MinGW build script under Windows
-update_changelog:
-	cp -a ../changelog ../docs
+update_changelog: ../changelog
+	$(COPY_COMMAND) $(subst /,$(PATH_SEPARATOR),../changelog ../docs)
 	$(SED_COMMAND) "s|BUILD_DATE|`date -u +"%a, %d %b %Y %T"`|" ../docs/changelog
 	$(SED_COMMAND) "s|BUILD_VERSION|$(APP_VERSION)|" ../docs/changelog
 
 clean: app_clean
 	@$(PLATFORM_CLEAN)
-	@$(DEL_COMMAND) $(PROJECT_OBJECTS)
+	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(PROJECT_OBJECTS))
 	@echo Cleanup complete!
 
 very_clean: clean

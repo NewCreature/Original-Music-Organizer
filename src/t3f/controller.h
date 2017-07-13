@@ -25,7 +25,7 @@
 
 typedef struct
 {
-	
+
 	int type;     // type of input (mouse, keyboard, joystick)
 	int sub_type; // axis, button, etc.
 	int button;   // which button (keyboard/joystick/mouse buttons)
@@ -39,26 +39,27 @@ typedef struct
 
 typedef struct
 {
-	
+
 	int flags;
 	float pos;
 	float delta;
-	
+
 	bool was_held;
 	bool down;
 	bool held;
 	bool pressed;
 	bool released;
-	
+
 } T3F_CONTROLLER_STATE;
 
 typedef struct
 {
-	
+
 	T3F_CONTROLLER_BINDING binding[T3F_MAX_CONTROLLER_BINDINGS];
 	T3F_CONTROLLER_STATE state[T3F_MAX_CONTROLLER_BINDINGS];
 	int bindings;
-	
+    const char * device_name; // remap all bindings to controller that matches this
+
 } T3F_CONTROLLER;
 
 T3F_CONTROLLER * t3f_create_controller(int bindings);

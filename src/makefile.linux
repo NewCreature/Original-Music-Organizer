@@ -6,5 +6,7 @@ DEPEND_LIBS = -lm $(LINUX_DEPEND_LIBS)
 DEL_COMMAND = rm -f
 DEL_FOLDER_COMMAND = rm -rf
 SED_COMMAND = sed -i
+COPY_COMMAND = cp
+PATH_SEPARATOR = /
 
 include makefile.common

@@ -88,10 +88,6 @@ extern float t3f_display_scale_x;
 extern float t3f_display_scale_y;
 extern int t3f_display_width;
 extern int t3f_display_height;
-extern float t3f_display_top;
-extern float t3f_display_bottom;
-extern float t3f_display_left;
-extern float t3f_display_right;
 
 extern bool t3f_key[ALLEGRO_KEY_MAX];
 extern bool t3f_quit;

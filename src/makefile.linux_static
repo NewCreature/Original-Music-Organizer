@@ -7,6 +7,8 @@ LIB_SUFFIX = -static
 DEL_COMMAND = rm -f
 DEL_FOLDER_COMMAND = rm -rf
 SED_COMMAND = sed -i
+COPY_COMMAND = cp
+PATH_SEPARATOR = /
 
 include makefile.common
 

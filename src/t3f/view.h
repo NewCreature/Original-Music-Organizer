@@ -18,14 +18,24 @@ typedef struct
 	float vp_x;
 	float vp_y;
 
+	int flags;
+
+	/* edges */
+	float top;
+	float bottom;
+	float left;
+	float right;
+	bool need_update;
+	ALLEGRO_TRANSFORM transform;
+
 } T3F_VIEW;
 
 extern T3F_VIEW * t3f_default_view;
 extern T3F_VIEW * t3f_current_view;
 
-T3F_VIEW * t3f_create_view(float ox, float oy, float w, float h, float vpx, float vpy);
+T3F_VIEW * t3f_create_view(float ox, float oy, float w, float h, float vpx, float vpy, int flags);
+void t3f_adjust_view(T3F_VIEW * vp, float ox, float oy, float w, float h, float vpx, float vpy, int flags);
 void t3f_destroy_view(T3F_VIEW * vp);
-void t3f_set_view_focus(T3F_VIEW * vp, float fx, float fy);
 void t3f_select_view(T3F_VIEW * sp);
 T3F_VIEW * t3f_get_current_view(void);
 bool t3f_project_coordinates(float vw, float vpx, float vpy, float * x, float * y, float z);

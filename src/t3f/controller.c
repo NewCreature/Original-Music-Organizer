@@ -101,6 +101,7 @@ void t3f_write_controller_config(ALLEGRO_CONFIG * acp, const char * section, T3F
 	char temp_string2[1024] = {0};
 	int j;
 
+	al_set_config_value(acp, section, "Device Name", cp->device_name ? cp->device_name : "");
 	for(j = 0; j < cp->bindings; j++)
 	{
 		sprintf(temp_string, "Binding %d Type", j);
@@ -139,12 +140,41 @@ void t3f_write_controller_config(ALLEGRO_CONFIG * acp, const char * section, T3F
 	}
 }
 
+static int matched[T3F_MAX_JOYSTICKS] = {0};
+
+static void remap_controller_to_device(T3F_CONTROLLER * cp)
+{
+	int i;
+	int matching_device = -1;
+
+	if(cp->device_name)
+	{
+		for(i = 0; i < al_get_num_joysticks(); i++)
+		{
+			if(!strcmp(cp->device_name, al_get_joystick_name(t3f_joystick[i])) && !matched[i])
+			{
+				matching_device = i;
+				matched[i] = 1;
+				break;
+			}
+		}
+		if(matching_device >= 0)
+		{
+			for(i = 0; i < cp->bindings; i++)
+			{
+				cp->binding[i].joystick = matching_device;
+			}
+		}
+	}
+}
+
 bool t3f_read_controller_config(ALLEGRO_CONFIG * acp, const char * section, T3F_CONTROLLER * cp)
 {
 	char temp_string[1024] = {0};
 	const char * item;
 	int j;
 
+	cp->device_name = al_get_config_value(acp, section, "Device Name");
 	for(j = 0; j < cp->bindings; j++)
 	{
 		sprintf(temp_string, "Binding %d Type", j);
@@ -251,7 +281,42 @@ bool t3f_read_controller_config(ALLEGRO_CONFIG * acp, const char * section, T3F_
 			}
 		}
 	}
+	if(cp->device_name)
+	{
+		remap_controller_to_device(cp);
+	}
 	return true;
+}
+
+static bool binding_is_joystick(T3F_CONTROLLER * cp, int i)
+{
+	if(cp->binding[i].type == T3F_CONTROLLER_BINDING_JOYSTICK_AXIS || cp->binding[i].type == T3F_CONTROLLER_BINDING_JOYSTICK_BUTTON)
+	{
+		return true;
+	}
+	return false;
+}
+
+static void t3f_find_controller_device_name(T3F_CONTROLLER * cp)
+{
+	int i;
+	int type;
+	int source;
+
+	/* only get device name for joysticks */
+	type = cp->binding[0].type;
+	if(binding_is_joystick(cp, 0))
+	{
+		source = cp->binding[0].joystick;
+		for(i = 1; i < cp->bindings; i++)
+		{
+			if(!binding_is_joystick(cp, i) || cp->binding[i].joystick != source)
+			{
+				return;
+			}
+		}
+		cp->device_name = al_get_joystick_name(t3f_joystick[source]);
+	}
 }
 
 bool t3f_bind_controller(T3F_CONTROLLER * cp, int binding)
@@ -303,6 +368,7 @@ bool t3f_bind_controller(T3F_CONTROLLER * cp, int binding)
 				{
 					cp->binding[binding].type = T3F_CONTROLLER_BINDING_KEY;
 					cp->binding[binding].button = event.keyboard.keycode;
+					t3f_find_controller_device_name(cp);
 					al_destroy_event_queue(queue);
 					return true;
 				}
@@ -318,6 +384,7 @@ bool t3f_bind_controller(T3F_CONTROLLER * cp, int binding)
 				cp->binding[binding].joystick = t3f_get_joystick_number(event.joystick.id);
 				cp->binding[binding].stick = event.joystick.stick;
 				cp->binding[binding].button = event.joystick.button;
+				t3f_find_controller_device_name(cp);
 				al_destroy_event_queue(queue);
 				return true;
 			}
@@ -333,6 +400,7 @@ bool t3f_bind_controller(T3F_CONTROLLER * cp, int binding)
 						cp->binding[binding].stick = event.joystick.stick;
 						cp->binding[binding].axis = event.joystick.axis;
 						cp->binding[binding].flags = T3F_CONTROLLER_FLAG_AXIS_NEGATIVE;
+						t3f_find_controller_device_name(cp);
 						al_destroy_event_queue(queue);
 						return true;
 					}
@@ -343,6 +411,7 @@ bool t3f_bind_controller(T3F_CONTROLLER * cp, int binding)
 						cp->binding[binding].stick = event.joystick.stick;
 						cp->binding[binding].axis = event.joystick.axis;
 						cp->binding[binding].flags = T3F_CONTROLLER_FLAG_AXIS_POSITIVE;
+						t3f_find_controller_device_name(cp);
 						al_destroy_event_queue(queue);
 						return true;
 					}
@@ -361,6 +430,7 @@ bool t3f_bind_controller(T3F_CONTROLLER * cp, int binding)
 			{
 				cp->binding[binding].type = T3F_CONTROLLER_BINDING_MOUSE_BUTTON;
 				cp->binding[binding].button = event.mouse.button;
+				t3f_find_controller_device_name(cp);
 				al_destroy_event_queue(queue);
 				return true;
 			}

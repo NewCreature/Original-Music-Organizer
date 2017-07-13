@@ -178,7 +178,11 @@ ALLEGRO_BITMAP * t3f_put_bitmap_on_atlas(T3F_ATLAS * ap, ALLEGRO_BITMAP ** bp, i
 			return NULL;
 		}
 	}
-	t3f_actually_put_bitmap_on_atlas_pixel_copy(ap, *bp, type);
+	#ifdef ALLEGRO_ANDROID
+		t3f_actually_put_bitmap_on_atlas_pixel_copy(ap, *bp, type);
+	#else
+		t3f_actually_put_bitmap_on_atlas_fbo(ap, *bp, type);
+	#endif
 	retbp = al_create_sub_bitmap(ap->page, ap->x + 1, ap->y + 1, al_get_bitmap_width(*bp), al_get_bitmap_height(*bp));
 	ap->x += al_get_bitmap_width(*bp) + 2;
 	if(al_get_bitmap_height(*bp) + 2 > ap->line_height)

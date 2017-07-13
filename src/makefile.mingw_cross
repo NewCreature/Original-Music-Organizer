@@ -12,6 +12,8 @@ DEL_COMMAND = rm -f
 DEL_FOLDER_COMMAND = rm -rf
 SED_COMMAND = sed -i
 EXE_SUFFIX = .exe
+COPY_COMMAND = cp
+PATH_SEPARATOR = /
 
 include makefile.common
 
