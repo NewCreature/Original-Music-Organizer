@@ -1,8 +1,10 @@
 #include "t3f/t3f.h"
+#include "t3f/file_utils.h"
 #include "DUMBA5/dumba5.h"
 
 #include "instance.h"
 #include "player_registry.h"
+#include "queue.h"
 
 bool omo_play_file(void * data, const char * fn)
 {
@@ -163,6 +165,143 @@ int omo_menu_file_queue_files(void * data)
 		}
 		return 0;
 	}
+    return 1;
+}
+
+static int file_count = 0;
+
+static bool count_file(const char * fn, void * data)
+{
+    file_count++;
+    return false;
+}
+
+static bool process_file(const char * fn, void * data)
+{
+    APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+    if(omo_get_player(&app->player_registry, fn))
+    {
+        if(omo_add_file_to_queue(app->queue, fn))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+int omo_menu_file_play_folder(void * data)
+{
+    APP_INSTANCE * app = (APP_INSTANCE *)data;
+    ALLEGRO_FILECHOOSER * fc;
+
+    fc = al_create_native_file_dialog(app->last_music_filename, "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER);
+	if(!fc)
+	{
+		goto fail;
+	}
+	if(!al_show_native_file_dialog(al_get_current_display(), fc))
+	{
+		goto fail;
+	}
+	if(!al_get_native_file_dialog_count(fc))
+	{
+		goto fail;
+	}
+    omo_stop_file(data);
+    if(app->queue)
+    {
+        omo_destroy_queue(app->queue);
+    }
+    file_count = 0;
+    if(t3f_scan_files(al_get_native_file_dialog_path(fc, 0), count_file, false, data))
+    {
+        app->queue = omo_create_queue(file_count);
+        if(app->queue)
+        {
+            if(!t3f_scan_files(al_get_native_file_dialog_path(fc, 0), process_file, false, data))
+            {
+                omo_destroy_queue(app->queue);
+                goto fail;
+            }
+            app->queue_pos = -1;
+        }
+    }
+
+    al_destroy_native_file_dialog(fc);
+    return 1;
+
+    fail:
+    {
+        if(fc)
+		{
+			al_destroy_native_file_dialog(fc);
+		}
+		return 0;
+    }
+    return 1;
+}
+
+int omo_menu_file_queue_folder(void * data)
+{
+    APP_INSTANCE * app = (APP_INSTANCE *)data;
+    ALLEGRO_FILECHOOSER * fc;
+    OMO_QUEUE * new_queue;
+    OMO_QUEUE * old_queue;
+    int i;
+
+    fc = al_create_native_file_dialog(app->last_music_filename, "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER);
+	if(!fc)
+	{
+		goto fail;
+	}
+	if(!al_show_native_file_dialog(al_get_current_display(), fc))
+	{
+		goto fail;
+	}
+	if(!al_get_native_file_dialog_count(fc))
+	{
+		goto fail;
+	}
+    file_count = 0;
+    if(t3f_scan_files(al_get_native_file_dialog_path(fc, 0), count_file, false, data))
+    {
+        new_queue = omo_create_queue(app->queue->file_count + file_count);
+        if(new_queue)
+        {
+            old_queue = app->queue;
+            app->queue = new_queue;
+            if(old_queue)
+            {
+                for(i = 0; i < old_queue->file_count; i++)
+                {
+                    omo_add_file_to_queue(app->queue, old_queue->file[i]);
+                }
+            }
+            if(!t3f_scan_files(al_get_native_file_dialog_path(fc, 0), process_file, false, data))
+            {
+                omo_destroy_queue(app->queue);
+                app->queue = old_queue;
+                goto fail;
+            }
+            if(old_queue)
+            {
+                omo_destroy_queue(old_queue);
+            }
+        }
+    }
+
+    al_destroy_native_file_dialog(fc);
+    return 1;
+
+    fail:
+    {
+        if(fc)
+		{
+			al_destroy_native_file_dialog(fc);
+		}
+		return 0;
+    }
     return 1;
 }
 
