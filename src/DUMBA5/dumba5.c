@@ -440,6 +440,7 @@ DUMBA5_PLAYER * dumba5_create_player(DUH * dp, int pattern, bool loop, int bufsi
 	player->volume = 1.0;
 	player->silentcount = 0;
 	player->duh = dp;
+	player->done_playing = false;
 
 	return player;
 }
