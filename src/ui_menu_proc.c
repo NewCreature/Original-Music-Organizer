@@ -61,13 +61,13 @@ static const char * omo_get_type_string(void * data)
     return type_buf;
 }
 
-int omo_menu_file_open(void * data)
+int omo_menu_file_play_files(void * data)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
     ALLEGRO_FILECHOOSER * fc;
     int i;
 
-	fc = al_create_native_file_dialog(app->last_music_filename, "Select music file.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE);
+	fc = al_create_native_file_dialog(app->last_music_filename, "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE);
 	if(!fc)
 	{
 		goto fail;
@@ -98,6 +98,61 @@ int omo_menu_file_open(void * data)
         app->queue_pos = -1;
     }
     al_destroy_native_file_dialog(fc);
+    return 1;
+
+	fail:
+	{
+		if(fc)
+		{
+			al_destroy_native_file_dialog(fc);
+		}
+		return 0;
+	}
+    return 1;
+}
+
+int omo_menu_file_queue_files(void * data)
+{
+    APP_INSTANCE * app = (APP_INSTANCE *)data;
+    ALLEGRO_FILECHOOSER * fc;
+    OMO_QUEUE * new_queue;
+    int i;
+
+	fc = al_create_native_file_dialog(app->last_music_filename, "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE);
+	if(!fc)
+	{
+		goto fail;
+	}
+	if(!al_show_native_file_dialog(al_get_current_display(), fc))
+	{
+		goto fail;
+	}
+	if(!al_get_native_file_dialog_count(fc))
+	{
+		goto fail;
+	}
+    new_queue = omo_create_queue(al_get_native_file_dialog_count(fc) + (app->queue ? app->queue->file_count : 0));
+    if(!new_queue)
+    {
+        goto fail;
+    }
+    if(app->queue)
+    {
+        for(i = 0; i < app->queue->file_count; i++)
+        {
+            omo_add_file_to_queue(new_queue, app->queue->file[i]);
+        }
+    }
+    omo_destroy_queue(app->queue);
+    for(i = 0; i < al_get_native_file_dialog_count(fc); i++)
+    {
+        if(omo_get_player(&app->player_registry, al_get_native_file_dialog_path(fc, i)))
+        {
+            omo_add_file_to_queue(new_queue, al_get_native_file_dialog_path(fc, i));
+        }
+    }
+    al_destroy_native_file_dialog(fc);
+    app->queue = new_queue;
     return 1;
 
 	fail:
