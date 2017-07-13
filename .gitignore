@@ -39,3 +39,4 @@ Thumbs.db
 *.app
 docs/changelog
 src/makefile.config
+bin/omo
