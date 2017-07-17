@@ -341,23 +341,32 @@ DUH_SIGRENDERER * dumba5_decompose_to_sigrenderer(DUMBA5_PLAYER * pp)
 DUH * dumba5_load_module(const char * fn)
 {
 	DUH * dp = NULL;
-	dp = dumb_load_xm_quick(fn);
-	if(!dp)
-	{
-		dp = dumb_load_it_quick(fn);
+
+	#if DUMB_MAJOR_VERSION > 0
+		dp = dumb_load_any_quick(fn, 0, 0);
 		if(!dp)
 		{
-			dp = dumb_load_mod_quick(fn);
+			return NULL;
+		}
+	#else
+		dp = dumb_load_xm_quick(fn);
+		if(!dp)
+		{
+			dp = dumb_load_it_quick(fn);
 			if(!dp)
 			{
-				dp = dumb_load_s3m_quick(fn);
+				dp = dumb_load_mod_quick(fn);
 				if(!dp)
 				{
-					return NULL;
+					dp = dumb_load_s3m_quick(fn);
+					if(!dp)
+					{
+						return NULL;
+					}
 				}
 			}
 		}
-	}
+	#endif
 	return dp;
 }
 

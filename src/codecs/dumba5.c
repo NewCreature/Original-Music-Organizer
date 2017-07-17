@@ -76,6 +76,17 @@ OMO_PLAYER * omo_codec_dumba5_get_player(void)
 	omo_player_add_type(&codec_player, ".s3m");
 	omo_player_add_type(&codec_player, ".xm");
 	omo_player_add_type(&codec_player, ".it");
+	#if DUMB_MAJOR_VERSION > 0
+		omo_player_add_type(&codec_player, ".stm");
+		omo_player_add_type(&codec_player, ".669");
+		omo_player_add_type(&codec_player, ".ptm");
+		omo_player_add_type(&codec_player, ".psm");
+		omo_player_add_type(&codec_player, ".mtm");
+		omo_player_add_type(&codec_player, ".dsm");
+		omo_player_add_type(&codec_player, ".amf");
+		omo_player_add_type(&codec_player, ".umx");
+		omo_player_add_type(&codec_player, ".j2b");
+	#endif
 	if(codec_player.initialize())
 	{
 		return &codec_player;
