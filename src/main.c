@@ -6,6 +6,7 @@
 
 #include "codecs/dumba5.h"
 #include "codecs/allegro_acodec.h"
+#include "codecs/gme.h"
 
 /* Mac OS X codecs */
 #ifdef ALLEGRO_MACOSX
@@ -153,6 +154,7 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	app->player_registry.players = 0;
 	omo_register_player(&app->player_registry, omo_codec_dumba5_get_player());
 	omo_register_player(&app->player_registry, omo_codec_allegro_acodec_get_player());
+	omo_register_player(&app->player_registry, omo_codec_gme_get_player());
 	#ifdef ALLEGRO_MACOSX
 		omo_register_player(&app->player_registry, omo_codec_avmidiplayer_get_player());
 		omo_register_player(&app->player_registry, omo_codec_avplayer_get_player());
