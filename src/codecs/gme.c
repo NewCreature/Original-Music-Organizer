@@ -63,6 +63,7 @@ static bool codec_play(void)
 		if(codec_thread)
 		{
 			al_start_thread(codec_thread);
+			return true;
 		}
 	}
 	return false;
@@ -98,9 +99,9 @@ static void codec_stop(void)
 
 static bool codec_done_playing(void)
 {
-	if(t3f_stream)
+	if(codec_stream)
 	{
-		return !al_get_audio_stream_playing(t3f_stream);
+		return !al_get_audio_stream_playing(codec_stream);
 	}
 	return false;
 }
