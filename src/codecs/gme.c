@@ -54,13 +54,33 @@ static bool codec_load_file(const char * fn, const char * subfn)
 	{
 		start_track = atoi(subfn);
 	}
+
 	gme_open_file(fn, &emu, 44100);
 	return true;
 }
 
 static bool codec_play(void)
 {
+	gme_info_t * track_info;
+	int l;
+
 	gme_start_track(emu, start_track);
+
+	gme_track_info(emu, &track_info, start_track);
+
+	/* calculate track length */
+	if(track_info->length <= 0)
+	{
+		track_info->length = track_info->intro_length + track_info->loop_length * 2;
+	}
+	if(track_info->length <= 0)
+	{
+		track_info->length = (long) (2.5 * 60 * 1000);
+	}
+	gme_set_fade(emu, track_info->length);
+	l = track_info->length / 1000;
+	gme_free_info(track_info);
+
 	codec_stream = al_create_audio_stream(4, buf_size, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
 	if(codec_stream)
 	{
@@ -105,9 +125,9 @@ static void codec_stop(void)
 
 static bool codec_done_playing(void)
 {
-	if(codec_stream)
+	if(gme_track_ended(emu))
 	{
-		return !al_get_audio_stream_playing(codec_stream);
+		return true;
 	}
 	return false;
 }
