@@ -4,6 +4,7 @@
 #include "player.h"
 
 static char player_filename[1024] = {0};
+static char player_sub_filename[1024] = {0};
 
 static bool codec_initialize(void)
 {
@@ -14,15 +15,26 @@ static bool codec_initialize(void)
 	return false;
 }
 
-static bool codec_load_file(const char * fn)
+static bool codec_load_file(const char * fn, const char * subfn)
 {
 	strcpy(player_filename, fn);
+	strcpy(player_sub_filename, "");
+	if(subfn)
+	{
+		strcpy(player_sub_filename, subfn);
+	}
 	return true;
 }
 
 static bool codec_play(void)
 {
-	if(dumba5_load_and_play_module(player_filename, 0, false, 44100, true))
+	int start = 0;
+
+	if(strlen(player_sub_filename) > 0)
+	{
+		start = atoi(player_sub_filename);
+	}
+	if(dumba5_load_and_play_module(player_filename, start, false, 44100, true))
 	{
 		return true;
 	}

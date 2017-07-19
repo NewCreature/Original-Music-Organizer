@@ -1,6 +1,23 @@
 #include "player_registry.h"
 #include "player.h"
 
+OMO_PLAYER_REGISTRY * omo_create_player_registry(void)
+{
+    OMO_PLAYER_REGISTRY * rp;
+
+    rp = malloc(sizeof(OMO_PLAYER_REGISTRY));
+    if(rp)
+    {
+        memset(rp, 0, sizeof(OMO_PLAYER_REGISTRY));
+    }
+    return rp;
+}
+
+void omo_destroy_player_registry(OMO_PLAYER_REGISTRY * rp)
+{
+    free(rp);
+}
+
 bool omo_register_player(OMO_PLAYER_REGISTRY * rp, OMO_PLAYER * pp)
 {
     if(rp->players < OMO_MAX_REGISTERED_PLAYERS)

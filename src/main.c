@@ -4,6 +4,9 @@
 #include "instance.h"
 #include "ui_init.h"
 
+#include "archive_handlers/libarchive.h"
+#include "archive_handlers/gme.h"
+
 #include "codecs/dumba5.h"
 #include "codecs/allegro_acodec.h"
 #include "codecs/gme.h"
@@ -44,12 +47,12 @@ void app_logic(void * data)
 					while(1)
 					{
 						app->queue_pos++;
-						if(app->queue_pos < app->queue->file_count)
+						if(app->queue_pos < app->queue->entry_count)
 						{
-							app->player = omo_get_player(&app->player_registry, app->queue->file[app->queue_pos]);
+							app->player = omo_get_player(app->player_registry, app->queue->entry[app->queue_pos]->file);
 							if(app->player)
 							{
-								if(app->player->load_file(app->queue->file[app->queue_pos]))
+								if(app->player->load_file(app->queue->entry[app->queue_pos]->file, app->queue->entry[app->queue_pos]->sub_file))
 								{
 									if(app->player->play())
 									{
@@ -116,7 +119,7 @@ void app_render(void * data)
 			al_clear_to_color(t3f_color_black);
 			if(app->queue)
 			{
-				for(i = 0; i < app->queue->file_count; i++)
+				for(i = 0; i < app->queue->entry_count; i++)
 				{
 					if(i == app->queue_pos)
 					{
@@ -126,7 +129,7 @@ void app_render(void * data)
 					{
 						color = t3f_color_white;
 					}
-					al_draw_textf(app->font, color, 0, i * al_get_font_line_height(app->font), 0, "%3d. %s", i + 1, app->queue->file[i]);
+					al_draw_textf(app->font, color, 0, i * al_get_font_line_height(app->font), 0, "%3d. %s", i + 1, app->queue->entry[i]->file);
 				}
 			}
 			/* insert rendering code here, see app_logic() for more info */
@@ -151,14 +154,32 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		printf("Error loading font!\n");
 		return false;
 	}
-	app->player_registry.players = 0;
-	omo_register_player(&app->player_registry, omo_codec_dumba5_get_player());
-	omo_register_player(&app->player_registry, omo_codec_allegro_acodec_get_player());
-	omo_register_player(&app->player_registry, omo_codec_gme_get_player());
+
+	/* register archive handlers */
+	app->archive_handler_registry = omo_create_archive_handler_registry();
+	if(!app->archive_handler_registry)
+	{
+		printf("Error setting up archive handlers!\n");
+		return false;
+	}
+	omo_register_archive_handler(app->archive_handler_registry, omo_get_libarchive_archive_handler());
+	omo_register_archive_handler(app->archive_handler_registry, omo_get_gme_archive_handler());
+
+	/* register players */
+	app->player_registry = omo_create_player_registry();
+	if(!app->player_registry)
+	{
+		printf("Error setting up player registry!\n");
+		return false;
+	}
+	omo_register_player(app->player_registry, omo_codec_dumba5_get_player());
+	omo_register_player(app->player_registry, omo_codec_allegro_acodec_get_player());
+	omo_register_player(app->player_registry, omo_codec_gme_get_player());
 	#ifdef ALLEGRO_MACOSX
-		omo_register_player(&app->player_registry, omo_codec_avmidiplayer_get_player());
-		omo_register_player(&app->player_registry, omo_codec_avplayer_get_player());
+		omo_register_player(app->player_registry, omo_codec_avmidiplayer_get_player());
+		omo_register_player(app->player_registry, omo_codec_avplayer_get_player());
 	#endif
+
 	if(!omo_setup_menus(app))
 	{
 		printf("Error setting up menus!\n");

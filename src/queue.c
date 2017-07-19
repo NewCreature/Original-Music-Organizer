@@ -8,16 +8,16 @@ OMO_QUEUE * omo_create_queue(int files)
     qp = malloc(sizeof(OMO_QUEUE));
     if(qp)
     {
-        qp->file = malloc(sizeof(char *) * files);
-        if(!qp->file)
+        qp->entry = malloc(sizeof(OMO_QUEUE_ENTRY *) * files);
+        if(!qp->entry)
         {
             free(qp);
             qp = NULL;
         }
         else
         {
-            qp->file_size = files;
-            qp->file_count = 0;
+            qp->entry_size = files;
+            qp->entry_count = 0;
         }
     }
     return qp;
@@ -27,24 +27,45 @@ void omo_destroy_queue(OMO_QUEUE * qp)
 {
     int i;
 
-    for(i = 0; i < qp->file_count; i++)
+    for(i = 0; i < qp->entry_count; i++)
     {
-        free(qp->file[i]);
+        if(qp->entry[i]->file)
+        {
+            free(qp->entry[i]->file);
+        }
+        if(qp->entry[i]->sub_file)
+        {
+            free(qp->entry[i]->sub_file);
+        }
+        free(qp->entry[i]);
     }
-    free(qp->file);
+    free(qp->entry);
     free(qp);
 }
 
-bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn)
+bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn)
 {
-    if(qp->file_count < qp->file_size)
+    if(qp->entry_count < qp->entry_size)
     {
-        qp->file[qp->file_count] = malloc(strlen(fn) + 2);
-        if(qp->file[qp->file_count])
+        qp->entry[qp->entry_count] = malloc(sizeof(OMO_QUEUE_ENTRY));
+        if(qp->entry[qp->entry_count])
         {
-            strcpy(qp->file[qp->file_count], fn);
-            qp->file_count++;
-            return true;
+            qp->entry[qp->entry_count]->file = malloc(strlen(fn) + 2);
+            if(qp->entry[qp->entry_count]->file)
+            {
+                strcpy(qp->entry[qp->entry_count]->file, fn);
+                qp->entry[qp->entry_count]->sub_file = NULL;
+                if(subfn)
+                {
+                    qp->entry[qp->entry_count]->sub_file = malloc(strlen(subfn) + 2);
+                    if(qp->entry[qp->entry_count]->sub_file)
+                    {
+                        strcpy(qp->entry[qp->entry_count]->sub_file, subfn);
+                    }
+                }
+                qp->entry_count++;
+                return true;
+            }
         }
     }
     return false;

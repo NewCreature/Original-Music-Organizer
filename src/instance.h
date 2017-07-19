@@ -4,6 +4,7 @@
 #include "t3f/t3f.h"
 
 #include "defines.h"
+#include "archive_handler_registry.h"
 #include "player_registry.h"
 #include "queue.h"
 
@@ -16,7 +17,8 @@ typedef struct
 	int state;
 	ALLEGRO_FONT * font;
 
-	OMO_PLAYER_REGISTRY player_registry;
+	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;
+	OMO_PLAYER_REGISTRY * player_registry;
 	OMO_PLAYER * player; // current player
 	OMO_QUEUE * queue;
 	int queue_pos;

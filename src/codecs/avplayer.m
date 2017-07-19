@@ -9,7 +9,7 @@
 static AVAudioPlayer * player = NULL;
 static double start_time;
 
-static bool codec_load_file(const char * fn)
+static bool codec_load_file(const char * fn, const char * subfn)
 {
 	NSString * fnstring = [NSString stringWithUTF8String:fn];
 

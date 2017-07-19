@@ -6,7 +6,7 @@
 static char player_filename[1024] = {0};
 static OMO_PLAYER codec_player;
 
-static bool codec_load_file(const char * fn)
+static bool codec_load_file(const char * fn, const char * subfn)
 {
 	strcpy(player_filename, fn);
 	return true;

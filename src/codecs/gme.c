@@ -1,5 +1,5 @@
-#include "t3f/t3f.h"
 #include "gme/gme.h"
+#include "t3f/t3f.h"
 
 #include "player.h"
 
@@ -9,6 +9,7 @@ static bool paused = false;
 static int buf_size = 1024;
 static ALLEGRO_THREAD * codec_thread = NULL;
 static ALLEGRO_AUDIO_STREAM * codec_stream = NULL;
+static int start_track;
 
 static void * gme_update_thread(ALLEGRO_THREAD * thread, void * arg)
 {
@@ -46,15 +47,20 @@ static void * gme_update_thread(ALLEGRO_THREAD * thread, void * arg)
 	return NULL;
 }
 
-static bool codec_load_file(const char * fn)
+static bool codec_load_file(const char * fn, const char * subfn)
 {
+	start_track = 0;
+	if(subfn)
+	{
+		start_track = atoi(subfn);
+	}
 	gme_open_file(fn, &emu, 44100);
 	return true;
 }
 
 static bool codec_play(void)
 {
-	gme_start_track(emu, 0);
+	gme_start_track(emu, start_track);
 	codec_stream = al_create_audio_stream(4, buf_size, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
 	if(codec_stream)
 	{
