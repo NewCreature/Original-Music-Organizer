@@ -7,6 +7,7 @@
 #include "archive_handler_registry.h"
 #include "player_registry.h"
 #include "queue.h"
+#include "library.h"
 
 /* structure to hold all of our app-specific data */
 typedef struct
@@ -21,6 +22,7 @@ typedef struct
 	OMO_PLAYER_REGISTRY * player_registry;
 	OMO_PLAYER * player; // current player
 	OMO_QUEUE * queue;
+	OMO_LIBRARY * library;
 	int queue_pos;
 
 } APP_INSTANCE;

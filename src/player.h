@@ -15,6 +15,7 @@ typedef struct
     /* playback functions */
     bool (*initialize)(void);
     bool (*load_file)(const char * fn, const char * subfn);
+    int (*get_track_count)(const char * fn);
     bool (*play)(void);
     bool (*pause)(bool paused);
     void (*stop)(void);

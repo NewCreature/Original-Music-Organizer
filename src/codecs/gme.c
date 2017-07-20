@@ -59,6 +59,20 @@ static bool codec_load_file(const char * fn, const char * subfn)
 	return true;
 }
 
+static int codec_get_track_count(const char * fn)
+{
+	Music_Emu * local_emu = NULL;
+	int count = 0;
+
+	gme_open_file(fn, &local_emu, 44100);
+	if(local_emu)
+	{
+		count = gme_track_count(local_emu);
+		gme_delete(local_emu);
+	}
+	return count;
+}
+
 static bool codec_play(void)
 {
 	gme_info_t * track_info;
@@ -137,6 +151,7 @@ OMO_PLAYER * omo_codec_gme_get_player(void)
 	memset(&codec_player, 0, sizeof(OMO_PLAYER));
 	codec_player.initialize = NULL;
 	codec_player.load_file = codec_load_file;
+	codec_player.get_track_count = codec_get_track_count;
 	codec_player.play = codec_play;
 	codec_player.pause = codec_pause;
 	codec_player.stop = codec_stop;

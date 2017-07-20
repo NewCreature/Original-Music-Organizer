@@ -60,6 +60,15 @@ static const char * omo_get_type_string(void * data)
             strcat(type_buf, ";");
         }
     }
+    for(i = 0; i < app->archive_handler_registry->archive_handlers; i++)
+    {
+        for(j = 0; j < app->archive_handler_registry->archive_handler[i].types; j++)
+        {
+            strcat(type_buf, "*");
+            strcat(type_buf, app->archive_handler_registry->archive_handler[i].type[j]);
+            strcat(type_buf, ";");
+        }
+    }
     type_buf[strlen(type_buf) - 1] = '\0';
     return type_buf;
 }
@@ -68,19 +77,32 @@ static int omo_get_total_files(ALLEGRO_FILECHOOSER * fc, void * data)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
     OMO_ARCHIVE_HANDLER * archive_handler;
+    OMO_PLAYER * player;
     int total_files = 0;
-    int i;
+    int i, j, c;
 
     for(i = 0; i < al_get_native_file_dialog_count(fc); i++)
     {
         archive_handler = omo_get_archive_handler(app->archive_handler_registry, al_get_native_file_dialog_path(fc, i));
         if(archive_handler)
         {
-            total_files += archive_handler->count_files(al_get_native_file_dialog_path(fc, i));
+            c = archive_handler->count_files(al_get_native_file_dialog_path(fc, i));
+            for(j = 0; j < c; j++)
+            {
+                player = omo_get_player(app->player_registry, archive_handler->get_file(al_get_native_file_dialog_path(fc, i), j));
+                if(player)
+                {
+                    total_files++;
+                }
+            }
         }
         else
         {
-            total_files++;
+            player = omo_get_player(app->player_registry, al_get_native_file_dialog_path(fc, i));
+            if(player)
+            {
+                total_files += player->get_track_count(al_get_native_file_dialog_path(fc, i));
+            }
         }
     }
     return total_files;
@@ -91,8 +113,10 @@ int omo_menu_file_play_files(void * data)
     APP_INSTANCE * app = (APP_INSTANCE *)data;
     ALLEGRO_FILECHOOSER * fc;
     OMO_ARCHIVE_HANDLER * archive_handler = NULL;
+    OMO_PLAYER * player;
     int total_files = 0;
     int i, j, c;
+    char buf[256];
 
 	fc = al_create_native_file_dialog(app->last_music_filename, "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE);
 	if(!fc)
@@ -125,14 +149,27 @@ int omo_menu_file_play_files(void * data)
                 c = archive_handler->count_files(al_get_native_file_dialog_path(fc, i));
                 for(j = 0; j < c; j++)
                 {
-                    omo_add_file_to_queue(app->queue, al_get_native_file_dialog_path(fc, i),  archive_handler->get_file(al_get_native_file_dialog_path(fc, i), j));
+                    player = omo_get_player(app->player_registry, archive_handler->get_file(al_get_native_file_dialog_path(fc, i), j));
+                    if(player)
+                    {
+                        sprintf(buf, "%d", j);
+                        omo_add_file_to_queue(app->queue, al_get_native_file_dialog_path(fc, i),  buf);
+                    }
                 }
             }
 
             /* otherwise, add single file */
-            else if(omo_get_player(app->player_registry, al_get_native_file_dialog_path(fc, i)))
+            else
             {
-                omo_add_file_to_queue(app->queue, al_get_native_file_dialog_path(fc, i), NULL);
+                player = omo_get_player(app->player_registry, al_get_native_file_dialog_path(fc, i));
+                if(player)
+                {
+                    for(j = 0; j < player->get_track_count(al_get_native_file_dialog_path(fc, i)); j++)
+                    {
+                        sprintf(buf, "%d", j);
+                        omo_add_file_to_queue(app->queue, al_get_native_file_dialog_path(fc, i), buf);
+                    }
+                }
             }
         }
         app->queue_pos = -1;

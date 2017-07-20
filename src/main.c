@@ -1,11 +1,12 @@
 #include "t3f/t3f.h"
+#include "t3f/file_utils.h"
 #include <DUMBA5/dumba5.h>
 
 #include "instance.h"
+#include "library.h"
 #include "ui_init.h"
 
 #include "archive_handlers/libarchive.h"
-#include "archive_handlers/gme.h"
 
 #include "codecs/dumba5.h"
 #include "codecs/allegro_acodec.h"
@@ -17,10 +18,36 @@
 	#include "codecs/avplayer.h"
 #endif
 
+static char extracted_filename[1024] = {0};
+
+static void stop_player(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_ARCHIVE_HANDLER * archive_handler;
+
+	if(app->player)
+	{
+		app->player->stop();
+		app->player = NULL;
+
+		/* delete previously extracted file if we played from archive */
+		archive_handler = omo_get_archive_handler(app->archive_handler_registry, 	app->queue->entry[app->queue_pos]->file);
+		if(archive_handler)
+		{
+			if(strlen(extracted_filename) > 0)
+			{
+				al_remove_filename(extracted_filename);
+			}
+		}
+	}
+}
+
 /* main logic routine */
 void app_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_ARCHIVE_HANDLER * archive_handler;
+	const char * subfile;
 	bool next_file = false;
 
 	switch(app->state)
@@ -33,8 +60,7 @@ void app_logic(void * data)
 				{
 					if(app->player->done_playing())
 					{
-						app->player->stop();
-						app->player = NULL;
+						stop_player(data);
 						next_file = true;
 					}
 				}
@@ -49,14 +75,41 @@ void app_logic(void * data)
 						app->queue_pos++;
 						if(app->queue_pos < app->queue->entry_count)
 						{
-							app->player = omo_get_player(app->player_registry, app->queue->entry[app->queue_pos]->file);
-							if(app->player)
+							archive_handler = omo_get_archive_handler(app->archive_handler_registry, app->queue->entry[app->queue_pos]->file);
+							if(archive_handler)
 							{
-								if(app->player->load_file(app->queue->entry[app->queue_pos]->file, app->queue->entry[app->queue_pos]->sub_file))
+								strcpy(extracted_filename, "");
+								if(app->queue->entry[app->queue_pos]->sub_file)
 								{
-									if(app->player->play())
+									app->player = omo_get_player(app->player_registry, archive_handler->get_file(app->queue->entry[app->queue_pos]->file, atoi(app->queue->entry[app->queue_pos]->sub_file)));
+									if(app->player)
 									{
-										break;
+										subfile = archive_handler->extract_file(app->queue->entry[app->queue_pos]->file, atoi(app->queue->entry[app->queue_pos]->sub_file));
+										if(strlen(subfile) > 0)
+										{
+											strcpy(extracted_filename, subfile);
+											if(app->player->load_file(extracted_filename, 0))
+											{
+												if(app->player->play())
+												{
+													break;
+												}
+											}
+										}
+									}
+								}
+							}
+							else
+							{
+								app->player = omo_get_player(app->player_registry, app->queue->entry[app->queue_pos]->file);
+								if(app->player)
+								{
+									if(app->player->load_file(app->queue->entry[app->queue_pos]->file, app->queue->entry[app->queue_pos]->sub_file))
+									{
+										if(app->player->play())
+										{
+											break;
+										}
 									}
 								}
 							}
@@ -74,8 +127,7 @@ void app_logic(void * data)
 				{
 					if(app->player)
 					{
-						app->player->stop();
-						app->player = NULL;
+						stop_player(data);
 					}
 					if(app->queue_pos > 0)
 					{
@@ -92,8 +144,7 @@ void app_logic(void * data)
 			{
 				if(app->player)
 				{
-					app->player->stop();
-					app->player = NULL;
+					stop_player(data);
 				}
 				t3f_key[ALLEGRO_KEY_RIGHT] = 0;
 			}
@@ -129,7 +180,7 @@ void app_render(void * data)
 					{
 						color = t3f_color_white;
 					}
-					al_draw_textf(app->font, color, 0, i * al_get_font_line_height(app->font), 0, "%3d. %s", i + 1, app->queue->entry[i]->file);
+					al_draw_textf(app->font, color, 0, i * al_get_font_line_height(app->font), 0, "%3d. %s%s%s", i + 1, app->queue->entry[i]->file, app->queue->entry[i]->sub_file ? "/" : "", app->queue->entry[i]->sub_file ? app->queue->entry[i]->sub_file : "");
 				}
 			}
 			/* insert rendering code here, see app_logic() for more info */
@@ -138,9 +189,86 @@ void app_render(void * data)
 	}
 }
 
+static unsigned long total_files = 0;
+
+static bool count_file(const char * fn, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_ARCHIVE_HANDLER * archive_handler;
+	OMO_PLAYER * player;
+	int i;
+
+	archive_handler = omo_get_archive_handler(app->archive_handler_registry, fn);
+	if(archive_handler)
+	{
+		for(i = 0; i < archive_handler->count_files(fn); i++)
+		{
+			player = omo_get_player(app->player_registry, archive_handler->get_file(fn, i));
+			if(player)
+			{
+				total_files++;
+			}
+		}
+	}
+	else
+	{
+		player = omo_get_player(app->player_registry, fn);
+		if(player)
+		{
+			total_files += player->get_track_count(fn);
+		}
+	}
+
+    return false;
+}
+
+static bool add_file(const char * fn, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_ARCHIVE_HANDLER * archive_handler;
+	OMO_PLAYER * player;
+	int i, c;
+	char buf[32] = {0};
+
+	archive_handler = omo_get_archive_handler(app->archive_handler_registry, fn);
+	if(archive_handler)
+	{
+		c = archive_handler->count_files(fn);
+		for(i = 0; i < c; i++)
+		{
+			player = omo_get_player(app->player_registry, archive_handler->get_file(fn, i));
+			if(player)
+			{
+				sprintf(buf, "%d", i); // reference by index instead of filename
+				omo_add_file_to_library(app->library, fn, buf);
+			}
+		}
+	}
+	else
+	{
+		player = omo_get_player(app->player_registry, fn);
+		if(player)
+		{
+			c = player->get_track_count(fn);
+			for(i = 0; i < c; i++)
+			{
+				sprintf(buf, "%d", i);
+				omo_add_file_to_library(app->library, fn, c > 1 ? buf : NULL);
+				total_files++;
+			}
+		}
+	}
+
+    return false;
+}
+
 /* initialize our app, load graphics, etc. */
 bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 {
+	const char * val;
+	char file_db_fn[1024];
+	char entry_db_fn[1024];
+
 	/* initialize T3F */
 	if(!t3f_initialize(T3F_APP_TITLE, 640, 480, 60.0, app_logic, app_render, T3F_DEFAULT | T3F_RESIZABLE, app))
 	{
@@ -163,7 +291,6 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		return false;
 	}
 	omo_register_archive_handler(app->archive_handler_registry, omo_get_libarchive_archive_handler());
-	omo_register_archive_handler(app->archive_handler_registry, omo_get_gme_archive_handler());
 
 	/* register players */
 	app->player_registry = omo_create_player_registry();
@@ -179,6 +306,22 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		omo_register_player(app->player_registry, omo_codec_avmidiplayer_get_player());
 		omo_register_player(app->player_registry, omo_codec_avplayer_get_player());
 	#endif
+
+	if(argc > 1)
+	{
+		al_set_config_value(t3f_config, "Settings", "library_path", argv[1]);
+	}
+	val = al_get_config_value(t3f_config, "Settings", "library_path");
+	if(!val)
+	{
+		printf("No library path set!\n");
+		return false;
+	}
+	t3f_scan_files(val, count_file, false, app);
+	strcpy(file_db_fn, t3f_get_filename(t3f_data_path, "files.ini"));
+	strcpy(entry_db_fn, t3f_get_filename(t3f_data_path, "database.ini"));
+	app->library = omo_create_library(file_db_fn, entry_db_fn, total_files);
+	t3f_scan_files(val, add_file, false, app);
 
 	if(!omo_setup_menus(app))
 	{
@@ -198,6 +341,7 @@ int main(int argc, char * argv[])
 	if(app_initialize(&app, argc, argv))
 	{
 		t3f_run();
+		omo_save_library(app.library);
 	}
 	else
 	{

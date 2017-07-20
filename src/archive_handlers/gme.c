@@ -12,8 +12,11 @@ static int count_files(const char * fn)
 	int count = 0;
 
 	gme_open_file(fn, &emu, 44100);
-	count = gme_track_count(emu);
-	gme_delete(emu);
+	if(emu)
+	{
+		count = gme_track_count(emu);
+		gme_delete(emu);
+	}
 	return count;
 }
 

@@ -19,6 +19,11 @@ static bool codec_load_file(const char * fn, const char * subfn)
 	return true;
 }
 
+static int codec_get_track_count(const char * fn)
+{
+	return 1;
+}
+
 static bool codec_play(void)
 {
 	[player play];
@@ -80,6 +85,7 @@ OMO_PLAYER * omo_codec_avplayer_get_player(void)
 	memset(&codec_player, 0, sizeof(OMO_PLAYER));
 	codec_player.initialize = NULL;
 	codec_player.load_file = codec_load_file;
+	codec_player.get_track_count = codec_get_track_count;
 	codec_player.play = codec_play;
 	codec_player.pause = codec_pause;
 	codec_player.stop = codec_stop;
