@@ -134,7 +134,6 @@ bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * sub
         {
             md5_file(fn, h);
             sprintf(sum_string, "%04x%04x%04x%04x%s", h[0], h[1], h[2], h[3], subfn ? subfn : "");
-            printf("%s: %s\n", section, sum_string);
             al_set_config_value(lp->file_database, section, "id", sum_string);
             if(subfn)
             {
