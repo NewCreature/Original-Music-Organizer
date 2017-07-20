@@ -206,10 +206,13 @@ void app_render(void * data)
 						color = t3f_color_white;
 					}
 					sprintf(section, "%s%s%s", app->queue->entry[i]->file, app->queue->entry[i]->sub_file ? "/" : "", app->queue->entry[i]->sub_file ? app->queue->entry[i]->sub_file : "");
-					val = al_get_config_value(app->library->file_database, section, "id");
-					if(val)
+					if(app->library)
 					{
-						val2 = al_get_config_value(app->library->entry_database, val, "title");
+						val = al_get_config_value(app->library->file_database, section, "id");
+						if(val)
+						{
+							val2 = al_get_config_value(app->library->entry_database, val, "title");
+						}
 					}
 					if(val2)
 					{
@@ -352,16 +355,14 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		al_set_config_value(t3f_config, "Settings", "library_path", argv[1]);
 	}
 	val = al_get_config_value(t3f_config, "Settings", "library_path");
-	if(!val)
+	if(val)
 	{
-		printf("No library path set!\n");
-		return false;
+		t3f_scan_files(val, count_file, false, app);
+		strcpy(file_db_fn, t3f_get_filename(t3f_data_path, "files.ini"));
+		strcpy(entry_db_fn, t3f_get_filename(t3f_data_path, "database.ini"));
+		app->library = omo_create_library(file_db_fn, entry_db_fn, total_files);
+		t3f_scan_files(val, add_file, false, app);
 	}
-	t3f_scan_files(val, count_file, false, app);
-	strcpy(file_db_fn, t3f_get_filename(t3f_data_path, "files.ini"));
-	strcpy(entry_db_fn, t3f_get_filename(t3f_data_path, "database.ini"));
-	app->library = omo_create_library(file_db_fn, entry_db_fn, total_files);
-	t3f_scan_files(val, add_file, false, app);
 
 	if(!omo_setup_menus(app))
 	{
@@ -381,7 +382,10 @@ int main(int argc, char * argv[])
 	if(app_initialize(&app, argc, argv))
 	{
 		t3f_run();
-		omo_save_library(app.library);
+		if(app.library)
+		{
+			omo_save_library(app.library);
+		}
 	}
 	else
 	{
