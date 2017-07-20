@@ -1,5 +1,5 @@
-Original Music Organizer
-------------------------
+OMO
+---
 
 Note: this program is in early development. The current version is very minimal
 and is only able to do basic playback of files in supported formats (see below
@@ -11,7 +11,6 @@ To-do:
     Implement library.
     Implement tag editor.
     Implement tag scraper.
-    Add support for multiple songs in a single file/archive.
     Add support for more formats.
 
 
@@ -57,9 +56,9 @@ to provide packages.
 Getting Started
 ---------------
 
-The current version only supports the ability to browse your files and select
-music. To play back a song, simply open it with the file select dialog. Once a
-song is playing, you can pause and resume it with the playback menu.
+Use the menu items in the File menu to select files to play or add to the
+queue. OMO will play back the queued songs. You can also move forward or
+backward in the queue with the left and right arrow keys.
 
 
 Contacting Us
