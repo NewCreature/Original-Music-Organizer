@@ -454,3 +454,36 @@ int omo_menu_playback_pause(void * data)
     omo_pause_file(data, true);
     return 1;
 }
+
+int omo_menu_playback_shuffle(void * data)
+{
+    APP_INSTANCE * app = (APP_INSTANCE *)data;
+    OMO_QUEUE * new_queue;
+    int i, r;
+
+    if(app->queue)
+    {
+        /* stop currently playing song */
+        if(app->player)
+    	{
+    		app->player->stop();
+    		app->player = NULL;
+        }
+
+        /* create new queue */
+        new_queue = omo_create_queue(app->queue->entry_count);
+        if(new_queue)
+        {
+            for(i = 0; i < new_queue->entry_size; i++)
+            {
+                r = t3f_rand(&app->rng_state) % app->queue->entry_count;
+                omo_add_file_to_queue(new_queue, app->queue->entry[r]->file, app->queue->entry[r]->sub_file);
+                omo_delete_queue_item(app->queue, r);
+            }
+            omo_destroy_queue(app->queue);
+            app->queue = new_queue;
+            app->queue_pos = -1;
+        }
+    }
+    return 1;
+}

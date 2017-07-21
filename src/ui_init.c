@@ -26,6 +26,7 @@ bool omo_setup_menus(void * data)
     }
     t3f_add_menu_item(app->menu[OMO_MENU_PLAYBACK], "Play", 0, NULL, omo_menu_playback_play, NULL);
     t3f_add_menu_item(app->menu[OMO_MENU_PLAYBACK], "Pause", 0, NULL, omo_menu_playback_pause, NULL);
+    t3f_add_menu_item(app->menu[OMO_MENU_PLAYBACK], "Shuffle", 0, NULL, omo_menu_playback_shuffle, NULL);
 
     app->menu[OMO_MENU_MAIN] = al_create_menu();
     if(!app->menu[OMO_MENU_MAIN])

@@ -70,3 +70,26 @@ bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn)
     }
     return false;
 }
+
+void omo_delete_queue_item(OMO_QUEUE * qp, int index)
+{
+    int i;
+
+    if(index < qp->entry_count)
+    {
+        if(qp->entry[index]->file)
+        {
+            free(qp->entry[index]->file);
+        }
+        if(qp->entry[index]->sub_file)
+        {
+            free(qp->entry[index]->sub_file);
+        }
+        free(qp->entry[index]);
+        for(i = index; i < qp->entry_count - 1; i++)
+        {
+            qp->entry[i] = qp->entry[i + 1];
+        }
+        qp->entry_count--;
+    }
+}
