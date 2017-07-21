@@ -15,7 +15,7 @@ static int count_files(const char * fn)
 
 	if(strcmp(fn, cached_rar_file))
 	{
-		sprintf(system_command, "unrar l \"%s\" > \"%s\"", fn, t3f_get_filename(t3f_data_path, "rarlist.txt"));
+		sprintf(system_command, "/usr/local/bin/unrar l \"%s\" > \"%s\"", fn, t3f_get_filename(t3f_data_path, "rarlist.txt"));
 		system(system_command);
 		strcpy(cached_rar_file, fn);
 	}
@@ -64,7 +64,7 @@ static const char * get_file(const char * fn, int index)
 
 	if(strcmp(fn, cached_rar_file))
 	{
-		sprintf(system_command, "unrar l \"%s\" > \"%s\"", fn, t3f_get_filename(t3f_data_path, "rarlist.txt"));
+		sprintf(system_command, "/usr/local/bin/unrar l \"%s\" > \"%s\"", fn, t3f_get_filename(t3f_data_path, "rarlist.txt"));
 		system(system_command);
 		strcpy(cached_rar_file, fn);
 	}
@@ -90,7 +90,7 @@ static const char * get_file(const char * fn, int index)
 		}
 		al_fclose(fp);
 	}
-	printf("%s\n", returnfn);
+//	printf("%s\n", returnfn);
 
 	return returnfn;
 }
@@ -103,8 +103,8 @@ static const char * extract_file(const char * fn, int index)
 
 	al_change_directory(al_path_cstr(t3f_data_path, '/'));
 	strcpy(subfile, get_file(fn, index));
-	sprintf(system_command, "unrar x \"%s\" \"%s\"", fn, subfile);
-	printf(">%s\n", system_command);
+	sprintf(system_command, "/usr/local/bin/unrar x \"%s\" \"%s\"", fn, subfile);
+//	printf(">%s\n", system_command);
 	system(system_command);
 	strcpy(returnfn, t3f_get_filename(t3f_data_path, subfile));
 	al_change_directory(cwd);
