@@ -103,7 +103,7 @@ static const char * extract_file(const char * fn, int index)
 
 	al_change_directory(al_path_cstr(t3f_data_path, '/'));
 	strcpy(subfile, get_file(fn, index));
-	sprintf(system_command, "/usr/local/bin/unrar x \"%s\" \"%s\"", fn, subfile);
+	sprintf(system_command, "/usr/local/bin/unrar x -y \"%s\" \"%s\"", fn, subfile);
 //	printf(">%s\n", system_command);
 	system(system_command);
 	strcpy(returnfn, t3f_get_filename(t3f_data_path, subfile));
