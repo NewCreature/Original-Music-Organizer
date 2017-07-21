@@ -77,7 +77,7 @@ static const char * get_file(const char * fn, int index)
 			if(line_pointer)
 			{
 				line_count++;
-				if(line_count - 10 == index)
+				if(line_count - 9 == index)
 				{
 					strcpy(returnfn, &line_buffer[41]);
 					remove_line_endings(returnfn);
