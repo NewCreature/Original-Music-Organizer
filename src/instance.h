@@ -24,6 +24,7 @@ typedef struct
 	OMO_QUEUE * queue;
 	OMO_LIBRARY * library;
 	int queue_pos;
+	T3F_RNG_STATE rng_state;
 
 } APP_INSTANCE;
 
