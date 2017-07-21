@@ -168,6 +168,15 @@ OMO_PLAYER * omo_codec_gme_get_player(void)
 	omo_player_add_type(&codec_player, ".nsf");
 	omo_player_add_type(&codec_player, ".sap");
 	omo_player_add_type(&codec_player, ".spc");
+	omo_player_add_type(&codec_player, ".sp1");
+	omo_player_add_type(&codec_player, ".sp2");
+	omo_player_add_type(&codec_player, ".sp3");
+	omo_player_add_type(&codec_player, ".sp4");
+	omo_player_add_type(&codec_player, ".sp5");
+	omo_player_add_type(&codec_player, ".sp6");
+	omo_player_add_type(&codec_player, ".sp7");
+	omo_player_add_type(&codec_player, ".sp8");
+	omo_player_add_type(&codec_player, ".sp9");
 	omo_player_add_type(&codec_player, ".vgm");
 	return &codec_player;
 }

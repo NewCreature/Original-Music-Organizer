@@ -7,6 +7,7 @@
 #include "ui_init.h"
 
 #include "archive_handlers/libarchive.h"
+#include "archive_handlers/unrar.h"
 
 #include "codecs/dumba5.h"
 #include "codecs/allegro_acodec.h"
@@ -334,6 +335,7 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		return false;
 	}
 	omo_register_archive_handler(app->archive_handler_registry, omo_get_libarchive_archive_handler());
+	omo_register_archive_handler(app->archive_handler_registry, omo_get_unrar_archive_handler());
 
 	/* register players */
 	app->player_registry = omo_create_player_registry();
@@ -371,6 +373,7 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	}
 	t3f_attach_menu(app->menu[OMO_MENU_MAIN]);
 
+	t3f_srand(&app->rng_state, time(0));
 	app->state = 0;
 	return true;
 }
