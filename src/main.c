@@ -385,6 +385,7 @@ int main(int argc, char * argv[])
 	if(app_initialize(&app, argc, argv))
 	{
 		t3f_run();
+		stop_player(&app);
 		if(app.library)
 		{
 			omo_save_library(app.library);
