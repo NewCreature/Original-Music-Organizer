@@ -43,6 +43,28 @@ static void stop_player(void * data)
 	}
 }
 
+void omo_event_handler(ALLEGRO_EVENT * event, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	switch(event->type)
+	{
+		case ALLEGRO_EVENT_DISPLAY_RESIZE:
+		{
+			t3f_event_handler(event);
+			app->ui_queue_list_box_element->w = event->display.width;
+			app->ui_queue_list_box_element->h = event->display.height;
+			app->ui_queue_list_element->w = event->display.width - 16;
+			app->ui_queue_list_element->h = event->display.height - 16;
+			break;
+		}
+		default:
+		{
+			t3f_event_handler(event);
+		}
+	}
+}
+
 /* main logic routine */
 void app_logic(void * data)
 {
@@ -261,6 +283,7 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		printf("Error initializing T3F!\n");
 		return false;
 	}
+	t3f_set_event_handler(omo_event_handler);
 	if(!t3gui_init())
 	{
 		printf("Error initializing T3GUI!\n");

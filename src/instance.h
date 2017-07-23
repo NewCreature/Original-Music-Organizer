@@ -19,6 +19,7 @@ typedef struct
 	int state;
 	ALLEGRO_FONT * font;
 	T3GUI_DIALOG * ui_dialog;
+	T3GUI_ELEMENT * ui_queue_list_box_element;
 	T3GUI_ELEMENT * ui_queue_list_element;
 
 	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;
