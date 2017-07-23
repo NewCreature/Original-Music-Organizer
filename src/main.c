@@ -55,6 +55,8 @@ void app_logic(void * data)
 	{
 		default:
 		{
+			app->ui_queue_list_element->d1 = app->queue_pos;
+			t3gui_logic();
 			if(app->queue)
 			{
 				if(app->player)
@@ -157,77 +159,17 @@ void app_logic(void * data)
 	}
 }
 
-static void get_path_filename(const char * fn, char * outfn)
-{
-	int i, j;
-	int pos = 0;
-
-	for(i = strlen(fn) - 1; i >= 0; i--)
-	{
-		if(fn[i] == '/')
-		{
-			for(j = i + 1; j < strlen(fn); j++)
-			{
-				outfn[pos] = fn[j];
-				pos++;
-			}
-			outfn[pos] = 0;
-			break;
-		}
-	}
-}
-
 /* main rendering routine */
 void app_render(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	ALLEGRO_COLOR color;
-	int i;
-	const char * val;
-	const char * val2 = NULL;
-	char display_fn[256] = {0};
-	char display_title[256] = {0};
-	char section[1024] = {0};
 
 	switch(app->state)
 	{
 		default:
 		{
 			al_clear_to_color(t3f_color_black);
-			if(app->queue)
-			{
-				for(i = 0; i < app->queue->entry_count; i++)
-				{
-					if(i == app->queue_pos)
-					{
-						color = al_map_rgba_f(1.0, 1.0, 0.0, 1.0);
-					}
-					else
-					{
-						color = t3f_color_white;
-					}
-					sprintf(section, "%s%s%s", app->queue->entry[i]->file, app->queue->entry[i]->sub_file ? "/" : "", app->queue->entry[i]->sub_file ? app->queue->entry[i]->sub_file : "");
-					if(app->library)
-					{
-						val = al_get_config_value(app->library->file_database, section, "id");
-						if(val)
-						{
-							val2 = al_get_config_value(app->library->entry_database, val, "title");
-						}
-					}
-					if(val2)
-					{
-						sprintf(display_title, "%3d. %s", i + 1, val2);
-					}
-					else
-					{
-						get_path_filename(app->queue->entry[i]->file, display_fn);
-						sprintf(display_title, "%3d. %s%s%s", i + 1, display_fn, app->queue->entry[i]->sub_file ? "/" : "", app->queue->entry[i]->sub_file ? app->queue->entry[i]->sub_file : "");
-					}
-					al_draw_text(app->font, color, 0, i * al_get_font_line_height(app->font), 0, display_title);
-				}
-			}
-			/* insert rendering code here, see app_logic() for more info */
+			t3gui_render();
 			break;
 		}
 	}
@@ -319,6 +261,11 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		printf("Error initializing T3F!\n");
 		return false;
 	}
+	if(!t3gui_init())
+	{
+		printf("Error initializing T3GUI!\n");
+		return false;
+	}
 	memset(app, 0, sizeof(APP_INSTANCE));
 	app->font = al_create_builtin_font();
 	if(!app->font)
@@ -372,6 +319,7 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		return false;
 	}
 	t3f_attach_menu(app->menu[OMO_MENU_MAIN]);
+	t3gui_show_dialog(app->ui_dialog, t3f_queue, 0, app);
 
 	t3f_srand(&app->rng_state, time(0));
 	app->state = 0;
@@ -390,6 +338,7 @@ int main(int argc, char * argv[])
 		{
 			omo_save_library(app.library);
 		}
+		t3gui_exit();
 	}
 	else
 	{

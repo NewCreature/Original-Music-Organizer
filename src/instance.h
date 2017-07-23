@@ -2,6 +2,7 @@
 #define OMO_INSTANCE_H
 
 #include "t3f/t3f.h"
+#include "t3gui/t3gui.h"
 
 #include "defines.h"
 #include "archive_handler_registry.h"
@@ -17,6 +18,8 @@ typedef struct
 	char last_music_filename[1024];
 	int state;
 	ALLEGRO_FONT * font;
+	T3GUI_DIALOG * ui_dialog;
+	T3GUI_ELEMENT * ui_queue_list_element;
 
 	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;
 	OMO_PLAYER_REGISTRY * player_registry;
