@@ -1,6 +1,6 @@
-#include "instance.h"
+#include "../instance.h"
 
-#include "ui_menu_proc.h"
+#include "menu_proc.h"
 
 static char ui_queue_text[1024] = {0};
 

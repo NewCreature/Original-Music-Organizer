@@ -4,7 +4,7 @@
 
 #include "instance.h"
 #include "library.h"
-#include "ui_init.h"
+#include "ui/init.h"
 
 #include "archive_handlers/libarchive.h"
 #include "archive_handlers/unrar.h"

@@ -1,11 +1,10 @@
-#include "t3f/t3f.h"
-#include "t3f/file_utils.h"
-#include "DUMBA5/dumba5.h"
+#include "../t3f/t3f.h"
+#include "../t3f/file_utils.h"
 
-#include "instance.h"
-#include "archive_handler_registry.h"
-#include "player_registry.h"
-#include "queue.h"
+#include "../instance.h"
+#include "../archive_handler_registry.h"
+#include "../player_registry.h"
+#include "../queue.h"
 
 bool omo_play_file(void * data, const char * fn, const char * subfn)
 {
