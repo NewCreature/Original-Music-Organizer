@@ -289,6 +289,9 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		printf("Error initializing T3GUI!\n");
 		return false;
 	}
+
+	al_set_config_value(t3f_config, "T3F", "save_window_pos", "true");
+
 	memset(app, 0, sizeof(APP_INSTANCE));
 	app->font = al_create_builtin_font();
 	if(!app->font)
