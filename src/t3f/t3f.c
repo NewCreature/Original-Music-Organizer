@@ -648,6 +648,7 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 	const char * cvalue2 = NULL;
 	char val[128] = {0};
 	int dflags = 0;
+	int dx, dy;
 	int dw, dh;
 	int ret = 1;
 
@@ -846,6 +847,24 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 			dw = 800;
 			dh = 480;
 		#endif
+		cvalue = al_get_config_value(t3f_config, "T3F", "save_window_pos");
+		if(cvalue)
+		{
+			if(!strcmp(cvalue, "true"))
+			{
+				cvalue = al_get_config_value(t3f_config, "T3F", "window_pos_x");
+				if(cvalue)
+				{
+					cvalue2 = al_get_config_value(t3f_config, "T3F", "window_pos_y");
+					if(cvalue2)
+					{
+						dx = atoi(cvalue);
+						dy = atoi(cvalue2);
+						al_set_new_window_position(dx, dy);
+					}
+				}
+			}
+		}
 		t3f_display = al_create_display(dw, dh);
 		if(!t3f_display)
 		{
@@ -914,9 +933,16 @@ void t3f_set_event_handler(void (*proc)(ALLEGRO_EVENT * event, void * data))
 void t3f_exit(void)
 {
 	const ALLEGRO_FILE_INTERFACE * old_interface;
+	char buf[256];
+	int x, y;
 
 	old_interface = al_get_new_file_interface();
 	al_set_standard_file_interface();
+	al_get_window_position(t3f_display, &x, &y);
+	sprintf(buf, "%d", x);
+	al_set_config_value(t3f_config, "T3F", "window_pos_x", buf);
+	sprintf(buf, "%d", y);
+	al_set_config_value(t3f_config, "T3F", "window_pos_y", buf);
 	al_save_config_file(t3f_config_filename, t3f_config);
 	al_set_new_file_interface(old_interface);
 	t3f_quit = true;
@@ -1454,6 +1480,7 @@ void t3f_run(void)
 	{
 		free(t3f_package_name);
 	}
+
 	al_destroy_display(t3f_display);
 }
 
