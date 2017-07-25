@@ -4,7 +4,8 @@
 
 #include "instance.h"
 #include "library.h"
-#include "ui/init.h"
+#include "ui/menu_init.h"
+#include "ui/dialog_init.h"
 
 #include "archive_handlers/libarchive.h"
 #include "archive_handlers/unrar.h"
@@ -345,6 +346,12 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		return false;
 	}
 	t3f_attach_menu(app->menu[OMO_MENU_MAIN]);
+
+	if(!omo_setup_dialogs(app))
+	{
+		printf("Error settings up dialogs!\n");
+		return false;
+	}
 	t3gui_show_dialog(app->ui_dialog, t3f_queue, 0, app);
 
 	t3f_srand(&app->rng_state, time(0));
