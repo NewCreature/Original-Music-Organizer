@@ -21,6 +21,8 @@ typedef struct
 	T3GUI_DIALOG * ui_dialog;
 	T3GUI_ELEMENT * ui_queue_list_box_element;
 	T3GUI_ELEMENT * ui_queue_list_element;
+	T3GUI_ELEMENT * ui_button_element[6];
+	int button_pressed;
 
 	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;
 	OMO_PLAYER_REGISTRY * player_registry;

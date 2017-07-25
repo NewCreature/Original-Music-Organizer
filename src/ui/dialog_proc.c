@@ -64,3 +64,11 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
    }
    return NULL;
 }
+
+int ui_player_button_proc(T3GUI_ELEMENT * ep, void * dp3)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)dp3;
+
+	app->button_pressed = ep->d2;
+	return 0;
+}

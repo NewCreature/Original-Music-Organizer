@@ -5,6 +5,7 @@
 #include "instance.h"
 #include "library.h"
 #include "ui/menu_init.h"
+#include "ui/menu_proc.h"
 #include "ui/dialog_init.h"
 
 #include "archive_handlers/libarchive.h"
@@ -46,17 +47,12 @@ static void stop_player(void * data)
 
 void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
-
 	switch(event->type)
 	{
 		case ALLEGRO_EVENT_DISPLAY_RESIZE:
 		{
 			t3f_event_handler(event);
-			app->ui_queue_list_box_element->w = event->display.width;
-			app->ui_queue_list_box_element->h = event->display.height;
-			app->ui_queue_list_element->w = event->display.width - 16;
-			app->ui_queue_list_element->h = event->display.height - 16;
+			omo_resize_dialogs(data);
 			break;
 		}
 		default:
@@ -149,34 +145,88 @@ void app_logic(void * data)
 			}
 			if(t3f_key[ALLEGRO_KEY_LEFT])
 			{
-				if(app->queue)
+				app->button_pressed = 0;
+				t3f_key[ALLEGRO_KEY_LEFT] = 0;
+			}
+			if(t3f_key[ALLEGRO_KEY_RIGHT])
+			{
+				app->button_pressed = 2;
+				t3f_key[ALLEGRO_KEY_RIGHT] = 0;
+			}
+			switch(app->button_pressed)
+			{
+				case 0:
+				{
+					if(app->queue)
+					{
+						if(app->player)
+						{
+							stop_player(data);
+						}
+						if(app->queue_pos > 0)
+						{
+							app->queue_pos -= 2;
+						}
+						else
+						{
+							app->queue_pos = -1;
+						}
+					}
+					break;
+				}
+				case 1:
+				{
+					break;
+				}
+				case 2:
 				{
 					if(app->player)
 					{
 						stop_player(data);
 					}
-					if(app->queue_pos > 0)
+					break;
+				}
+				case 3:
+				{
+					if(app->player)
 					{
-						app->queue_pos -= 2;
+						stop_player(data);
+						app->queue_pos = app->queue->entry_count;
+					}
+					break;
+				}
+				case 4:
+				{
+					if(OMO_KEY_CTRL)
+					{
+						omo_menu_file_play_folder(data);
+						t3f_key[ALLEGRO_KEY_COMMAND] = 0;
+						t3f_key[ALLEGRO_KEY_LCTRL] = 0;
+						t3f_key[ALLEGRO_KEY_RCTRL] = 0;
 					}
 					else
 					{
-						app->queue_pos = -1;
+						omo_menu_file_play_files(data);
 					}
+					break;
 				}
-				t3f_key[ALLEGRO_KEY_LEFT] = 0;
-			}
-			if(t3f_key[ALLEGRO_KEY_RIGHT])
-			{
-				if(app->player)
+				case 5:
 				{
-					stop_player(data);
+					if(OMO_KEY_CTRL)
+					{
+						omo_menu_file_queue_folder(data);
+						t3f_key[ALLEGRO_KEY_COMMAND] = 0;
+						t3f_key[ALLEGRO_KEY_LCTRL] = 0;
+						t3f_key[ALLEGRO_KEY_RCTRL] = 0;
+					}
+					else
+					{
+						omo_menu_file_queue_files(data);
+					}
+					break;
 				}
-				t3f_key[ALLEGRO_KEY_RIGHT] = 0;
 			}
-			/* insert logic here, as your project grows you can add more states
-			 * to deal with various parts of your app (logo, title screen, in-
-			 * game, etc.) */
+			app->button_pressed = -1;
 			break;
 		}
 	}
@@ -356,6 +406,7 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 
 	t3f_srand(&app->rng_state, time(0));
 	app->state = 0;
+	app->button_pressed = -1;
 	return true;
 }
 
