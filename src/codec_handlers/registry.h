@@ -3,19 +3,19 @@
 
 #include "codec_handler.h"
 
-#define OMO_MAX_REGISTERED_PLAYERS 128
+#define OMO_MAX_REGISTERED_CODEC_HANDLERS 128
 
 typedef struct
 {
 
-    OMO_CODEC_HANDLER player[OMO_MAX_REGISTERED_PLAYERS];
-    int players;
+    OMO_CODEC_HANDLER codec_handler[OMO_MAX_REGISTERED_CODEC_HANDLERS];
+    int codec_handlers;
 
 } OMO_CODEC_HANDLER_REGISTRY;
 
-OMO_CODEC_HANDLER_REGISTRY * omo_create_player_registry(void);
-void omo_destroy_player_registry(OMO_CODEC_HANDLER_REGISTRY * rp);
-bool omo_register_player(OMO_CODEC_HANDLER_REGISTRY * rp, OMO_CODEC_HANDLER * pp);
-OMO_CODEC_HANDLER * omo_get_player(OMO_CODEC_HANDLER_REGISTRY * rp, const char * fn);
+OMO_CODEC_HANDLER_REGISTRY * omo_create_codec_handler_registry(void);
+void omo_destroy_codec_handler_registry(OMO_CODEC_HANDLER_REGISTRY * rp);
+bool omo_register_codec_handler(OMO_CODEC_HANDLER_REGISTRY * rp, OMO_CODEC_HANDLER * pp);
+OMO_CODEC_HANDLER * omo_get_codec_handler(OMO_CODEC_HANDLER_REGISTRY * rp, const char * fn);
 
 #endif

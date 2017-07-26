@@ -3,6 +3,7 @@
 
 #include "instance.h"
 #include "library.h"
+#include "player.h"
 #include "ui/menu_init.h"
 #include "ui/menu_proc.h"
 #include "ui/dialog_init.h"
@@ -19,30 +20,6 @@
 	#include "codec_handlers/avmidiplayer/avmidiplayer.h"
 	#include "codec_handlers/avplayer/avplayer.h"
 #endif
-
-static char extracted_filename[1024] = {0};
-
-static void stop_player(void * data)
-{
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	OMO_ARCHIVE_HANDLER * archive_handler;
-
-	if(app->player)
-	{
-		app->player->stop();
-		app->player = NULL;
-
-		/* delete previously extracted file if we played from archive */
-		archive_handler = omo_get_archive_handler(app->archive_handler_registry, 	app->queue->entry[app->queue_pos]->file);
-		if(archive_handler)
-		{
-			if(strlen(extracted_filename) > 0)
-			{
-				al_remove_filename(extracted_filename);
-			}
-		}
-	}
-}
 
 void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 {
@@ -65,83 +42,16 @@ void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 void app_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	OMO_ARCHIVE_HANDLER * archive_handler;
-	const char * subfile;
-	bool next_file = false;
 
 	switch(app->state)
 	{
 		default:
 		{
-			app->ui_queue_list_element->d1 = app->queue_pos;
-			t3gui_logic();
-			if(app->queue)
+			if(app->player)
 			{
-				if(app->player)
-				{
-					if(app->player->done_playing())
-					{
-						stop_player(data);
-						next_file = true;
-					}
-				}
-				else
-				{
-					next_file = true;
-				}
-				if(next_file)
-				{
-					while(1)
-					{
-						app->queue_pos++;
-						if(app->queue_pos < app->queue->entry_count)
-						{
-							archive_handler = omo_get_archive_handler(app->archive_handler_registry, app->queue->entry[app->queue_pos]->file);
-							if(archive_handler)
-							{
-								strcpy(extracted_filename, "");
-								if(app->queue->entry[app->queue_pos]->sub_file)
-								{
-									app->player = omo_get_player(app->player_registry, archive_handler->get_file(app->queue->entry[app->queue_pos]->file, atoi(app->queue->entry[app->queue_pos]->sub_file)));
-									if(app->player)
-									{
-										subfile = archive_handler->extract_file(app->queue->entry[app->queue_pos]->file, atoi(app->queue->entry[app->queue_pos]->sub_file));
-										if(strlen(subfile) > 0)
-										{
-											strcpy(extracted_filename, subfile);
-											if(app->player->load_file(extracted_filename, 0))
-											{
-												if(app->player->play())
-												{
-													break;
-												}
-											}
-										}
-									}
-								}
-							}
-							else
-							{
-								app->player = omo_get_player(app->player_registry, app->queue->entry[app->queue_pos]->file);
-								if(app->player)
-								{
-									if(app->player->load_file(app->queue->entry[app->queue_pos]->file, app->queue->entry[app->queue_pos]->sub_file))
-									{
-										if(app->player->play())
-										{
-											break;
-										}
-									}
-								}
-							}
-						}
-						else
-						{
-							break;
-						}
-					}
-				}
+				app->ui_queue_list_element->d1 = app->player->queue_pos;
 			}
+			t3gui_logic();
 			if(t3f_key[ALLEGRO_KEY_LEFT])
 			{
 				app->button_pressed = 0;
@@ -156,42 +66,22 @@ void app_logic(void * data)
 			{
 				case 0:
 				{
-					if(app->queue)
-					{
-						if(app->player)
-						{
-							stop_player(data);
-						}
-						if(app->queue_pos > 0)
-						{
-							app->queue_pos -= 2;
-						}
-						else
-						{
-							app->queue_pos = -1;
-						}
-					}
+					omo_play_previous_song(app->player);
 					break;
 				}
 				case 1:
 				{
+					omo_start_player(app->player);
 					break;
 				}
 				case 2:
 				{
-					if(app->player)
-					{
-						stop_player(data);
-					}
+					omo_play_next_song(app->player);
 					break;
 				}
 				case 3:
 				{
-					if(app->player)
-					{
-						stop_player(data);
-						app->queue_pos = app->queue->entry_count;
-					}
+					omo_stop_player(app->player);
 					break;
 				}
 				case 4:
@@ -226,6 +116,7 @@ void app_logic(void * data)
 				}
 			}
 			app->button_pressed = -1;
+			omo_player_logic(app->player, app->archive_handler_registry, app->codec_handler_registry);
 			break;
 		}
 	}
@@ -253,7 +144,7 @@ static bool count_file(const char * fn, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	OMO_ARCHIVE_HANDLER * archive_handler;
-	OMO_CODEC_HANDLER * player;
+	OMO_CODEC_HANDLER * codec_handler;
 	int i;
 
 	archive_handler = omo_get_archive_handler(app->archive_handler_registry, fn);
@@ -261,8 +152,8 @@ static bool count_file(const char * fn, void * data)
 	{
 		for(i = 0; i < archive_handler->count_files(fn); i++)
 		{
-			player = omo_get_player(app->player_registry, archive_handler->get_file(fn, i));
-			if(player)
+			codec_handler = omo_get_codec_handler(app->codec_handler_registry, archive_handler->get_file(fn, i));
+			if(codec_handler)
 			{
 				total_files++;
 			}
@@ -270,10 +161,10 @@ static bool count_file(const char * fn, void * data)
 	}
 	else
 	{
-		player = omo_get_player(app->player_registry, fn);
-		if(player)
+		codec_handler = omo_get_codec_handler(app->codec_handler_registry, fn);
+		if(codec_handler)
 		{
-			total_files += player->get_track_count(fn);
+			total_files += codec_handler->get_track_count(fn);
 		}
 	}
 
@@ -284,7 +175,7 @@ static bool add_file(const char * fn, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	OMO_ARCHIVE_HANDLER * archive_handler;
-	OMO_CODEC_HANDLER * player;
+	OMO_CODEC_HANDLER * codec_handler;
 	int i, c;
 	char buf[32] = {0};
 
@@ -294,8 +185,8 @@ static bool add_file(const char * fn, void * data)
 		c = archive_handler->count_files(fn);
 		for(i = 0; i < c; i++)
 		{
-			player = omo_get_player(app->player_registry, archive_handler->get_file(fn, i));
-			if(player)
+			codec_handler = omo_get_codec_handler(app->codec_handler_registry, archive_handler->get_file(fn, i));
+			if(codec_handler)
 			{
 				sprintf(buf, "%d", i); // reference by index instead of filename
 				omo_add_file_to_library(app->library, fn, buf);
@@ -304,10 +195,10 @@ static bool add_file(const char * fn, void * data)
 	}
 	else
 	{
-		player = omo_get_player(app->player_registry, fn);
-		if(player)
+		codec_handler = omo_get_codec_handler(app->codec_handler_registry, fn);
+		if(codec_handler)
 		{
-			c = player->get_track_count(fn);
+			c = codec_handler->get_track_count(fn);
 			for(i = 0; i < c; i++)
 			{
 				sprintf(buf, "%d", i);
@@ -361,18 +252,18 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	omo_register_archive_handler(app->archive_handler_registry, omo_get_unrar_archive_handler());
 
 	/* register players */
-	app->player_registry = omo_create_player_registry();
-	if(!app->player_registry)
+	app->codec_handler_registry = omo_create_codec_handler_registry();
+	if(!app->codec_handler_registry)
 	{
 		printf("Error setting up player registry!\n");
 		return false;
 	}
-	omo_register_player(app->player_registry, omo_codec_dumba5_get_player());
-	omo_register_player(app->player_registry, omo_codec_allegro_acodec_get_player());
-	omo_register_player(app->player_registry, omo_codec_gme_get_player());
+	omo_register_codec_handler(app->codec_handler_registry, omo_codec_dumba5_get_codec_handler());
+	omo_register_codec_handler(app->codec_handler_registry, omo_codec_allegro_acodec_get_codec_handler());
+	omo_register_codec_handler(app->codec_handler_registry, omo_codec_gme_get_codec_handler());
 	#ifdef ALLEGRO_MACOSX
-		omo_register_player(app->player_registry, omo_codec_avmidiplayer_get_player());
-		omo_register_player(app->player_registry, omo_codec_avplayer_get_player());
+		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avmidiplayer_get_codec_handler());
+		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avplayer_get_codec_handler());
 	#endif
 
 	if(argc > 1)
@@ -387,6 +278,12 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		strcpy(entry_db_fn, t3f_get_filename(t3f_data_path, "database.ini"));
 		app->library = omo_create_library(file_db_fn, entry_db_fn, total_files);
 		t3f_scan_files(val, add_file, false, app);
+	}
+	app->player = omo_create_player();
+	if(!app->player)
+	{
+		printf("Error creating player!\n");
+		return false;
 	}
 
 	if(!omo_setup_menus(app))
@@ -416,7 +313,10 @@ int main(int argc, char * argv[])
 	if(app_initialize(&app, argc, argv))
 	{
 		t3f_run();
-		stop_player(&app);
+		if(app.player)
+		{
+			omo_stop_player(app.player);
+		}
 		if(app.library)
 		{
 			omo_save_library(app.library);

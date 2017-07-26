@@ -1,6 +1,6 @@
 #include "codec_handler.h"
 
-bool omo_player_add_type(OMO_CODEC_HANDLER * pp, const char * type)
+bool omo_codec_handler_add_type(OMO_CODEC_HANDLER * pp, const char * type)
 {
     if(pp->types < OMO_CODEC_HANDLER_MAX_TYPES)
     {

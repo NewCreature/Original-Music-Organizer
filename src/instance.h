@@ -9,13 +9,14 @@
 #include "codec_handlers/registry.h"
 #include "queue.h"
 #include "library.h"
+#include "player.h"
 
 /* structure to hold all of our app-specific data */
 typedef struct
 {
 
 	ALLEGRO_MENU * menu[OMO_MAX_MENUS];
-	char last_music_filename[1024];
+	char last_music_filename[1024]; // keep track of where we were last browsing for files
 	int state;
 	ALLEGRO_FONT * font;
 	T3GUI_DIALOG * ui_dialog;
@@ -25,11 +26,9 @@ typedef struct
 	int button_pressed;
 
 	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;
-	OMO_CODEC_HANDLER_REGISTRY * player_registry;
-	OMO_CODEC_HANDLER * player; // current player
-	OMO_QUEUE * queue;
+	OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry;
 	OMO_LIBRARY * library;
-	int queue_pos;
+	OMO_PLAYER * player;
 	T3F_RNG_STATE rng_state;
 
 } APP_INSTANCE;

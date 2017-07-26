@@ -1,7 +1,7 @@
 #include "registry.h"
 #include "codec_handler.h"
 
-OMO_CODEC_HANDLER_REGISTRY * omo_create_player_registry(void)
+OMO_CODEC_HANDLER_REGISTRY * omo_create_codec_handler_registry(void)
 {
     OMO_CODEC_HANDLER_REGISTRY * rp;
 
@@ -13,45 +13,45 @@ OMO_CODEC_HANDLER_REGISTRY * omo_create_player_registry(void)
     return rp;
 }
 
-void omo_destroy_player_registry(OMO_CODEC_HANDLER_REGISTRY * rp)
+void omo_destroy_codec_handler_registry(OMO_CODEC_HANDLER_REGISTRY * rp)
 {
     free(rp);
 }
 
-bool omo_register_player(OMO_CODEC_HANDLER_REGISTRY * rp, OMO_CODEC_HANDLER * pp)
+bool omo_register_codec_handler(OMO_CODEC_HANDLER_REGISTRY * rp, OMO_CODEC_HANDLER * pp)
 {
-    if(rp->players < OMO_MAX_REGISTERED_PLAYERS)
+    if(rp->codec_handlers < OMO_MAX_REGISTERED_CODEC_HANDLERS)
     {
-        memcpy(&rp->player[rp->players], pp, sizeof(OMO_CODEC_HANDLER));
-        rp->players++;
+        memcpy(&rp->codec_handler[rp->codec_handlers], pp, sizeof(OMO_CODEC_HANDLER));
+        rp->codec_handlers++;
         return true;
     }
     return false;
 }
 
-OMO_CODEC_HANDLER * omo_get_player(OMO_CODEC_HANDLER_REGISTRY * rp, const char * fn)
+OMO_CODEC_HANDLER * omo_get_codec_handler(OMO_CODEC_HANDLER_REGISTRY * rp, const char * fn)
 {
     ALLEGRO_PATH * path;
     const char * extension;
     int i, j;
-    OMO_CODEC_HANDLER * player = NULL;
+    OMO_CODEC_HANDLER * codec_handler = NULL;
 
     path = al_create_path(fn);
     if(path)
     {
         extension = al_get_path_extension(path);
-        for(i = 0; i < rp->players; i++)
+        for(i = 0; i < rp->codec_handlers; i++)
         {
-            for(j = 0; j < rp->player[i].types; j++)
+            for(j = 0; j < rp->codec_handler[i].types; j++)
             {
-                if(!strcasecmp(extension, rp->player[i].type[j]))
+                if(!strcasecmp(extension, rp->codec_handler[i].type[j]))
                 {
-                    player = &rp->player[i];
+                    codec_handler = &rp->codec_handler[i];
                     break;
                 }
             }
         }
         al_destroy_path(path);
     }
-    return player;
+    return codec_handler;
 }

@@ -7,7 +7,7 @@
 #include "../codec_handler.h"
 
 static AVMIDIPlayer * player = NULL;
-static OMO_CODEC_HANDLER codec_player;
+static OMO_CODEC_HANDLER codec_handler;
 static double start_time;
 
 static bool codec_load_file(const char * fn, const char * subfn)
@@ -78,21 +78,21 @@ static bool codec_done_playing(void)
 	return al_get_time() - start_time >= player.duration;
 }
 
-OMO_CODEC_HANDLER * omo_codec_avmidiplayer_get_player(void)
+OMO_CODEC_HANDLER * omo_codec_avmidiplayer_get_codec_handler(void)
 {
-	memset(&codec_player, 0, sizeof(OMO_CODEC_HANDLER));
-	codec_player.initialize = NULL;
-	codec_player.load_file = codec_load_file;
-	codec_player.get_track_count = codec_get_track_count;
-	codec_player.play = codec_play;
-	codec_player.pause = codec_pause;
-	codec_player.stop = codec_stop;
-	codec_player.seek = codec_seek;
-	codec_player.get_position = codec_get_position;
-	codec_player.get_length = codec_get_length;
-	codec_player.done_playing = codec_done_playing;
-	codec_player.types = 0;
-	omo_player_add_type(&codec_player, ".mid");
+	memset(&codec_handler, 0, sizeof(OMO_CODEC_HANDLER));
+	codec_handler.initialize = NULL;
+	codec_handler.load_file = codec_load_file;
+	codec_handler.get_track_count = codec_get_track_count;
+	codec_handler.play = codec_play;
+	codec_handler.pause = codec_pause;
+	codec_handler.stop = codec_stop;
+	codec_handler.seek = codec_seek;
+	codec_handler.get_position = codec_get_position;
+	codec_handler.get_length = codec_get_length;
+	codec_handler.done_playing = codec_done_playing;
+	codec_handler.types = 0;
+	omo_codec_handler_add_type(&codec_handler, ".mid");
 
-	return &codec_player;
+	return &codec_handler;
 }

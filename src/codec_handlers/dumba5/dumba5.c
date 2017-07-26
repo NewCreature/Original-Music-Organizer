@@ -74,40 +74,40 @@ static bool codec_done_playing(void)
 	return dumba5_module_playback_finished();
 }
 
-static OMO_CODEC_HANDLER codec_player;
+static OMO_CODEC_HANDLER codec_handler;
 
-OMO_CODEC_HANDLER * omo_codec_dumba5_get_player(void)
+OMO_CODEC_HANDLER * omo_codec_dumba5_get_codec_handler(void)
 {
-	memset(&codec_player, 0, sizeof(OMO_CODEC_HANDLER));
-	codec_player.initialize = codec_initialize;
-	codec_player.load_file = codec_load_file;
-	codec_player.get_track_count = codec_get_track_count;
-	codec_player.play = codec_play;
-	codec_player.pause = codec_pause;
-	codec_player.stop = codec_stop;
-	codec_player.seek = NULL;
-	codec_player.get_position = codec_get_position;
-	codec_player.get_length = NULL;
-	codec_player.done_playing = codec_done_playing;
-	codec_player.types = 0;
-	omo_player_add_type(&codec_player, ".mod");
-	omo_player_add_type(&codec_player, ".s3m");
-	omo_player_add_type(&codec_player, ".xm");
-	omo_player_add_type(&codec_player, ".it");
+	memset(&codec_handler, 0, sizeof(OMO_CODEC_HANDLER));
+	codec_handler.initialize = codec_initialize;
+	codec_handler.load_file = codec_load_file;
+	codec_handler.get_track_count = codec_get_track_count;
+	codec_handler.play = codec_play;
+	codec_handler.pause = codec_pause;
+	codec_handler.stop = codec_stop;
+	codec_handler.seek = NULL;
+	codec_handler.get_position = codec_get_position;
+	codec_handler.get_length = NULL;
+	codec_handler.done_playing = codec_done_playing;
+	codec_handler.types = 0;
+	omo_codec_handler_add_type(&codec_handler, ".mod");
+	omo_codec_handler_add_type(&codec_handler, ".s3m");
+	omo_codec_handler_add_type(&codec_handler, ".xm");
+	omo_codec_handler_add_type(&codec_handler, ".it");
 	#if DUMB_MAJOR_VERSION > 0
-		omo_player_add_type(&codec_player, ".stm");
-		omo_player_add_type(&codec_player, ".669");
-		omo_player_add_type(&codec_player, ".ptm");
-		omo_player_add_type(&codec_player, ".psm");
-		omo_player_add_type(&codec_player, ".mtm");
-		omo_player_add_type(&codec_player, ".dsm");
-		omo_player_add_type(&codec_player, ".amf");
-		omo_player_add_type(&codec_player, ".umx");
-		omo_player_add_type(&codec_player, ".j2b");
+		omo_codec_handler_add_type(&codec_handler, ".stm");
+		omo_codec_handler_add_type(&codec_handler, ".669");
+		omo_codec_handler_add_type(&codec_handler, ".ptm");
+		omo_codec_handler_add_type(&codec_handler, ".psm");
+		omo_codec_handler_add_type(&codec_handler, ".mtm");
+		omo_codec_handler_add_type(&codec_handler, ".dsm");
+		omo_codec_handler_add_type(&codec_handler, ".amf");
+		omo_codec_handler_add_type(&codec_handler, ".umx");
+		omo_codec_handler_add_type(&codec_handler, ".j2b");
 	#endif
-	if(codec_player.initialize())
+	if(codec_handler.initialize())
 	{
-		return &codec_player;
+		return &codec_handler;
 	}
 	return NULL;
 }

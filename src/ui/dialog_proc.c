@@ -34,15 +34,15 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
 
     if(index < 0)
     {
-        if(list_size)
+        if(list_size && app->player)
         {
-            *list_size = app->queue ? app->queue->entry_count : 0;
+            *list_size = app->player->queue ? app->player->queue->entry_count : 0;
         }
         return NULL;
     }
-    if(app->queue)
+    if(app->player && app->player->queue)
     {
-        sprintf(section, "%s%s%s", app->queue->entry[index]->file, app->queue->entry[index]->sub_file ? "/" : "", app->queue->entry[index]->sub_file ? app->queue->entry[index]->sub_file : "");
+        sprintf(section, "%s%s%s", app->player->queue->entry[index]->file, app->player->queue->entry[index]->sub_file ? "/" : "", app->player->queue->entry[index]->sub_file ? app->player->queue->entry[index]->sub_file : "");
         if(app->library)
         {
             val = al_get_config_value(app->library->file_database, section, "id");
@@ -57,8 +57,8 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
         }
         else
         {
-            get_path_filename(app->queue->entry[index]->file, display_fn);
-            sprintf(ui_queue_text, "%3d. %s%s%s", index + 1, display_fn, app->queue->entry[index]->sub_file ? "/" : "", app->queue->entry[index]->sub_file ? app->queue->entry[index]->sub_file : "");
+            get_path_filename(app->player->queue->entry[index]->file, display_fn);
+            sprintf(ui_queue_text, "%3d. %s%s%s", index + 1, display_fn, app->player->queue->entry[index]->sub_file ? "/" : "", app->player->queue->entry[index]->sub_file ? app->player->queue->entry[index]->sub_file : "");
         }
        return ui_queue_text;
    }

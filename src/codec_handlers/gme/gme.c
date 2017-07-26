@@ -3,7 +3,7 @@
 
 #include "../codec_handler.h"
 
-static OMO_CODEC_HANDLER codec_player;
+static OMO_CODEC_HANDLER codec_handler;
 static Music_Emu * emu = NULL;
 static bool paused = false;
 static int buf_size = 1024;
@@ -146,37 +146,37 @@ static bool codec_done_playing(void)
 	return false;
 }
 
-OMO_CODEC_HANDLER * omo_codec_gme_get_player(void)
+OMO_CODEC_HANDLER * omo_codec_gme_get_codec_handler(void)
 {
-	memset(&codec_player, 0, sizeof(OMO_CODEC_HANDLER));
-	codec_player.initialize = NULL;
-	codec_player.load_file = codec_load_file;
-	codec_player.get_track_count = codec_get_track_count;
-	codec_player.play = codec_play;
-	codec_player.pause = codec_pause;
-	codec_player.stop = codec_stop;
-	codec_player.seek = NULL;
-	codec_player.get_position = NULL;
-	codec_player.get_length = NULL;
-	codec_player.done_playing = codec_done_playing;
-	codec_player.types = 0;
-	omo_player_add_type(&codec_player, ".ay");
-	omo_player_add_type(&codec_player, ".gbs");
-	omo_player_add_type(&codec_player, ".gym");
-	omo_player_add_type(&codec_player, ".hes");
-	omo_player_add_type(&codec_player, ".kss");
-	omo_player_add_type(&codec_player, ".nsf");
-	omo_player_add_type(&codec_player, ".sap");
-	omo_player_add_type(&codec_player, ".spc");
-	omo_player_add_type(&codec_player, ".sp1");
-	omo_player_add_type(&codec_player, ".sp2");
-	omo_player_add_type(&codec_player, ".sp3");
-	omo_player_add_type(&codec_player, ".sp4");
-	omo_player_add_type(&codec_player, ".sp5");
-	omo_player_add_type(&codec_player, ".sp6");
-	omo_player_add_type(&codec_player, ".sp7");
-	omo_player_add_type(&codec_player, ".sp8");
-	omo_player_add_type(&codec_player, ".sp9");
-	omo_player_add_type(&codec_player, ".vgm");
-	return &codec_player;
+	memset(&codec_handler, 0, sizeof(OMO_CODEC_HANDLER));
+	codec_handler.initialize = NULL;
+	codec_handler.load_file = codec_load_file;
+	codec_handler.get_track_count = codec_get_track_count;
+	codec_handler.play = codec_play;
+	codec_handler.pause = codec_pause;
+	codec_handler.stop = codec_stop;
+	codec_handler.seek = NULL;
+	codec_handler.get_position = NULL;
+	codec_handler.get_length = NULL;
+	codec_handler.done_playing = codec_done_playing;
+	codec_handler.types = 0;
+	omo_codec_handler_add_type(&codec_handler, ".ay");
+	omo_codec_handler_add_type(&codec_handler, ".gbs");
+	omo_codec_handler_add_type(&codec_handler, ".gym");
+	omo_codec_handler_add_type(&codec_handler, ".hes");
+	omo_codec_handler_add_type(&codec_handler, ".kss");
+	omo_codec_handler_add_type(&codec_handler, ".nsf");
+	omo_codec_handler_add_type(&codec_handler, ".sap");
+	omo_codec_handler_add_type(&codec_handler, ".spc");
+	omo_codec_handler_add_type(&codec_handler, ".sp1");
+	omo_codec_handler_add_type(&codec_handler, ".sp2");
+	omo_codec_handler_add_type(&codec_handler, ".sp3");
+	omo_codec_handler_add_type(&codec_handler, ".sp4");
+	omo_codec_handler_add_type(&codec_handler, ".sp5");
+	omo_codec_handler_add_type(&codec_handler, ".sp6");
+	omo_codec_handler_add_type(&codec_handler, ".sp7");
+	omo_codec_handler_add_type(&codec_handler, ".sp8");
+	omo_codec_handler_add_type(&codec_handler, ".sp9");
+	omo_codec_handler_add_type(&codec_handler, ".vgm");
+	return &codec_handler;
 }

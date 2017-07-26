@@ -6,42 +6,6 @@
 #include "../codec_handlers/registry.h"
 #include "../queue.h"
 
-bool omo_play_file(void * data, const char * fn, const char * subfn)
-{
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
-
-    printf("play: %s\n", fn);
-    app->player = omo_get_player(app->player_registry, fn);
-    if(app->player)
-    {
-        app->player->load_file(fn, subfn);
-        app->player->play();
-    }
-
-    return false;
-}
-
-void omo_stop_file(void * data)
-{
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
-
-    if(app->player)
-    {
-        app->player->stop();
-        app->player = NULL;
-    }
-}
-
-void omo_pause_file(void * data, bool paused)
-{
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
-
-    if(app->player)
-    {
-        app->player->pause(paused);
-    }
-}
-
 static char type_buf[1024] = {0};
 
 static const char * omo_get_type_string(void * data)
@@ -50,12 +14,12 @@ static const char * omo_get_type_string(void * data)
     int i, j;
 
     strcpy(type_buf, "");
-    for(i = 0; i < app->player_registry->players; i++)
+    for(i = 0; i < app->codec_handler_registry->codec_handlers; i++)
     {
-        for(j = 0; j < app->player_registry->player[i].types; j++)
+        for(j = 0; j < app->codec_handler_registry->codec_handler[i].types; j++)
         {
             strcat(type_buf, "*");
-            strcat(type_buf, app->player_registry->player[i].type[j]);
+            strcat(type_buf, app->codec_handler_registry->codec_handler[i].type[j]);
             strcat(type_buf, ";");
         }
     }
@@ -88,7 +52,7 @@ static int omo_get_total_files(ALLEGRO_FILECHOOSER * fc, void * data)
             c = archive_handler->count_files(al_get_native_file_dialog_path(fc, i));
             for(j = 0; j < c; j++)
             {
-                player = omo_get_player(app->player_registry, archive_handler->get_file(al_get_native_file_dialog_path(fc, i), j));
+                player = omo_get_codec_handler(app->codec_handler_registry, archive_handler->get_file(al_get_native_file_dialog_path(fc, i), j));
                 if(player)
                 {
                     total_files++;
@@ -97,7 +61,7 @@ static int omo_get_total_files(ALLEGRO_FILECHOOSER * fc, void * data)
         }
         else
         {
-            player = omo_get_player(app->player_registry, al_get_native_file_dialog_path(fc, i));
+            player = omo_get_codec_handler(app->codec_handler_registry, al_get_native_file_dialog_path(fc, i));
             if(player)
             {
                 total_files += player->get_track_count(al_get_native_file_dialog_path(fc, i));
@@ -124,7 +88,7 @@ static void add_files_to_queue(ALLEGRO_FILECHOOSER * fc, OMO_QUEUE * queue, void
             c = archive_handler->count_files(al_get_native_file_dialog_path(fc, i));
             for(j = 0; j < c; j++)
             {
-                player = omo_get_player(app->player_registry, archive_handler->get_file(al_get_native_file_dialog_path(fc, i), j));
+                player = omo_get_codec_handler(app->codec_handler_registry, archive_handler->get_file(al_get_native_file_dialog_path(fc, i), j));
                 if(player)
                 {
                     sprintf(buf, "%d", j);
@@ -136,7 +100,7 @@ static void add_files_to_queue(ALLEGRO_FILECHOOSER * fc, OMO_QUEUE * queue, void
         /* otherwise, add single file */
         else
         {
-            player = omo_get_player(app->player_registry, al_get_native_file_dialog_path(fc, i));
+            player = omo_get_codec_handler(app->codec_handler_registry, al_get_native_file_dialog_path(fc, i));
             if(player)
             {
                 c = player->get_track_count(al_get_native_file_dialog_path(fc, i));
@@ -169,17 +133,18 @@ int omo_menu_file_play_files(void * data)
 	{
 		goto fail;
 	}
-    omo_stop_file(data);
-    if(app->queue)
+    omo_stop_player(app->player);
+    if(app->player->queue)
     {
-        omo_destroy_queue(app->queue);
+        omo_destroy_queue(app->player->queue);
     }
     total_files = omo_get_total_files(fc, data);
-    app->queue = omo_create_queue(total_files);
-    if(app->queue)
+    app->player->queue = omo_create_queue(total_files);
+    if(app->player->queue)
     {
-        add_files_to_queue(fc, app->queue, data);
-        app->queue_pos = -1;
+        add_files_to_queue(fc, app->player->queue, data);
+        app->player->queue_pos = -1;
+        app->player->state = OMO_PLAYER_STATE_PLAYING;
     }
     al_destroy_native_file_dialog(fc);
     return 1;
@@ -217,22 +182,22 @@ int omo_menu_file_queue_files(void * data)
 		goto fail;
 	}
     total_files = omo_get_total_files(fc, data);
-    new_queue = omo_create_queue(total_files + (app->queue ? app->queue->entry_count : 0));
+    new_queue = omo_create_queue(total_files + (app->player->queue ? app->player->queue->entry_count : 0));
     if(!new_queue)
     {
         goto fail;
     }
-    if(app->queue)
+    if(app->player->queue)
     {
-        for(i = 0; i < app->queue->entry_count; i++)
+        for(i = 0; i < app->player->queue->entry_count; i++)
         {
-            omo_add_file_to_queue(new_queue, app->queue->entry[i]->file, app->queue->entry[i]->sub_file);
+            omo_add_file_to_queue(new_queue, app->player->queue->entry[i]->file, app->player->queue->entry[i]->sub_file);
         }
     }
-    omo_destroy_queue(app->queue);
+    omo_destroy_queue(app->player->queue);
     add_files_to_queue(fc, new_queue, data);
     al_destroy_native_file_dialog(fc);
-    app->queue = new_queue;
+    app->player->queue = new_queue;
     return 1;
 
 	fail:
@@ -261,7 +226,7 @@ static bool count_file(const char * fn, void * data)
         c = archive_handler->count_files(fn);
         for(i = 0; i < c; i++)
         {
-            player = omo_get_player(app->player_registry, archive_handler->get_file(fn, i));
+            player = omo_get_codec_handler(app->codec_handler_registry, archive_handler->get_file(fn, i));
             if(player)
             {
                 file_count++;
@@ -270,7 +235,7 @@ static bool count_file(const char * fn, void * data)
     }
     else
     {
-        player = omo_get_player(app->player_registry, fn);
+        player = omo_get_codec_handler(app->codec_handler_registry, fn);
         if(player)
         {
             c = player->get_track_count(fn);
@@ -297,24 +262,24 @@ static bool process_file(const char * fn, void * data)
         c = archive_handler->count_files(fn);
         for(i = 0; i < c; i++)
         {
-            player = omo_get_player(app->player_registry, archive_handler->get_file(fn, i));
+            player = omo_get_codec_handler(app->codec_handler_registry, archive_handler->get_file(fn, i));
             if(player)
             {
                 sprintf(buf, "%d", i);
-                omo_add_file_to_queue(app->queue, fn, buf);
+                omo_add_file_to_queue(app->player->queue, fn, buf);
             }
         }
     }
     else
     {
-        player = omo_get_player(app->player_registry, fn);
+        player = omo_get_codec_handler(app->codec_handler_registry, fn);
         if(player)
         {
             c = player->get_track_count(fn);
             for(i = 0; i < c; i++)
             {
                 sprintf(buf, "%d", i);
-                omo_add_file_to_queue(app->queue, fn, c > 1 ? buf : NULL);
+                omo_add_file_to_queue(app->player->queue, fn, c > 1 ? buf : NULL);
             }
         }
     }
@@ -339,23 +304,24 @@ int omo_menu_file_play_folder(void * data)
 	{
 		goto fail;
 	}
-    omo_stop_file(data);
-    if(app->queue)
+    omo_stop_player(app->player);
+    if(app->player->queue)
     {
-        omo_destroy_queue(app->queue);
+        omo_destroy_queue(app->player->queue);
     }
     file_count = 0;
     if(t3f_scan_files(al_get_native_file_dialog_path(fc, 0), count_file, false, data))
     {
-        app->queue = omo_create_queue(file_count);
-        if(app->queue)
+        app->player->queue = omo_create_queue(file_count);
+        if(app->player->queue)
         {
             if(!t3f_scan_files(al_get_native_file_dialog_path(fc, 0), process_file, false, data))
             {
-                omo_destroy_queue(app->queue);
+                omo_destroy_queue(app->player->queue);
                 goto fail;
             }
-            app->queue_pos = -1;
+            app->player->queue_pos = -1;
+            app->player->state = OMO_PLAYER_STATE_PLAYING;
         }
     }
 
@@ -397,22 +363,22 @@ int omo_menu_file_queue_folder(void * data)
     file_count = 0;
     if(t3f_scan_files(al_get_native_file_dialog_path(fc, 0), count_file, false, data))
     {
-        new_queue = omo_create_queue(app->queue->entry_count + file_count);
+        new_queue = omo_create_queue(app->player->queue->entry_count + file_count);
         if(new_queue)
         {
-            old_queue = app->queue;
-            app->queue = new_queue;
+            old_queue = app->player->queue;
+            app->player->queue = new_queue;
             if(old_queue)
             {
                 for(i = 0; i < old_queue->entry_count; i++)
                 {
-                    omo_add_file_to_queue(app->queue, old_queue->entry[i]->file, old_queue->entry[i]->sub_file);
+                    omo_add_file_to_queue(app->player->queue, old_queue->entry[i]->file, old_queue->entry[i]->sub_file);
                 }
             }
             if(!t3f_scan_files(al_get_native_file_dialog_path(fc, 0), process_file, false, data))
             {
-                omo_destroy_queue(app->queue);
-                app->queue = old_queue;
+                omo_destroy_queue(app->player->queue);
+                app->player->queue = old_queue;
                 goto fail;
             }
             if(old_queue)
@@ -444,13 +410,17 @@ int omo_menu_file_exit(void * data)
 
 int omo_menu_playback_play(void * data)
 {
-    omo_pause_file(data, false);
+    APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+    omo_resume_player(app->player);
     return 1;
 }
 
 int omo_menu_playback_pause(void * data)
 {
-    omo_pause_file(data, true);
+    APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+    omo_pause_player(app->player);
     return 1;
 }
 
@@ -460,28 +430,24 @@ int omo_menu_playback_shuffle(void * data)
     OMO_QUEUE * new_queue;
     int i, r;
 
-    if(app->queue)
+    if(app->player->queue)
     {
         /* stop currently playing song */
-        if(app->player)
-    	{
-    		app->player->stop();
-    		app->player = NULL;
-        }
+        omo_stop_player(app->player);
 
         /* create new queue */
-        new_queue = omo_create_queue(app->queue->entry_count);
+        new_queue = omo_create_queue(app->player->queue->entry_count);
         if(new_queue)
         {
             for(i = 0; i < new_queue->entry_size; i++)
             {
-                r = t3f_rand(&app->rng_state) % app->queue->entry_count;
-                omo_add_file_to_queue(new_queue, app->queue->entry[r]->file, app->queue->entry[r]->sub_file);
-                omo_delete_queue_item(app->queue, r);
+                r = t3f_rand(&app->rng_state) % app->player->queue->entry_count;
+                omo_add_file_to_queue(new_queue, app->player->queue->entry[r]->file, app->player->queue->entry[r]->sub_file);
+                omo_delete_queue_item(app->player->queue, r);
             }
-            omo_destroy_queue(app->queue);
-            app->queue = new_queue;
-            app->queue_pos = -1;
+            omo_destroy_queue(app->player->queue);
+            app->player->queue = new_queue;
+            app->player->queue_pos = -1;
         }
     }
     return 1;
