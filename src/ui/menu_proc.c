@@ -2,8 +2,8 @@
 #include "../t3f/file_utils.h"
 
 #include "../instance.h"
-#include "../archive_handler_registry.h"
-#include "../player_registry.h"
+#include "../archive_handlers/registry.h"
+#include "../codec_handlers/registry.h"
 #include "../queue.h"
 
 bool omo_play_file(void * data, const char * fn, const char * subfn)
@@ -76,7 +76,7 @@ static int omo_get_total_files(ALLEGRO_FILECHOOSER * fc, void * data)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
     OMO_ARCHIVE_HANDLER * archive_handler;
-    OMO_PLAYER * player;
+    OMO_CODEC_HANDLER * player;
     int total_files = 0;
     int i, j, c;
 
@@ -111,7 +111,7 @@ static void add_files_to_queue(ALLEGRO_FILECHOOSER * fc, OMO_QUEUE * queue, void
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
     OMO_ARCHIVE_HANDLER * archive_handler = NULL;
-    OMO_PLAYER * player;
+    OMO_CODEC_HANDLER * player;
     char buf[256];
     int i, j, c;
 
@@ -252,7 +252,7 @@ static bool count_file(const char * fn, void * data)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
     OMO_ARCHIVE_HANDLER * archive_handler;
-    OMO_PLAYER * player;
+    OMO_CODEC_HANDLER * player;
     int i, c;
 
     archive_handler = omo_get_archive_handler(app->archive_handler_registry, fn);
@@ -287,7 +287,7 @@ static bool process_file(const char * fn, void * data)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
     OMO_ARCHIVE_HANDLER * archive_handler;
-    OMO_PLAYER * player;
+    OMO_CODEC_HANDLER * player;
     char buf[32] = {0};
     int i, c;
 

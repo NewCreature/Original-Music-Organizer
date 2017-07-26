@@ -1,4 +1,4 @@
-#include "archive_handler_registry.h"
+#include "registry.h"
 #include "archive_handler.h"
 
 OMO_ARCHIVE_HANDLER_REGISTRY * omo_create_archive_handler_registry(void)

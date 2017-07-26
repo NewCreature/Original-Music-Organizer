@@ -1,6 +1,5 @@
 #include "t3f/t3f.h"
 #include "t3f/file_utils.h"
-#include <DUMBA5/dumba5.h>
 
 #include "instance.h"
 #include "library.h"
@@ -8,17 +7,17 @@
 #include "ui/menu_proc.h"
 #include "ui/dialog_init.h"
 
-#include "archive_handlers/libarchive.h"
-#include "archive_handlers/unrar.h"
+#include "archive_handlers/libarchive/libarchive.h"
+#include "archive_handlers/unrar/unrar.h"
 
-#include "codecs/dumba5.h"
-#include "codecs/allegro_acodec.h"
-#include "codecs/gme.h"
+#include "codec_handlers/dumba5/dumba5.h"
+#include "codec_handlers/allegro_acodec/allegro_acodec.h"
+#include "codec_handlers/gme/gme.h"
 
 /* Mac OS X codecs */
 #ifdef ALLEGRO_MACOSX
-	#include "codecs/avmidiplayer.h"
-	#include "codecs/avplayer.h"
+	#include "codec_handlers/avmidiplayer/avmidiplayer.h"
+	#include "codec_handlers/avplayer/avplayer.h"
 #endif
 
 static char extracted_filename[1024] = {0};
@@ -254,7 +253,7 @@ static bool count_file(const char * fn, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	OMO_ARCHIVE_HANDLER * archive_handler;
-	OMO_PLAYER * player;
+	OMO_CODEC_HANDLER * player;
 	int i;
 
 	archive_handler = omo_get_archive_handler(app->archive_handler_registry, fn);
@@ -285,7 +284,7 @@ static bool add_file(const char * fn, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	OMO_ARCHIVE_HANDLER * archive_handler;
-	OMO_PLAYER * player;
+	OMO_CODEC_HANDLER * player;
 	int i, c;
 	char buf[32] = {0};
 

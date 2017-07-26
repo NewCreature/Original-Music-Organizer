@@ -1,15 +1,15 @@
-#ifndef OMO_PLAYER_H
-#define OMO_PLAYER_H
+#ifndef OMO_CODEC_HANDLER_H
+#define OMO_CODEC_HANDLER_H
 
 #include "t3f/t3f.h"
 
-#define OMO_PLAYER_MAX_TYPES     128
-#define OMO_PLAYER_MAX_TYPE_SIZE  16
+#define OMO_CODEC_HANDLER_MAX_TYPES     128
+#define OMO_CODEC_HANDLER_MAX_TYPE_SIZE  16
 
 typedef struct
 {
 
-    char type[OMO_PLAYER_MAX_TYPES][OMO_PLAYER_MAX_TYPE_SIZE];
+    char type[OMO_CODEC_HANDLER_MAX_TYPES][OMO_CODEC_HANDLER_MAX_TYPE_SIZE];
     int types;
 
     /* playback functions */
@@ -24,8 +24,8 @@ typedef struct
     float (*get_length)(void);
     bool (*done_playing)(void);
 
-} OMO_PLAYER;
+} OMO_CODEC_HANDLER;
 
-bool omo_player_add_type(OMO_PLAYER * pp, const char * type);
+bool omo_player_add_type(OMO_CODEC_HANDLER * pp, const char * type);
 
 #endif

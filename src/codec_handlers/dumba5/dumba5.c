@@ -1,7 +1,7 @@
 #include "t3f/t3f.h"
 #include "DUMBA5/dumba5.h"
 
-#include "player.h"
+#include "../codec_handler.h"
 
 static char player_filename[1024] = {0};
 static char player_sub_filename[1024] = {0};
@@ -74,11 +74,11 @@ static bool codec_done_playing(void)
 	return dumba5_module_playback_finished();
 }
 
-static OMO_PLAYER codec_player;
+static OMO_CODEC_HANDLER codec_player;
 
-OMO_PLAYER * omo_codec_dumba5_get_player(void)
+OMO_CODEC_HANDLER * omo_codec_dumba5_get_player(void)
 {
-	memset(&codec_player, 0, sizeof(OMO_PLAYER));
+	memset(&codec_player, 0, sizeof(OMO_CODEC_HANDLER));
 	codec_player.initialize = codec_initialize;
 	codec_player.load_file = codec_load_file;
 	codec_player.get_track_count = codec_get_track_count;

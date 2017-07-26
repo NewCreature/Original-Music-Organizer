@@ -5,8 +5,8 @@
 #include "t3gui/t3gui.h"
 
 #include "defines.h"
-#include "archive_handler_registry.h"
-#include "player_registry.h"
+#include "archive_handlers/registry.h"
+#include "codec_handlers/registry.h"
 #include "queue.h"
 #include "library.h"
 
@@ -25,8 +25,8 @@ typedef struct
 	int button_pressed;
 
 	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;
-	OMO_PLAYER_REGISTRY * player_registry;
-	OMO_PLAYER * player; // current player
+	OMO_CODEC_HANDLER_REGISTRY * player_registry;
+	OMO_CODEC_HANDLER * player; // current player
 	OMO_QUEUE * queue;
 	OMO_LIBRARY * library;
 	int queue_pos;

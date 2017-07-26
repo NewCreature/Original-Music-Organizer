@@ -1,40 +1,40 @@
-#include "player_registry.h"
-#include "player.h"
+#include "registry.h"
+#include "codec_handler.h"
 
-OMO_PLAYER_REGISTRY * omo_create_player_registry(void)
+OMO_CODEC_HANDLER_REGISTRY * omo_create_player_registry(void)
 {
-    OMO_PLAYER_REGISTRY * rp;
+    OMO_CODEC_HANDLER_REGISTRY * rp;
 
-    rp = malloc(sizeof(OMO_PLAYER_REGISTRY));
+    rp = malloc(sizeof(OMO_CODEC_HANDLER_REGISTRY));
     if(rp)
     {
-        memset(rp, 0, sizeof(OMO_PLAYER_REGISTRY));
+        memset(rp, 0, sizeof(OMO_CODEC_HANDLER_REGISTRY));
     }
     return rp;
 }
 
-void omo_destroy_player_registry(OMO_PLAYER_REGISTRY * rp)
+void omo_destroy_player_registry(OMO_CODEC_HANDLER_REGISTRY * rp)
 {
     free(rp);
 }
 
-bool omo_register_player(OMO_PLAYER_REGISTRY * rp, OMO_PLAYER * pp)
+bool omo_register_player(OMO_CODEC_HANDLER_REGISTRY * rp, OMO_CODEC_HANDLER * pp)
 {
     if(rp->players < OMO_MAX_REGISTERED_PLAYERS)
     {
-        memcpy(&rp->player[rp->players], pp, sizeof(OMO_PLAYER));
+        memcpy(&rp->player[rp->players], pp, sizeof(OMO_CODEC_HANDLER));
         rp->players++;
         return true;
     }
     return false;
 }
 
-OMO_PLAYER * omo_get_player(OMO_PLAYER_REGISTRY * rp, const char * fn)
+OMO_CODEC_HANDLER * omo_get_player(OMO_CODEC_HANDLER_REGISTRY * rp, const char * fn)
 {
     ALLEGRO_PATH * path;
     const char * extension;
     int i, j;
-    OMO_PLAYER * player = NULL;
+    OMO_CODEC_HANDLER * player = NULL;
 
     path = al_create_path(fn);
     if(path)

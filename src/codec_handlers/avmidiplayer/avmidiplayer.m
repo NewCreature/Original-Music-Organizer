@@ -4,16 +4,18 @@
 #include <Foundation/Foundation.h>
 #include <AVFoundation/AVFoundation.h>
 
-#include "player.h"
+#include "../codec_handler.h"
 
-static AVAudioPlayer * player = NULL;
+static AVMIDIPlayer * player = NULL;
+static OMO_CODEC_HANDLER codec_player;
 static double start_time;
 
 static bool codec_load_file(const char * fn, const char * subfn)
 {
 	NSString * fnstring = [NSString stringWithUTF8String:fn];
 
-	player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:fnstring] error:nil];
+//	player = [[AVMIDIPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:@"data/test.mid"] soundBankURL:nil error:nil];
+	player = [[AVMIDIPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:fnstring] soundBankURL:nil error:nil];
 	[player prepareToPlay];
 
 	return true;
@@ -26,7 +28,7 @@ static int codec_get_track_count(const char * fn)
 
 static bool codec_play(void)
 {
-	[player play];
+	[player play:nil];
 	start_time = al_get_time();
 	return true;
 }
@@ -39,7 +41,7 @@ static bool codec_pause(bool paused)
 	}
 	else
 	{
-		[player play];
+		[player play:nil];
 	}
 	return true;
 }
@@ -56,21 +58,19 @@ static void codec_stop(void)
 
 static bool codec_seek(float pos)
 {
-//	player.currentTime = pos;
+	player.currentPosition = pos;
 	return true;
 //	[player currentPosition] = pos;
 }
 
 static float codec_get_position(void)
 {
-	return 0.0;
-//	return player.currentTime;
+	return player.currentPosition;
 }
 
 static float codec_get_length(void)
 {
-	return 0.0;
-//	return player.duration;
+	return player.duration;
 }
 
 static bool codec_done_playing(void)
@@ -78,11 +78,9 @@ static bool codec_done_playing(void)
 	return al_get_time() - start_time >= player.duration;
 }
 
-static OMO_PLAYER codec_player;
-
-OMO_PLAYER * omo_codec_avplayer_get_player(void)
+OMO_CODEC_HANDLER * omo_codec_avmidiplayer_get_player(void)
 {
-	memset(&codec_player, 0, sizeof(OMO_PLAYER));
+	memset(&codec_player, 0, sizeof(OMO_CODEC_HANDLER));
 	codec_player.initialize = NULL;
 	codec_player.load_file = codec_load_file;
 	codec_player.get_track_count = codec_get_track_count;
@@ -94,11 +92,7 @@ OMO_PLAYER * omo_codec_avplayer_get_player(void)
 	codec_player.get_length = codec_get_length;
 	codec_player.done_playing = codec_done_playing;
 	codec_player.types = 0;
-	omo_player_add_type(&codec_player, ".mp2");
-	omo_player_add_type(&codec_player, ".mp3");
-	omo_player_add_type(&codec_player, ".mp4");
-	omo_player_add_type(&codec_player, ".m4a");
-	omo_player_add_type(&codec_player, ".aac");
+	omo_player_add_type(&codec_player, ".mid");
 
 	return &codec_player;
 }

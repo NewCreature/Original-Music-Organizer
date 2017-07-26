@@ -1,10 +1,10 @@
 #include "t3f/t3f.h"
 #include "t3f/music.h"
 
-#include "player.h"
+#include "../codec_handler.h"
 
 static char player_filename[1024] = {0};
-static OMO_PLAYER codec_player;
+static OMO_CODEC_HANDLER codec_player;
 
 static bool codec_load_file(const char * fn, const char * subfn)
 {
@@ -59,9 +59,9 @@ static bool codec_done_playing(void)
 	return false;
 }
 
-OMO_PLAYER * omo_codec_allegro_acodec_get_player(void)
+OMO_CODEC_HANDLER * omo_codec_allegro_acodec_get_player(void)
 {
-	memset(&codec_player, 0, sizeof(OMO_PLAYER));
+	memset(&codec_player, 0, sizeof(OMO_CODEC_HANDLER));
 	codec_player.initialize = NULL;
 	codec_player.load_file = codec_load_file;
 	codec_player.get_track_count = codec_get_track_count;
