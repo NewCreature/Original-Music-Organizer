@@ -33,16 +33,15 @@ static bool codec_play(void)
 	return true;
 }
 
-static bool codec_pause(bool paused)
+static bool codec_pause(void)
 {
-	if(paused)
-	{
-		[player stop];
-	}
-	else
-	{
-		[player play:nil];
-	}
+	[player stop];
+	return true;
+}
+
+static bool codec_resume(void)
+{
+	[player play:nil];
 	return true;
 }
 
@@ -86,6 +85,7 @@ OMO_CODEC_HANDLER * omo_codec_avmidiplayer_get_codec_handler(void)
 	codec_handler.get_track_count = codec_get_track_count;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;
+	codec_handler.resume = codec_resume;
 	codec_handler.stop = codec_stop;
 	codec_handler.seek = codec_seek;
 	codec_handler.get_position = codec_get_position;

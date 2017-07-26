@@ -109,16 +109,15 @@ static bool codec_play(void)
 	return false;
 }
 
-static bool codec_pause(bool paused)
+static bool codec_pause(void)
 {
-	if(paused)
-	{
-		paused = true;
-	}
-	else
-	{
-		paused = false;
-	}
+	paused = true;
+	return true;
+}
+
+static bool codec_resume(void)
+{
+	paused = false;
 	return true;
 }
 
@@ -154,6 +153,7 @@ OMO_CODEC_HANDLER * omo_codec_gme_get_codec_handler(void)
 	codec_handler.get_track_count = codec_get_track_count;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;
+	codec_handler.resume = codec_resume;
 	codec_handler.stop = codec_stop;
 	codec_handler.seek = NULL;
 	codec_handler.get_position = NULL;
