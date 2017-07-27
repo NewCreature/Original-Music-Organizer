@@ -211,12 +211,52 @@ static bool add_file(const char * fn, void * data)
     return false;
 }
 
+static bool add_file_to_queue(const char * fn, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_ARCHIVE_HANDLER * archive_handler;
+	OMO_CODEC_HANDLER * codec_handler;
+	int i, c;
+	char buf[32] = {0};
+
+	archive_handler = omo_get_archive_handler(app->archive_handler_registry, fn);
+	if(archive_handler)
+	{
+		c = archive_handler->count_files(fn);
+		for(i = 0; i < c; i++)
+		{
+			codec_handler = omo_get_codec_handler(app->codec_handler_registry, archive_handler->get_file(fn, i));
+			if(codec_handler)
+			{
+				sprintf(buf, "%d", i); // reference by index instead of filename
+				omo_add_file_to_queue(app->player->queue, fn, buf);
+			}
+		}
+	}
+	else
+	{
+		codec_handler = omo_get_codec_handler(app->codec_handler_registry, fn);
+		if(codec_handler)
+		{
+			c = codec_handler->get_track_count(fn);
+			for(i = 0; i < c; i++)
+			{
+				sprintf(buf, "%d", i);
+				omo_add_file_to_queue(app->player->queue, fn, c > 1 ? buf : NULL);
+			}
+		}
+	}
+
+    return false;
+}
+
 /* initialize our app, load graphics, etc. */
 bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 {
 	const char * val;
 	char file_db_fn[1024];
 	char entry_db_fn[1024];
+	int i;
 
 	/* initialize T3F */
 	if(!t3f_initialize(T3F_APP_TITLE, 640, 480, 60.0, app_logic, app_render, T3F_DEFAULT | T3F_RESIZABLE, app))
@@ -266,10 +306,6 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avplayer_get_codec_handler());
 	#endif
 
-	if(argc > 1)
-	{
-		al_set_config_value(t3f_config, "Settings", "library_path", argv[1]);
-	}
 	val = al_get_config_value(t3f_config, "Settings", "library_path");
 	if(val)
 	{
@@ -284,6 +320,28 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	{
 		printf("Error creating player!\n");
 		return false;
+	}
+	if(argc > 1)
+	{
+		total_files = 0;
+		for(i = 1; i < argc; i++)
+		{
+			count_file(argv[i], app);
+		}
+		app->player->queue = omo_create_queue(total_files);
+		if(app->player->queue)
+		{
+			for(i = 1; i < argc; i++)
+			{
+				add_file_to_queue(argv[i], app);
+			}
+			if(app->player->queue->entry_count)
+			{
+				app->player->queue_pos = -1;
+				omo_start_player(app->player);
+			}
+		}
+		al_set_config_value(t3f_config, "Settings", "library_path", argv[1]);
 	}
 
 	if(!omo_setup_menus(app))
