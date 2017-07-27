@@ -30,7 +30,14 @@ static void * gme_update_thread(ALLEGRO_THREAD * thread, void * arg)
 			fragment = (short *)al_get_audio_stream_fragment(codec_stream);
 			if(fragment)
 			{
-				gme_play(emu, buf_size * 2, fragment);
+				if(paused)
+				{
+					memset(fragment, 0, sizeof(short) * buf_size * 2);
+				}
+				else
+				{
+					gme_play(emu, buf_size * 2, fragment);
+				}
 				if(!al_set_audio_stream_fragment(codec_stream, fragment))
 				{
 				}
