@@ -194,7 +194,10 @@ int omo_menu_file_queue_files(void * data)
             omo_add_file_to_queue(new_queue, app->player->queue->entry[i]->file, app->player->queue->entry[i]->sub_file);
         }
     }
-    omo_destroy_queue(app->player->queue);
+    if(app->player->queue)
+    {
+        omo_destroy_queue(app->player->queue);
+    }
     add_files_to_queue(fc, new_queue, data);
     al_destroy_native_file_dialog(fc);
     app->player->queue = new_queue;
