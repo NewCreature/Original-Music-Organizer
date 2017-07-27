@@ -47,11 +47,13 @@ void app_logic(void * data)
 	{
 		default:
 		{
-			if(app->player)
-			{
-				app->ui_queue_list_element->d1 = app->player->queue_pos;
-			}
 			t3gui_logic();
+			if(app->ui_queue_list_element->id1 >= 0)
+			{
+				app->player->queue_pos = app->ui_queue_list_element->id1 - 1;
+				omo_play_next_song(app->player);
+				app->ui_queue_list_element->id1 = -1;
+			}
 			sprintf(app->ui_button_text[0], "|<");
 			if(app->player->state == OMO_PLAYER_STATE_PLAYING)
 			{
