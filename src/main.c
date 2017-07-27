@@ -50,8 +50,16 @@ void app_logic(void * data)
 			t3gui_logic();
 			if(app->ui_queue_list_element->id1 >= 0)
 			{
-				app->player->queue_pos = app->ui_queue_list_element->id1 - 1;
-				omo_play_next_song(app->player);
+				if(app->player->state == OMO_PLAYER_STATE_PLAYING)
+				{
+					app->player->queue_pos = app->ui_queue_list_element->id1 - 1;
+					omo_play_next_song(app->player);
+				}
+				else
+				{
+					app->player->queue_pos = app->ui_queue_list_element->id1;
+					omo_start_player(app->player);
+				}
 				app->ui_queue_list_element->id1 = -1;
 			}
 			sprintf(app->ui_button_text[0], "|<");
@@ -90,6 +98,7 @@ void app_logic(void * data)
 					{
 						case OMO_PLAYER_STATE_STOPPED:
 						{
+							app->player->queue_pos = app->ui_queue_list_element->d1;
 							omo_start_player(app->player);
 							break;
 						}

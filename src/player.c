@@ -83,13 +83,10 @@ bool omo_play_previous_song(OMO_PLAYER * pp)
         {
             omo_stop_player_playback(pp);
         }
-        if(pp->queue_pos > 0)
+        pp->queue_pos--;
+        if(pp->queue_pos < 0)
         {
-            pp->queue_pos -= 2;
-        }
-        else
-        {
-            pp->queue_pos = -1;
+            pp->queue_pos = 0;
         }
     }
     return true;
@@ -100,6 +97,7 @@ bool omo_play_next_song(OMO_PLAYER * pp)
     if(pp->codec_handler)
     {
         omo_stop_player_playback(pp);
+        pp->queue_pos++;
     }
     return true;
 }
@@ -128,7 +126,6 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
         {
             while(1)
             {
-                pp->queue_pos++;
                 if(pp->queue_pos < pp->queue->entry_count)
                 {
                     archive_handler = omo_get_archive_handler(archive_handler_registry, pp->queue->entry[pp->queue_pos]->file);
@@ -175,6 +172,7 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
                     pp->state = OMO_PLAYER_STATE_STOPPED;
                     break;
                 }
+                pp->queue_pos++;
             }
         }
     }

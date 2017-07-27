@@ -143,7 +143,7 @@ int omo_menu_file_play_files(void * data)
     if(app->player->queue)
     {
         add_files_to_queue(fc, app->player->queue, data);
-        app->player->queue_pos = -1;
+        app->player->queue_pos = 0;
         app->player->state = OMO_PLAYER_STATE_PLAYING;
     }
     al_destroy_native_file_dialog(fc);
@@ -323,7 +323,7 @@ int omo_menu_file_play_folder(void * data)
                 omo_destroy_queue(app->player->queue);
                 goto fail;
             }
-            app->player->queue_pos = -1;
+            app->player->queue_pos = 0;
             app->player->state = OMO_PLAYER_STATE_PLAYING;
         }
     }
@@ -450,7 +450,7 @@ int omo_menu_playback_shuffle(void * data)
             }
             omo_destroy_queue(app->player->queue);
             app->player->queue = new_queue;
-            app->player->queue_pos = -1;
+            app->player->queue_pos = 0;
         }
     }
     return 1;
