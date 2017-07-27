@@ -58,7 +58,7 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
         else
         {
             get_path_filename(app->player->queue->entry[index]->file, display_fn);
-            sprintf(ui_queue_text, "%3d. %s%s%s", index + 1, display_fn, app->player->queue->entry[index]->sub_file ? "/" : "", app->player->queue->entry[index]->sub_file ? app->player->queue->entry[index]->sub_file : "");
+            sprintf(ui_queue_text, "%s%s%s%s", index == app->player->queue_pos ? ">" : " ", display_fn, app->player->queue->entry[index]->sub_file ? "/" : "", app->player->queue->entry[index]->sub_file ? app->player->queue->entry[index]->sub_file : "");
         }
        return ui_queue_text;
    }
