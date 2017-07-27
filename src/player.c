@@ -172,6 +172,7 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
                 }
                 else
                 {
+                    pp->state = OMO_PLAYER_STATE_STOPPED;
                     break;
                 }
             }
