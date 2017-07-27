@@ -9,6 +9,8 @@
 static AVMIDIPlayer * player = NULL;
 static OMO_CODEC_HANDLER codec_handler;
 static double start_time;
+static double pause_start;
+static double pause_total;
 
 static bool codec_load_file(const char * fn, const char * subfn)
 {
@@ -30,17 +32,20 @@ static bool codec_play(void)
 {
 	[player play:nil];
 	start_time = al_get_time();
+	pause_total = 0.0;
 	return true;
 }
 
 static bool codec_pause(void)
 {
 	[player stop];
+	pause_start = al_get_time();
 	return true;
 }
 
 static bool codec_resume(void)
 {
+	pause_total += al_get_time() - pause_start;
 	[player play:nil];
 	return true;
 }
@@ -74,7 +79,7 @@ static float codec_get_length(void)
 
 static bool codec_done_playing(void)
 {
-	return al_get_time() - start_time >= player.duration;
+	return al_get_time() - (start_time + pause_total) >= player.duration;
 }
 
 OMO_CODEC_HANDLER * omo_codec_avmidiplayer_get_codec_handler(void)
