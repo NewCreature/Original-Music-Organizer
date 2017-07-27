@@ -61,8 +61,8 @@ void app_logic(void * data)
 			{
 				sprintf(app->ui_button_text[1], ">");
 			}
-			sprintf(app->ui_button_text[2], ">|");
-			sprintf(app->ui_button_text[3], "[]");
+			sprintf(app->ui_button_text[2], "[]");
+			sprintf(app->ui_button_text[3], ">|");
 			sprintf(app->ui_button_text[4], "^");
 			sprintf(app->ui_button_text[5], "+");
 			if(t3f_key[ALLEGRO_KEY_LEFT])
@@ -106,12 +106,12 @@ void app_logic(void * data)
 				}
 				case 2:
 				{
-					omo_play_next_song(app->player);
+					omo_stop_player(app->player);
 					break;
 				}
 				case 3:
 				{
-					omo_stop_player(app->player);
+					omo_play_next_song(app->player);
 					break;
 				}
 				case 4:
