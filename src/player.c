@@ -55,12 +55,24 @@ void omo_stop_player(OMO_PLAYER * pp)
 
 void omo_pause_player(OMO_PLAYER * pp)
 {
-
+    if(pp->codec_handler)
+    {
+        if(pp->codec_handler->pause())
+        {
+            pp->state = OMO_PLAYER_STATE_PAUSED;
+        }
+    }
 }
 
 void omo_resume_player(OMO_PLAYER * pp)
 {
-
+    if(pp->codec_handler)
+    {
+        if(pp->codec_handler->resume())
+        {
+            pp->state = OMO_PLAYER_STATE_PLAYING;
+        }
+    }
 }
 
 bool omo_play_previous_song(OMO_PLAYER * pp)

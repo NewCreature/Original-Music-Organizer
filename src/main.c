@@ -52,6 +52,19 @@ void app_logic(void * data)
 				app->ui_queue_list_element->d1 = app->player->queue_pos;
 			}
 			t3gui_logic();
+			sprintf(app->ui_button_text[0], "|<");
+			if(app->player->state == OMO_PLAYER_STATE_PLAYING)
+			{
+				sprintf(app->ui_button_text[1], "||");
+			}
+			else
+			{
+				sprintf(app->ui_button_text[1], ">");
+			}
+			sprintf(app->ui_button_text[2], ">|");
+			sprintf(app->ui_button_text[3], "[]");
+			sprintf(app->ui_button_text[4], "^");
+			sprintf(app->ui_button_text[5], "+");
 			if(t3f_key[ALLEGRO_KEY_LEFT])
 			{
 				app->button_pressed = 0;
@@ -71,7 +84,24 @@ void app_logic(void * data)
 				}
 				case 1:
 				{
-					omo_start_player(app->player);
+					switch(app->player->state)
+					{
+						case OMO_PLAYER_STATE_STOPPED:
+						{
+							omo_start_player(app->player);
+							break;
+						}
+						case OMO_PLAYER_STATE_PLAYING:
+						{
+							omo_pause_player(app->player);
+							break;
+						}
+						case OMO_PLAYER_STATE_PAUSED:
+						{
+							omo_resume_player(app->player);
+							break;
+						}
+					}
 					break;
 				}
 				case 2:

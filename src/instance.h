@@ -23,6 +23,7 @@ typedef struct
 	T3GUI_ELEMENT * ui_queue_list_box_element;
 	T3GUI_ELEMENT * ui_queue_list_element;
 	T3GUI_ELEMENT * ui_button_element[6];
+	char ui_button_text[6][8];
 	int button_pressed;
 
 	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;

@@ -32,7 +32,6 @@ void omo_resize_dialogs(void * data)
 bool omo_setup_dialogs(void * data)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
-    char * button_text[6] = {"|<", ">", ">|", "[]", "^", "+"};
     int i;
 
     app->ui_dialog = t3gui_create_dialog();
@@ -44,7 +43,7 @@ bool omo_setup_dialogs(void * data)
     app->ui_queue_list_element = t3gui_dialog_add_element(app->ui_dialog, NULL, t3gui_list_proc, 8, 8, al_get_display_width(t3f_display) - 16, al_get_display_height(t3f_display) - 16, 0, 0, 0, 0, ui_queue_list_proc, NULL, app);
     for(i = 0; i < 6; i++)
     {
-        app->ui_button_element[i] = t3gui_dialog_add_element(app->ui_dialog, NULL, t3gui_push_button_proc, 8, 8, 16, 16, 0, 0, 0, i, button_text[i], ui_player_button_proc, app);
+        app->ui_button_element[i] = t3gui_dialog_add_element(app->ui_dialog, NULL, t3gui_push_button_proc, 8, 8, 16, 16, 0, 0, 0, i, app->ui_button_text[i], ui_player_button_proc, app);
     }
     omo_resize_dialogs(data);
 
