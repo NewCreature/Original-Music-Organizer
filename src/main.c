@@ -4,6 +4,7 @@
 #include "instance.h"
 #include "library.h"
 #include "player.h"
+#include "file_chooser.h"
 #include "ui/menu_init.h"
 #include "ui/menu_proc.h"
 #include "ui/dialog_init.h"
@@ -47,6 +48,7 @@ void app_logic(void * data)
 	{
 		default:
 		{
+			omo_file_chooser_logic(data);
 			t3gui_logic();
 			if(app->ui_queue_list_element->id1 >= 0)
 			{

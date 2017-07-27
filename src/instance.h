@@ -16,6 +16,10 @@ typedef struct
 {
 
 	ALLEGRO_MENU * menu[OMO_MAX_MENUS];
+	ALLEGRO_FILECHOOSER * file_chooser;
+	int file_chooser_mode;
+	bool file_chooser_done;
+	ALLEGRO_THREAD * file_chooser_thread;
 	char last_music_filename[1024]; // keep track of where we were last browsing for files
 	int state;
 	ALLEGRO_FONT * font;

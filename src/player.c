@@ -115,6 +115,7 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
             if(pp->codec_handler->done_playing())
             {
                 omo_stop_player_playback(pp);
+                pp->queue_pos++;
                 next_file = true;
             }
         }
