@@ -92,7 +92,7 @@ ANDROID_PLATFORM_LIBS = -lcurl
 ##########################
 DEBIAN_APP_NAME = $(subst _,-,$(APP_NAME))
 DEBIAN_SECTION = games
-DEBIAN_DEPENDS = libc6 libmpg123 unrar
+DEBIAN_DEPENDS = libc6 libmpg123 libgme unrar
 DEBIAN_MAINTAINER = Your\ Name\ \<user\@email.com\>
 DEBIAN_DESCRIPTION = Short\ decription\ of\ your\ app.
 DEBIAN_LONG_DESCRIPTION = Long\ description\ of\ your\ app.
