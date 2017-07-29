@@ -85,7 +85,7 @@ static const char * get_file(const char * fn, int index)
 				line_count++;
 				if(line_count - 9 == index)
 				{
-					#ifndef ALLEGRO_LINUX
+					#ifndef ALLEGRO_UNIX
 						strcpy(returnfn, &line_buffer[41]);
 						remove_line_endings(returnfn);
 					#else
