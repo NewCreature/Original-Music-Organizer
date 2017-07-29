@@ -92,7 +92,7 @@ static const char * get_file(const char * fn, int index)
 					}
 					else
 					{
-						strcpy(returnfn, line_buffer);
+						strcpy(returnfn, &line_buffer[1]);
 						for(i = 0; i < strlen(returnfn); i++)
 						{
 							if(returnfn[i] == ' ')
