@@ -116,7 +116,6 @@ static const char * get_file(const char * fn, int index)
 			}
 			else
 			{
-				printf("end\n");
 				break;
 			}
 		}
