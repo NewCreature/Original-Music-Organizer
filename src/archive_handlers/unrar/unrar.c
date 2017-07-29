@@ -88,14 +88,14 @@ static const char * get_file(const char * fn, int index)
 				if(line_count == 2)
 				{
 					version = line_buffer[6];
-					if(version == 4)
+					if(version == '4')
 					{
 						skip_lines = 8;
 					}
 				}
 				if(line_count - skip_lines == index)
 				{
-					if(version != 4)
+					if(version != '4')
 					{
 						strcpy(returnfn, &line_buffer[41]);
 						remove_line_endings(returnfn);
