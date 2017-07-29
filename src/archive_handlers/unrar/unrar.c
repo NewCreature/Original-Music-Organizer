@@ -85,10 +85,13 @@ static const char * get_file(const char * fn, int index)
 				line_count++;
 				if(line_count - 9 == index)
 				{
-					#ifndef ALLEGRO_UNIX
+					if(line_buffer[1] == ' ')
+					{
 						strcpy(returnfn, &line_buffer[41]);
 						remove_line_endings(returnfn);
-					#else
+					}
+					else
+					{
 						strcpy(returnfn, line_buffer);
 						for(i = 0; i < strlen(returnfn); i++)
 						{
@@ -98,7 +101,7 @@ static const char * get_file(const char * fn, int index)
 								break;
 							}
 						}
-					#endif
+					}
 				}
 			}
 			else
