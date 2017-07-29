@@ -12,10 +12,15 @@ static int count_files(const char * fn)
 	char line_buffer[256];
 	char * line_pointer;
 	int line_count = 0;
+	#ifdef ALLEGRO_MACOSX
+		const char * command_prefix = "/user/local/bin/";
+	#else
+		const char * command_prefix = "";
+	#endif
 
 	if(strcmp(fn, cached_rar_file))
 	{
-		sprintf(system_command, "/usr/local/bin/unrar l \"%s\" > \"%s\"", fn, t3f_get_filename(t3f_data_path, "rarlist.txt"));
+		sprintf(system_command, "%sunrar l \"%s\" > \"%s\"", command_prefix, fn, t3f_get_filename(t3f_data_path, "rarlist.txt"));
 		system(system_command);
 		strcpy(cached_rar_file, fn);
 	}
