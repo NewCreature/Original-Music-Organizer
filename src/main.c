@@ -387,7 +387,7 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 			}
 			if(app->player->queue->entry_count)
 			{
-				app->player->queue_pos = -1;
+				app->player->queue_pos = 0;
 				omo_start_player(app->player);
 			}
 		}
