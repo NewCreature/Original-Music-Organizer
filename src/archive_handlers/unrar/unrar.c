@@ -66,6 +66,7 @@ static const char * get_file(const char * fn, int index)
 	char line_buffer[256];
 	char * line_pointer;
 	int line_count = 0;
+	int i;
 
 	if(strcmp(fn, cached_rar_file))
 	{
@@ -84,8 +85,20 @@ static const char * get_file(const char * fn, int index)
 				line_count++;
 				if(line_count - 9 == index)
 				{
-					strcpy(returnfn, &line_buffer[41]);
-					remove_line_endings(returnfn);
+					#ifndef ALLEGRO_LINUX
+						strcpy(returnfn, &line_buffer[41]);
+						remove_line_endings(returnfn);
+					#else
+						strcpy(returnfn, line_buffer);
+						for(i = 0; i < strlen(returnfn); i++)
+						{
+							if(returnfn[i] == ' ')
+							{
+								returnfn[i] = 0;
+								break;
+							}
+						}
+					#endif
 				}
 			}
 			else
