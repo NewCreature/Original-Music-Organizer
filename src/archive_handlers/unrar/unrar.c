@@ -66,6 +66,8 @@ static const char * get_file(const char * fn, int index)
 	char line_buffer[256];
 	char * line_pointer;
 	int line_count = 0;
+	int skip_lines = 9;
+	int version;
 	int i;
 
 	if(strcmp(fn, cached_rar_file))
@@ -83,9 +85,17 @@ static const char * get_file(const char * fn, int index)
 			if(line_pointer)
 			{
 				line_count++;
-				if(line_count - 9 == index)
+				if(line_count == 2)
 				{
-					if(line_buffer[1] == ' ')
+					version = line_buffer[6];
+					if(version == 4)
+					{
+						skip_lines = 8;
+					}
+				}
+				if(line_count - skip_lines == index)
+				{
+					if(version != 4)
 					{
 						strcpy(returnfn, &line_buffer[41]);
 						remove_line_endings(returnfn);
@@ -106,6 +116,7 @@ static const char * get_file(const char * fn, int index)
 			}
 			else
 			{
+				printf("end\n");
 				break;
 			}
 		}
