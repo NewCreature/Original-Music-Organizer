@@ -16,6 +16,10 @@
 #include "codec_handlers/allegro_acodec/allegro_acodec.h"
 #include "codec_handlers/gme/gme.h"
 
+#ifndef ALLEGRO_MACOSX
+	#include "codec_handlers/mp3a5/mp3a5.h"
+#endif
+
 /* Mac OS X codecs */
 #ifdef ALLEGRO_MACOSX
 	#include "codec_handlers/avmidiplayer/avmidiplayer.h"
@@ -344,6 +348,9 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_dumba5_get_codec_handler());
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_allegro_acodec_get_codec_handler());
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_gme_get_codec_handler());
+	#ifndef ALLEGRO_MACOSX
+		omo_register_codec_handler(app->codec_handler_registry, omo_codec_mp3a5_get_codec_handler());
+	#endif
 	#ifdef ALLEGRO_MACOSX
 		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avmidiplayer_get_codec_handler());
 		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avplayer_get_codec_handler());

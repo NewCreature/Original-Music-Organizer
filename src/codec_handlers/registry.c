@@ -15,6 +15,15 @@ OMO_CODEC_HANDLER_REGISTRY * omo_create_codec_handler_registry(void)
 
 void omo_destroy_codec_handler_registry(OMO_CODEC_HANDLER_REGISTRY * rp)
 {
+    int i;
+
+    for(i = 0; i < rp->codec_handlers; i++)
+    {
+        if(rp->codec_handler[i].exit)
+        {
+            rp->codec_handler[i].exit();
+        }
+    }
     free(rp);
 }
 

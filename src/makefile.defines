@@ -46,36 +46,36 @@ MACOSX_PLATFORM_LIBS = -framework AVFoundation
 # Linux stuff #
 ###############
 #LINUX_CFLAGS =
-#LINUX_PLATFORM_OBJECTS =
+LINUX_PLATFORM_OBJECTS = codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o
 #LINUX_PLATFORM_LIBS =
-#LINUX_DEPEND_LIBS =
+LINUX_DEPEND_LIBS = -lmpg123
 #LINUX_PLATFORM_TARGET =
 
 ################################################
 # Linux static stuff (for binary distrubution) #
 ################################################
 #LINUX_STATIC_CFLAGS =
-#LINUX_STATIC_PLATFORM_OBJECTS =
+LINUX_STATIC_PLATFORM_OBJECTS = codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o
 #LINUX_STATIC_PLATFORM_LIBS =
-#LINUX_STATIC_DEPEND_LIBS =
+LINUX_STATIC_DEPEND_LIBS = -lmpg123
 #LINUX_STATIC_PLATFORM_TARGET =
 
 ##############################
 # MinGW cross-compiler stuff #
 ##############################
 #MINGW_CROSS_CFLAGS =
-#MINGW_CROSS_PLATFORM_OBJECTS =
+MINGW_CROSS_PLATFORM_OBJECTS = codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o
 #MINGW_CROSS_PLATFORM_LIBS =
-#MINGW_CROSS_DEPEND_LIBS =
+MINGW_CROSS_DEPEND_LIBS = -lmpg123
 #MINGW_CROSS_PLATFORM_TARGET =
 
 ###############
 # MinGW stuff #
 ###############
 #MINGW_CFLAGS =
-#MINGW_PLATFORM_OBJECTS =
+MINGW_PLATFORM_OBJECTS = codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o
 #MINGW_PLATFORM_LIBS =
-#MINGW_DEPEND_LIBS =
+MINGW_DEPEND_LIBS = -lmpg123
 #MINGW_PLATFORM_TARGET =
 
 #################
@@ -92,7 +92,7 @@ ANDROID_PLATFORM_LIBS = -lcurl
 ##########################
 DEBIAN_APP_NAME = $(subst _,-,$(APP_NAME))
 DEBIAN_SECTION = games
-DEBIAN_DEPENDS = libc6
+DEBIAN_DEPENDS = libc6 libmpg123
 DEBIAN_MAINTAINER = Your\ Name\ \<user\@email.com\>
 DEBIAN_DESCRIPTION = Short\ decription\ of\ your\ app.
 DEBIAN_LONG_DESCRIPTION = Long\ description\ of\ your\ app.
