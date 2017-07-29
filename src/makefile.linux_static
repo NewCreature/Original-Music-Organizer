@@ -18,8 +18,8 @@ include makefile.common
 #generate Debian package
 debian_package: $(APP_EXE_NAME) ../debian/control_gen
 	echo Generating files...
-	echo "!C menu-2\n?package("$(DEBIAN_APP_NAME)"):\n	needs=\"X11\"\n	section=\"Games/Action\"\n	title=\""$(APP_TITLE)"\"\n	command=\"/usr/$(DEBIAN_SECTION)/$(DEBIAN_APP_NAME)\"\n	;" > ../debian/menu
-	echo "[Desktop Entry]\nName="$(APP_TITLE)"\nExec=/usr/$(DEBIAN_SECTION)/$(DEBIAN_APP_NAME)\nIcon=$(DEBIAN_APP_NAME)\nTerminal=false\nType=Application\nCategories=Game;" > ../debian/app.desktop
+	echo "!C menu-2\n?package("$(DEBIAN_APP_NAME)"):\n	needs=\"X11\"\n	section=\"Games/Action\"\n	title=\""$(APP_TITLE)"\"\n	command=\"/usr/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)\"\n	;" > ../debian/menu
+	echo "[Desktop Entry]\nName="$(APP_TITLE)"\nExec=/usr/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)\nIcon=$(DEBIAN_APP_NAME)\nTerminal=false\nType=Application\nCategories=Game;" > ../debian/app.desktop
 	../debian/control_gen ../debian $(DEBIAN_APP_NAME) $(APP_VERSION) $(DEBIAN_SECTION) optional `dpkg-architecture -l -qDEB_BUILD_ARCH` $(DEBIAN_DEPENDS) "`du -s --block-size=1024 ../bin`" $(DEBIAN_MAINTAINER) $(DEBIAN_DESCRIPTION) $(DEBIAN_LONG_DESCRIPTION)
 	echo Building directory structure...
 	mkdir -p ../temp
@@ -33,7 +33,7 @@ debian_package: $(APP_EXE_NAME) ../debian/control_gen
 	mkdir -p ../temp/debian_temp/usr/share/pixmaps
 	mkdir -p ../temp/debian_temp/usr/share/applications
 	mkdir -p ../temp/debian_temp/usr/share/menu
-	mkdir -p ../temp/debian_temp/usr/$(DEBIAN_SECTION)
+	mkdir -p ../temp/debian_temp/usr/$(DEBIAN_DIR)
 	echo Copying files...
 	cp -a ../bin/data ../temp/debian_temp/usr/share/$(DEBIAN_APP_NAME)
 	cp ../docs/changelog ../temp/debian_temp/usr/share/doc/$(DEBIAN_APP_NAME)/changelog
@@ -42,12 +42,12 @@ debian_package: $(APP_EXE_NAME) ../debian/control_gen
 	cp ../icons/debian_icon.svg ../temp/debian_temp/usr/share/pixmaps/$(DEBIAN_APP_NAME).svg
 	cp ../debian/app.desktop ../temp/debian_temp/usr/share/applications/$(DEBIAN_APP_NAME).desktop
 	cp ../debian/menu ../temp/debian_temp/usr/share/menu/$(DEBIAN_APP_NAME)
-	cp ../bin/$(DEBIAN_APP_NAME) ../temp/debian_temp/usr/$(DEBIAN_SECTION)/$(DEBIAN_APP_NAME)
+	cp ../bin/$(DEBIAN_APP_NAME) ../temp/debian_temp/usr/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)
 	cp ../debian/control ../temp/DEBIAN
 	cp ../debian/postinst ../temp/DEBIAN
 	echo Building package...
-	strip ../temp/debian_temp/usr/$(DEBIAN_SECTION)/$(DEBIAN_APP_NAME)
-	chmod 755 ../temp/debian_temp/usr/$(DEBIAN_SECTION)/$(DEBIAN_APP_NAME)
+	strip ../temp/debian_temp/usr/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)
+	chmod 755 ../temp/debian_temp/usr/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)
 	chmod 755 ../temp/DEBIAN/postinst
 	find ../temp/debian_temp -type d | xargs chmod 755
 	find ../temp/debian_temp/usr/share/$(DEBIAN_APP_NAME) -type f -exec chmod 644 {} \;

@@ -92,6 +92,7 @@ ANDROID_PLATFORM_LIBS = -lcurl
 ##########################
 DEBIAN_APP_NAME = $(subst _,-,$(APP_NAME))
 DEBIAN_SECTION = sound
+DEBIAN_DIR = bin
 DEBIAN_DEPENDS = libc6,\ libmpg123,\ libgme,\ libarchive,\ unrar,\ libdumb1
 DEBIAN_MAINTAINER = Your\ Name\ \<user\@email.com\>
 DEBIAN_DESCRIPTION = Enjoy\ your\ music\ collection.
