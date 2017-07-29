@@ -83,7 +83,7 @@ static int copy_data(struct archive *ar, struct archive *aw)
 	int r;
 	const void *buff;
 	size_t size;
-	la_int64_t offset;
+	int64_t offset;
 
 	for(;;)
 	{
