@@ -385,7 +385,6 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 				omo_start_player(app->player);
 			}
 		}
-		al_set_config_value(t3f_config, "Settings", "library_path", argv[1]);
 	}
 
 	if(!omo_setup_menus(app))
