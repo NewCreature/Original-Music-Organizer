@@ -321,12 +321,6 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	al_set_config_value(t3f_config, "T3F", "save_window_pos", "true");
 
 	memset(app, 0, sizeof(APP_INSTANCE));
-	app->font = al_create_builtin_font();
-	if(!app->font)
-	{
-		printf("Error loading font!\n");
-		return false;
-	}
 
 	/* register archive handlers */
 	app->archive_handler_registry = omo_create_archive_handler_registry();
