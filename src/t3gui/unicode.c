@@ -1,6 +1,6 @@
-/*         ______   ___    ___ 
- *        /\  _  \ /\_ \  /\_ \ 
- *        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___ 
+/*         ______   ___    ___
+ *        /\  _  \ /\_ \  /\_ \
+ *        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
  *         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
  *          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
  *           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
@@ -134,13 +134,13 @@ static unsigned short _codepage_table[] =
    0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F,
    0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F,
    0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F,
-   0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 
-   0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 
-   0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 
-   0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 
-   0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 
-   0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 
-   0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 
+   0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E,
+   0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E,
+   0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E,
+   0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E,
+   0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E,
+   0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E,
+   0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E,
    0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E, 0x5E,
 };
 
@@ -149,17 +149,17 @@ static unsigned short _codepage_table[] =
 /* this default table reduces Latin-1 and Extended-A characters to 7 bits */
 static unsigned short _codepage_extras[] =
 {
-   0xA1, '!',  0xA2, 'c',  0xA3, '#',  0xB5, 'u',  0xBF, '?',  0xC0, 'A', 
-   0xC1, 'A',  0xC2, 'A',  0xC3, 'A',  0xC4, 'A',  0xC5, 'A',  0xC6, 'A', 
-   0xC7, 'C',  0xC8, 'E',  0xC9, 'E',  0xCA, 'E',  0xCB, 'E',  0xCC, 'I', 
-   0xCD, 'I',  0xCE, 'I',  0xCF, 'I',  0xD0, 'D',  0xD1, 'N',  0xD2, 'O', 
-   0xD3, 'O',  0xD4, 'O',  0xD5, 'O',  0xD6, 'O',  0xD7, 'X',  0xD8, '0', 
-   0xD9, 'U',  0xDA, 'U',  0xDB, 'U',  0xDC, 'U',  0xDD, 'Y',  0xDE, 'P', 
-   0xDF, 'S',  0xE0, 'a',  0xE1, 'a',  0xE2, 'a',  0xE3, 'a',  0xE4, 'a', 
-   0xE5, 'a',  0xE6, 'a',  0xE7, 'c',  0xE8, 'e',  0xE9, 'e',  0xEA, 'e', 
-   0xEB, 'e',  0xEC, 'i',  0xED, 'i',  0xEE, 'i',  0xEF, 'i',  0xF0, 'o', 
-   0xF1, 'n',  0xF2, 'o',  0xF3, 'o',  0xF4, 'o',  0xF5, 'o',  0xF6, 'o', 
-   0xF8, 'o',  0xF9, 'u',  0xFA, 'u',  0xFB, 'u',  0xFC, 'u',  0xFD, 'y', 
+   0xA1, '!',  0xA2, 'c',  0xA3, '#',  0xB5, 'u',  0xBF, '?',  0xC0, 'A',
+   0xC1, 'A',  0xC2, 'A',  0xC3, 'A',  0xC4, 'A',  0xC5, 'A',  0xC6, 'A',
+   0xC7, 'C',  0xC8, 'E',  0xC9, 'E',  0xCA, 'E',  0xCB, 'E',  0xCC, 'I',
+   0xCD, 'I',  0xCE, 'I',  0xCF, 'I',  0xD0, 'D',  0xD1, 'N',  0xD2, 'O',
+   0xD3, 'O',  0xD4, 'O',  0xD5, 'O',  0xD6, 'O',  0xD7, 'X',  0xD8, '0',
+   0xD9, 'U',  0xDA, 'U',  0xDB, 'U',  0xDC, 'U',  0xDD, 'Y',  0xDE, 'P',
+   0xDF, 'S',  0xE0, 'a',  0xE1, 'a',  0xE2, 'a',  0xE3, 'a',  0xE4, 'a',
+   0xE5, 'a',  0xE6, 'a',  0xE7, 'c',  0xE8, 'e',  0xE9, 'e',  0xEA, 'e',
+   0xEB, 'e',  0xEC, 'i',  0xED, 'i',  0xEE, 'i',  0xEF, 'i',  0xF0, 'o',
+   0xF1, 'n',  0xF2, 'o',  0xF3, 'o',  0xF4, 'o',  0xF5, 'o',  0xF6, 'o',
+   0xF8, 'o',  0xF9, 'u',  0xFA, 'u',  0xFB, 'u',  0xFC, 'u',  0xFD, 'y',
    0xFE, 'p',  0xFF, 'y',
 
    0x100, 'A',  0x101, 'a',  0x102, 'A',  0x103, 'a',  0x104, 'A',
@@ -237,7 +237,7 @@ static int ascii_cp_setc(char *s, int c)
 	    *s = codepage_extras[i+1];
 	    return 1;
 	 }
-      } 
+      }
    }
 
    *s = '^';
@@ -262,7 +262,7 @@ static int ascii_cp_isok(int c)
       for (i=0; codepage_extras[i]; i+=2) {
 	 if (codepage_extras[i] == c)
 	    return true;
-      } 
+      }
    }
 
    return false;
@@ -336,7 +336,7 @@ static int unicode_isok(int c)
 /* utf8_getc:
  *  Reads a character from a UTF-8 string.
  */
-static int utf8_getc(const char *s)
+int ugetc(const char *s)
 {
    int c = *((unsigned char *)(s++));
    int n, t;
@@ -366,7 +366,7 @@ static int utf8_getc(const char *s)
 /* utf8_getx:
  *  Reads a character from a UTF-8 string, advancing the pointer position.
  */
-static int utf8_getx(char **s)
+int ugetx(char **s)
 {
    int c = *((unsigned char *)((*s)++));
    int n, t;
@@ -393,12 +393,16 @@ static int utf8_getx(char **s)
    return c;
 }
 
+int ugetxc(const char **s)
+{
+    return ugetx((char **)s);
+}
 
 
 /* utf8_setc:
  *  Sets a character in a UTF-8 string.
  */
-static int utf8_setc(char *s, int c)
+int usetc(char *s, int c)
 {
    int size, bits, b, i;
 
@@ -438,7 +442,7 @@ static int utf8_setc(char *s, int c)
 /* utf8_width:
  *  Returns the width of a UTF-8 character.
  */
-static int utf8_width(const char *s)
+int uwidth(const char *s)
 {
    int c = *((unsigned char *)s);
    int n = 1;
@@ -456,7 +460,7 @@ static int utf8_width(const char *s)
 /* utf8_cwidth:
  *  Returns the width of a UTF-8 character.
  */
-static int utf8_cwidth(int c)
+int ucwidth(int c)
 {
    int size, bits, b;
 
@@ -483,7 +487,7 @@ static int utf8_cwidth(int c)
 /* utf8_isok:
  *  Checks whether this character can be encoded in UTF-8 format.
  */
-static int utf8_isok(int c)
+int uisok(int c)
 {
    return true;
 }
@@ -494,7 +498,7 @@ static int utf8_isok(int c)
 static UTYPE_INFO utypes[] =
 {
    { U_ASCII,    ascii_getc,    ascii_getx,    ascii_setc,    ascii_width,   ascii_cwidth,   ascii_isok,    1    },
-   { U_UTF8,     utf8_getc,     utf8_getx,     utf8_setc,     utf8_width,    utf8_cwidth,    utf8_isok,     4     },
+   { U_UTF8,     ugetc,     ugetx,     usetc,     uwidth,    ucwidth,    uisok,     4     },
    { U_UNICODE,  unicode_getc,  unicode_getx,  unicode_setc,  unicode_width, unicode_cwidth, unicode_isok,  2  },
    { U_ASCII_CP, ascii_cp_getc, ascii_cp_getx, ascii_cp_setc, ascii_width,   ascii_cwidth,   ascii_cp_isok, 1 },
    { 0,          NULL,          NULL,          NULL,          NULL,          NULL,           NULL,          0                     },
@@ -507,22 +511,6 @@ static UTYPE_INFO utypes[] =
 
 /* current format information and worker routines */
 static int utype = U_UTF8;
-
-/* ugetc: */
-int (*ugetc)(const char *s) = utf8_getc;
-/* ugetxc: */
-int (*ugetx)(char **s) = utf8_getx;
-/* ugetxc: */
-int (*ugetxc)(const char** s) = (int (*)(const char**)) utf8_getx;
-/* usetc: */
-int (*usetc)(char *s, int c) = utf8_setc;
-/* uwidth: */
-int (*uwidth)(const char *s) = utf8_width;
-/* ucwidth: */
-int (*ucwidth)(int c) = utf8_cwidth;
-/* uisok: */
-int (*uisok)(int c) = utf8_isok;
-
 
 
 /* _find_utype:
@@ -549,18 +537,6 @@ UTYPE_INFO *_find_utype(int type)
  */
 void set_uformat(int type)
 {
-   UTYPE_INFO *info = _find_utype(type);
-
-   if (info) {
-      utype = info->id;
-      ugetc = info->u_getc;
-      ugetx = (int (*)(char **)) info->u_getx;
-      ugetxc = (int (*)(const char **)) info->u_getx;
-      usetc = info->u_setc;
-      uwidth = info->u_width;
-      ucwidth = info->u_cwidth;
-      uisok = info->u_isok;
-   }
 }
 
 
@@ -621,7 +597,7 @@ int need_uconvert(const char *s, int type, int newtype)
 {
    int c;
    assert(s);
-   
+
    if (type == U_CURRENT)
       type = utype;
 
@@ -739,7 +715,7 @@ char *uconvert(const char *s, int type, char *buf, int newtype, int size)
 
 
 /* uoffset:
- *  Returns the offset in bytes from the start of the string to the 
+ *  Returns the offset in bytes from the start of the string to the
  *  character at the specified index. If the index is negative, counts
  *  backward from the end of the string (-1 returns an offset to the
  *  last character).
@@ -1728,7 +1704,7 @@ int utoupper(int c)
  */
 int uisspace(int c)
 {
-   return ((c == ' ') || (c == '\t') || (c == '\r') || 
+   return ((c == ' ') || (c == '\t') || (c == '\r') ||
 	   (c == '\n') || (c == '\f') || (c == '\v') ||
 	   (c == 0x1680) || ((c >= 0x2000) && (c <= 0x200A)) ||
 	   (c == 0x2028) || (c == 0x202f) || (c == 0x3000));
@@ -3165,4 +3141,3 @@ int uszprintf(char *buf, int size, const char *format, ...)
 
    return ret;
 }
-

@@ -65,13 +65,13 @@ AL_FUNC(int, uwidth_max, (int type));
 #define uconvert_ascii(s, buf)      uconvert(s, U_ASCII, buf, U_CURRENT, sizeof(buf))
 #define uconvert_toascii(s, buf)    uconvert(s, U_CURRENT, buf, U_ASCII, sizeof(buf))
 
-AL_FUNCPTR(int, ugetc, (const char *s));
-AL_FUNCPTR(int, ugetx, (char **s));
-AL_FUNCPTR(int, ugetxc, (const char **s));
-AL_FUNCPTR(int, usetc, (char *s, int c));
-AL_FUNCPTR(int, uwidth, (const char *s));
-AL_FUNCPTR(int, ucwidth, (int c));
-AL_FUNCPTR(int, uisok, (int c));
+AL_FUNC(int, ugetc, (const char *s));
+AL_FUNC(int, ugetx, (char **s));
+AL_FUNC(int, ugetxc, (const char **s));
+AL_FUNC(int, usetc, (char *s, int c));
+AL_FUNC(int, uwidth, (const char *s));
+AL_FUNC(int, ucwidth, (int c));
+AL_FUNC(int, uisok, (int c));
 AL_FUNC(int, uoffset, (const char *s, int idx));
 AL_FUNC(int, ugetat, (const char *s, int idx));
 AL_FUNC(int, usetat, (char *s, int idx, int c));
@@ -128,5 +128,3 @@ AL_PRINTFUNC(int, usprintf, (char *buf, const char *format, ...), 2, 3);
 #endif
 
 #endif          /* ifndef ALLEGRO_UNICODE__H */
-
-
