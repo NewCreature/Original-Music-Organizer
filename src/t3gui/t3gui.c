@@ -246,6 +246,7 @@ bool t3gui_show_dialog_init(T3GUI_DIALOG * dp, ALLEGRO_EVENT_QUEUE * qp, int fla
         }
         t3gui_listen_for_events(t3gui_dialog_player[t3gui_dialog_players], al_get_keyboard_event_source());
         t3gui_listen_for_events(t3gui_dialog_player[t3gui_dialog_players], al_get_mouse_event_source());
+        t3gui_listen_for_events(t3gui_dialog_player[t3gui_dialog_players], al_get_display_event_source(al_get_current_display()));
     }
     return true;
 }
