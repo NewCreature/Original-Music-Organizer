@@ -253,6 +253,10 @@ bool t3gui_show_dialog_init(T3GUI_DIALOG * dp, ALLEGRO_EVENT_QUEUE * qp, int fla
 
 bool t3gui_show_dialog(T3GUI_DIALOG * dp, ALLEGRO_EVENT_QUEUE * qp, int flags, void * user_data)
 {
+    #ifdef ALLEGRO_WINDOWS
+        t3gui_unload_resources();
+        t3gui_reload_resources();
+    #endif
     if(t3gui_show_dialog_init(dp, qp, flags, user_data))
     {
         t3gui_start_dialog(t3gui_dialog_player[t3gui_dialog_players]);
