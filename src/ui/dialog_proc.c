@@ -8,10 +8,16 @@ static void get_path_filename(const char * fn, char * outfn)
 {
 	int i, j;
 	int pos = 0;
+	char path_separator;
 
+	#ifdef ALLEGRO_WINDOWS
+		path_separator = '\\';
+	#else
+		path_separator = '/';
+	#endif
 	for(i = strlen(fn) - 1; i >= 0; i--)
 	{
-		if(fn[i] == '/')
+		if(fn[i] == path_separator)
 		{
 			for(j = i + 1; j < strlen(fn); j++)
 			{
