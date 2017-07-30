@@ -142,14 +142,12 @@ static void t3gui_unload_resource(T3GUI_RESOURCE * rp)
             case T3GUI_RESOURCE_TYPE_BITMAP:
             {
                 destroy_nine_patch_bitmap(rp->data);
-                rp->data = NULL;
                 break;
             }
             case T3GUI_RESOURCE_TYPE_FONT:
             case T3GUI_RESOURCE_TYPE_DEFAULT_FONT:
             {
                 al_destroy_font(rp->data);
-                rp->data = NULL;
                 break;
             }
         }
