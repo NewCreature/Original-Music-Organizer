@@ -5,8 +5,9 @@
 #include <allegro5/allegro_font.h>
 #include "nine_patch.h"
 
-#define T3GUI_RESOURCE_TYPE_BITMAP 0
-#define T3GUI_RESOURCE_TYPE_FONT   1
+#define T3GUI_RESOURCE_TYPE_BITMAP       0
+#define T3GUI_RESOURCE_TYPE_FONT         1
+#define T3GUI_RESOURCE_TYPE_DEFAULT_FONT 2
 
 #define T3GUI_MAX_RESOURCES      256
 #define T3GUI_MAX_BITMAPS        256

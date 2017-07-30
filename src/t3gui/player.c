@@ -402,6 +402,16 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
             al_emit_user_event(&player->event_src, &my_event, t3gui_event_destructor);
             break;
         }
+        case ALLEGRO_EVENT_DISPLAY_LOST:
+        {
+            t3gui_unload_resources();
+            break;
+        }
+        case ALLEGRO_EVENT_DISPLAY_FOUND:
+        {
+            t3gui_reload_resources();
+            break;
+        }
 
         case ALLEGRO_EVENT_TIMER:
         {

@@ -6,7 +6,6 @@ static T3GUI_THEME t3gui_default_theme;
 static bool create_default_theme(T3GUI_THEME * theme)
 {
     ALLEGRO_BITMAP * bp;
-    ALLEGRO_FONT * font;
     ALLEGRO_STATE old_state;
     char np[7][7] =
     {
@@ -55,11 +54,6 @@ static bool create_default_theme(T3GUI_THEME * theme)
     {
         return false;
     }
-    font = al_create_builtin_font();
-    if(!font)
-    {
-        return false;
-    }
     for(i = 0; i < T3GUI_ELEMENT_STATES; i++)
     {
         theme->state[i].bitmap[0] = theme->bitmap[0];
@@ -67,7 +61,7 @@ static bool create_default_theme(T3GUI_THEME * theme)
         theme->state[i].color[T3GUI_THEME_COLOR_MG] = t3gui_silver;
         theme->state[i].color[T3GUI_THEME_COLOR_FG] = t3gui_black;
         theme->state[i].color[T3GUI_THEME_COLOR_EG] = t3gui_red;
-        theme->state[i].font = font;
+        t3gui_load_font(&theme->state[i].font, NULL, 0);
         theme->state[i].aux_font = NULL;
     }
     return true;

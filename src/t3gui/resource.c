@@ -68,7 +68,7 @@ bool t3gui_load_font(ALLEGRO_FONT ** fp, const char * fn, int size)
 {
     T3GUI_RESOURCE * rp;
 
-    rp = t3gui_find_resource(fn, size);
+    rp = t3gui_find_resource(fn ? fn : "", size);
     if(rp)
     {
         *fp = rp->data;
@@ -79,12 +79,19 @@ bool t3gui_load_font(ALLEGRO_FONT ** fp, const char * fn, int size)
     rp = t3gui_get_resource();
     if(rp)
     {
-        rp->data = al_load_font(fn, size, 0);
+        if(!fn)
+        {
+            rp->data = al_create_builtin_font();
+        }
+        else
+        {
+            rp->data = al_load_font(fn, size, 0);
+        }
         if(rp->data)
         {
-            strcpy(rp->path, fn);
+            strcpy(rp->path, fn ? fn : "");
             rp->data_i = size;
-            rp->type = T3GUI_RESOURCE_TYPE_FONT;
+            rp->type = fn ? T3GUI_RESOURCE_TYPE_FONT : T3GUI_RESOURCE_TYPE_DEFAULT_FONT;
             t3gui_resources++;
             *fp = rp->data;
             t3gui_font[t3gui_fonts] = fp;
@@ -139,6 +146,7 @@ static void t3gui_unload_resource(T3GUI_RESOURCE * rp)
                 break;
             }
             case T3GUI_RESOURCE_TYPE_FONT:
+            case T3GUI_RESOURCE_TYPE_DEFAULT_FONT:
             {
                 al_destroy_font(rp->data);
                 rp->data = NULL;
@@ -188,6 +196,21 @@ bool t3gui_reload_resource(T3GUI_RESOURCE * rp)
             {
                 ALLEGRO_FONT * fp;
                 fp = al_load_font(rp->path, rp->data_i, 0);
+                if(fp)
+                {
+                    t3gui_update_font(rp->data, fp);
+                    rp->data = fp;
+                }
+                else
+                {
+                    ret = false;
+                }
+                break;
+            }
+            case T3GUI_RESOURCE_TYPE_DEFAULT_FONT:
+            {
+                ALLEGRO_FONT * fp;
+                fp = al_create_builtin_font();
                 if(fp)
                 {
                     t3gui_update_font(rp->data, fp);
