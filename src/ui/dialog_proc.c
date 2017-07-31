@@ -59,7 +59,7 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
         }
         if(val2)
         {
-            sprintf(ui_queue_text, "%3d. %s", index + 1, val2);
+            sprintf(ui_queue_text, "%s%s", index == app->player->queue_pos ? ">" : " ", val2);
         }
         else
         {
