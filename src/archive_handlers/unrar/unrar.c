@@ -130,15 +130,19 @@ static const char * extract_file(const char * fn, int index)
 {
 	char system_command[1024];
 	char subfile[1024];
-	char * cwd = al_get_current_directory();
+	char path_separator;
 
-	al_change_directory(al_path_cstr(t3f_data_path, '/'));
+	#ifdef ALLEGRO_WINDOWS
+		path_separator = '\\';
+	#else
+		path_separator = '/';
+	#endif
+
 	strcpy(subfile, get_file(fn, index));
-	sprintf(system_command, "%sunrar x -inul -y \"%s\" \"%s\"", command_prefix, fn, subfile);
+	sprintf(system_command, "%sunrar x -inul -y \"%s\" \"%s\" \"%s\"", command_prefix, fn, subfile, al_path_cstr(t3f_data_path, path_separator));
 //	printf(">%s\n", system_command);
 	system(system_command);
 	strcpy(returnfn, t3f_get_filename(t3f_data_path, subfile));
-	al_change_directory(cwd);
 	return returnfn;
 }
 
