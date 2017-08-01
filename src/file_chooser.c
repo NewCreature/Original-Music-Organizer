@@ -198,11 +198,11 @@ void omo_file_chooser_logic(void * data)
                             {
                                 omo_add_file_to_queue(new_queue, app->player->queue->entry[i]->file,    app->player->queue->entry[i]->sub_file);
                             }
+                            omo_destroy_queue(app->player->queue);
                         }
-                        omo_destroy_queue(app->player->queue);
+                        add_files_to_queue(app->file_chooser, new_queue, data);
+                        app->player->queue = new_queue;
                     }
-                    add_files_to_queue(app->file_chooser, new_queue, data);
-                    app->player->queue = new_queue;
 					break;
 				}
 				case 2:
