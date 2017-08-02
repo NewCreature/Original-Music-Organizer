@@ -20,7 +20,6 @@ typedef struct
 	int file_chooser_mode;
 	bool file_chooser_done;
 	ALLEGRO_THREAD * file_chooser_thread;
-	char last_music_filename[1024]; // keep track of where we were last browsing for files
 	int state;
 	T3GUI_DIALOG * ui_dialog;
 	T3GUI_ELEMENT * ui_queue_list_box_element;

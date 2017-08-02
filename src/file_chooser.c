@@ -167,6 +167,7 @@ void omo_file_chooser_logic(void * data)
 	{
 		if(al_get_native_file_dialog_count(app->file_chooser))
 		{
+            al_set_config_value(t3f_config, "App Settings", "last_music_filename", al_get_native_file_dialog_path(app->file_chooser, 0));
 			switch(app->file_chooser_mode)
 			{
 				case 0:

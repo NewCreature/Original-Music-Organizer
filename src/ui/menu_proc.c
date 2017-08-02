@@ -25,8 +25,9 @@ static void * file_chooser_thread_proc(ALLEGRO_THREAD * thread, void * arg)
 static bool omo_start_file_chooser(void * data, const char * title, const char * types, int mode)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
+    const char * last_music_filename = al_get_config_value(t3f_config, "App Settings", last_music_filename);
 
-    app->file_chooser = al_create_native_file_dialog(app->last_music_filename, title, types, mode);
+    app->file_chooser = al_create_native_file_dialog(last_music_filename, title, types, mode);
     if(!app->file_chooser)
     {
         return false;
