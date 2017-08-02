@@ -183,6 +183,7 @@ OMO_ARCHIVE_HANDLER * omo_get_libarchive_archive_handler(void)
 	archive_handler.extract_file = extract_file;
 	omo_archive_handler_add_type(&archive_handler, ".zip");
 	omo_archive_handler_add_type(&archive_handler, ".zsn");
+	omo_archive_handler_add_type(&archive_handler, ".vgz");
 //	omo_archive_handler_add_type(&archive_handler, ".rar");
 //	omo_archive_handler_add_type(&archive_handler, ".rsn");
 	return &archive_handler;
