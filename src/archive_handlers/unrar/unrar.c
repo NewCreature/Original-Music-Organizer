@@ -5,7 +5,7 @@
 static OMO_ARCHIVE_HANDLER archive_handler;
 static char cached_rar_file[1024];
 #ifdef ALLEGRO_MACOSX
-	static const char * command_prefix = "/user/local/bin/";
+	static const char * command_prefix = "/usr/local/bin/";
 #else
 	static const char * command_prefix = "";
 #endif
@@ -67,7 +67,8 @@ static const char * get_file(const char * fn, int index)
 	char * line_pointer;
 	int line_count = 0;
 	int skip_lines = 9;
-	int version;
+	int fn_offset;
+	int version, subversion;
 	int i;
 
 	if(strcmp(fn, cached_rar_file))
@@ -91,18 +92,32 @@ static const char * get_file(const char * fn, int index)
 					if(version == '4')
 					{
 						skip_lines = 8;
+						fn_offset = 1;
+					}
+					else if(version == '5')
+					{
+						subversion = line_buffer[8];
+						if(subversion == '0')
+						{
+							fn_offset = 39;
+						}
+						else
+						{
+							fn_offset = 41;
+						}
 					}
 				}
 				if(line_count - skip_lines == index)
 				{
+					strcpy(returnfn, &line_buffer[fn_offset]);
+
+					/* remove leading or trailing characters depending on version */
 					if(version != '4')
 					{
-						strcpy(returnfn, &line_buffer[41]);
 						remove_line_endings(returnfn);
 					}
 					else
 					{
-						strcpy(returnfn, &line_buffer[1]);
 						for(i = 0; i < strlen(returnfn); i++)
 						{
 							if(returnfn[i] == ' ')
