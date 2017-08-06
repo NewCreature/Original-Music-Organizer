@@ -62,7 +62,6 @@ static void * mp3a5_thread_proc(ALLEGRO_THREAD * tp, void * data)
 	al_register_event_source(queue, al_get_audio_stream_event_source(mp3->audio_stream));
     al_set_audio_stream_playing(mp3->audio_stream, true);
     mp3->paused = false;
-    mp3->done = false;
     bool end_of_mp3 = false;
 
 	while(!end_of_mp3)
@@ -127,6 +126,8 @@ bool mp3a5_play_mp3(MP3A5_MP3 * mp, size_t buffer_count, unsigned int samples)
         if(mp->thread)
         {
             al_attach_audio_stream_to_mixer(mp->audio_stream, al_get_default_mixer());
+            mp->paused = false;
+            mp->done = false;
             al_start_thread(mp->thread);
             return true;
         }
