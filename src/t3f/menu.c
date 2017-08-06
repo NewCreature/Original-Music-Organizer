@@ -74,9 +74,10 @@ void t3f_refresh_menus(void)
 
 bool t3f_attach_menu(ALLEGRO_MENU * mp)
 {
-    al_register_event_source(t3f_queue, al_get_default_menu_event_source());
-    al_set_display_menu(t3f_display, mp);
-    return true;
+  t3f_menu_resize = true;
+  al_register_event_source(t3f_queue, al_get_default_menu_event_source());
+  al_set_display_menu(t3f_display, mp);
+  return true;
 }
 
 void t3f_enable_menus(bool enabled)

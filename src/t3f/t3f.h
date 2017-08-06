@@ -80,6 +80,7 @@ typedef struct
 #include "vector.h"
 #include "view.h"
 
+extern bool t3f_menu_resize;
 extern int t3f_virtual_display_width;
 extern int t3f_virtual_display_height;
 extern int t3f_display_offset_x;
