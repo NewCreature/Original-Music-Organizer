@@ -306,7 +306,7 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	int i;
 
 	/* initialize T3F */
-	if(!t3f_initialize(T3F_APP_TITLE, 640, 480, 60.0, app_logic, app_render, T3F_DEFAULT | T3F_RESIZABLE | T3F_USE_OPENGL, app))
+	if(!t3f_initialize(T3F_APP_TITLE, 640, 480, 60.0, app_logic, app_render, T3F_DEFAULT | T3F_RESIZABLE | T3F_USE_OPENGL | T3F_USE_MENU, app))
 	{
 		printf("Error initializing T3F!\n");
 		return false;
