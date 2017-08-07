@@ -285,10 +285,10 @@ static int move_focus(T3GUI_ELEMENT *d, int keycode, bool shift, int *focus_obj)
    /* choose a comparison function */
    switch (keycode) {
       case ALLEGRO_KEY_TAB:   cmp = (shift == false) ? cmp_tab : cmp_shift_tab; break;
-      case ALLEGRO_KEY_RIGHT: cmp = cmp_right; break;
+/*      case ALLEGRO_KEY_RIGHT: cmp = cmp_right; break;
       case ALLEGRO_KEY_LEFT:  cmp = cmp_left;  break;
       case ALLEGRO_KEY_DOWN:  cmp = cmp_down;  break;
-      case ALLEGRO_KEY_UP:    cmp = cmp_up;    break;
+      case ALLEGRO_KEY_UP:    cmp = cmp_up;    break; */
       default:                return D_O_K;
    }
 
