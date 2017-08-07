@@ -1846,6 +1846,10 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
                 }
                 al_draw_text(font, fg, d->x+4, y+2, 0, text);
                 y += al_get_font_line_height(font);
+                if(y > d->y + d->h)
+                {
+                    break;
+                }
             }
             if(d->d3 > 0 && dd.d1 > 0)
             {
