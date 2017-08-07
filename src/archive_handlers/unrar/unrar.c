@@ -1,5 +1,7 @@
 #include "t3f/t3f.h"
-
+#ifdef ALLEGRO_WINDOWS
+	#include <windows.h>
+#endif
 #include "../archive_handler.h"
 
 static OMO_ARCHIVE_HANDLER archive_handler;
@@ -10,6 +12,27 @@ static char cached_rar_file[1024];
 	static const char * command_prefix = "";
 #endif
 
+static int my_system(char * command)
+{
+	int ret;
+
+	#ifdef ALLEGRO_WINDOWS
+		STARTUPINFO si = {0};
+		PROCESS_INFORMATION pi = {0};
+		si.cb = sizeof(si);
+		si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+		si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+		si.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+		si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+		si.wShowWindow = SW_HIDE;
+		ret = CreateProcess(NULL, command, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+		WaitForSingleObject(pi.hProcess, INFINITE);
+	#else
+		ret = system(command);
+	#endif
+
+	return ret;
+}
 
 static int count_files(const char * fn)
 {
@@ -21,7 +44,7 @@ static int count_files(const char * fn)
 	if(strcmp(fn, cached_rar_file))
 	{
 		sprintf(system_command, "%sunrar l \"%s\" > \"%s\"", command_prefix, fn, t3f_get_filename(t3f_data_path, "rarlist.txt"));
-		system(system_command);
+		my_system(system_command);
 		strcpy(cached_rar_file, fn);
 	}
 	fp = al_fopen(t3f_get_filename(t3f_data_path, "rarlist.txt"), "r");
@@ -74,7 +97,7 @@ static const char * get_file(const char * fn, int index)
 	if(strcmp(fn, cached_rar_file))
 	{
 		sprintf(system_command, "%sunrar l \"%s\" > \"%s\"", command_prefix, fn, t3f_get_filename(t3f_data_path, "rarlist.txt"));
-		system(system_command);
+		my_system(system_command);
 		strcpy(cached_rar_file, fn);
 	}
 	fp = al_fopen(t3f_get_filename(t3f_data_path, "rarlist.txt"), "r");
@@ -156,7 +179,7 @@ static const char * extract_file(const char * fn, int index)
 	strcpy(subfile, get_file(fn, index));
 	sprintf(system_command, "%sunrar x -inul -y \"%s\" \"%s\" \"%s\"", command_prefix, fn, subfile, al_path_cstr(t3f_data_path, path_separator));
 //	printf(">%s\n", system_command);
-	system(system_command);
+	my_system(system_command);
 	strcpy(returnfn, t3f_get_filename(t3f_data_path, subfile));
 	return returnfn;
 }
