@@ -81,32 +81,6 @@ void app_logic(void * data)
 			sprintf(app->ui_button_text[3], ">|");
 			sprintf(app->ui_button_text[4], "^");
 			sprintf(app->ui_button_text[5], "+");
-/*			if(t3f_key[ALLEGRO_KEY_UP])
-			{
-				app->ui_queue_list_element->d1--;
-				if(app->ui_queue_list_element->d1 < 0)
-				{
-					app->ui_queue_list_element->d1 = 0;
-				}
-				t3f_key[ALLEGRO_KEY_UP] = 0;
-			}
-			if(t3f_key[ALLEGRO_KEY_DOWN])
-			{
-				app->ui_queue_list_element->d1++;
-				if(app->ui_queue_list_element->d1 >= app->player->queue->entry_count)
-				{
-					app->ui_queue_list_element->d1 = app->player->queue->entry_count - 1;
-				}
-				if(app->ui_queue_list_element->d1 < app->ui_queue_list_element->d2)
-				{
-					app->ui_queue_list_element->d2 = app->ui_queue_list_element->d1;
-				}
-				else if(app->ui_queue_list_element->d1 > app->ui_queue_list_element->d2 + visible_elements)
-				{
-					app->ui_queue_list_element->d2 = app->ui_queue_list_element->d1;
-				}
-				t3f_key[ALLEGRO_KEY_DOWN] = 0;
-			} */
 			if(t3f_key[ALLEGRO_KEY_LEFT])
 			{
 				app->button_pressed = 0;

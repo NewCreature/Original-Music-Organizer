@@ -116,7 +116,7 @@ static ALLEGRO_COLOR get_color(const char * buf)
     return al_map_rgba(ce[0], ce[1], ce[2], ce[3]);
 }
 
-static void t3gui_get_theme_state(ALLEGRO_CONFIG * cp, const char * section, T3GUI_THEME_STATE * sp)
+static void t3gui_get_theme_state(ALLEGRO_CONFIG * cp, const char * section, T3GUI_THEME_STATE * sp, ALLEGRO_PATH * theme_path)
 {
     const char * val;
     const char * val2;
@@ -129,7 +129,8 @@ static void t3gui_get_theme_state(ALLEGRO_CONFIG * cp, const char * section, T3G
         val = al_get_config_value(cp, section, key_buf);
         if(val)
         {
-            t3gui_load_bitmap(&sp->bitmap[j], val);
+            al_set_path_filename(theme_path, val);
+            t3gui_load_bitmap(&sp->bitmap[j], al_path_cstr(theme_path, '/'));
         }
     }
     for(j = 0; j < T3GUI_THEME_MAX_COLORS; j++)
@@ -147,7 +148,8 @@ static void t3gui_get_theme_state(ALLEGRO_CONFIG * cp, const char * section, T3G
         val2 = al_get_config_value(cp, section, "font size");
         if(val2)
         {
-            t3gui_load_font(&sp->font, val, atoi(val2));
+            al_set_path_filename(theme_path, val);
+            t3gui_load_font(&sp->font, strlen(val) > 0 ? al_path_cstr(theme_path, '/') : NULL, atoi(val2));
         }
     }
 }
@@ -158,6 +160,7 @@ T3GUI_THEME * t3gui_load_theme(const char * fn)
     int i;
     char section_buf[64] = {0};
     T3GUI_THEME * tp;
+    ALLEGRO_PATH * theme_path;
 
     cp = al_load_config_file(fn);
     if(cp)
@@ -165,17 +168,22 @@ T3GUI_THEME * t3gui_load_theme(const char * fn)
         tp = t3gui_create_theme();
         if(tp)
         {
-            /* Fill in all states with data from Default section. */
-            for(i = 0; i < T3GUI_ELEMENT_STATES; i++)
+            theme_path = al_create_path(fn);
+            if(theme_path)
             {
-                t3gui_get_theme_state(cp, "Default", &tp->state[i]);
-            }
+                /* Fill in all states with data from Default section. */
+                for(i = 0; i < T3GUI_ELEMENT_STATES; i++)
+                {
+                    t3gui_get_theme_state(cp, "Default", &tp->state[i], theme_path);
+                }
 
-            /* Load state-specific data. */
-            for(i = 0; i < T3GUI_ELEMENT_STATES; i++)
-            {
-                sprintf(section_buf, "State %d", i);
-                t3gui_get_theme_state(cp, section_buf, &tp->state[i]);
+                /* Load state-specific data. */
+                for(i = 0; i < T3GUI_ELEMENT_STATES; i++)
+                {
+                    sprintf(section_buf, "State %d", i);
+                    t3gui_get_theme_state(cp, section_buf, &tp->state[i], theme_path);
+                }
+                al_destroy_path(theme_path);
             }
             return tp;
         }
