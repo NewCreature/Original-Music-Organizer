@@ -317,6 +317,7 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		printf("Error initializing T3GUI!\n");
 		return false;
 	}
+	al_set_mouse_wheel_precision(120);
 
 	al_set_config_value(t3f_config, "T3F", "save_window_pos", "true");
 
