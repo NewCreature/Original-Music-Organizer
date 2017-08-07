@@ -47,6 +47,7 @@ void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 void app_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	int visible_elements;
 
 	switch(app->state)
 	{
@@ -81,14 +82,78 @@ void app_logic(void * data)
 			sprintf(app->ui_button_text[3], ">|");
 			sprintf(app->ui_button_text[4], "^");
 			sprintf(app->ui_button_text[5], "+");
+			visible_elements = app->ui_queue_list_element->h / al_get_font_line_height(app->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font);
+/*			if(t3f_key[ALLEGRO_KEY_UP])
+			{
+				app->ui_queue_list_element->d1--;
+				if(app->ui_queue_list_element->d1 < 0)
+				{
+					app->ui_queue_list_element->d1 = 0;
+				}
+				t3f_key[ALLEGRO_KEY_UP] = 0;
+			}
+			if(t3f_key[ALLEGRO_KEY_DOWN])
+			{
+				app->ui_queue_list_element->d1++;
+				if(app->ui_queue_list_element->d1 >= app->player->queue->entry_count)
+				{
+					app->ui_queue_list_element->d1 = app->player->queue->entry_count - 1;
+				}
+				if(app->ui_queue_list_element->d1 < app->ui_queue_list_element->d2)
+				{
+					app->ui_queue_list_element->d2 = app->ui_queue_list_element->d1;
+				}
+				else if(app->ui_queue_list_element->d1 > app->ui_queue_list_element->d2 + visible_elements)
+				{
+					app->ui_queue_list_element->d2 = app->ui_queue_list_element->d1;
+				}
+				t3f_key[ALLEGRO_KEY_DOWN] = 0;
+			} */
+			if(t3f_key[ALLEGRO_KEY_PGUP])
+			{
+				app->ui_queue_list_element->d1 -= visible_elements;
+				if(app->ui_queue_list_element->d1 < 0)
+				{
+					app->ui_queue_list_element->d1 = 0;
+				}
+				app->ui_queue_list_element->d2 -= visible_elements;
+				if(app->ui_queue_list_element->d2 < 0)
+				{
+					app->ui_queue_list_element->d1 = 0;
+				}
+				t3f_key[ALLEGRO_KEY_PGUP] = 0;
+			}
+			if(t3f_key[ALLEGRO_KEY_PGDN])
+			{
+				app->ui_queue_list_element->d1 += visible_elements;
+				if(app->ui_queue_list_element->d1 >= app->player->queue->entry_count)
+				{
+					app->ui_queue_list_element->d1 = app->player->queue->entry_count - 1;
+				}
+				app->ui_queue_list_element->d2 += visible_elements;
+				if(app->ui_queue_list_element->d2 >= app->player->queue->entry_count)
+				{
+					app->ui_queue_list_element->d2 = app->player->queue->entry_count - 1;
+				}
+				t3f_key[ALLEGRO_KEY_PGDN] = 0;
+			}
 			if(t3f_key[ALLEGRO_KEY_LEFT])
 			{
 				app->button_pressed = 0;
 				t3f_key[ALLEGRO_KEY_LEFT] = 0;
 			}
+			if(t3f_key[ALLEGRO_KEY_ENTER])
+			{
+				if(app->player->queue_pos != app->ui_queue_list_element->d1)
+				{
+					omo_stop_player(app->player);
+					app->player->queue_pos = app->ui_queue_list_element->d1;
+					omo_start_player(app->player);
+				}
+			}
 			if(t3f_key[ALLEGRO_KEY_RIGHT])
 			{
-				app->button_pressed = 2;
+				app->button_pressed = 3;
 				t3f_key[ALLEGRO_KEY_RIGHT] = 0;
 			}
 			switch(app->button_pressed)
