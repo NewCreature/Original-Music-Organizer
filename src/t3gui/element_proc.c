@@ -893,7 +893,7 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
             return D_O_K;
 
       case MSG_KEYREPEAT:
-      case MSG_KEYUP:
+      case MSG_KEYDOWN:
          /* handle movement keys to move slider */
 
          if (vert) {
@@ -1722,11 +1722,14 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
     getfuncptr *func = d->dp;
     const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font;
     int nelem = 0;
+    int visible_elements;
     int y = d->y;
 
     assert(func);
 
     func(-1, &nelem, d->dp3);
+
+    visible_elements = d->h / al_get_font_line_height(d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font);
 
     T3GUI_ELEMENT dd =
     {
@@ -1776,6 +1779,46 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
                 {
                     d->d1--;
                     if (d->d1 < 0) d->d1 = 0;
+                    ret |= D_USED_KEY;
+                }
+                else if(c == ALLEGRO_KEY_PGDN)
+                {
+                    d->d1 += visible_elements;
+    				if(d->d1 >= nelem)
+    				{
+    					d->d1 = nelem - 1;
+    				}
+    				d->d2 += visible_elements - 1;
+    				if(d->d2 >= nelem - visible_elements)
+    				{
+    					d->d2 = nelem - visible_elements - 1;
+    				}
+                    ret |= D_USED_KEY;
+                }
+                else if(c == ALLEGRO_KEY_PGUP)
+                {
+                    d->d1 -= visible_elements;
+    				if(d->d1 < 0)
+    				{
+    					d->d1 = 0;
+    				}
+    				d->d2 -= visible_elements;
+    				if(d->d2 < 0)
+    				{
+    					d->d2 = 0;
+    				}
+                    ret |= D_USED_KEY;
+                }
+                else if(c == ALLEGRO_KEY_HOME)
+                {
+                    d->d1 = 0;
+                    d->d2 = 0;
+                    ret |= D_USED_KEY;
+                }
+                else if(c == ALLEGRO_KEY_END)
+                {
+                    d->d1 = nelem - 1;
+                    d->d2 = nelem - visible_elements - 1;
                     ret |= D_USED_KEY;
                 }
                 if(ret & D_USED_KEY)
