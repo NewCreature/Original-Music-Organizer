@@ -913,7 +913,7 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
             endkey = ALLEGRO_KEY_END;
          }
 
-         if (c == upkey)
+/*         if (c == upkey)
             delta = 1;
          else if (c == downkey)
             delta = -1;
@@ -926,7 +926,7 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
          else if (c == endkey)
             delta = d->d1 - d->d2;
          else
-            delta = 0;
+            delta = 0; */
 
          if (delta) {
             oldpos = slp;
@@ -1755,7 +1755,8 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
             break;
         }
 
-        case MSG_KEYUP:
+        case MSG_KEYDOWN:
+        case MSG_KEYREPEAT:
         {
             if(d->d3 > 0 && dd.d1 > 0 && d->mousex > dd.x)
             {
