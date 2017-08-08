@@ -867,7 +867,7 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 						}
 						dx = atoi(cvalue);
 						dy = atoi(cvalue2);
-						al_set_new_window_position(dx, dy + doy + doy / 2 + 3);
+						al_set_new_window_position(dx, dy + doy ? (doy + doy / 2 + 3) : 0);
 					}
 				}
 			}
@@ -1202,9 +1202,9 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 			t3f_select_view(t3f_current_view);
 			t3f_mouse_scale_x = (float)t3f_virtual_display_width / (float)t3f_display_width;
 			t3f_mouse_scale_y = (float)t3f_virtual_display_height / (float)t3f_display_height;
-			sprintf(val, "%d", t3f_display_width);
+			sprintf(val, "%d", al_get_display_width(t3f_display));
 			al_set_config_value(t3f_config, "T3F", "display_width", val);
-			sprintf(val, "%d", t3f_display_height);
+			sprintf(val, "%d", al_get_display_height(t3f_display));
 			al_set_config_value(t3f_config, "T3F", "display_height", val);
 			break;
 		}
