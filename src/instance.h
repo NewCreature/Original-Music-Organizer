@@ -10,25 +10,19 @@
 #include "queue.h"
 #include "library.h"
 #include "player.h"
+#include "ui/ui.h"
 
 /* structure to hold all of our app-specific data */
 typedef struct
 {
 
+	OMO_UI * ui;
 	ALLEGRO_MENU * menu[OMO_MAX_MENUS];
 	ALLEGRO_FILECHOOSER * file_chooser;
 	int file_chooser_mode;
 	bool file_chooser_done;
 	ALLEGRO_THREAD * file_chooser_thread;
 	int state;
-	T3GUI_DIALOG * ui_dialog;
-	T3GUI_ELEMENT * ui_queue_list_box_element;
-	T3GUI_ELEMENT * ui_queue_list_element;
-	T3GUI_ELEMENT * ui_button_element[6];
-	T3GUI_THEME * ui_box_theme;
-	T3GUI_THEME * ui_list_box_theme;
-	T3GUI_THEME * ui_button_theme;
-	char ui_button_text[6][8];
 	int button_pressed;
 
 	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;

@@ -7,7 +7,7 @@
 #include "file_chooser.h"
 #include "ui/menu_init.h"
 #include "ui/menu_proc.h"
-#include "ui/dialog_init.h"
+#include "ui/ui.h"
 
 #include "archive_handlers/libarchive/libarchive.h"
 #include "archive_handlers/unrar/unrar.h"
@@ -28,12 +28,14 @@
 
 void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 {
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
 	switch(event->type)
 	{
 		case ALLEGRO_EVENT_DISPLAY_RESIZE:
 		{
 			t3f_event_handler(event);
-			omo_resize_dialogs(data);
+			omo_resize_ui(app->ui, al_get_display_width(t3f_display), al_get_display_height(t3f_display));
 			break;
 		}
 		default:
@@ -54,33 +56,33 @@ void app_logic(void * data)
 		{
 			omo_file_chooser_logic(data);
 			t3gui_logic();
-			if(app->ui_queue_list_element->id1 >= 0)
+			if(app->ui->ui_queue_list_element->id1 >= 0)
 			{
 				if(app->player->state == OMO_PLAYER_STATE_PLAYING)
 				{
-					app->player->queue_pos = app->ui_queue_list_element->id1 - 1;
+					app->player->queue_pos = app->ui->ui_queue_list_element->id1 - 1;
 					omo_play_next_song(app->player);
 				}
 				else
 				{
-					app->player->queue_pos = app->ui_queue_list_element->id1;
+					app->player->queue_pos = app->ui->ui_queue_list_element->id1;
 					omo_start_player(app->player);
 				}
-				app->ui_queue_list_element->id1 = -1;
+				app->ui->ui_queue_list_element->id1 = -1;
 			}
-			sprintf(app->ui_button_text[0], "|<");
+			sprintf(app->ui->ui_button_text[0], "|<");
 			if(app->player->state == OMO_PLAYER_STATE_PLAYING)
 			{
-				sprintf(app->ui_button_text[1], "||");
+				sprintf(app->ui->ui_button_text[1], "||");
 			}
 			else
 			{
-				sprintf(app->ui_button_text[1], ">");
+				sprintf(app->ui->ui_button_text[1], ">");
 			}
-			sprintf(app->ui_button_text[2], "[]");
-			sprintf(app->ui_button_text[3], ">|");
-			sprintf(app->ui_button_text[4], "^");
-			sprintf(app->ui_button_text[5], "+");
+			sprintf(app->ui->ui_button_text[2], "[]");
+			sprintf(app->ui->ui_button_text[3], ">|");
+			sprintf(app->ui->ui_button_text[4], "^");
+			sprintf(app->ui->ui_button_text[5], "+");
 			if(t3f_key[ALLEGRO_KEY_LEFT])
 			{
 				app->button_pressed = 0;
@@ -88,10 +90,10 @@ void app_logic(void * data)
 			}
 			if(t3f_key[ALLEGRO_KEY_ENTER])
 			{
-				if(app->player->queue_pos != app->ui_queue_list_element->d1)
+				if(app->player->queue_pos != app->ui->ui_queue_list_element->d1)
 				{
 					omo_stop_player(app->player);
-					app->player->queue_pos = app->ui_queue_list_element->d1;
+					app->player->queue_pos = app->ui->ui_queue_list_element->d1;
 					omo_start_player(app->player);
 				}
 			}
@@ -113,7 +115,7 @@ void app_logic(void * data)
 					{
 						case OMO_PLAYER_STATE_STOPPED:
 						{
-							app->player->queue_pos = app->ui_queue_list_element->d1;
+							app->player->queue_pos = app->ui->ui_queue_list_element->d1;
 							omo_start_player(app->player);
 							break;
 						}
@@ -404,12 +406,13 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	}
 	t3f_attach_menu(app->menu[OMO_MENU_MAIN]);
 
-	if(!omo_setup_dialogs(app))
+	app->ui = omo_create_ui(0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), app);
+	if(!app->ui)
 	{
 		printf("Error settings up dialogs!\n");
 		return false;
 	}
-	t3gui_show_dialog(app->ui_dialog, t3f_queue, 0, app);
+	t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, 0, app);
 
 	t3f_srand(&app->rng_state, time(0));
 	app->state = 0;
