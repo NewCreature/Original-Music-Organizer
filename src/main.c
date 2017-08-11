@@ -98,24 +98,7 @@ void app_logic(void * data)
 			sprintf(app->ui->ui_button_text[5], "+");
 			if(t3f_key[ALLEGRO_KEY_T])
 			{
-				al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_OPENGL);
-				app->ui->tags_display = al_create_display(320, 240);
-				if(app->ui->tags_display)
-				{
-					al_register_event_source(t3f_queue, al_get_display_event_source(app->ui->tags_display));
-					al_set_target_bitmap(al_get_backbuffer(app->ui->tags_display));
-					app->ui->tags_box_theme = t3gui_load_theme("data/themes/basic/box_theme.ini");
-				    if(app->ui->tags_box_theme)
-				    {
-						app->ui->tags_dialog = t3gui_create_dialog();
-						if(app->ui->tags_dialog)
-						{
-							t3gui_dialog_add_element(app->ui->tags_dialog, app->ui->tags_box_theme, t3gui_box_proc, 0, 0, 320, 240, 0, 0, 0, 0, NULL, NULL, NULL);
-							t3gui_show_dialog(app->ui->tags_dialog, t3f_queue, T3GUI_PLAYER_CLEAR, app);
-//							al_set_target_bitmap(al_get_backbuffer(t3f_display));
-						}
-				    }
-				}
+				omo_open_tags_dialog(app->ui, app);
 				t3f_key[ALLEGRO_KEY_T] = 0;
 			}
 			if(t3f_key[ALLEGRO_KEY_LEFT])

@@ -23,6 +23,8 @@ typedef struct
 	T3GUI_THEME * ui_list_box_theme;
 	T3GUI_THEME * ui_button_theme;
     T3GUI_THEME * tags_box_theme;
+    T3GUI_THEME * tags_list_box_theme;
+    T3GUI_THEME * tags_button_theme;
 	char ui_button_text[6][8];
 
 } OMO_UI;
@@ -30,5 +32,7 @@ typedef struct
 OMO_UI * omo_create_ui(int mode, int width, int height, void * data);
 void omo_destroy_ui(OMO_UI * uip);
 void omo_resize_ui(OMO_UI * uip, int width, int height);
+
+bool omo_open_tags_dialog(OMO_UI * uip, void * data);
 
 #endif
