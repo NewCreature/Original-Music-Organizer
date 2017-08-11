@@ -14,6 +14,7 @@ typedef struct
     int mode;
 
     /* tags dialog */
+    ALLEGRO_DISPLAY * tags_display;
     T3GUI_DIALOG * tags_dialog;
     char tags_text[OMO_UI_MAX_TAGS][OMO_UI_MAX_TAG_LENGTH];
 
@@ -21,6 +22,7 @@ typedef struct
     T3GUI_THEME * ui_box_theme;
 	T3GUI_THEME * ui_list_box_theme;
 	T3GUI_THEME * ui_button_theme;
+    T3GUI_THEME * tags_box_theme;
 	char ui_button_text[6][8];
 
 } OMO_UI;
