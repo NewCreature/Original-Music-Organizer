@@ -23,6 +23,7 @@ typedef struct T3GUI_PLAYER
     ALLEGRO_EVENT_QUEUE * input;
     ALLEGRO_EVENT_SOURCE event_src;
     ALLEGRO_THREAD * thread;
+    ALLEGRO_DISPLAY * display;
     bool user_queue;
 //    void (*event_proc)(ALLEGRO_EVENT * event, T3GUI_ELEMENT * ep, void * data);
     void * user_data;

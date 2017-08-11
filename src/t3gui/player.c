@@ -1,4 +1,5 @@
 #include <allegro5/allegro5.h>
+#include "../t3f/t3f.h"
 #include "defines.h"
 #include "unicode.h"
 #include "dialog.h"
@@ -988,6 +989,7 @@ bool t3gui_start_dialog(T3GUI_PLAYER * player)
      player->cursor_timer = al_create_timer(0.25);
      al_register_event_source(player->input, al_get_timer_event_source(player->cursor_timer));
      al_start_timer(player->cursor_timer);
+     player->display = al_get_current_display();
 
      player->running = true;
      player->no_close_callback = false;
@@ -1103,6 +1105,8 @@ void t3gui_process_dialog(T3GUI_PLAYER * player)
 
 bool t3gui_draw_dialog(T3GUI_PLAYER *player)
 {
+    ALLEGRO_STATE old_state;
+    ALLEGRO_TRANSFORM identity;
     int n;
    if (player->threaded && !player->thread) return false;
    if (player->draw_veto) return false;
@@ -1112,14 +1116,24 @@ bool t3gui_draw_dialog(T3GUI_PLAYER *player)
 
 
    int clip_x, clip_y, clip_w, clip_h;
-   al_get_clipping_rectangle(&clip_x, &clip_y, &clip_w, &clip_h);
 
    //printf("Post redraw message\n");
    player->redraw = false;
+   al_store_state(&old_state, ALLEGRO_STATE_TARGET_BITMAP | ALLEGRO_STATE_TRANSFORM);
+   al_set_target_bitmap(al_get_backbuffer(t3f_display));
+   al_set_target_bitmap(al_get_backbuffer(player->display));
+   al_get_clipping_rectangle(&clip_x, &clip_y, &clip_w, &clip_h);
+   al_identity_transform(&identity);
+   al_use_transform(&identity);
+   if(player->flags & T3GUI_PLAYER_CLEAR)
+   {
+       al_clear_to_color(al_map_rgb(0, 0, rand() % 256));
+   }
    player->res |= t3gui_dialog_message(player->dialog, MSG_DRAW, 0, &player->obj);
+   al_set_clipping_rectangle(clip_x, clip_y, clip_w, clip_h);
+   al_restore_state(&old_state);
    player->res &= ~D_REDRAW_ANY;
 
-   al_set_clipping_rectangle(clip_x, clip_y, clip_w, clip_h);
 
    return true;
 }

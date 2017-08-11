@@ -11,6 +11,7 @@
 #define T3GUI_ELEMENT_STATE_DISABLED     3
 
 #define T3GUI_PLAYER_NO_ESCAPE           1
+#define T3GUI_PLAYER_CLEAR               2
 
 #define T3GUI_DIALOG_VERSION          0
 #define T3GUI_DIALOG_SUBVERSION       9

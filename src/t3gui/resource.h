@@ -20,6 +20,7 @@ typedef struct
     char path[1024];
     void * data;
     int data_i;
+    ALLEGRO_DISPLAY * display;
 
 } T3GUI_RESOURCE;
 

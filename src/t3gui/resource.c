@@ -42,7 +42,7 @@ static T3GUI_RESOURCE * t3gui_find_resource(const char * fn, int data_i)
     /* see if we have already loaded this resource */
     for(i = 0; i < t3gui_resources; i++)
     {
-        if(!strcmp(fn, t3gui_resource[i]->path) && t3gui_resource[i]->data_i == data_i)
+        if(!strcmp(fn, t3gui_resource[i]->path) && t3gui_resource[i]->data_i == data_i && t3gui_resource[i]->display == al_get_current_display())
         {
             return t3gui_resource[i];
         }
@@ -92,6 +92,7 @@ bool t3gui_load_font(ALLEGRO_FONT ** fp, const char * fn, int size)
             strcpy(rp->path, fn ? fn : "");
             rp->data_i = size;
             rp->type = fn ? T3GUI_RESOURCE_TYPE_FONT : T3GUI_RESOURCE_TYPE_DEFAULT_FONT;
+            rp->display = al_get_current_display();
             t3gui_resources++;
             *fp = rp->data;
             t3gui_font[t3gui_fonts] = fp;
@@ -123,6 +124,7 @@ bool t3gui_load_bitmap(NINE_PATCH_BITMAP ** bp, const char * fn)
             strcpy(rp->path, fn);
             rp->data_i = 0;
             rp->type = T3GUI_RESOURCE_TYPE_BITMAP;
+            rp->display = al_get_current_display();
             t3gui_resources++;
             *bp = rp->data;
             t3gui_bitmap[t3gui_bitmaps] = bp;

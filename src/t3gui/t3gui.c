@@ -329,18 +329,12 @@ void t3gui_logic(void)
 
 void t3gui_render(void)
 {
-    ALLEGRO_STATE old_state;
-    ALLEGRO_TRANSFORM identity;
     int i;
 
-    al_store_state(&old_state, ALLEGRO_STATE_TRANSFORM);
-    al_identity_transform(&identity);
-    al_use_transform(&identity);
     for(i = 0; i < t3gui_dialog_players; i++)
     {
         t3gui_draw_dialog(t3gui_dialog_player[i]);
     }
-    al_restore_state(&old_state);
 }
 
 int t3gui_get_active_dialogs(void)
