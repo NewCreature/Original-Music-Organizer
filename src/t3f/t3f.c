@@ -1170,7 +1170,10 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 		/* user pressed close button */
 		case ALLEGRO_EVENT_DISPLAY_CLOSE:
 		{
-			t3f_exit();
+			if(event->display.source == t3f_display)
+			{
+				t3f_exit();
+			}
 			break;
 		}
 
