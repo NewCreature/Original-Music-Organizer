@@ -32,6 +32,11 @@ static int codec_get_track_count(const char * fn)
 	return 1;
 }
 
+static const char * codec_get_tag(const char * name)
+{
+	return mp3a5_get_tag(codec_mp3, name);
+}
+
 static bool codec_play(void)
 {
 	if(mp3a5_play_mp3(codec_mp3, 4, 1024))
@@ -81,6 +86,7 @@ OMO_CODEC_HANDLER * omo_codec_mp3a5_get_codec_handler(void)
 	codec_handler.exit = codec_exit;
 	codec_handler.load_file = codec_load_file;
 	codec_handler.get_track_count = codec_get_track_count;
+	codec_handler.get_tag = codec_get_tag;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;
 	codec_handler.resume = codec_resume;

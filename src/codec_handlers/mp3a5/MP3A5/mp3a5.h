@@ -14,6 +14,8 @@ typedef struct
 
     ALLEGRO_AUDIO_STREAM * audio_stream;
     mpg123_handle * mp3;
+    mpg123_id3v1 * id3_v1;
+    mpg123_id3v2 * id3_v2;
     ALLEGRO_THREAD * thread;
     int buffer_size;
     bool paused;
@@ -30,6 +32,7 @@ bool mp3a5_play_mp3(MP3A5_MP3 * mp, size_t buffer_count, unsigned int samples);
 void mp3a5_stop_mp3(MP3A5_MP3 * mp);
 void mp3a5_pause_mp3(MP3A5_MP3 * mp);
 void mp3a5_resume_mp3(MP3A5_MP3 * mp);
+const char * mp3a5_get_tag(MP3A5_MP3 * mp, const char * name);
 
 #ifdef __cplusplus
 }

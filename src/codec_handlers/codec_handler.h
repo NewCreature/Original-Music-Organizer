@@ -12,11 +12,16 @@ typedef struct
     char type[OMO_CODEC_HANDLER_MAX_TYPES][OMO_CODEC_HANDLER_MAX_TYPE_SIZE];
     int types;
 
-    /* playback functions */
+    /* init/exit routines */
     bool (*initialize)(void);
     void (*exit)(void);
+
+    /* file operations */
     bool (*load_file)(const char * fn, const char * subfn);
     int (*get_track_count)(const char * fn);
+    const char * (*get_tag)(const char * name);
+
+    /* playback functions */
     bool (*play)(void);
     bool (*pause)(void);
     bool (*resume)(void);
