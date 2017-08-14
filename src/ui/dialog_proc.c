@@ -63,9 +63,13 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
         }
         if(title)
         {
-			if(artist)
+			if(artist && album)
 			{
-            	sprintf(ui_queue_text, "%s%s - %s", index == app->player->queue_pos ? ">" : " ", artist, title);
+            	sprintf(ui_queue_text, "%s%s - %s (%s)", index == app->player->queue_pos ? ">" : " ", artist, title, album);
+			}
+			else if(artist)
+			{
+				sprintf(ui_queue_text, "%s%s - %s", index == app->player->queue_pos ? ">" : " ", artist, title);
 			}
 			else if(album)
 			{
