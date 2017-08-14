@@ -35,10 +35,12 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
     APP_INSTANCE * app = (APP_INSTANCE *)data;
     char section[1024] = {0};
     char display_fn[256] = {0};
+	char prefix[16] = {0};
     const char * val = NULL;
 	const char * artist = NULL;
 	const char * album = NULL;
 	const char * title = NULL;
+	const char * track = NULL;
 
     if(index < 0)
     {
@@ -59,31 +61,38 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
 				artist = al_get_config_value(app->library->entry_database, val, "Artist");
 				album = al_get_config_value(app->library->entry_database, val, "Album");
                 title = al_get_config_value(app->library->entry_database, val, "Title");
+				track = al_get_config_value(app->library->entry_database, val, "Track");
             }
         }
+		sprintf(prefix, "%s", index == app->player->queue_pos ? ">" : " ");
+		if(track)
+		{
+			strcat(prefix, track);
+			strcat(prefix, ". ");
+		}
         if(title)
         {
 			if(artist && album)
 			{
-            	sprintf(ui_queue_text, "%s%s - %s (%s)", index == app->player->queue_pos ? ">" : " ", artist, title, album);
+            	sprintf(ui_queue_text, "%s%s - %s (%s)", prefix, artist, title, album);
 			}
 			else if(artist)
 			{
-				sprintf(ui_queue_text, "%s%s - %s", index == app->player->queue_pos ? ">" : " ", artist, title);
+				sprintf(ui_queue_text, "%s%s - %s", prefix, artist, title);
 			}
 			else if(album)
 			{
-				sprintf(ui_queue_text, "%s%s - %s", index == app->player->queue_pos ? ">" : " ", album, title);
+				sprintf(ui_queue_text, "%s%s - %s", prefix, album, title);
 			}
 			else
 			{
-				sprintf(ui_queue_text, "%s%s", index == app->player->queue_pos ? ">" : " ", title);
+				sprintf(ui_queue_text, "%s%s", prefix, title);
 			}
         }
         else
         {
             get_path_filename(app->player->queue->entry[index]->file, display_fn);
-            sprintf(ui_queue_text, "%s%s%s%s", index == app->player->queue_pos ? ">" : " ", display_fn, app->player->queue->entry[index]->sub_file ? "/" : "", app->player->queue->entry[index]->sub_file ? app->player->queue->entry[index]->sub_file : "");
+            sprintf(ui_queue_text, "%s%s%s%s", prefix, display_fn, app->player->queue->entry[index]->sub_file ? "/" : "", app->player->queue->entry[index]->sub_file ? app->player->queue->entry[index]->sub_file : "");
         }
        return ui_queue_text;
    }
