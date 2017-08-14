@@ -1128,7 +1128,7 @@ static int draw_textcursor(T3GUI_ELEMENT *d, bool draw, int *margin, int cursor_
         r_margin = *margin;
     }
 
-    char *buf = malloc(strlen(text));
+    char *buf = malloc(strlen(text) + 1);
     char lbuf[16] = {0};
     while (true)
     {
@@ -1284,7 +1284,7 @@ static int draw_textbox(T3GUI_ELEMENT *d, bool draw, int *margin)
         r_margin = *margin;
     }
 
-    char *buf = malloc(strlen(text));
+    char *buf = malloc(strlen(text) + 1);
     while (true)
     {
         int x0 = d->x+4;
