@@ -3,7 +3,7 @@
 #include "library.h"
 #include "md5.h"
 
-OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_fn, int total_files)
+OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_fn)
 {
     OMO_LIBRARY * lp = NULL;
 
@@ -11,40 +11,34 @@ OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_
     if(lp)
     {
         memset(lp, 0, sizeof(OMO_LIBRARY));
-        lp->entry = malloc(sizeof(OMO_LIBRARY_ENTRY *) * total_files);
-        if(lp->entry)
+        lp->file_database_fn = malloc(strlen(file_db_fn) + 1);
+        if(!lp->file_database_fn)
         {
-            lp->entry_size = total_files;
-            lp->entry_count = 0;
-            lp->file_database_fn = malloc(strlen(file_db_fn) + 1);
-            if(!lp->file_database_fn)
-            {
-                goto fail;
-            }
-            strcpy(lp->file_database_fn, file_db_fn);
-            lp->file_database = al_load_config_file(file_db_fn);
+            goto fail;
+        }
+        strcpy(lp->file_database_fn, file_db_fn);
+        lp->file_database = al_load_config_file(file_db_fn);
+        if(!lp->file_database)
+        {
+            lp->file_database = al_create_config();
             if(!lp->file_database)
             {
-                lp->file_database = al_create_config();
-                if(!lp->file_database)
-                {
-                    goto fail;
-                }
-            }
-            lp->entry_database_fn = malloc(strlen(entry_db_fn) + 1);
-            if(!lp->entry_database_fn)
-            {
                 goto fail;
             }
-            strcpy(lp->entry_database_fn, entry_db_fn);
-            lp->entry_database = al_load_config_file(entry_db_fn);
+        }
+        lp->entry_database_fn = malloc(strlen(entry_db_fn) + 1);
+        if(!lp->entry_database_fn)
+        {
+            goto fail;
+        }
+        strcpy(lp->entry_database_fn, entry_db_fn);
+        lp->entry_database = al_load_config_file(entry_db_fn);
+        if(!lp->entry_database)
+        {
+            lp->entry_database = al_create_config();
             if(!lp->entry_database)
             {
-                lp->entry_database = al_create_config();
-                if(!lp->entry_database)
-                {
-                    goto fail;
-                }
+                goto fail;
             }
         }
     }
@@ -54,30 +48,38 @@ OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_
     {
         if(lp)
         {
-            if(lp->entry)
+            if(lp->file_database_fn)
             {
-                if(lp->file_database_fn)
-                {
-                    free(lp->file_database_fn);
-                }
-                if(lp->file_database)
-                {
-                    al_destroy_config(lp->file_database);
-                }
-                if(lp->entry_database_fn)
-                {
-                    free(lp->entry_database_fn);
-                }
-                if(lp->entry_database)
-                {
-                    al_destroy_config(lp->entry_database);
-                }
-                free(lp->entry);
+                free(lp->file_database_fn);
+            }
+            if(lp->file_database)
+            {
+                al_destroy_config(lp->file_database);
+            }
+            if(lp->entry_database_fn)
+            {
+                free(lp->entry_database_fn);
+            }
+            if(lp->entry_database)
+            {
+                al_destroy_config(lp->entry_database);
             }
             free(lp);
         }
     }
     return NULL;
+}
+
+bool omo_allocate_library(OMO_LIBRARY * lp, int total_files)
+{
+    lp->entry = malloc(sizeof(OMO_LIBRARY_ENTRY *) * total_files);
+    if(lp->entry)
+    {
+        lp->entry_size = total_files;
+        lp->entry_count = 0;
+        return true;
+    }
+    return false;
 }
 
 void omo_destroy_library(OMO_LIBRARY * lp)

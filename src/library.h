@@ -25,7 +25,8 @@ typedef struct
 
 } OMO_LIBRARY;
 
-OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_fn, int total_files);
+OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_fn);
+bool omo_allocate_library(OMO_LIBRARY * lp, int total_files);
 void omo_destroy_library(OMO_LIBRARY * lp);
 bool omo_save_library(OMO_LIBRARY * lp);
 bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subfn);

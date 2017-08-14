@@ -90,7 +90,6 @@ void omo_resize_ui(OMO_UI * uip, int width, int height)
 
 bool omo_open_tags_dialog(OMO_UI * uip, void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
     char * tag_types[7] = {"Album Artist", "Artist", "Album", "Track", "Disc", "Title", "Comment"};
     int y = 8;
     int i;
@@ -127,7 +126,7 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
                 t3gui_dialog_add_element(uip->tags_dialog, uip->tags_list_box_theme, t3gui_edit_proc, 8, y, 320 - 16, al_get_font_line_height(uip->tags_box_theme->state[0].font) + 4, 0, 0, 256, 0, uip->tags_text[i], NULL, NULL);
                 y += al_get_font_line_height(uip->tags_box_theme->state[0].font) * 2 + 2;
             }
-            t3gui_show_dialog(app->ui->tags_dialog, t3f_queue, T3GUI_PLAYER_CLEAR, app);
+            t3gui_show_dialog(uip->tags_dialog, t3f_queue, T3GUI_PLAYER_CLEAR, data);
             return true;
         }
     }
