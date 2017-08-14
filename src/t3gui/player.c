@@ -367,7 +367,7 @@ static void dialog_thread_internal_event_handler(T3GUI_PLAYER * player, ALLEGRO_
 static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * event)
 {
     ALLEGRO_EVENT my_event;
-    my_event.user.data4 = (unsigned long)player;
+    my_event.user.data4 = (intptr_t)player;
     switch (event->type)
     {
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
@@ -779,7 +779,7 @@ static void update_dialog(T3GUI_PLAYER * player)
 {
     ALLEGRO_EVENT my_event;
     int n;
-    my_event.user.data4 = (unsigned long)player;
+    my_event.user.data4 = (intptr_t)player;
 
     /* Check for objects that need to be redrawn */
     for(n = 0; player->dialog[n].proc; n++)
@@ -831,7 +831,7 @@ static void *dialog_thread_func(ALLEGRO_THREAD *thread, void *arg)
     while(player->running)
     {
         ALLEGRO_EVENT my_event;
-        my_event.user.data4 = (unsigned long)player;
+        my_event.user.data4 = (intptr_t)player;
         if(player->redraw)
         {
             my_event.user.type = T3GUI_EVENT_REDRAW;
@@ -946,6 +946,7 @@ T3GUI_PLAYER *t3gui_init_dialog(T3GUI_ELEMENT *dialog, int focus_obj, int flags,
         ALLEGRO_COLOR grey = t3gui_silver;
 //      dialog[c].mg = grey;
     }
+    player->paused = false;
 
     return player;
 }
@@ -990,6 +991,8 @@ bool t3gui_start_dialog(T3GUI_PLAYER * player)
      al_register_event_source(player->input, al_get_timer_event_source(player->cursor_timer));
      al_start_timer(player->cursor_timer);
      player->display = al_get_current_display();
+
+     al_register_event_source(player->input, &dialog_controller);
 
      player->running = true;
      player->no_close_callback = false;
@@ -1045,7 +1048,7 @@ bool t3gui_stop_dialog_thread(T3GUI_PLAYER *player)
     t3gui_stop_dialog(player);
     al_set_thread_should_stop(player->thread);
     ALLEGRO_EVENT event;
-    event.user.data4 = (unsigned long)player;
+    event.user.data4 = (intptr_t)player;
     event.user.type = EGGC_STOP;
     al_emit_user_event(&dialog_controller, &event, NULL);
     al_join_thread(player->thread, NULL);
@@ -1065,9 +1068,10 @@ bool t3gui_pause_dialog(T3GUI_PLAYER *player)
 //   assert(player->thread);
 
    ALLEGRO_EVENT event;
-   event.user.data4 = (unsigned long)player;
+   event.user.data4 = (intptr_t)player;
    event.user.type = EGGC_PAUSE;
    al_emit_user_event(&dialog_controller, &event, NULL);
+   t3gui_process_dialog(player);
 
    return true;
 }
@@ -1081,7 +1085,7 @@ bool t3gui_resume_dialog(T3GUI_PLAYER *player)
 //   assert(player->thread);
 
    ALLEGRO_EVENT event;
-   event.user.data4 = (unsigned long)player;
+   event.user.data4 = (intptr_t)player;
    event.user.type = EGGC_RESUME;
    al_emit_user_event(&dialog_controller, &event, NULL);
 

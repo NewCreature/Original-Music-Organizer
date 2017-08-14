@@ -306,7 +306,7 @@ bool t3gui_close_dialog_by_element(T3GUI_ELEMENT * ep)
             }
             else
             {
-                t3gui_resume_dialog(t3gui_dialog_player[t3gui_dialog_players]);
+                t3gui_resume_dialog(t3gui_dialog_player[t3gui_dialog_players - 1]);
             }
             return true;
         }
