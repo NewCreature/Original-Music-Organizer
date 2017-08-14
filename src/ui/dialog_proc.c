@@ -36,7 +36,9 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
     char section[1024] = {0};
     char display_fn[256] = {0};
     const char * val = NULL;
-    const char * val2 = NULL;
+	const char * artist = NULL;
+	const char * album = NULL;
+	const char * title = NULL;
 
     if(index < 0)
     {
@@ -54,12 +56,25 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
             val = al_get_config_value(app->library->file_database, section, "id");
             if(val)
             {
-                val2 = al_get_config_value(app->library->entry_database, val, "title");
+				artist = al_get_config_value(app->library->entry_database, val, "Artist");
+				album = al_get_config_value(app->library->entry_database, val, "Album");
+                title = al_get_config_value(app->library->entry_database, val, "Title");
             }
         }
-        if(val2)
+        if(title)
         {
-            sprintf(ui_queue_text, "%s%s", index == app->player->queue_pos ? ">" : " ", val2);
+			if(artist)
+			{
+            	sprintf(ui_queue_text, "%s%s - %s", index == app->player->queue_pos ? ">" : " ", artist, title);
+			}
+			else if(album)
+			{
+				sprintf(ui_queue_text, "%s%s - %s", index == app->player->queue_pos ? ">" : " ", album, title);
+			}
+			else
+			{
+				sprintf(ui_queue_text, "%s%s", index == app->player->queue_pos ? ">" : " ", title);
+			}
         }
         else
         {
