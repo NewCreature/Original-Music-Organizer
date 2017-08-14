@@ -124,7 +124,7 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
             {
                 t3gui_dialog_add_element(uip->tags_dialog, uip->tags_box_theme, t3gui_text_proc, 8, y, 320 - 16, al_get_font_line_height(uip->tags_box_theme->state[0].font), 0, 0, 0, 0, tag_types[i], NULL, NULL);
                 y += al_get_font_line_height(uip->tags_box_theme->state[0].font) + 2;
-                t3gui_dialog_add_element(uip->tags_dialog, uip->tags_list_box_theme, t3gui_editbox_proc, 8, y, 320 - 16, al_get_font_line_height(uip->tags_box_theme->state[0].font) + 4, 0, 0, 256, 0, uip->tags_text[i], NULL, NULL);
+                t3gui_dialog_add_element(uip->tags_dialog, uip->tags_list_box_theme, t3gui_edit_proc, 8, y, 320 - 16, al_get_font_line_height(uip->tags_box_theme->state[0].font) + 4, 0, 0, 256, 0, uip->tags_text[i], NULL, NULL);
                 y += al_get_font_line_height(uip->tags_box_theme->state[0].font) * 2 + 2;
             }
             t3gui_show_dialog(app->ui->tags_dialog, t3f_queue, T3GUI_PLAYER_CLEAR, app);
