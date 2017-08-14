@@ -2,6 +2,8 @@
 #include "t3f/file_utils.h"
 
 #include "instance.h"
+#include "defines.h"
+#include "constants.h"
 #include "library.h"
 #include "player.h"
 #include "file_chooser.h"
@@ -29,6 +31,7 @@
 void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	int i;
 
 	switch(event->type)
 	{
@@ -36,6 +39,13 @@ void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 		{
 			if(event->display.source == app->ui->tags_display)
 			{
+				for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+				{
+					if(strlen(app->ui->tags_text[i]) > 0)
+					{
+						al_set_config_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i], app->ui->tags_text[i]);
+					}
+				}
 				t3gui_close_dialog(app->ui->tags_dialog);
 				t3gui_destroy_dialog(app->ui->tags_dialog);
 				t3gui_destroy_theme(app->ui->tags_box_theme);
@@ -62,6 +72,9 @@ void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 void app_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	char fullfn[1024];
+	const char * val2;
+	int i, j;
 
 	switch(app->state)
 	{
@@ -100,7 +113,30 @@ void app_logic(void * data)
 				sprintf(app->ui->ui_button_text[5], "+");
 				if(t3f_key[ALLEGRO_KEY_T] && app->library && app->player->queue)
 				{
-					omo_open_tags_dialog(app->ui, app);
+					j = app->ui->ui_queue_list_element->d1;
+					strcpy(fullfn, app->player->queue->entry[j]->file);
+					if(app->player->queue->entry[j]->sub_file)
+					{
+						strcat(fullfn, "/");
+						strcat(fullfn, app->player->queue->entry[j]->sub_file);
+					}
+					app->ui->tags_entry = al_get_config_value(app->library->file_database, fullfn, "id");
+					if(app->ui->tags_entry)
+					{
+						for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+						{
+							val2 = al_get_config_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i]);
+							if(val2)
+							{
+								strcpy(app->ui->tags_text[i], val2);
+							}
+							else
+							{
+								strcpy(app->ui->tags_text[i], "");
+							}
+						}
+						omo_open_tags_dialog(app->ui, app);
+					}
 					t3f_key[ALLEGRO_KEY_T] = 0;
 				}
 				if(t3f_key[ALLEGRO_KEY_LEFT])
