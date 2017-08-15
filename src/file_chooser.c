@@ -117,10 +117,10 @@ void omo_file_chooser_logic(void * data)
                     omo_reset_file_count();
                     if(t3f_scan_files(al_get_native_file_dialog_path(app->file_chooser, 0), omo_count_file, false, data))
                     {
-                        new_queue = omo_create_queue(app->player->queue->entry_count + omo_get_file_count());
+                        new_queue = omo_create_queue((app->player->queue ? app->player->queue->entry_count : 0) + omo_get_file_count());
                         if(new_queue)
                         {
-                            old_queue_size = app->player->queue->entry_count;
+                            old_queue_size = app->player->queue ? app->player->queue->entry_count : 0;
                             old_queue = app->player->queue;
                             app->player->queue = new_queue;
                             if(old_queue)
