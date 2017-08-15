@@ -131,10 +131,6 @@ void omo_destroy_library(OMO_LIBRARY * lp)
             {
                 free(lp->entry[i]->filename);
             }
-            if(lp->entry[i]->id)
-            {
-                free(lp->entry[i]->id);
-            }
             free(lp->entry[i]);
         }
     }
