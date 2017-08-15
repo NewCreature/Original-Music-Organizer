@@ -4,6 +4,7 @@
 #include "main.h"
 #include "events.h"
 #include "ui/menu_init.h"
+#include "file_helpers.h"
 
 #include "archive_handlers/libarchive/libarchive.h"
 #include "archive_handlers/unrar/unrar.h"
@@ -22,167 +23,6 @@
 	#include "codec_handlers/avplayer/avplayer.h"
 #endif
 
-static unsigned long total_files = 0;
-
-static bool count_file(const char * fn, void * data)
-{
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	OMO_ARCHIVE_HANDLER * archive_handler;
-	OMO_CODEC_HANDLER * codec_handler;
-	int i, c;
-	const char * val;
-	const char * target_fn;
-	char buf[32] = {0};
-
-	archive_handler = omo_get_archive_handler(app->archive_handler_registry, fn);
-	if(archive_handler)
-	{
-		val = al_get_config_value(app->library->file_database, fn, "archive_files");
-		if(val)
-		{
-			c = atoi(val);
-		}
-		else
-		{
-			c = archive_handler->count_files(fn);
-			sprintf(buf, "%d", c);
-			al_set_config_value(app->library->file_database, fn, "archive_files", buf);
-		}
-		for(i = 0; i < c; i++)
-		{
-			sprintf(buf, "entry_%d", i);
-			val = al_get_config_value(app->library->file_database, fn, buf);
-			if(val)
-			{
-				target_fn = val;
-			}
-			else
-			{
-				target_fn = archive_handler->get_file(fn, i);
-				al_set_config_value(app->library->file_database, fn, buf, target_fn);
-			}
-			codec_handler = omo_get_codec_handler(app->codec_handler_registry, target_fn);
-			if(codec_handler)
-			{
-				total_files++;
-			}
-		}
-	}
-	else
-	{
-		codec_handler = omo_get_codec_handler(app->codec_handler_registry, fn);
-		if(codec_handler)
-		{
-			total_files += codec_handler->get_track_count(fn);
-		}
-	}
-
-    return false;
-}
-
-static bool add_file(const char * fn, void * data)
-{
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	OMO_ARCHIVE_HANDLER * archive_handler;
-	OMO_CODEC_HANDLER * codec_handler;
-	int i, c = 0;
-	char buf[32] = {0};
-	const char * val;
-	const char * target_fn = NULL;
-
-	archive_handler = omo_get_archive_handler(app->archive_handler_registry, fn);
-	if(archive_handler)
-	{
-		val = al_get_config_value(app->library->file_database, fn, "archive_files");
-		if(val)
-		{
-			c = atoi(val);
-		}
-		for(i = 0; i < c; i++)
-		{
-			sprintf(buf, "entry_%d", i);
-			val = al_get_config_value(app->library->file_database, fn, buf);
-			if(val)
-			{
-				target_fn = val;
-			}
-			codec_handler = omo_get_codec_handler(app->codec_handler_registry, target_fn);
-			if(codec_handler)
-			{
-				sprintf(buf, "%d", i); // reference by index instead of filename
-				omo_add_file_to_library(app->library, fn, buf);
-			}
-		}
-	}
-	else
-	{
-		codec_handler = omo_get_codec_handler(app->codec_handler_registry, fn);
-		if(codec_handler)
-		{
-			c = codec_handler->get_track_count(fn);
-			for(i = 0; i < c; i++)
-			{
-				sprintf(buf, "%d", i);
-				omo_add_file_to_library(app->library, fn, c > 1 ? buf : NULL);
-				total_files++;
-			}
-		}
-	}
-
-    return false;
-}
-
-static bool add_file_to_queue(const char * fn, void * data)
-{
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	OMO_ARCHIVE_HANDLER * archive_handler;
-	OMO_CODEC_HANDLER * codec_handler;
-	int i, c = 0;
-	char buf[32] = {0};
-	const char * val;
-	const char * target_fn;
-
-	archive_handler = omo_get_archive_handler(app->archive_handler_registry, fn);
-	if(archive_handler)
-	{
-		val = al_get_config_value(app->library->file_database, fn, "archive_files");
-		if(val)
-		{
-			c = atoi(val);
-		}
-		for(i = 0; i < c; i++)
-		{
-			sprintf(buf, "entry_%d", i);
-			val = al_get_config_value(app->library->file_database, fn, buf);
-			if(val)
-			{
-				target_fn = val;
-			}
-			codec_handler = omo_get_codec_handler(app->codec_handler_registry, target_fn);
-			if(codec_handler)
-			{
-				sprintf(buf, "%d", i); // reference by index instead of filename
-				omo_add_file_to_queue(app->player->queue, fn, buf);
-			}
-		}
-	}
-	else
-	{
-		codec_handler = omo_get_codec_handler(app->codec_handler_registry, fn);
-		if(codec_handler)
-		{
-			c = codec_handler->get_track_count(fn);
-			for(i = 0; i < c; i++)
-			{
-				sprintf(buf, "%d", i);
-				omo_add_file_to_queue(app->player->queue, fn, c > 1 ? buf : NULL);
-			}
-		}
-	}
-
-    return false;
-}
-
 static bool omo_setup_library(APP_INSTANCE * app)
 {
 	const char * val;
@@ -200,9 +40,10 @@ static bool omo_setup_library(APP_INSTANCE * app)
 		{
 			return false;
 		}
-		t3f_scan_files(val, count_file, false, app);
-		omo_allocate_library(app->library, total_files);
-		t3f_scan_files(val, add_file, false, app);
+		omo_reset_file_count();
+		t3f_scan_files(val, omo_count_file, false, app);
+		omo_allocate_library(app->library, omo_get_file_count());
+		t3f_scan_files(val, omo_add_file, false, app);
 
 		/* tally up artists */
 		omo_add_artist_to_library(app->library, "All");
@@ -295,17 +136,17 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	}
 	if(argc > 1)
 	{
-		total_files = 0;
+		omo_reset_file_count();
 		for(i = 1; i < argc; i++)
 		{
-			count_file(argv[i], app);
+			omo_count_file(argv[i], app);
 		}
-		app->player->queue = omo_create_queue(total_files);
+		app->player->queue = omo_create_queue(omo_get_file_count());
 		if(app->player->queue)
 		{
 			for(i = 1; i < argc; i++)
 			{
-				add_file_to_queue(argv[i], app);
+				omo_queue_file(argv[i], app);
 			}
 			if(app->player->queue->entry_count)
 			{
