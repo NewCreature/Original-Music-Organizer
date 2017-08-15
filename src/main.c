@@ -416,12 +416,57 @@ static bool add_file_to_queue(const char * fn, void * data)
     return false;
 }
 
-/* initialize our app, load graphics, etc. */
-bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
+bool omo_setup_library(APP_INSTANCE * app)
 {
 	const char * val;
 	char file_db_fn[1024];
 	char entry_db_fn[1024];
+	int i;
+
+	val = al_get_config_value(t3f_config, "Settings", "library_path");
+	if(val)
+	{
+		strcpy(file_db_fn, t3f_get_filename(t3f_data_path, "files.ini"));
+		strcpy(entry_db_fn, t3f_get_filename(t3f_data_path, "database.ini"));
+		app->library = omo_create_library(file_db_fn, entry_db_fn);
+		if(!app->library)
+		{
+			return false;
+		}
+		t3f_scan_files(val, count_file, false, app);
+		omo_allocate_library(app->library, total_files);
+		t3f_scan_files(val, add_file, false, app);
+
+		/* tally up artists */
+		omo_add_artist_to_library(app->library, "All");
+		omo_add_artist_to_library(app->library, "Unknown");
+		for(i = 0; i < app->library->entry_count; i++)
+		{
+			val = al_get_config_value(app->library->entry_database, app->library->entry[i]->id, "Artist");
+			if(val)
+			{
+				omo_add_artist_to_library(app->library, val);
+			}
+		}
+
+		/* tally up albums */
+		omo_add_album_to_library(app->library, "All");
+		omo_add_album_to_library(app->library, "Unknown");
+		for(i = 0; i < app->library->entry_count; i++)
+		{
+			val = al_get_config_value(app->library->entry_database, app->library->entry[i]->id, "Album");
+			if(val)
+			{
+				omo_add_album_to_library(app->library, val);
+			}
+		}
+	}
+	return true;
+}
+
+/* initialize our app, load graphics, etc. */
+bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
+{
 	int i;
 
 	/* initialize T3F */
@@ -470,15 +515,10 @@ bool app_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avplayer_get_codec_handler());
 	#endif
 
-	val = al_get_config_value(t3f_config, "Settings", "library_path");
-	if(val)
+	if(!omo_setup_library(app))
 	{
-		strcpy(file_db_fn, t3f_get_filename(t3f_data_path, "files.ini"));
-		strcpy(entry_db_fn, t3f_get_filename(t3f_data_path, "database.ini"));
-		app->library = omo_create_library(file_db_fn, entry_db_fn);
-		t3f_scan_files(val, count_file, false, app);
-		omo_allocate_library(app->library, total_files);
-		t3f_scan_files(val, add_file, false, app);
+		printf("Failed to set up library!\n");
+		return false;
 	}
 	app->player = omo_create_player();
 	if(!app->player)

@@ -73,11 +73,48 @@ OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_
 bool omo_allocate_library(OMO_LIBRARY * lp, int total_files)
 {
     lp->entry = malloc(sizeof(OMO_LIBRARY_ENTRY *) * total_files);
-    if(lp->entry)
+    if(!lp->entry)
     {
-        lp->entry_size = total_files;
-        lp->entry_count = 0;
-        return true;
+        goto fail;
+    }
+    lp->entry_size = total_files;
+    lp->entry_count = 0;
+
+    lp->artist_entry = malloc(sizeof(char *) * total_files + 2);
+    if(!lp->artist_entry)
+    {
+        goto fail;
+    }
+    lp->artist_entry_size = total_files + 2;
+    lp->artist_entry_count = 0;
+
+    lp->album_entry = malloc(sizeof(char *) * total_files + 2);
+    if(!lp->album_entry)
+    {
+        goto fail;
+    }
+    lp->album_entry_size = total_files + 2;
+    lp->album_entry_count = 0;
+
+    return true;
+
+    fail:
+    {
+        if(lp->entry)
+        {
+            free(lp->entry);
+            lp->entry = NULL;
+        }
+        if(lp->artist_entry)
+        {
+            free(lp->artist_entry);
+            lp->artist_entry = NULL;
+        }
+        if(lp->album_entry)
+        {
+            free(lp->album_entry);
+            lp->album_entry = NULL;
+        }
     }
     return false;
 }
@@ -86,17 +123,36 @@ void omo_destroy_library(OMO_LIBRARY * lp)
 {
     int i;
 
-    for(i = 0; i < lp->entry_count; i++)
+    if(lp->entry)
     {
-        if(lp->entry[i]->filename)
+        for(i = 0; i < lp->entry_count; i++)
         {
-            free(lp->entry[i]->filename);
+            if(lp->entry[i]->filename)
+            {
+                free(lp->entry[i]->filename);
+            }
+            if(lp->entry[i]->id)
+            {
+                free(lp->entry[i]->id);
+            }
+            free(lp->entry[i]);
         }
-        if(lp->entry[i]->id)
+    }
+    if(lp->artist_entry)
+    {
+        for(i = 0; i < lp->artist_entry_count; i++)
         {
-            free(lp->entry[i]->id);
+            free(lp->artist_entry[i]);
         }
-        free(lp->entry[i]);
+        free(lp->artist_entry);
+    }
+    if(lp->album_entry)
+    {
+        for(i = 0; i < lp->album_entry_count; i++)
+        {
+            free(lp->album_entry[i]);
+        }
+        free(lp->album_entry);
     }
     free(lp->file_database_fn);
     al_destroy_config(lp->file_database);
@@ -149,6 +205,94 @@ bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * sub
             if(lp->entry[lp->entry_count]->filename)
             {
                 strcpy(lp->entry[lp->entry_count]->filename, fn);
+                lp->entry[lp->entry_count]->id = al_get_config_value(lp->file_database, section, "id");
+                if(lp->entry[lp->entry_count]->id)
+                {
+                    lp->entry_count++;
+                    return true;
+                }
+                free(lp->entry[lp->entry_count]);
+            }
+        }
+    }
+    return false;
+}
+
+static char last_artist_name[256] = {0};
+
+static bool find_artist(OMO_LIBRARY * lp, const char * name)
+{
+    int i;
+
+    /* optimize finding artist if it's the same as the previously added one */
+    if(!strcmp(name, last_artist_name))
+    {
+        return true;
+    }
+
+    for(i = 0; i < lp->artist_entry_count; i++)
+    {
+        if(!strcmp(lp->artist_entry[i], name))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool omo_add_artist_to_library(OMO_LIBRARY * lp, const char * name)
+{
+    if(lp->artist_entry_count < lp->artist_entry_size)
+    {
+        if(!find_artist(lp, name))
+        {
+            lp->artist_entry[lp->artist_entry_count] = malloc(strlen(name) + 1);
+            if(lp->artist_entry[lp->artist_entry_count])
+            {
+                strcpy(lp->artist_entry[lp->artist_entry_count], name);
+                strcpy(last_artist_name, name);
+                lp->artist_entry_count++;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+static char last_album_name[256] = {0};
+
+static bool find_album(OMO_LIBRARY * lp, const char * name)
+{
+    int i;
+
+    /* optimize finding artist if it's the same as the previously added one */
+    if(!strcmp(name, last_album_name))
+    {
+        return true;
+    }
+
+    for(i = 0; i < lp->album_entry_count; i++)
+    {
+        if(!strcmp(lp->album_entry[i], name))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name)
+{
+    if(lp->album_entry_count < lp->album_entry_size)
+    {
+        if(!find_album(lp, name))
+        {
+            lp->album_entry[lp->album_entry_count] = malloc(strlen(name) + 1);
+            if(lp->album_entry[lp->album_entry_count])
+            {
+                strcpy(lp->album_entry[lp->album_entry_count], name);
+                strcpy(last_album_name, name);
+                lp->album_entry_count++;
                 return true;
             }
         }

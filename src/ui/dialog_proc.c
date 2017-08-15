@@ -3,6 +3,8 @@
 #include "../instance.h"
 
 static char ui_queue_text[1024] = {0};
+static char ui_artist_text[1024] = {0};
+static char ui_album_text[1024] = {0};
 
 static void get_path_filename(const char * fn, char * outfn)
 {
@@ -95,6 +97,46 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
             sprintf(ui_queue_text, "%s%s%s%s", prefix, display_fn, app->player->queue->entry[index]->sub_file ? "/" : "", app->player->queue->entry[index]->sub_file ? app->player->queue->entry[index]->sub_file : "");
         }
        return ui_queue_text;
+   }
+   return NULL;
+}
+
+char * ui_artist_list_proc(int index, int *list_size, void * data)
+{
+    APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+    if(index < 0)
+    {
+        if(list_size && app->library && app->library->artist_entry)
+        {
+            *list_size = app->library->artist_entry_count;
+        }
+        return NULL;
+    }
+    if(app->library && app->library->artist_entry)
+    {
+		sprintf(ui_artist_text, "%s", app->library->artist_entry[index]);
+		return ui_artist_text;
+   }
+   return NULL;
+}
+
+char * ui_album_list_proc(int index, int *list_size, void * data)
+{
+    APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+    if(index < 0)
+    {
+        if(list_size && app->library && app->library->album_entry)
+        {
+            *list_size = app->library->album_entry_count;
+        }
+        return NULL;
+    }
+    if(app->library && app->library->album_entry)
+    {
+		sprintf(ui_album_text, "%s", app->library->album_entry[index]);
+		return ui_album_text;
    }
    return NULL;
 }

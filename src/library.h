@@ -5,7 +5,7 @@ typedef struct
 {
 
     char * filename;
-    char * id;
+    const char * id;
 
 } OMO_LIBRARY_ENTRY;
 
@@ -15,6 +15,14 @@ typedef struct
     OMO_LIBRARY_ENTRY ** entry;
     unsigned long entry_size;
     unsigned long entry_count;
+
+    char ** artist_entry;
+    int artist_entry_size;
+    int artist_entry_count;
+
+    char ** album_entry;
+    int album_entry_size;
+    int album_entry_count;
 
     /* two databases, one for storing file paths and one for storing song
        information that the file database references by id */
@@ -30,5 +38,7 @@ bool omo_allocate_library(OMO_LIBRARY * lp, int total_files);
 void omo_destroy_library(OMO_LIBRARY * lp);
 bool omo_save_library(OMO_LIBRARY * lp);
 bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subfn);
+bool omo_add_artist_to_library(OMO_LIBRARY * lp, const char * name);
+bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name);
 
 #endif
