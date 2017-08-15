@@ -2,6 +2,7 @@
 #define OMO_QUEUE_H
 
 #include "t3f/t3f.h"
+#include "library.h"
 
 typedef struct
 {
@@ -24,5 +25,7 @@ OMO_QUEUE * omo_create_queue(int files);
 void omo_destroy_queue(OMO_QUEUE * qp);
 bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn);
 void omo_delete_queue_item(OMO_QUEUE * qp, int index);
+
+void omo_sort_queue(OMO_QUEUE * qp, OMO_LIBRARY * lp, int mode, int start_index, int count);
 
 #endif

@@ -127,7 +127,7 @@ int omo_menu_file_queue_folder(void * data)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    app->file_chooser_mode = 2;
+    app->file_chooser_mode = 3;
     app->file_chooser_done = false;
     omo_start_file_chooser(data, "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER);
     return 1;

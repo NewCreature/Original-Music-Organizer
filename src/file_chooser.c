@@ -36,6 +36,7 @@ void omo_file_chooser_logic(void * data)
     OMO_QUEUE * new_queue;
     OMO_QUEUE * old_queue;
     int total_files = 0;
+    int old_queue_size = 0;
     int i;
 
 	if(app->file_chooser && app->file_chooser_done)
@@ -57,6 +58,7 @@ void omo_file_chooser_logic(void * data)
 				    if(app->player->queue)
 				    {
 				        add_files_to_queue(app->file_chooser, app->player->queue, data);
+                        omo_sort_queue(app->player->queue, app->library, 0, 0, app->player->queue->entry_count);
 				        app->player->queue_pos = 0;
 				        app->player->state = OMO_PLAYER_STATE_PLAYING;
 				    }
@@ -70,6 +72,7 @@ void omo_file_chooser_logic(void * data)
                     {
                         if(app->player->queue)
                         {
+                            old_queue_size = app->player->queue->entry_count;
                             for(i = 0; i < app->player->queue->entry_count; i++)
                             {
                                 omo_add_file_to_queue(new_queue, app->player->queue->entry[i]->file,    app->player->queue->entry[i]->sub_file);
@@ -78,6 +81,7 @@ void omo_file_chooser_logic(void * data)
                         }
                         add_files_to_queue(app->file_chooser, new_queue, data);
                         app->player->queue = new_queue;
+                        omo_sort_queue(app->player->queue, app->library, 0, old_queue_size, app->player->queue->entry_count - old_queue_size);
                     }
 					break;
 				}
@@ -100,6 +104,7 @@ void omo_file_chooser_logic(void * data)
                             }
                             else
                             {
+                                omo_sort_queue(app->player->queue, app->library, 0, 0, app->player->queue->entry_count);
                                 app->player->queue_pos = 0;
                                 app->player->state = OMO_PLAYER_STATE_PLAYING;
                             }
@@ -115,6 +120,7 @@ void omo_file_chooser_logic(void * data)
                         new_queue = omo_create_queue(app->player->queue->entry_count + omo_get_file_count());
                         if(new_queue)
                         {
+                            old_queue_size = app->player->queue->entry_count;
                             old_queue = app->player->queue;
                             app->player->queue = new_queue;
                             if(old_queue)
@@ -135,6 +141,7 @@ void omo_file_chooser_logic(void * data)
                                 {
                                     omo_destroy_queue(old_queue);
                                 }
+                                omo_sort_queue(app->player->queue, app->library, 0, old_queue_size, app->player->queue->entry_count - old_queue_size);
                             }
                         }
                     }

@@ -93,3 +93,171 @@ void omo_delete_queue_item(OMO_QUEUE * qp, int index)
         qp->entry_count--;
     }
 }
+
+static OMO_LIBRARY * library = NULL;
+
+static int sort_by_track(const void *e1, const void *e2)
+{
+    OMO_QUEUE_ENTRY ** entry1 = (OMO_QUEUE_ENTRY **)e1;
+    OMO_QUEUE_ENTRY ** entry2 = (OMO_QUEUE_ENTRY **)e2;
+    const char * sort_field[5] = {"Artist", "Album", "Disc", "Track", "Title"};
+    int sort_type[5] = {0, 0, 1, 1, 0};
+    char buf[1024];
+    const char * val1;
+    const char * val2;
+    const char * id1;
+    const char * id2;
+    int i1, i2;
+    int i, c;
+
+    sprintf(buf, "%s%s%s", (*entry1)->file, (*entry1)->sub_file ? "/" : "", (*entry1)->sub_file ? (*entry1)->sub_file : "");
+    id1 = al_get_config_value(library->file_database, buf, "id");
+    sprintf(buf, "%s%s%s", (*entry2)->file, (*entry2)->sub_file ? "/" : "", (*entry2)->sub_file ? (*entry2)->sub_file : "");
+    id2 = al_get_config_value(library->file_database, buf, "id");
+
+    if(id1 && id2)
+    {
+        for(i = 0; i < 5; i++)
+        {
+            val1 = al_get_config_value(library->entry_database, id1, sort_field[i]);
+            val2 = al_get_config_value(library->entry_database, id2, sort_field[i]);
+            if(val1 && val2)
+            {
+                if(sort_type[i] == 0)
+                {
+                    c = strcmp(val1, val2);
+                    if(c != 0)
+                    {
+                        return c;
+                    }
+                }
+                else
+                {
+                    i1 = atoi(val1);
+                    i2 = atoi(val2);
+                    if(i1 != i2)
+                    {
+                        return i1 - i2;
+                    }
+                }
+            }
+        }
+
+    }
+    c = strcmp((*entry1)->file, (*entry2)->file);
+    if(c != 0)
+    {
+        return c;
+    }
+
+    return strcmp((*entry1)->sub_file, (*entry2)->sub_file);
+}
+
+static int sort_by_artist_and_title(const void *e1, const void *e2)
+{
+    OMO_QUEUE_ENTRY ** entry1 = (OMO_QUEUE_ENTRY **)e1;
+    OMO_QUEUE_ENTRY ** entry2 = (OMO_QUEUE_ENTRY **)e2;
+    const char * sort_field[2] = {"Artist", "Title"};
+    char buf[1024];
+    const char * val1;
+    const char * val2;
+    const char * id1;
+    const char * id2;
+    int i, c;
+
+    sprintf(buf, "%s%s%s", (*entry1)->file, (*entry1)->sub_file ? "/" : "", (*entry1)->sub_file ? (*entry1)->sub_file : "");
+    id1 = al_get_config_value(library->file_database, buf, "id");
+    sprintf(buf, "%s%s%s", (*entry2)->file, (*entry2)->sub_file ? "/" : "", (*entry2)->sub_file ? (*entry2)->sub_file : "");
+    id2 = al_get_config_value(library->file_database, buf, "id");
+
+    if(id1 && id2)
+    {
+        for(i = 0; i < 2; i++)
+        {
+            val1 = al_get_config_value(library->entry_database, id1, sort_field[i]);
+            val2 = al_get_config_value(library->entry_database, id2, sort_field[i]);
+            if(val1 && val2)
+            {
+                c = strcmp(val1, val2);
+                if(c != 0)
+                {
+                    return c;
+                }
+            }
+        }
+
+    }
+    c = strcmp((*entry1)->file, (*entry2)->file);
+    if(c != 0)
+    {
+        return c;
+    }
+
+    return strcmp((*entry1)->sub_file, (*entry2)->sub_file);
+}
+
+static int sort_by_title(const void *e1, const void *e2)
+{
+    OMO_QUEUE_ENTRY ** entry1 = (OMO_QUEUE_ENTRY **)e1;
+    OMO_QUEUE_ENTRY ** entry2 = (OMO_QUEUE_ENTRY **)e2;
+    const char * sort_field[1] = {"Title"};
+    char buf[1024];
+    const char * val1;
+    const char * val2;
+    const char * id1;
+    const char * id2;
+    int i, c;
+
+    sprintf(buf, "%s%s%s", (*entry1)->file, (*entry1)->sub_file ? "/" : "", (*entry1)->sub_file ? (*entry1)->sub_file : "");
+    id1 = al_get_config_value(library->file_database, buf, "id");
+    sprintf(buf, "%s%s%s", (*entry2)->file, (*entry2)->sub_file ? "/" : "", (*entry2)->sub_file ? (*entry2)->sub_file : "");
+    id2 = al_get_config_value(library->file_database, buf, "id");
+
+    if(id1 && id2)
+    {
+        for(i = 0; i < 1; i++)
+        {
+            val1 = al_get_config_value(library->entry_database, id1, sort_field[i]);
+            val2 = al_get_config_value(library->entry_database, id2, sort_field[i]);
+            if(val1 && val2)
+            {
+                c = strcmp(val1, val2);
+                if(c != 0)
+                {
+                    return c;
+                }
+            }
+        }
+
+    }
+    c = strcmp((*entry1)->file, (*entry2)->file);
+    if(c != 0)
+    {
+        return c;
+    }
+
+    return strcmp((*entry1)->sub_file, (*entry2)->sub_file);
+}
+
+void omo_sort_queue(OMO_QUEUE * qp, OMO_LIBRARY * lp, int mode, int start_index, int count)
+{
+    library = lp;
+    switch(mode)
+    {
+        case 0:
+        {
+            qsort(&qp->entry[start_index], count, sizeof(OMO_QUEUE_ENTRY *), sort_by_track);
+            break;
+        }
+        case 1:
+        {
+            qsort(&qp->entry[start_index], count, sizeof(OMO_QUEUE_ENTRY *), sort_by_artist_and_title);
+            break;
+        }
+        case 2:
+        {
+            qsort(&qp->entry[start_index], count, sizeof(OMO_QUEUE_ENTRY *), sort_by_title);
+            break;
+        }
+    }
+}
