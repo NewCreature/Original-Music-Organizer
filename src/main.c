@@ -55,6 +55,14 @@ void omo_logic(void * data)
 				sprintf(app->ui->ui_button_text[3], ">|");
 				sprintf(app->ui->ui_button_text[4], "^");
 				sprintf(app->ui->ui_button_text[5], "+");
+				if(t3f_key[ALLEGRO_KEY_L])
+				{
+					t3gui_close_dialog(app->ui->ui_dialog);
+					app->library_view = !app->library_view;
+					omo_create_main_dialog(app->ui, app->library_view ? 1 : 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), app);
+					t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
+					t3f_key[ALLEGRO_KEY_L] = 0;
+				}
 				if(t3f_key[ALLEGRO_KEY_T] && app->library && app->player->queue)
 				{
 					j = app->ui->ui_queue_list_element->d1;

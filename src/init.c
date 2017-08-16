@@ -71,6 +71,9 @@ static bool omo_setup_library(APP_INSTANCE * app)
 				omo_add_album_to_library(app->library, val);
 			}
 		}
+
+		/* make song list */
+		omo_get_library_song_list(app->library, "All", "All");
 	}
 	return true;
 }
@@ -166,12 +169,18 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	}
 	t3f_attach_menu(app->menu[OMO_MENU_MAIN]);
 
-	app->ui = omo_create_ui(0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), app);
+	app->ui = omo_create_ui();
 	if(!app->ui)
 	{
 		printf("Error settings up dialogs!\n");
 		return false;
 	}
+	if(!omo_create_main_dialog(app->ui, 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), app))
+	{
+		printf("Unable to create main dialog!\n");
+		return false;
+	}
+
 	t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
 
 	t3f_srand(&app->rng_state, time(0));

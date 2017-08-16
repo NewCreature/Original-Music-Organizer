@@ -24,6 +24,7 @@ typedef struct
 	ALLEGRO_THREAD * file_chooser_thread;
 	int state;
 	int button_pressed;
+	bool library_view;
 
 	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;
 	OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry;

@@ -5,6 +5,7 @@
 static char ui_queue_text[1024] = {0};
 static char ui_artist_text[1024] = {0};
 static char ui_album_text[1024] = {0};
+static char ui_song_text[1024] = {0};
 
 static void get_path_filename(const char * fn, char * outfn)
 {
@@ -127,6 +128,35 @@ char * ui_artist_list_proc(int index, int *list_size, void * data)
     {
 		sprintf(ui_artist_text, "%s", app->library->artist_entry[index]);
 		return ui_artist_text;
+   }
+   return NULL;
+}
+
+char * ui_song_list_proc(int index, int *list_size, void * data)
+{
+    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	const char * val;
+
+    if(index < 0)
+    {
+        if(list_size && app->library && app->library->song_entry)
+        {
+            *list_size = app->library->song_entry_count;
+        }
+        return NULL;
+    }
+    if(app->library && app->library->song_entry)
+    {
+		val = al_get_config_value(app->library->entry_database, app->library->entry[index]->id, "Title");
+		if(val)
+		{
+			strcpy(ui_song_text, val);
+		}
+		else
+		{
+			strcpy(ui_song_text, app->library->entry[index]->filename);
+		}
+		return ui_song_text;
    }
    return NULL;
 }

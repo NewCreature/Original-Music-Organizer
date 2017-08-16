@@ -96,6 +96,8 @@ bool omo_allocate_library(OMO_LIBRARY * lp, int total_files)
     lp->album_entry_size = total_files + 2;
     lp->album_entry_count = 0;
 
+    lp->song_entry = NULL;
+
     return true;
 
     fail:
@@ -150,6 +152,10 @@ void omo_destroy_library(OMO_LIBRARY * lp)
         }
         free(lp->album_entry);
     }
+    if(lp->song_entry)
+    {
+        free(lp->song_entry);
+    }
     free(lp->file_database_fn);
     al_destroy_config(lp->file_database);
     free(lp->entry_database_fn);
@@ -197,7 +203,7 @@ bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * sub
         if(!val)
         {
             md5_file(fn, h);
-            sprintf(sum_string, "%04x%04x%04x%04x%s", h[0], h[1], h[2], h[3], subfn ? subfn : "");
+            sprintf(sum_string, "%04x%04x%04x%04x%s%s", h[0], h[1], h[2], h[3], subfn ? subfn : "", track ? track : "");
             al_set_config_value(lp->file_database, section, "id", sum_string);
             if(subfn)
             {
@@ -304,4 +310,82 @@ bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name)
         }
     }
     return false;
+}
+
+static OMO_LIBRARY * library = NULL;
+
+static int sort_by_path(const void *e1, const void *e2)
+{
+    int entry1 = *((int *)e1);
+    int entry2 = *((int *)e2);
+
+    return strcmp(library->entry[entry1]->filename, library->entry[entry2]->filename);
+}
+
+static int sort_by_title(const void *e1, const void *e2)
+{
+    int entry1 = *((int *)e1);
+    int entry2 = *((int *)e2);
+    const char * sort_field[1] = {"Title"};
+    const char * val1;
+    const char * val2;
+    const char * id1;
+    const char * id2;
+    int i, c;
+
+    id1 = al_get_config_value(library->file_database, library->entry[entry1]->filename, "id");
+    id2 = al_get_config_value(library->file_database, library->entry[entry2]->filename, "id");
+
+    if(id1 && id2)
+    {
+        for(i = 0; i < 1; i++)
+        {
+            val1 = al_get_config_value(library->entry_database, id1, sort_field[i]);
+            val2 = al_get_config_value(library->entry_database, id2, sort_field[i]);
+            if(val1 && val2)
+            {
+                c = strcmp(val1, val2);
+                if(c != 0)
+                {
+                    return c;
+                }
+            }
+        }
+
+    }
+    return sort_by_path(e1, e2);
+}
+
+static void library_sort_by_title(OMO_LIBRARY * lp)
+{
+    library = lp;
+    qsort(lp->song_entry, lp->song_entry_count, sizeof(unsigned long), sort_by_title);
+}
+
+bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char * album)
+{
+    const char * val;
+    int i;
+
+    if(lp->song_entry)
+    {
+        free(lp->song_entry);
+    }
+    if(!strcmp(artist, "All"))
+    {
+        if(!strcmp(album, "All"))
+        {
+            lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
+            if(lp->song_entry)
+            {
+                for(i = 0; i < lp->entry_count; i++)
+                {
+                    lp->song_entry[i] = i;
+                }
+                lp->song_entry_count = lp->entry_count;
+                library_sort_by_title(lp);
+            }
+        }
+    }
+    return true;
 }

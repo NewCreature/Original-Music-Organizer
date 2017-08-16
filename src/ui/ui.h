@@ -11,6 +11,9 @@ typedef struct
 	T3GUI_ELEMENT * ui_queue_list_box_element;
 	T3GUI_ELEMENT * ui_queue_list_element;
 	T3GUI_ELEMENT * ui_button_element[6];
+    T3GUI_ELEMENT * ui_artist_list_element;
+    T3GUI_ELEMENT * ui_album_list_element;
+    T3GUI_ELEMENT * ui_song_list_element;
     int mode;
 
     /* tags dialog */
@@ -30,9 +33,10 @@ typedef struct
 
 } OMO_UI;
 
-OMO_UI * omo_create_ui(int mode, int width, int height, void * data);
+OMO_UI * omo_create_ui(void);
 void omo_destroy_ui(OMO_UI * uip);
-void omo_resize_ui(OMO_UI * uip, int width, int height);
+void omo_resize_ui(OMO_UI * uip, int mode, int width, int height);
+bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void * data);
 
 bool omo_open_tags_dialog(OMO_UI * uip, void * data);
 

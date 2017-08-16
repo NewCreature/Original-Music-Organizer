@@ -24,6 +24,11 @@ typedef struct
     int album_entry_size;
     int album_entry_count;
 
+    /* current list of songs for song list pane */
+    unsigned long * song_entry;
+    int song_entry_size;
+    int song_entry_count;
+
     /* two databases, one for storing file paths and one for storing song
        information that the file database references by id */
     char * file_database_fn;
@@ -40,5 +45,6 @@ bool omo_save_library(OMO_LIBRARY * lp);
 bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subfn, const char * track);
 bool omo_add_artist_to_library(OMO_LIBRARY * lp, const char * name);
 bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name);
+bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char * album);
 
 #endif
