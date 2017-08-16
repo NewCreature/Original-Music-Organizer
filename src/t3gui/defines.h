@@ -4,11 +4,12 @@
 #include <allegro5/allegro_font.h>
 #include "nine_patch.h"
 
-#define T3GUI_ELEMENT_STATES             4
+#define T3GUI_ELEMENT_STATES             5
 #define T3GUI_ELEMENT_STATE_NORMAL       0
 #define T3GUI_ELEMENT_STATE_HOVER        1
 #define T3GUI_ELEMENT_STATE_SELECTED     2
 #define T3GUI_ELEMENT_STATE_DISABLED     3
+#define T3GUI_ELEMENT_STATE_EXTRA        4
 
 #define T3GUI_PLAYER_NO_ESCAPE           1
 #define T3GUI_PLAYER_CLEAR               2

@@ -1072,30 +1072,35 @@ int t3gui_scroll_proc(int msg, T3GUI_ELEMENT *d, int c)
       if (vert) {
          slx = d->x+2;
          sly = d->y+2 + offset;
-         slw = d->w-3;
+         slw = d->w-4;
          slh = hh-4;
       } else {
          slx = d->x+2 + offset;
          sly = d->y+2;
-         slw = hh-3;
+         slw = hh-4;
          slh = d->h-4;
       }
 
-      al_draw_filled_rectangle(d->x+0.5, d->y+0.5, d->x+d->w-0.5, d->y+d->h-0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG]);
-      al_draw_rectangle(d->x+0.5, d->y+0.5, d->x+d->w-0.5, d->y+d->h-0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG], 1.0);
+/*      al_draw_filled_rectangle(d->x+0.5, d->y+0.5, d->x+d->w-0.5, d->y+d->h-0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG]);
+      al_draw_rectangle(d->x+0.5, d->y+0.5, d->x+d->w-0.5, d->y+d->h-0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG], 1.0); */
+
+      NINE_PATCH_BITMAP *p9;
 
       /* draw body */
-      if (d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[1]) {
-         NINE_PATCH_BITMAP *p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[1];
+      if (d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[2])
+      {
+          p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[2];
+          draw_nine_patch_bitmap(p9, d->theme->state[T3GUI_ELEMENT_STATE_EXTRA].color[T3GUI_THEME_COLOR_BG], d->x, d->y, d->w, d->h);
+      }
+      if (d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[3]) {
+         p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[3];
          int w = max(slw, get_nine_patch_bitmap_min_width(p9));
          int h = max(slh, get_nine_patch_bitmap_min_height(p9));
-         draw_nine_patch_bitmap(p9, al_map_rgba_f(1.0, 1.0, 1.0, 1.0), slx+0.5, sly+0.5, w, h);
-      } else {
-         al_draw_filled_rectangle(slx+0.5, sly+0.5, slx+slw-0.5, sly+slh-0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_MG]);
+         draw_nine_patch_bitmap(p9, d->theme->state[T3GUI_ELEMENT_STATE_EXTRA].color[T3GUI_THEME_COLOR_FG], slx, sly, w, h);
       }
 
-      if (d->flags & D_GOTFOCUS)
-         al_draw_rectangle(d->x+0.5, d->y+0.5, d->x+d->w-0.5, d->y+d->h-0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG], 4.0);
+/*      if (d->flags & D_GOTFOCUS)
+         al_draw_rectangle(d->x+0.5, d->y+0.5, d->x+d->w-0.5, d->y+d->h-0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG], 4.0); */
 
       return retval;
    }
@@ -1711,6 +1716,17 @@ int t3gui_editbox_proc(int msg, T3GUI_ELEMENT *d, int c)
     return ret;
 }
 
+static void flush_render(void)
+{
+    bool held = al_is_bitmap_drawing_held();
+
+    if(held)
+    {
+        al_hold_bitmap_drawing(false);
+        al_hold_bitmap_drawing(true);
+    }
+}
+
 /* typedef for the listbox callback functions */
 typedef const char *(getfuncptr)(int index, int *num_elem, void *dp3);
 
@@ -1874,11 +1890,12 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
         {
             int n;
             t3gui_box_proc(MSG_DRAW, d, 0);
-            if(d->flags & D_GOTFOCUS)
-            {
-                al_draw_rectangle(d->x+0.5, d->y+0.5, d->x+d->w-0.5, d->y+d->h-0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG], 3.0);
-            }
 
+            if(d->d3 > 0 && dd.d1 > 0)
+            {
+                flush_render();
+                al_set_clipping_rectangle(d->x, d->y, d->w - d->d3, d->h);
+            }
             for(n = d->d2; n<nelem; n++)
             {
                 ALLEGRO_COLOR fg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG];
@@ -1895,6 +1912,15 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
                     break;
                 }
             }
+            if(d->d3 > 0 && dd.d1 > 0)
+            {
+                flush_render();
+                al_set_clipping_rectangle(d->x, d->y, d->w, d->h);
+            }
+            NINE_PATCH_BITMAP *p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[1];
+            int w = max(d->w, get_nine_patch_bitmap_min_width(p9));
+            int h = max(d->h, get_nine_patch_bitmap_min_height(p9));
+            draw_nine_patch_bitmap(p9, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG], d->x, d->y, w, h);
             if(d->d3 > 0 && dd.d1 > 0)
             {
                 ret |= t3gui_scroll_proc(msg, &dd, c);
