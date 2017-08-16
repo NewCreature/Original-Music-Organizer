@@ -30,16 +30,19 @@ static bool omo_setup_library(APP_INSTANCE * app)
 	char entry_db_fn[1024];
 	int i;
 
+	/* load the library databases */
+	strcpy(file_db_fn, t3f_get_filename(t3f_data_path, "files.ini"));
+	strcpy(entry_db_fn, t3f_get_filename(t3f_data_path, "database.ini"));
+	app->library = omo_create_library(file_db_fn, entry_db_fn);
+	if(!app->library)
+	{
+		return false;
+	}
+
+	/* scan library paths */
 	val = al_get_config_value(t3f_config, "Settings", "library_path");
 	if(val)
 	{
-		strcpy(file_db_fn, t3f_get_filename(t3f_data_path, "files.ini"));
-		strcpy(entry_db_fn, t3f_get_filename(t3f_data_path, "database.ini"));
-		app->library = omo_create_library(file_db_fn, entry_db_fn);
-		if(!app->library)
-		{
-			return false;
-		}
 		omo_reset_file_count();
 		t3f_scan_files(val, omo_count_file, false, app);
 		omo_allocate_library(app->library, omo_get_file_count());

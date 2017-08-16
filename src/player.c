@@ -142,7 +142,7 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
                                 if(strlen(subfile) > 0)
                                 {
                                     strcpy(pp->extracted_filename, subfile);
-                                    if(pp->codec_handler->load_file(pp->extracted_filename, 0))
+                                    if(pp->codec_handler->load_file(pp->extracted_filename, pp->queue->entry[pp->queue_pos]->track))
                                     {
                                         if(pp->codec_handler->play())
                                         {
@@ -158,7 +158,7 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
                         pp->codec_handler = omo_get_codec_handler(codec_handler_registry, pp->queue->entry[pp->queue_pos]->file);
                         if(pp->codec_handler)
                         {
-                            if(pp->codec_handler->load_file(pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file))
+                            if(pp->codec_handler->load_file(pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->track))
                             {
                                 if(pp->codec_handler->play())
                                 {

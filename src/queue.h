@@ -9,6 +9,7 @@ typedef struct
 
     char * file;
     char * sub_file;
+    char * track;
 
 } OMO_QUEUE_ENTRY;
 
@@ -23,7 +24,7 @@ typedef struct
 
 OMO_QUEUE * omo_create_queue(int files);
 void omo_destroy_queue(OMO_QUEUE * qp);
-bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn);
+bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn, const char * track);
 void omo_delete_queue_item(OMO_QUEUE * qp, int index);
 
 void omo_sort_queue(OMO_QUEUE * qp, OMO_LIBRARY * lp, int mode, int start_index, int count);

@@ -173,7 +173,7 @@ int omo_menu_playback_shuffle(void * data)
             for(i = 0; i < new_queue->entry_size; i++)
             {
                 r = t3f_rand(&app->rng_state) % app->player->queue->entry_count;
-                omo_add_file_to_queue(new_queue, app->player->queue->entry[r]->file, app->player->queue->entry[r]->sub_file);
+                omo_add_file_to_queue(new_queue, app->player->queue->entry[r]->file, app->player->queue->entry[r]->sub_file, app->player->queue->entry[r]->track);
                 omo_delete_queue_item(app->player->queue, r);
             }
             omo_destroy_queue(app->player->queue);

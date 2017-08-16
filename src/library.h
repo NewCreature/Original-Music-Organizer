@@ -37,7 +37,7 @@ OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_
 bool omo_allocate_library(OMO_LIBRARY * lp, int total_files);
 void omo_destroy_library(OMO_LIBRARY * lp);
 bool omo_save_library(OMO_LIBRARY * lp);
-bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subfn);
+bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subfn, const char * track);
 bool omo_add_artist_to_library(OMO_LIBRARY * lp, const char * name);
 bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name);
 

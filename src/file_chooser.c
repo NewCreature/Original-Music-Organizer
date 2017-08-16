@@ -75,7 +75,7 @@ void omo_file_chooser_logic(void * data)
                             old_queue_size = app->player->queue->entry_count;
                             for(i = 0; i < app->player->queue->entry_count; i++)
                             {
-                                omo_add_file_to_queue(new_queue, app->player->queue->entry[i]->file,    app->player->queue->entry[i]->sub_file);
+                                omo_add_file_to_queue(new_queue, app->player->queue->entry[i]->file,    app->player->queue->entry[i]->sub_file, app->player->queue->entry[i]->track);
                             }
                             omo_destroy_queue(app->player->queue);
                         }
@@ -127,7 +127,7 @@ void omo_file_chooser_logic(void * data)
                             {
                                 for(i = 0; i < old_queue->entry_count; i++)
                                 {
-                                    omo_add_file_to_queue(app->player->queue, old_queue->entry[i]->file, old_queue->entry[i]->sub_file);
+                                    omo_add_file_to_queue(app->player->queue, old_queue->entry[i]->file, old_queue->entry[i]->sub_file, old_queue->entry[i]->track);
                                 }
                             }
                             if(!t3f_scan_files(al_get_native_file_dialog_path(app->file_chooser, 0), omo_queue_file, false, data))

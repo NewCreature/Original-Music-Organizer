@@ -37,30 +37,43 @@ void omo_destroy_queue(OMO_QUEUE * qp)
         {
             free(qp->entry[i]->sub_file);
         }
+        if(qp->entry[i]->track)
+        {
+            free(qp->entry[i]->track);
+        }
         free(qp->entry[i]);
     }
     free(qp->entry);
     free(qp);
 }
 
-bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn)
+bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn, const char * track)
 {
     if(qp->entry_count < qp->entry_size)
     {
         qp->entry[qp->entry_count] = malloc(sizeof(OMO_QUEUE_ENTRY));
         if(qp->entry[qp->entry_count])
         {
-            qp->entry[qp->entry_count]->file = malloc(strlen(fn) + 2);
+            qp->entry[qp->entry_count]->file = malloc(strlen(fn) + 1);
             if(qp->entry[qp->entry_count]->file)
             {
                 strcpy(qp->entry[qp->entry_count]->file, fn);
                 qp->entry[qp->entry_count]->sub_file = NULL;
                 if(subfn)
                 {
-                    qp->entry[qp->entry_count]->sub_file = malloc(strlen(subfn) + 2);
+                    qp->entry[qp->entry_count]->sub_file = malloc(strlen(subfn) + 1);
                     if(qp->entry[qp->entry_count]->sub_file)
                     {
                         strcpy(qp->entry[qp->entry_count]->sub_file, subfn);
+                    }
+                }
+                qp->entry[qp->entry_count]->track = NULL;
+                if(track)
+                {
+                    qp->entry[qp->entry_count]->track = malloc(strlen(track) + 1);
+                    if(qp->entry[qp->entry_count]->track)
+                    {
+                        strcpy(qp->entry[qp->entry_count]->track, track);
                     }
                 }
                 qp->entry_count++;
@@ -95,6 +108,41 @@ void omo_delete_queue_item(OMO_QUEUE * qp, int index)
 }
 
 static OMO_LIBRARY * library = NULL;
+
+static int sort_by_path(const void *e1, const void *e2)
+{
+    OMO_QUEUE_ENTRY ** entry1 = (OMO_QUEUE_ENTRY **)e1;
+    OMO_QUEUE_ENTRY ** entry2 = (OMO_QUEUE_ENTRY **)e2;
+    int c;
+    int id1, id2;
+
+    c = strcmp((*entry1)->file, (*entry2)->file);
+    if(c != 0)
+    {
+        return c;
+    }
+
+    if((*entry1)->sub_file && (*entry2)->sub_file)
+    {
+        id1 = atoi((*entry1)->sub_file);
+        id2 = atoi((*entry2)->sub_file);
+        if(id1 != id2)
+        {
+            return id1 - id2;
+        }
+    }
+
+    if((*entry1)->track && (*entry2)->track)
+    {
+        id1 = atoi((*entry1)->track);
+        id2 = atoi((*entry2)->track);
+        if(id1 != id2)
+        {
+            return id1 - id2;
+        }
+    }
+    return 0;
+}
 
 static int sort_by_track(const void *e1, const void *e2)
 {
@@ -142,15 +190,8 @@ static int sort_by_track(const void *e1, const void *e2)
                 }
             }
         }
-
     }
-    c = strcmp((*entry1)->file, (*entry2)->file);
-    if(c != 0)
-    {
-        return c;
-    }
-
-    return strcmp((*entry1)->sub_file, (*entry2)->sub_file);
+    return sort_by_path(e1, e2);
 }
 
 static int sort_by_artist_and_title(const void *e1, const void *e2)
@@ -187,13 +228,7 @@ static int sort_by_artist_and_title(const void *e1, const void *e2)
         }
 
     }
-    c = strcmp((*entry1)->file, (*entry2)->file);
-    if(c != 0)
-    {
-        return c;
-    }
-
-    return strcmp((*entry1)->sub_file, (*entry2)->sub_file);
+    return sort_by_path(e1, e2);
 }
 
 static int sort_by_title(const void *e1, const void *e2)
@@ -230,13 +265,7 @@ static int sort_by_title(const void *e1, const void *e2)
         }
 
     }
-    c = strcmp((*entry1)->file, (*entry2)->file);
-    if(c != 0)
-    {
-        return c;
-    }
-
-    return strcmp((*entry1)->sub_file, (*entry2)->sub_file);
+    return sort_by_path(e1, e2);
 }
 
 void omo_sort_queue(OMO_QUEUE * qp, OMO_LIBRARY * lp, int mode, int start_index, int count)

@@ -94,7 +94,17 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
         else
         {
             get_path_filename(app->player->queue->entry[index]->file, display_fn);
-            sprintf(ui_queue_text, "%s%s%s%s", prefix, display_fn, app->player->queue->entry[index]->sub_file ? "/" : "", app->player->queue->entry[index]->sub_file ? app->player->queue->entry[index]->sub_file : "");
+            sprintf(ui_queue_text, "%s%s", prefix, display_fn);
+			if(app->player->queue->entry[index]->sub_file)
+			{
+				strcat(ui_queue_text, "/");
+				strcat(ui_queue_text, app->player->queue->entry[index]->sub_file);
+			}
+			if(app->player->queue->entry[index]->track)
+			{
+				strcat(ui_queue_text, ":");
+				strcat(ui_queue_text, app->player->queue->entry[index]->track);
+			}
         }
        return ui_queue_text;
    }

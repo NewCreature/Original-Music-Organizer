@@ -173,7 +173,7 @@ bool omo_save_library(OMO_LIBRARY * lp)
     return ret;
 }
 
-bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subfn)
+bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subfn, const char * track)
 {
     const char * val;
     uint32_t h[4];
@@ -182,7 +182,17 @@ bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * sub
 
     if(lp->entry_count < lp->entry_size)
     {
-        sprintf(section, "%s%s%s", fn, subfn ? "/" : "", subfn ? subfn : "");
+        sprintf(section, "%s", fn);
+        if(subfn)
+        {
+            strcat(section, "/");
+            strcat(section, subfn);
+        }
+        if(track)
+        {
+            strcat(section, ":");
+            strcat(section, track);
+        }
         val = al_get_config_value(lp->file_database, section, "id");
         if(!val)
         {
