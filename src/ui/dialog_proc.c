@@ -147,14 +147,14 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
     }
     if(app->library && app->library->song_entry)
     {
-		val = al_get_config_value(app->library->entry_database, app->library->entry[index]->id, "Title");
+		val = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Title");
 		if(val)
 		{
 			strcpy(ui_song_text, val);
 		}
 		else
 		{
-			strcpy(ui_song_text, app->library->entry[index]->filename);
+			strcpy(ui_song_text, app->library->entry[app->library->song_entry[index]]->filename);
 		}
 		return ui_song_text;
    }
