@@ -65,6 +65,7 @@ bool omo_count_file(const char * fn, void * data)
 					if(extracted_fn)
 					{
 						c2 = codec_handler->get_track_count(extracted_fn);
+						al_remove_filename(extracted_fn);
 						sprintf(buf2, "%d", c2);
 						al_set_config_value(app->library->file_database, fn, buf, buf2);
 					}
@@ -229,6 +230,7 @@ bool omo_queue_file(const char * fn, void * data)
 					if(extracted_fn)
 					{
 						c2 = codec_handler->get_track_count(extracted_fn);
+			            al_remove_filename(extracted_fn);
 					}
 				}
 				for(j = 0; j < c2; j++)
