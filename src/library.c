@@ -185,6 +185,7 @@ bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * sub
     uint32_t h[4];
     char sum_string[128];
     char section[1024];
+    bool ret = true;
 
     if(lp->entry_count < lp->entry_size)
     {
@@ -217,14 +218,55 @@ bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * sub
             if(lp->entry[lp->entry_count]->filename)
             {
                 strcpy(lp->entry[lp->entry_count]->filename, fn);
+            }
+            lp->entry[lp->entry_count]->sub_filename = NULL;
+            if(subfn)
+            {
+                lp->entry[lp->entry_count]->sub_filename = malloc(strlen(subfn) + 1);
+                if(lp->entry[lp->entry_count]->sub_filename)
+                {
+                    strcpy(lp->entry[lp->entry_count]->sub_filename, subfn);
+                }
+                else
+                {
+                    ret = false;
+                }
+            }
+            lp->entry[lp->entry_count]->track = NULL;
+            if(track)
+            {
+                lp->entry[lp->entry_count]->track = malloc(strlen(track) + 1);
+                if(lp->entry[lp->entry_count]->track)
+                {
+                    strcpy(lp->entry[lp->entry_count]->track, track);
+                }
+                else
+                {
+                    ret = false;
+                }
+            }
+            if(ret)
+            {
                 lp->entry[lp->entry_count]->id = al_get_config_value(lp->file_database, section, "id");
                 if(lp->entry[lp->entry_count]->id)
                 {
                     lp->entry_count++;
                     return true;
                 }
-                free(lp->entry[lp->entry_count]);
             }
+            if(lp->entry[lp->entry_count]->track)
+            {
+                free(lp->entry[lp->entry_count]->track);
+            }
+            if(lp->entry[lp->entry_count]->sub_filename)
+            {
+                free(lp->entry[lp->entry_count]->sub_filename);
+            }
+            if(lp->entry[lp->entry_count]->filename)
+            {
+                free(lp->entry[lp->entry_count]->filename);
+            }
+            free(lp->entry[lp->entry_count]);
         }
     }
     return false;

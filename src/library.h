@@ -5,6 +5,8 @@ typedef struct
 {
 
     char * filename;
+    char * sub_filename;
+    char * track;
     const char * id;
 
 } OMO_LIBRARY_ENTRY;
