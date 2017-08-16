@@ -138,7 +138,6 @@ bool omo_add_file(const char * fn, void * data)
 				if(val2)
 				{
 					c2 = atoi(val);
-					printf("tracks: %d\n", c2);
 					for(j = 0; j < c2; j++)
 					{
 						sprintf(buf2, "%d", j);
