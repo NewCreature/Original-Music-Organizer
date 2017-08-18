@@ -528,5 +528,38 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
             }
         }
     }
+    else if(!strcmp(artist, "Unknown"))
+    {
+
+    }
+    else
+    {
+        lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
+        lp->song_entry_count = 0;
+        if(lp->song_entry)
+        {
+            for(i = 0; i < lp->entry_count; i++)
+            {
+                val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Artist");
+                if(val)
+                {
+                    if(!strcmp(val, artist))
+                    {
+                        val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Album");
+                        if(val)
+                        {
+                            if(!strcmp(val, album))
+                            {
+                                lp->song_entry[lp->song_entry_count] = i;
+                                lp->song_entry_count++;
+                            }
+                        }
+                    }
+                }
+            }
+            library_sort_by_track(lp);
+        }
+    }
+
     return true;
 }
