@@ -14,10 +14,182 @@ void mp3a5_exit(void)
     mpg123_exit();
 }
 
+static void get_lines(mpg123_string *inlines, char * buffer)
+{
+	size_t i;
+	int hadcr = 0, hadlf = 0;
+	char *lines = NULL;
+	char *line  = NULL;
+	size_t len = 0;
+
+    strcpy(buffer, "");
+	if(inlines != NULL && inlines->fill)
+	{
+		lines = inlines->p;
+		len   = inlines->fill;
+	}
+	else return;
+
+	line = lines;
+	for(i=0; i<len; ++i)
+	{
+		if(lines[i] == '\n' || lines[i] == '\r' || lines[i] == 0)
+		{
+			char save = lines[i]; /* saving, changing, restoring a byte in the data */
+			if(save == '\n') ++hadlf;
+			if(save == '\r') ++hadcr;
+			if((hadcr || hadlf) && hadlf % 2 == 0 && hadcr % 2 == 0) line = "";
+
+			if(line)
+			{
+				lines[i] = 0;
+                strcat(buffer, line);
+                strcat(buffer, "\n");
+				line = NULL;
+				lines[i] = save;
+			}
+		}
+		else
+		{
+			hadlf = hadcr = 0;
+			if(line == NULL) line = lines+i;
+		}
+	}
+    if(buffer[strlen(buffer) - 1] == '\n')
+    {
+        buffer[strlen(buffer) - 1] = 0;
+    }
+}
+
+static char mp3a5_tag_buffer[1024] = {0};
+
+static MP3A5_MP3_TAGS * mp3a5_get_tags(const char * filename, MP3A5_MP3 * mp3)
+{
+    mpg123_id3v1 * id3_v1 = NULL;
+    mpg123_id3v2 * id3_v2 = NULL;
+    int meta;
+    char id[5] = {0};
+    int i;
+
+    /* read tags */
+    mp3->tags = NULL;
+    if(mpg123_open(mp3->mp3, filename) == MPG123_OK)
+    {
+        mpg123_scan(mp3->mp3);
+        mpg123_seek(mp3->mp3, 0, SEEK_SET);
+        meta = mpg123_meta_check(mp3->mp3);
+        if(meta & MPG123_ID3)
+        {
+            mpg123_id3(mp3->mp3, &id3_v1, &id3_v2);
+            mp3->tags = malloc(sizeof(MP3A5_MP3_TAGS));
+            if(mp3->tags)
+            {
+                memset(mp3->tags, 0, sizeof(MP3A5_MP3_TAGS));
+                if(id3_v2)
+                {
+                    /* artist */
+                    get_lines(id3_v2->artist, mp3a5_tag_buffer);
+                    mp3->tags->artist = malloc(strlen(mp3a5_tag_buffer) + 1);
+                    if(mp3->tags->artist)
+                    {
+                        strcpy(mp3->tags->artist, mp3a5_tag_buffer);
+                    }
+
+                    /* album */
+                    get_lines(id3_v2->album, mp3a5_tag_buffer);
+                    mp3->tags->album = malloc(strlen(mp3a5_tag_buffer) + 1);
+                    if(mp3->tags->album)
+                    {
+                        strcpy(mp3->tags->album, mp3a5_tag_buffer);
+                    }
+
+                    /* title */
+                    get_lines(id3_v2->title, mp3a5_tag_buffer);
+                    mp3->tags->title = malloc(strlen(mp3a5_tag_buffer) + 1);
+                    if(mp3->tags->title)
+                    {
+                        strcpy(mp3->tags->title, mp3a5_tag_buffer);
+                    }
+
+                    /* genre */
+                    get_lines(id3_v2->genre, mp3a5_tag_buffer);
+                    mp3->tags->genre = malloc(strlen(mp3a5_tag_buffer) + 1);
+                    if(mp3->tags->genre)
+                    {
+                        strcpy(mp3->tags->genre, mp3a5_tag_buffer);
+                    }
+
+                    /* year */
+                    get_lines(id3_v2->year, mp3a5_tag_buffer);
+                    mp3->tags->year = malloc(strlen(mp3a5_tag_buffer) + 1);
+                    if(mp3->tags->year)
+                    {
+                        strcpy(mp3->tags->year, mp3a5_tag_buffer);
+                    }
+
+                    /* comment */
+                    get_lines(id3_v2->comment, mp3a5_tag_buffer);
+                    mp3->tags->comment = malloc(strlen(mp3a5_tag_buffer) + 1);
+                    if(mp3->tags->comment)
+                    {
+                        strcpy(mp3->tags->comment, mp3a5_tag_buffer);
+                    }
+
+                    for(i = 0; i < id3_v2->texts; i++)
+                    {
+                        memcpy(id, id3_v2->text[i].id, 4);
+                        if(!strcmp(id, "TPOS"))
+                        {
+                            get_lines(&id3_v2->text[i].text, mp3a5_tag_buffer);
+                            mp3->tags->disc = malloc(strlen(mp3a5_tag_buffer) + 1);
+                            if(mp3->tags->disc)
+                            {
+                                strcpy(mp3->tags->disc, mp3a5_tag_buffer);
+                            }
+                        }
+                        else if(!strcmp(id, "TRCK"))
+                        {
+                            get_lines(&id3_v2->text[i].text, mp3a5_tag_buffer);
+                            mp3->tags->track = malloc(strlen(mp3a5_tag_buffer) + 1);
+                            if(mp3->tags->track)
+                            {
+                                strcpy(mp3->tags->track, mp3a5_tag_buffer);
+                            }
+                        }
+                        else if(!strcmp(id, "TCOP"))
+                        {
+                            get_lines(&id3_v2->text[i].text, mp3a5_tag_buffer);
+                            mp3->tags->copyright = malloc(strlen(mp3a5_tag_buffer) + 1);
+                            if(mp3->tags->copyright)
+                            {
+                                strcpy(mp3->tags->copyright, mp3a5_tag_buffer);
+                            }
+                        }
+                    }
+                }
+                else if(id3_v1)
+                {
+                    mp3->tags->artist = malloc(strlen(id3_v1->artist) + 1);
+                    strcpy(mp3->tags->artist, id3_v1->artist);
+                    mp3->tags->album = malloc(strlen(id3_v1->album) + 1);
+                    strcpy(mp3->tags->album, id3_v1->album);
+                    mp3->tags->title = malloc(strlen(id3_v1->title) + 1);
+                    strcpy(mp3->tags->title, id3_v1->title);
+                    mp3->tags->year = malloc(strlen(id3_v1->year) + 1);
+                    strcpy(mp3->tags->year, id3_v1->year);
+                    mp3->tags->comment = malloc(strlen(id3_v1->comment) + 1);
+                    strcpy(mp3->tags->comment, id3_v1->comment);
+                }
+            }
+        }
+        mpg123_close(mp3->mp3);
+    }
+    return mp3->tags;
+}
+
 MP3A5_MP3 * mp3a5_load_mp3(const char *filename)
 {
     MP3A5_MP3 * mp3;
-    int meta;
 
     mp3 = malloc(sizeof(MP3A5_MP3));
     if(mp3)
@@ -25,16 +197,7 @@ MP3A5_MP3 * mp3a5_load_mp3(const char *filename)
         mp3->mp3 = mpg123_new(NULL, NULL);
         if(mp3->mp3)
         {
-            /* read tags */
-            if(mpg123_open(mp3->mp3, filename) == MPG123_OK)
-    		{
-                meta = mpg123_meta_check(mp3->mp3);
-                if(meta & MPG123_ID3)
-                {
-                    mpg123_id3(mp3->mp3, &mp3->id3_v1, &mp3->id3_v2);
-                }
-                mpg123_close(mp3->mp3);
-    		}
+            mp3->tags = mp3a5_get_tags(filename, mp3);
 
             /* open file in preparation for streaming */
             if(mpg123_open(mp3->mp3, filename) == MPG123_OK)
@@ -58,6 +221,46 @@ MP3A5_MP3 * mp3a5_load_mp3(const char *filename)
 void mp3a5_destroy_mp3(MP3A5_MP3 * mp)
 {
     mp3a5_stop_mp3(mp);
+    if(mp->tags)
+    {
+        if(mp->tags->artist)
+        {
+            free(mp->tags->artist);
+        }
+        if(mp->tags->album)
+        {
+            free(mp->tags->album);
+        }
+        if(mp->tags->disc)
+        {
+            free(mp->tags->disc);
+        }
+        if(mp->tags->track)
+        {
+            free(mp->tags->track);
+        }
+        if(mp->tags->title)
+        {
+            free(mp->tags->title);
+        }
+        if(mp->tags->genre)
+        {
+            free(mp->tags->genre);
+        }
+        if(mp->tags->year)
+        {
+            free(mp->tags->year);
+        }
+        if(mp->tags->copyright)
+        {
+            free(mp->tags->copyright);
+        }
+        if(mp->tags->comment)
+        {
+            free(mp->tags->comment);
+        }
+        free(mp->tags);
+    }
     mpg123_delete(mp->mp3);
     free(mp);
 }
@@ -175,131 +378,4 @@ void mp3a5_pause_mp3(MP3A5_MP3 * mp)
 void mp3a5_resume_mp3(MP3A5_MP3 * mp)
 {
     mp->paused = false;
-}
-
-static void get_lines(mpg123_string *inlines, char * buffer)
-{
-	size_t i;
-	int hadcr = 0, hadlf = 0;
-	char *lines = NULL;
-	char *line  = NULL;
-	size_t len = 0;
-
-    strcpy(buffer, "");
-	if(inlines != NULL && inlines->fill)
-	{
-		lines = inlines->p;
-		len   = inlines->fill;
-	}
-	else return;
-
-	line = lines;
-	for(i=0; i<len; ++i)
-	{
-		if(lines[i] == '\n' || lines[i] == '\r' || lines[i] == 0)
-		{
-			char save = lines[i]; /* saving, changing, restoring a byte in the data */
-			if(save == '\n') ++hadlf;
-			if(save == '\r') ++hadcr;
-			if((hadcr || hadlf) && hadlf % 2 == 0 && hadcr % 2 == 0) line = "";
-
-			if(line)
-			{
-				lines[i] = 0;
-                printf("get line: %s\n", inlines->p);
-                strcat(buffer, line);
-                strcat(buffer, "\n");
-				line = NULL;
-				lines[i] = save;
-			}
-		}
-		else
-		{
-			hadlf = hadcr = 0;
-			if(line == NULL) line = lines+i;
-		}
-	}
-    if(buffer[strlen(buffer) - 1] == '\n')
-    {
-        buffer[strlen(buffer) - 1] = 0;
-    }
-}
-
-static char mp3a5_tag_buffer[1024] = {0};
-
-const char * mp3a5_get_tag(MP3A5_MP3 * mp, const char * name)
-{
-    if(!strcasecmp(name, "artist"))
-    {
-        if(mp->id3_v2)
-        {
-            get_lines(mp->id3_v2->artist, mp3a5_tag_buffer);
-            return mp3a5_tag_buffer;
-        }
-        else if(mp->id3_v1)
-        {
-            return mp->id3_v1->artist;
-        }
-    }
-    else if(!strcasecmp(name, "album"))
-    {
-        if(mp->id3_v2)
-        {
-            get_lines(mp->id3_v2->album, mp3a5_tag_buffer);
-            return mp3a5_tag_buffer;
-        }
-        else if(mp->id3_v1)
-        {
-            return mp->id3_v1->album;
-        }
-    }
-    else if(!strcasecmp(name, "title"))
-    {
-        if(mp->id3_v2)
-        {
-            get_lines(mp->id3_v2->title, mp3a5_tag_buffer);
-            return mp3a5_tag_buffer;
-        }
-        else if(mp->id3_v1)
-        {
-            return mp->id3_v1->title;
-        }
-    }
-/*    else if(!strcasecmp(name, "genre"))
-    {
-        if(mp->id3_v2)
-        {
-            get_lines(mp->id3_v2->genre, mp3a5_tag_buffer);
-            return mp3a5_tag_buffer;
-        }
-        else if(mp->id3_v1)
-        {
-            return mp->id3_v1->genre;
-        }
-    } */
-    else if(!strcasecmp(name, "year"))
-    {
-        if(mp->id3_v2)
-        {
-            get_lines(mp->id3_v2->year, mp3a5_tag_buffer);
-            return mp3a5_tag_buffer;
-        }
-        else if(mp->id3_v1)
-        {
-            return mp->id3_v1->year;
-        }
-    }
-    else if(!strcasecmp(name, "comment"))
-    {
-        if(mp->id3_v2)
-        {
-            get_lines(mp->id3_v2->comment, mp3a5_tag_buffer);
-            return mp3a5_tag_buffer;
-        }
-        else if(mp->id3_v1)
-        {
-            return mp->id3_v1->comment;
-        }
-    }
-    return NULL;
 }
