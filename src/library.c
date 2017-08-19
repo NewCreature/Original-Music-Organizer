@@ -299,17 +299,9 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
                 hashed = true;
             }
 
-            if(hashed && !md5_hash)
-            {
-                printf("hash failed\n");
-            }
             /* if hash succeeded, add file and info to databases */
             if(hashed && md5_hash)
             {
-                if(!md5_hash)
-                {
-                    printf("hash failed\n");
-                }
                 if(extracted_filename)
                 {
                     file_size = get_file_size(extracted_filename);
