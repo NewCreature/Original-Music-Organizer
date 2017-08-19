@@ -13,23 +13,52 @@ bool omo_count_file(const char * fn, void * data)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	OMO_ARCHIVE_HANDLER * archive_handler;
 	OMO_CODEC_HANDLER * codec_handler;
+	ALLEGRO_FS_ENTRY * fs_entry;
 	int i, c = 0, c2 = 0;
+	time_t file_time;
 	const char * val;
 	const char * target_fn = NULL;
 	const char * extracted_fn;
 	char buf[32] = {0};
 	char buf2[32] = {0};
+	bool rescan = false;
 
 	archive_handler = omo_get_archive_handler(app->archive_handler_registry, fn);
 	if(archive_handler)
 	{
-		val = al_get_config_value(app->library->file_database, fn, "archive_files");
+		val = al_get_config_value(app->library->file_database, fn, "file_time");
 		if(val)
+		{
+			file_time = atol(val);
+			fs_entry = al_create_fs_entry(fn);
+			if(fs_entry)
+			{
+				if(file_time < al_get_fs_entry_mtime(fs_entry))
+				{
+					rescan = true;
+				}
+				al_destroy_fs_entry(fs_entry);
+			}
+		}
+		else
+		{
+			rescan = true;
+		}
+		val = al_get_config_value(app->library->file_database, fn, "archive_files");
+		if(val && !rescan)
 		{
 			c = atoi(val);
 		}
 		else
 		{
+			fs_entry = al_create_fs_entry(fn);
+			if(fs_entry)
+			{
+				file_time = al_get_fs_entry_mtime(fs_entry);
+				sprintf(buf, "%lu", file_time);
+				al_set_config_value(app->library->file_database, fn, "file_time", buf);
+				al_destroy_fs_entry(fs_entry);
+			}
 			c = archive_handler->count_files(fn);
 			if(app->library)
 			{
@@ -41,7 +70,7 @@ bool omo_count_file(const char * fn, void * data)
 		{
 			sprintf(buf, "entry_%d", i);
 			val = al_get_config_value(app->library->file_database, fn, buf);
-			if(val)
+			if(val && !rescan)
 			{
 				target_fn = val;
 			}
