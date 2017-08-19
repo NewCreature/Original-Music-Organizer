@@ -19,6 +19,7 @@ typedef struct
     /* tags dialog */
     ALLEGRO_DISPLAY * tags_display;
     T3GUI_DIALOG * tags_dialog;
+    char original_tags_text[OMO_UI_MAX_TAGS][OMO_UI_MAX_TAG_LENGTH];
     char tags_text[OMO_UI_MAX_TAGS][OMO_UI_MAX_TAG_LENGTH];
     const char * tags_entry;
 

@@ -3,6 +3,7 @@
 #include "../instance.h"
 #include "ui.h"
 #include "dialog_proc.h"
+#include "../constants.h"
 
 static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
 {
@@ -169,7 +170,6 @@ void omo_resize_ui(OMO_UI * uip, int mode, int width, int height)
 
 bool omo_open_tags_dialog(OMO_UI * uip, void * data)
 {
-    char * tag_types[7] = {"Album Artist", "Artist", "Album", "Track", "Disc", "Title", "Comment"};
     int y = 8;
     int i;
 
@@ -198,12 +198,16 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
         if(uip->tags_dialog)
         {
             t3gui_dialog_add_element(uip->tags_dialog, uip->tags_box_theme, t3gui_box_proc, 0, 0, 320, 240, 0, 0, 0, 0, NULL, NULL, NULL);
-            for(i = 0; i < 7; i++)
+            for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
             {
-                t3gui_dialog_add_element(uip->tags_dialog, uip->tags_box_theme, t3gui_text_proc, 8, y, 320 - 16, al_get_font_line_height(uip->tags_box_theme->state[0].font), 0, 0, 0, 0, tag_types[i], NULL, NULL);
-                y += al_get_font_line_height(uip->tags_box_theme->state[0].font) + 2;
-                t3gui_dialog_add_element(uip->tags_dialog, uip->tags_list_box_theme, t3gui_edit_proc, 8, y, 320 - 16, al_get_font_line_height(uip->tags_box_theme->state[0].font) + 4, 0, 0, 256, 0, uip->tags_text[i], NULL, NULL);
-                y += al_get_font_line_height(uip->tags_box_theme->state[0].font) * 2 + 2;
+                if(omo_tag_type[i])
+                {
+                    t3gui_dialog_add_element(uip->tags_dialog, uip->tags_box_theme, t3gui_text_proc, 8, y, 320 - 16, al_get_font_line_height(uip->tags_box_theme->state[0].font), 0, 0, 0, 0, (void *)omo_tag_type[i], NULL, NULL);
+                    y += al_get_font_line_height(uip->tags_box_theme->state[0].font) + 2;
+                    strcpy(uip->original_tags_text[i], uip->tags_text[i]);
+                    t3gui_dialog_add_element(uip->tags_dialog, uip->tags_list_box_theme, t3gui_edit_proc, 8, y, 320 - 16, al_get_font_line_height(uip->tags_box_theme->state[0].font) + 4, 0, 0, 256, 0, uip->tags_text[i], NULL, NULL);
+                    y += al_get_font_line_height(uip->tags_box_theme->state[0].font) * 2 + 2;
+                }
             }
             t3gui_show_dialog(uip->tags_dialog, t3f_queue, T3GUI_PLAYER_CLEAR, data);
             return true;
