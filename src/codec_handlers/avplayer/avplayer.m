@@ -36,6 +36,17 @@ static void codec_unload_file(void)
 
 static char tag_buffer[1024] = {0};
 
+static void codec_strcpy(char * dest, const char * src, int limit)
+{
+	int i;
+
+	for(i = 0; i < strlen(src) && i < limit - 1; i++)
+	{
+		dest[i] = src[i];
+	}
+	dest[limit - 1] = 0;
+}
+
 static const char * codec_get_tag(const char * name)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -66,7 +77,7 @@ static const char * codec_get_tag(const char * name)
 			utf8_val = [value UTF8String];
 			if(!strcasecmp(utf8_key, avplayer_tag_name[i]))
 			{
-				strcpy(tag_buffer, utf8_val);
+				codec_strcpy(tag_buffer, utf8_val, 1024);
 				[pool release];
 				return tag_buffer;
 			}
