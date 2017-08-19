@@ -34,35 +34,45 @@ static void codec_unload_file(void)
 	player = NULL;
 }
 
+static char tag_buffer[1024] = {0};
+
 static const char * codec_get_tag(const char * name)
 {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
 	NSString * path = [NSString stringWithUTF8String:player_filename];
-	AVAsset *asset = [AVURLAsset URLAssetWithURL:[NSURL fileURLWithPath:path] options:nil];
 	const char * utf8_key;
 	const char * utf8_val;
 	const char * tag_name[OMO_MAX_TAG_TYPES] = {"Album Artist", "Artist", "Album", "Disc", "Track", "Title", "Genre", "Year", "Copyright", "Comment"};
 	const char * avplayer_tag_name[OMO_MAX_TAG_TYPES] = {"id3/TPE2", "id3/TPE1", "id3/TALB", "id3/TPOS", "id3/TRCK", "id3/TIT2", "id3/TCON", "id3/TYER", "id3/TCOP", "id3/COMM"};
 	int i;
 
-	for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+	AVAsset *asset = [AVURLAsset URLAssetWithURL:[NSURL fileURLWithPath:path] options:nil];
+	if(asset)
 	{
-		if(!strcmp(name, tag_name[i]))
+		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 		{
-			break;
+			if(!strcmp(name, tag_name[i]))
+			{
+				break;
+			}
+		}
+		NSArray *metadata = [asset metadata];
+		for(AVMetadataItem* item in metadata)
+		{
+			NSString *key = [item identifier];
+			NSString *value = [item stringValue];
+			utf8_key = [key UTF8String];
+			utf8_val = [value UTF8String];
+			if(!strcasecmp(utf8_key, avplayer_tag_name[i]))
+			{
+				strcpy(tag_buffer, utf8_val);
+				[pool release];
+				return tag_buffer;
+			}
 		}
 	}
-	NSArray *metadata = [asset metadata];
-	for(AVMetadataItem* item in metadata)
-	{
-		NSString *key = [item identifier];
-		NSString *value = [item stringValue];
-		utf8_key = [key UTF8String];
-		utf8_val = [value UTF8String];
-		if(!strcasecmp(utf8_key, avplayer_tag_name[i]))
-		{
-			return utf8_val;
-		}
-	}
+	[pool release];
 	return NULL;
 }
 
