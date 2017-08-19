@@ -1,6 +1,10 @@
 #include "t3f/t3f.h"
 
 #include "library.h"
+#include "archive_handlers/registry.h"
+#include "codec_handlers/registry.h"
+#include "defines.h"
+#include "constants.h"
 #include "md5.h"
 
 OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_fn)
@@ -121,6 +125,22 @@ bool omo_allocate_library(OMO_LIBRARY * lp, int total_files)
     return false;
 }
 
+void omo_free_album_list(OMO_LIBRARY * lp)
+{
+    int i;
+
+    if(lp->album_entry)
+    {
+        for(i = 0; i < lp->album_entry_count; i++)
+        {
+            free(lp->album_entry[i]);
+        }
+        lp->album_entry_count = 0;
+        free(lp->album_entry);
+        lp->album_entry = NULL;
+    }
+}
+
 void omo_destroy_library(OMO_LIBRARY * lp)
 {
     int i;
@@ -144,14 +164,7 @@ void omo_destroy_library(OMO_LIBRARY * lp)
         }
         free(lp->artist_entry);
     }
-    if(lp->album_entry)
-    {
-        for(i = 0; i < lp->album_entry_count; i++)
-        {
-            free(lp->album_entry[i]);
-        }
-        free(lp->album_entry);
-    }
+    omo_free_album_list(lp);
     if(lp->song_entry)
     {
         free(lp->song_entry);
@@ -179,14 +192,53 @@ bool omo_save_library(OMO_LIBRARY * lp)
     return ret;
 }
 
-bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subfn, const char * track)
+static bool get_tags(OMO_LIBRARY * lp, const char * id, const char * fn, const char * track, OMO_CODEC_HANDLER_REGISTRY * crp)
+{
+    OMO_CODEC_HANDLER * codec_handler;
+    const char * val;
+    int i;
+
+    codec_handler = omo_get_codec_handler(crp, fn);
+    if(codec_handler)
+    {
+        if(codec_handler->get_tag)
+        {
+            if(codec_handler->load_file(fn, track))
+            {
+                for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+                {
+                    if(omo_tag_type[i])
+                    {
+                        val = codec_handler->get_tag(omo_tag_type[i]);
+                        if(val && strlen(val))
+                        {
+                            al_set_config_value(lp->entry_database, id, omo_tag_type[i], val);
+                        }
+                    }
+                }
+            }
+            if(codec_handler->unload_file)
+            {
+                codec_handler->unload_file();
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subfn, const char * track, OMO_ARCHIVE_HANDLER_REGISTRY * rp, OMO_CODEC_HANDLER_REGISTRY * crp)
 {
     const char * val;
     uint32_t h[4];
     char sum_string[128];
     char section[1024];
     bool ret = true;
+    const char * extracted_filename = NULL;
+    OMO_ARCHIVE_HANDLER * archive_handler;
+    bool hashed = false;
 
+    printf("file: %s\n", fn);
     if(lp->entry_count < lp->entry_size)
     {
         sprintf(section, "%s", fn);
@@ -203,12 +255,47 @@ bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * sub
         val = al_get_config_value(lp->file_database, section, "id");
         if(!val)
         {
-            md5_file(fn, h);
-            sprintf(sum_string, "%04x%04x%04x%04x%s%s", h[0], h[1], h[2], h[3], subfn ? subfn : "", track ? track : "");
-            al_set_config_value(lp->file_database, section, "id", sum_string);
             if(subfn)
             {
-                al_set_config_value(lp->file_database, section, "subfn", subfn);
+                archive_handler = omo_get_archive_handler(rp, fn);
+                if(archive_handler)
+                {
+                    extracted_filename = archive_handler->extract_file(fn, atoi(subfn));
+                }
+            }
+            if(extracted_filename)
+            {
+                md5_file(extracted_filename, h);
+                hashed = true;
+            }
+            else if(!subfn) // if we are here and subfn != NULL, we failed extraction
+            {
+                md5_file(fn, h);
+                hashed = true;
+            }
+
+            /* if hash succeeded, add file and info to databases */
+            if(hashed)
+            {
+                sprintf(sum_string, "%08x%08x%08x%08x", h[0], h[1], h[2], h[3]);
+                if(track)
+                {
+                    strcat(sum_string, track);
+                }
+                al_set_config_value(lp->file_database, section, "id", sum_string);
+                if(subfn)
+                {
+                    al_set_config_value(lp->file_database, section, "subfn", subfn);
+                }
+                if(extracted_filename)
+                {
+                    get_tags(lp, sum_string, extracted_filename, track, crp);
+                    al_remove_filename(extracted_filename);
+                }
+                else
+                {
+                    get_tags(lp, sum_string, fn, track, crp);
+                }
             }
         }
         lp->entry[lp->entry_count] = malloc(sizeof(OMO_LIBRARY_ENTRY));
@@ -456,6 +543,65 @@ static void library_sort_by_title(OMO_LIBRARY * lp)
     qsort(lp->song_entry, lp->song_entry_count, sizeof(unsigned long), sort_by_title);
 }
 
+static bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
+{
+    const char * val;
+    int i;
+
+    omo_free_album_list(lp);
+    lp->album_entry = malloc(sizeof(char *) * lp->entry_count + 2);
+    if(lp->album_entry)
+    {
+        omo_add_album_to_library(lp, "All");
+        omo_add_album_to_library(lp, "Unknown");
+        if(!strcmp(artist, "All"))
+        {
+            for(i = 0; i < lp->entry_count; i++)
+            {
+                val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Album");
+                if(val)
+                {
+                    omo_add_album_to_library(lp, val);
+                }
+            }
+        }
+        else if(!strcmp(artist, "Unknown"))
+        {
+            for(i = 0; i < lp->entry_count; i++)
+            {
+                val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Artist");
+                if(!val)
+                {
+                    val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Album");
+                    if(val)
+                    {
+                        omo_add_album_to_library(lp, val);
+                    }
+                }
+            }
+        }
+        else
+        {
+            for(i = 0; i < lp->entry_count; i++)
+            {
+                val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Artist");
+                if(val)
+                {
+                    if(!strcmp(val, artist))
+                    {
+                        val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Album");
+                        if(val)
+                        {
+                            omo_add_album_to_library(lp, val);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return true;
+}
+
 bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char * album)
 {
     const char * val;
@@ -528,6 +674,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
                 library_sort_by_track(lp);
             }
         }
+        omo_get_library_album_list(lp, artist);
     }
     else if(!strcmp(artist, "Unknown"))
     {
@@ -628,6 +775,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
                 library_sort_by_track(lp);
             }
         }
+        omo_get_library_album_list(lp, artist);
     }
     else
     {
@@ -720,6 +868,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
                 library_sort_by_track(lp);
             }
         }
+        omo_get_library_album_list(lp, artist);
     }
 
     return true;

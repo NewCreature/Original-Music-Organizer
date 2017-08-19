@@ -34,6 +34,10 @@ static void omo_stop_player_playback(OMO_PLAYER * pp)
     if(pp->codec_handler)
     {
         pp->codec_handler->stop();
+        if(pp->codec_handler->unload_file)
+        {
+            pp->codec_handler->unload_file();
+        }
         pp->codec_handler = NULL;
 
         /* delete previously extracted file if we played from archive */

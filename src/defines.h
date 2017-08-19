@@ -12,6 +12,6 @@
     #define OMO_KEY_CTRL (t3f_key[ALLEGRO_KEY_LCTRL] || t3f_key[ALLEGRO_KEY_RCTRL])
 #endif
 
-#define OMO_MAX_TAG_TYPES 7
+#define OMO_MAX_TAG_TYPES 16
 
 #endif

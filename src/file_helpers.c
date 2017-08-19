@@ -142,12 +142,12 @@ bool omo_add_file(const char * fn, void * data)
 					for(j = 0; j < c2; j++)
 					{
 						sprintf(buf2, "%d", j);
-						omo_add_file_to_library(app->library, fn, buf, c2 > 1 ? buf2 : NULL);
+						omo_add_file_to_library(app->library, fn, buf, c2 > 1 ? buf2 : NULL, app->archive_handler_registry, app->codec_handler_registry);
 					}
 				}
 				else
 				{
-					omo_add_file_to_library(app->library, fn, buf, NULL);
+					omo_add_file_to_library(app->library, fn, buf, NULL, app->archive_handler_registry, app->codec_handler_registry);
 				}
 			}
 		}
@@ -169,7 +169,7 @@ bool omo_add_file(const char * fn, void * data)
 			for(i = 0; i < c; i++)
 			{
 				sprintf(buf, "%d", i);
-				omo_add_file_to_library(app->library, fn, NULL, c > 1 ? buf : NULL);
+				omo_add_file_to_library(app->library, fn, NULL, c > 1 ? buf : NULL, app->archive_handler_registry, app->codec_handler_registry);
 			}
 		}
 	}

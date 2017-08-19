@@ -45,8 +45,10 @@ static bool omo_setup_library(APP_INSTANCE * app)
 	{
 		omo_reset_file_count();
 		t3f_scan_files(val, omo_count_file, false, app);
+		omo_save_library(app->library);
 		omo_allocate_library(app->library, omo_get_file_count());
 		t3f_scan_files(val, omo_add_file, false, app);
+		omo_save_library(app->library);
 
 		/* tally up artists */
 		omo_add_artist_to_library(app->library, "All");
