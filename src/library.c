@@ -232,11 +232,24 @@ static bool get_tags(OMO_LIBRARY * lp, const char * id, const char * fn, const c
     return false;
 }
 
+static unsigned long get_file_size(const char * fn)
+{
+    ALLEGRO_FS_ENTRY * fs_entry;
+    unsigned long size = 0;
+
+    fs_entry = al_create_fs_entry(fn);
+    if(fs_entry)
+    {
+        size = al_get_fs_entry_size(fs_entry);
+        al_destroy_fs_entry(fs_entry);
+    }
+    return size;
+}
+
 int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subfn, const char * track, OMO_ARCHIVE_HANDLER_REGISTRY * rp, OMO_CODEC_HANDLER_REGISTRY * crp)
 {
     const char * val = NULL;
     const char * val2 = NULL;
-    uint32_t h[4];
     char sum_string[128];
     char section[1024];
     int ret = true;
@@ -244,6 +257,8 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
     const char * extracted_filename = NULL;
     OMO_ARCHIVE_HANDLER * archive_handler;
     bool hashed = false;
+    unsigned long file_size;
+    const char * md5_hash = NULL;
 
     if(lp->entry_count < lp->entry_size)
     {
@@ -275,19 +290,27 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
             }
             if(extracted_filename)
             {
-                md5_file(extracted_filename, h);
+                md5_hash = md5_file(extracted_filename);
                 hashed = true;
             }
             else if(!subfn) // if we are here and subfn != NULL, we failed extraction
             {
-                md5_file(fn, h);
+                md5_hash = md5_file(fn);
                 hashed = true;
             }
 
             /* if hash succeeded, add file and info to databases */
-            if(hashed)
+            if(hashed && md5_hash)
             {
-                sprintf(sum_string, "%08x%08x%08x%08x", h[0], h[1], h[2], h[3]);
+                if(extracted_filename)
+                {
+                    file_size = get_file_size(extracted_filename);
+                }
+                else
+                {
+                    file_size = get_file_size(fn);
+                }
+                sprintf(sum_string, "%s%lu", md5_hash, file_size);
                 if(track)
                 {
                     strcat(sum_string, track);
