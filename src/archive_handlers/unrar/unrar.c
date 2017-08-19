@@ -75,9 +75,21 @@ static void remove_line_endings(char * buffer)
 
 	for(i = 0; i < strlen(buffer); i++)
 	{
-		if(buffer[i] == '\r' || buffer[i] == '\n' || buffer[i] == ' ')
+		if(buffer[i] == '\r' || buffer[i] == '\n')
 		{
 			buffer[i] = 0;
+		}
+	}
+	for(i = strlen(buffer) - 1; i >= 0; i--)
+	{
+		if(buffer[i] == ' ')
+		{
+
+			buffer[i] = '0';
+		}
+		else
+		{
+			break;
 		}
 	}
 }
@@ -159,7 +171,6 @@ static const char * get_file(const char * fn, int index)
 		}
 		al_fclose(fp);
 	}
-//	printf("|%s|\n", returnfn);
 
 	return returnfn;
 }
