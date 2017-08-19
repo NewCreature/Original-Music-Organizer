@@ -348,6 +348,7 @@ const char * md5_file(const char * fn)
             output = str2md5(buffer, file_size);
             strcpy(md5_hash_string, output);
             free(output);
+            free(buffer);
             hashed = 1;
         }
         fclose(fp);
