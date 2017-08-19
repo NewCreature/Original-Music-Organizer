@@ -4,9 +4,12 @@
 #include <Foundation/Foundation.h>
 #include <AVFoundation/AVFoundation.h>
 
+#include "../../defines.h"
+#include "../../constants.h"
 #include "../codec_handler.h"
 
 static AVAudioPlayer * player = NULL;
+static char player_filename[1024] = {0};
 static double start_time;
 static double pause_start;
 static double pause_total;
@@ -16,15 +19,51 @@ static bool codec_load_file(const char * fn, const char * subfn)
 	NSString * fnstring = [NSString stringWithUTF8String:fn];
 
 	player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:fnstring] error:nil];
-	[player prepareToPlay];
-
-	return true;
+	if(player)
+	{
+		strcpy(player_filename, fn);
+		[player prepareToPlay];
+		return true;
+	}
+	return false;
 }
 
 static void codec_unload_file(void)
 {
 	[player release];
 	player = NULL;
+}
+
+static const char * codec_get_tag(const char * name)
+{
+	NSString * path = [NSString stringWithUTF8String:player_filename];
+	AVAsset *asset = [AVURLAsset URLAssetWithURL:[NSURL fileURLWithPath:path] options:nil];
+	const char * utf8_key;
+	const char * utf8_val;
+	const char * tag_name[OMO_MAX_TAG_TYPES] = {"Album Artist", "Artist", "Album", "Disc", "Track", "Title", "Genre", "Year", "Copyright", "Comment"};
+	const char * avplayer_tag_name[OMO_MAX_TAG_TYPES] = {"id3/TPE2", "id3/TPE1", "id3/TALB", "id3/TPOS", "id3/TRCK", "id3/TIT2", "id3/TCON", "id3/TYER", "id3/TCOP", "id3/COMM"};
+	int i;
+
+	for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+	{
+		if(!strcmp(name, tag_name[i]))
+		{
+			break;
+		}
+	}
+	NSArray *metadata = [asset metadata];
+	for(AVMetadataItem* item in metadata)
+	{
+		NSString *key = [item identifier];
+		NSString *value = [item stringValue];
+		utf8_key = [key UTF8String];
+		utf8_val = [value UTF8String];
+		if(!strcasecmp(utf8_key, avplayer_tag_name[i]))
+		{
+			return utf8_val;
+		}
+	}
+	return NULL;
 }
 
 static int codec_get_track_count(const char * fn)
@@ -94,6 +133,7 @@ OMO_CODEC_HANDLER * omo_codec_avplayer_get_codec_handler(void)
 	codec_handler.initialize = NULL;
 	codec_handler.load_file = codec_load_file;
 	codec_handler.unload_file = codec_unload_file;
+	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;
