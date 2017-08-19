@@ -18,6 +18,7 @@ typedef struct
 
     /* file operations */
     bool (*load_file)(const char * fn, const char * subfn);
+    void (*unload_file)(void);
     int (*get_track_count)(const char * fn);
     const char * (*get_tag)(const char * name);
 

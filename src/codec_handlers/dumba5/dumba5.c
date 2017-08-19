@@ -3,6 +3,9 @@
 
 #include "../codec_handler.h"
 
+static DUMBA5_PLAYER * codec_player = NULL;
+static DUH * codec_module = NULL;
+
 static char player_filename[1024] = {0};
 static char player_sub_filename[1024] = {0};
 
@@ -23,7 +26,67 @@ static bool codec_load_file(const char * fn, const char * subfn)
 	{
 		strcpy(player_sub_filename, subfn);
 	}
-	return true;
+	codec_module = dumba5_load_module(fn);
+	if(codec_module)
+	{
+		return true;
+	}
+	return false;
+}
+
+static void codec_unload_file(void)
+{
+	unload_duh(codec_module);
+	codec_module = NULL;
+}
+
+static char tag_buffer[1024] = {0};
+
+static const char * codec_get_tag(const char * name)
+{
+	const char * tag;
+	const unsigned char * comment;
+	DUMB_IT_SIGDATA * sd;
+	int i;
+
+	if(!strcmp(name, "Title"))
+	{
+		tag = duh_get_tag(codec_module, "TITLE");
+		if(tag && strlen(tag))
+		{
+			return tag;
+		}
+	}
+	else if(!strcmp(name, "Comment"))
+	{
+		sd = duh_get_it_sigdata(codec_module);
+		if(sd)
+		{
+			comment = dumb_it_sd_get_song_message(sd);
+			if(comment && strlen((char *)comment))
+			{
+				strcpy(tag_buffer, "");
+				for(i = 0; i < strlen((char *)comment) && i < 1023; i++)
+				{
+					if(comment[i] < 128)
+					{
+						tag_buffer[i] = comment[i];
+					}
+					else
+					{
+						tag_buffer[i] = '_';
+					}
+					if(tag_buffer[i] == '\r')
+					{
+						tag_buffer[i] = '\n';
+					}
+				}
+				printf("comment: %s\n", tag_buffer);
+				return tag_buffer;
+			}
+		}
+	}
+	return NULL;
 }
 
 static int codec_get_track_count(const char * fn)
@@ -39,8 +102,10 @@ static bool codec_play(void)
 	{
 		start = atoi(player_sub_filename);
 	}
-	if(dumba5_load_and_play_module(player_filename, start, false, 44100, true))
+	codec_player = dumba5_create_player(codec_module, start, false, 4096, 44100, true);
+	if(codec_player)
 	{
+		dumba5_start_player(codec_player);
 		return true;
 	}
 	return false;
@@ -48,29 +113,29 @@ static bool codec_play(void)
 
 static bool codec_pause(void)
 {
-	dumba5_pause_module();
+	dumba5_pause_player(codec_player);
 	return true;
 }
 
 static bool codec_resume(void)
 {
-	dumba5_resume_module();
+	dumba5_resume_player(codec_player);
 	return true;
 }
 
 static void codec_stop(void)
 {
-	dumba5_stop_module();
+	dumba5_stop_player(codec_player);
 }
 
 static float codec_get_position(void)
 {
-	return (float)dumba5_get_module_position() / 65536.0;
+	return (float)dumba5_get_player_position(codec_player) / 65536.0;
 }
 
 static bool codec_done_playing(void)
 {
-	return dumba5_module_playback_finished();
+	return dumba5_player_playback_finished(codec_player);
 }
 
 static OMO_CODEC_HANDLER codec_handler;
@@ -80,6 +145,8 @@ OMO_CODEC_HANDLER * omo_codec_dumba5_get_codec_handler(void)
 	memset(&codec_handler, 0, sizeof(OMO_CODEC_HANDLER));
 	codec_handler.initialize = codec_initialize;
 	codec_handler.load_file = codec_load_file;
+	codec_handler.unload_file = codec_unload_file;
+	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;

@@ -71,6 +71,16 @@ static bool codec_load_file(const char * fn, const char * subfn)
 	return false;
 }
 
+static void codec_unload_file(void)
+{
+	if(info)
+	{
+		gme_free_info(info);
+	}
+	gme_delete(emu);
+	emu = NULL;
+}
+
 static const char * codec_get_tag(const char * name)
 {
 	if(info)
@@ -189,12 +199,6 @@ static void codec_stop(void)
 	codec_thread = NULL;
 	al_destroy_audio_stream(codec_stream);
 	codec_stream = NULL;
-	if(info)
-	{
-		gme_free_info(info);
-	}
-	gme_delete(emu);
-	emu = NULL;
 }
 
 /*static float codec_get_position(void)
@@ -216,6 +220,7 @@ OMO_CODEC_HANDLER * omo_codec_gme_get_codec_handler(void)
 	memset(&codec_handler, 0, sizeof(OMO_CODEC_HANDLER));
 	codec_handler.initialize = NULL;
 	codec_handler.load_file = codec_load_file;
+	codec_handler.unload_file = codec_unload_file;
 	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;
 	codec_handler.play = codec_play;
