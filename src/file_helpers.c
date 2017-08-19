@@ -167,7 +167,7 @@ bool omo_add_file(const char * fn, void * data)
 				val2 = al_get_config_value(app->library->file_database, fn, buf2);
 				if(val2)
 				{
-					c2 = atoi(val);
+					c2 = atoi(val2);
 					for(j = 0; j < c2; j++)
 					{
 						sprintf(buf2, "%d", j);
