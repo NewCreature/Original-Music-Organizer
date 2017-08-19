@@ -238,7 +238,6 @@ bool omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * sub
     OMO_ARCHIVE_HANDLER * archive_handler;
     bool hashed = false;
 
-    printf("file: %s\n", fn);
     if(lp->entry_count < lp->entry_size)
     {
         sprintf(section, "%s", fn);
