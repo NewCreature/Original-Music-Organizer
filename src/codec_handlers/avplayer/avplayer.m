@@ -44,6 +44,7 @@ static void codec_strcpy(char * dest, const char * src, int limit)
 	{
 		dest[i] = src[i];
 	}
+	dest[i] = 0;
 	dest[limit - 1] = 0;
 }
 
