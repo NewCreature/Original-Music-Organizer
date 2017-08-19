@@ -2,6 +2,7 @@
 #include "t3f/music.h"
 
 #include <vorbis/vorbisfile.h>
+#include <FLAC/metadata.h>
 
 #include "../codec_handler.h"
 
@@ -25,6 +26,33 @@ static bool codec_load_file(const char * fn, const char * subfn)
 	return true;
 }
 
+static char tag_name[32];
+
+static const char * get_tag_name(const char * name)
+{
+	if(!strcmp(name, "Disc"))
+	{
+		strcpy(tag_name, "DISCNUMBER");
+	}
+	else if(!strcmp(name, "Track"))
+	{
+		strcpy(tag_name, "TRACKNUMBER");
+	}
+	else if(!strcmp(name, "Year"))
+	{
+		strcpy(tag_name, "DATE");
+	}
+	else if(!strcmp(name, "Comment"))
+	{
+		strcpy(tag_name, "DESCRIPTION");
+	}
+	else
+	{
+		strcpy(tag_name, name);
+	}
+	return tag_name;
+}
+
 static const char * codec_get_tag(const char * name)
 {
 	if(!strcasecmp(codec_file_extension, ".ogg"))
@@ -32,34 +60,13 @@ static const char * codec_get_tag(const char * name)
 		OggVorbis_File vf;
 		vorbis_comment * vf_comment;
 		char * vf_comment_text = NULL;
-		char tag_name[32] = {0};
 
 		if(!ov_fopen(player_filename, &vf))
 		{
 			vf_comment = ov_comment(&vf, -1);
 			if(vf_comment)
 			{
-				if(!strcmp(name, "Disc"))
-				{
-					strcpy(tag_name, "DISCNUMBER");
-				}
-				else if(!strcmp(name, "Track"))
-				{
-					strcpy(tag_name, "TRACKNUMBER");
-				}
-				else if(!strcmp(name, "Year"))
-				{
-					strcpy(tag_name, "DATE");
-				}
-				else if(!strcmp(name, "Comment"))
-				{
-					strcpy(tag_name, "DESCRIPTION");
-				}
-				else
-				{
-					strcpy(tag_name, name);
-				}
-				vf_comment_text = vorbis_comment_query(vf_comment, tag_name, 0);
+				vf_comment_text = vorbis_comment_query(vf_comment, get_tag_name(name), 0);
 				if(vf_comment_text)
 				{
 					strcpy(codec_tag_buffer, vf_comment_text);
@@ -67,6 +74,34 @@ static const char * codec_get_tag(const char * name)
 			}
 			ov_clear(&vf);
 			if(vf_comment_text)
+			{
+				return codec_tag_buffer;
+			}
+		}
+	}
+	else if(!strcasecmp(codec_file_extension, ".flac"))
+	{
+		FLAC__StreamMetadata * flac_metadata;
+		int entry;
+		int i;
+
+		if(FLAC__metadata_get_tags(player_filename, &flac_metadata))
+		{
+			entry = FLAC__metadata_object_vorbiscomment_find_entry_from(flac_metadata, 0, get_tag_name(name));
+			if(entry >= 0)
+			{
+				for(i = 0; i < strlen((char *)(flac_metadata->data.vorbis_comment.comments[entry].entry)); i++)
+				{
+					if(flac_metadata->data.vorbis_comment.comments[entry].entry[i] == '=')
+					{
+						i++;
+						strcpy(codec_tag_buffer, (char *)&flac_metadata->data.vorbis_comment.comments[entry].entry[i]);
+					}
+				}
+				printf("%s\n", codec_tag_buffer);
+			}
+			FLAC__metadata_object_delete(flac_metadata);
+			if(entry >= 0)
 			{
 				return codec_tag_buffer;
 			}
