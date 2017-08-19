@@ -5,6 +5,7 @@
 
 static OMO_CODEC_HANDLER codec_handler;
 static Music_Emu * emu = NULL;
+static gme_info_t * info;
 static bool paused = false;
 static int buf_size = 1024;
 static ALLEGRO_THREAD * codec_thread = NULL;
@@ -62,8 +63,62 @@ static bool codec_load_file(const char * fn, const char * subfn)
 		start_track = atoi(subfn);
 	}
 
-	gme_open_file(fn, &emu, 44100);
-	return true;
+	if(!gme_open_file(fn, &emu, 44100))
+	{
+		gme_track_info(emu, &info, start_track);
+		return true;
+	}
+	return false;
+}
+
+static const char * codec_get_tag(const char * name)
+{
+	if(info)
+	{
+		if(!strcmp(name, "Album"))
+		{
+			if(strlen(info->game))
+			{
+				return info->game;
+			}
+		}
+		else if(!strcmp(name, "Artist"))
+		{
+			if(strlen(info->author))
+			{
+				return info->author;
+			}
+		}
+		else if(!strcmp(name, "Album"))
+		{
+			if(strlen(info->game))
+			{
+				return info->game;
+			}
+		}
+		else if(!strcmp(name, "Title"))
+		{
+			if(strlen(info->song))
+			{
+				return info->song;
+			}
+		}
+		else if(!strcmp(name, "Copyright"))
+		{
+			if(strlen(info->copyright))
+			{
+				return info->copyright;
+			}
+		}
+		else if(!strcmp(name, "Comment"))
+		{
+			if(strlen(info->comment))
+			{
+				return info->comment;
+			}
+		}
+	}
+	return NULL;
 }
 
 static int codec_get_track_count(const char * fn)
@@ -134,6 +189,10 @@ static void codec_stop(void)
 	codec_thread = NULL;
 	al_destroy_audio_stream(codec_stream);
 	codec_stream = NULL;
+	if(info)
+	{
+		gme_free_info(info);
+	}
 	gme_delete(emu);
 	emu = NULL;
 }
@@ -157,6 +216,7 @@ OMO_CODEC_HANDLER * omo_codec_gme_get_codec_handler(void)
 	memset(&codec_handler, 0, sizeof(OMO_CODEC_HANDLER));
 	codec_handler.initialize = NULL;
 	codec_handler.load_file = codec_load_file;
+	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;
