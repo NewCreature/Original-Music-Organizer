@@ -81,7 +81,6 @@ static const char * codec_get_tag(const char * name)
 						tag_buffer[i] = '\n';
 					}
 				}
-				printf("comment: %s\n", tag_buffer);
 				return tag_buffer;
 			}
 		}
