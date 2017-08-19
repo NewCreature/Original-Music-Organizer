@@ -78,7 +78,7 @@ static const char * codec_get_tag(const char * name)
 					}
 					if(tag_buffer[i] == '\r')
 					{
-						tag_buffer[i] = '\n';
+						tag_buffer[i] = ' ';
 					}
 				}
 				return tag_buffer;
