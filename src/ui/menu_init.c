@@ -18,6 +18,9 @@ bool omo_setup_menus(void * data)
     t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Play Folder", 0, NULL, omo_menu_file_play_folder, NULL);
     t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Queue Folder", 0, NULL, omo_menu_file_queue_folder, NULL);
     t3f_add_menu_item(app->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
+    t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Add Library Folder", 0, NULL, omo_menu_file_add_library_folder, NULL);
+    t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Clear Library Folders", 0, NULL, omo_menu_file_clear_library_folders, NULL);
+    t3f_add_menu_item(app->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
     t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Exit", 0, NULL, omo_menu_file_exit, NULL);
 
     app->menu[OMO_MENU_PLAYBACK] = al_create_menu();

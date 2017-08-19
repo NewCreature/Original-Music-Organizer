@@ -5,6 +5,8 @@
 #include "../archive_handlers/registry.h"
 #include "../codec_handlers/registry.h"
 #include "../queue.h"
+#include "../library.h"
+#include "../init.h"
 
 static void file_chooser_thread_helper(void * data)
 {
@@ -131,6 +133,28 @@ int omo_menu_file_queue_folder(void * data)
     app->file_chooser_done = false;
     omo_start_file_chooser(data, "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER);
     return 1;
+}
+
+int omo_menu_file_add_library_folder(void * data)
+{
+    APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+    app->file_chooser_mode = 4;
+    app->file_chooser_done = false;
+    omo_start_file_chooser(data, "Select library folder.", al_get_config_value(t3f_config, "Settings", "last_music_folder"), ALLEGRO_FILECHOOSER_FOLDER);
+    return 1;
+}
+
+int omo_menu_file_clear_library_folders(void * data)
+{
+    APP_INSTANCE * app = (APP_INSTANCE *)data;
+    char buf[4];
+
+    sprintf(buf, "%d", 0);
+    al_set_config_value(t3f_config, "Settings", "library_folders", buf);
+    omo_destroy_library(app->library);
+    omo_setup_library(app, omo_library_setup_update_proc);
+    return 0;
 }
 
 int omo_menu_file_exit(void * data)

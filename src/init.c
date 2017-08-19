@@ -23,12 +23,41 @@
 	#include "codec_handlers/avplayer/avplayer.h"
 #endif
 
-static bool omo_setup_library(APP_INSTANCE * app)
+void omo_library_setup_update_proc(const char * fn, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	ALLEGRO_FONT * font;
+	ALLEGRO_PATH * path;
+	ALLEGRO_STATE old_state;
+	ALLEGRO_TRANSFORM identity;
+	int clipx, clipy, clipw, cliph;
+
+	t3f_render(false);
+	al_store_state(&old_state, ALLEGRO_STATE_TRANSFORM);
+	al_get_clipping_rectangle(&clipx, &clipy, &clipw, &cliph);
+	al_set_clipping_rectangle(0, 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display));
+	al_identity_transform(&identity);
+	al_use_transform(&identity);
+	al_draw_filled_rectangle(0, 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), al_map_rgba_f(0.0, 0.0, 0.0, 0.5));
+	font = app->ui->ui_button_theme->state[0].font;
+	path = al_create_path(fn);
+	if(path)
+	{
+		al_draw_textf(font, t3f_color_white, 8, 8, 0, "add (%lu/%lu): %s", app->library->entry_count, app->library->entry_size, al_get_path_filename(path));
+		al_destroy_path(path);
+	}
+	al_flip_display();
+	al_set_clipping_rectangle(clipx, clipy, clipw, cliph);
+	al_restore_state(&old_state);
+}
+
+bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, void * data))
 {
 	const char * val;
 	char file_db_fn[1024];
 	char entry_db_fn[1024];
-	int i;
+	char buffer[64];
+	int c, i, j;
 
 	/* load the library databases */
 	strcpy(file_db_fn, t3f_get_filename(t3f_data_path, "files.ini"));
@@ -40,15 +69,29 @@ static bool omo_setup_library(APP_INSTANCE * app)
 	}
 
 	/* scan library paths */
-	val = al_get_config_value(t3f_config, "Settings", "library_path");
+	val = al_get_config_value(t3f_config, "Settings", "library_folders");
 	if(val)
 	{
+		c = atoi(val);
 		omo_reset_file_count();
-		t3f_scan_files(val, omo_count_file, false, app);
-		omo_save_library(app->library);
+		for(j = 0; j < c; j++)
+		{
+			sprintf(buffer, "library_folder_%d", j);
+			val = al_get_config_value(t3f_config, "Settings", buffer);
+			if(val)
+			{
+				t3f_scan_files(val, omo_count_file, false, NULL, app);
+				omo_save_library(app->library);
+			}
+		}
 		omo_allocate_library(app->library, omo_get_file_count());
-		t3f_scan_files(val, omo_add_file, false, app);
-		omo_save_library(app->library);
+		for(j = 0; j < c; j++)
+		{
+			sprintf(buffer, "library_folder_%d", j);
+			val = al_get_config_value(t3f_config, "Settings", buffer);
+			t3f_scan_files(val, omo_add_file, false, update_proc, app);
+			omo_save_library(app->library);
+		}
 
 		/* tally up artists */
 		omo_add_artist_to_library(app->library, "All");
@@ -131,11 +174,6 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avplayer_get_codec_handler());
 	#endif
 
-	if(!omo_setup_library(app))
-	{
-		printf("Failed to set up library!\n");
-		return false;
-	}
 	app->player = omo_create_player();
 	if(!app->player)
 	{
@@ -188,5 +226,12 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	t3f_srand(&app->rng_state, time(0));
 	app->state = 0;
 	app->button_pressed = -1;
+
+	/* set up library */
+	if(!omo_setup_library(app, omo_library_setup_update_proc))
+	{
+		printf("Failed to set up library!\n");
+		return false;
+	}
 	return true;
 }

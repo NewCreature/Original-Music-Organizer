@@ -142,6 +142,7 @@ bool omo_add_file(const char * fn, void * data)
 	const char * val;
 	const char * val2;
 	const char * target_fn = NULL;
+	int ret = 2; // don't update unless we get update signal from library function
 
 	archive_handler = omo_get_archive_handler(app->archive_handler_registry, fn);
 	if(archive_handler)
@@ -171,12 +172,12 @@ bool omo_add_file(const char * fn, void * data)
 					for(j = 0; j < c2; j++)
 					{
 						sprintf(buf2, "%d", j);
-						omo_add_file_to_library(app->library, fn, buf, c2 > 1 ? buf2 : NULL, app->archive_handler_registry, app->codec_handler_registry);
+						ret = omo_add_file_to_library(app->library, fn, buf, c2 > 1 ? buf2 : NULL, app->archive_handler_registry, app->codec_handler_registry);
 					}
 				}
 				else
 				{
-					omo_add_file_to_library(app->library, fn, buf, NULL, app->archive_handler_registry, app->codec_handler_registry);
+					ret = omo_add_file_to_library(app->library, fn, buf, NULL, app->archive_handler_registry, app->codec_handler_registry);
 				}
 			}
 		}
@@ -198,12 +199,16 @@ bool omo_add_file(const char * fn, void * data)
 			for(i = 0; i < c; i++)
 			{
 				sprintf(buf, "%d", i);
-				omo_add_file_to_library(app->library, fn, NULL, c > 1 ? buf : NULL, app->archive_handler_registry, app->codec_handler_registry);
+				ret = omo_add_file_to_library(app->library, fn, NULL, c > 1 ? buf : NULL, app->archive_handler_registry, app->codec_handler_registry);
 			}
 		}
 	}
 
-    return false;
+	if(ret == 2)
+	{
+    	return false;
+	}
+	return true;
 }
 
 bool omo_queue_file(const char * fn, void * data)

@@ -1,6 +1,6 @@
 #include "t3f.h"
 
-bool t3f_scan_files(const char * path, bool (*process_file)(const char * fn, void * data), bool subdir, void * data)
+bool t3f_scan_files(const char * path, bool (*process_file)(const char * fn, void * data), bool subdir, void (*update_proc)(const char * fn, void * data), void * data)
 {
 	ALLEGRO_FS_ENTRY * dir;
 	ALLEGRO_FS_ENTRY * fp;
@@ -44,11 +44,17 @@ bool t3f_scan_files(const char * path, bool (*process_file)(const char * fn, voi
 //		name = al_path_to_string(al_get_entry_name(fp), '/');
 		if(al_get_fs_entry_mode(fp) & ALLEGRO_FILEMODE_ISDIR)
 		{
-			t3f_scan_files(al_get_fs_entry_name(fp), process_file, true, data);
+			t3f_scan_files(al_get_fs_entry_name(fp), process_file, true, update_proc, data);
 		}
 		else
 		{
-            process_file(al_get_fs_entry_name(fp), data);
+            if(process_file(al_get_fs_entry_name(fp), data))
+			{
+				if(update_proc)
+				{
+					update_proc(al_get_fs_entry_name(fp), data);
+				}
+			}
 		}
 		al_destroy_fs_entry(fp);
 	}

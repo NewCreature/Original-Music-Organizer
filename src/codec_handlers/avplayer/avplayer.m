@@ -42,7 +42,14 @@ static void codec_strcpy(char * dest, const char * src, int limit)
 
 	for(i = 0; i < strlen(src) && i < limit - 1; i++)
 	{
-		dest[i] = src[i];
+		if(src[i] == '\r' || src[i] == '\n')
+		{
+			dest[i] = ' ';
+		}
+		else
+		{
+			dest[i] = src[i];
+		}
 	}
 	dest[i] = 0;
 	dest[limit - 1] = 0;
