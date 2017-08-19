@@ -299,7 +299,7 @@ char *str2md5(const char *str, int length) {
     int n;
     MD5_CTX c;
     unsigned char digest[16];
-    char *out = (char*)malloc(33);
+    char *out = md5_hash_string;
 
     MD5_Init(&c);
 
@@ -347,7 +347,6 @@ const char * md5_file(const char * fn)
             }
             output = str2md5(buffer, file_size);
             strcpy(md5_hash_string, output);
-            free(output);
             free(buffer);
             hashed = 1;
         }
