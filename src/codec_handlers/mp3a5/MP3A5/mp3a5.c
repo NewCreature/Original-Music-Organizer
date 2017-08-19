@@ -21,6 +21,8 @@ static void get_lines(mpg123_string *inlines, char * buffer)
 	char *lines = NULL;
 	char *line  = NULL;
 	size_t len = 0;
+    int buffer_len = 0;
+    int line_len;
 
     strcpy(buffer, "");
 	if(inlines != NULL && inlines->fill)
@@ -43,8 +45,17 @@ static void get_lines(mpg123_string *inlines, char * buffer)
 			if(line)
 			{
 				lines[i] = 0;
-                strcat(buffer, line);
-                strcat(buffer, "\n");
+                line_len = strlen(line);
+                if(buffer_len + line_len < 1023 - 1)
+                {
+                    strcat(buffer, line);
+                    strcat(buffer, " ");
+                    buffer_len += line_len + 1;
+                }
+                else
+                {
+                    break;
+                }
 				line = NULL;
 				lines[i] = save;
 			}
@@ -55,7 +66,7 @@ static void get_lines(mpg123_string *inlines, char * buffer)
 			if(line == NULL) line = lines+i;
 		}
 	}
-    if(buffer[strlen(buffer) - 1] == '\n')
+    if(buffer[strlen(buffer) - 1] == '\n' || buffer[strlen(buffer) - 1] == ' ')
     {
         buffer[strlen(buffer) - 1] = 0;
     }
@@ -194,6 +205,7 @@ MP3A5_MP3 * mp3a5_load_mp3(const char *filename)
     mp3 = malloc(sizeof(MP3A5_MP3));
     if(mp3)
     {
+        memset(mp3, 0, sizeof(MP3A5_MP3));
         mp3->mp3 = mpg123_new(NULL, NULL);
         if(mp3->mp3)
         {

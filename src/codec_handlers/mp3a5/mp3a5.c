@@ -40,41 +40,44 @@ static int codec_get_track_count(const char * fn)
 
 static const char * codec_get_tag(const char * name)
 {
-	if(!strcmp(name, "Artist"))
+	if(codec_mp3->tags)
 	{
-		return codec_mp3->tags->artist;
-	}
-	else if(!strcmp(name, "Album"))
-	{
-		return codec_mp3->tags->album;
-	}
-	else if(!strcmp(name, "Disc"))
-	{
-		return codec_mp3->tags->disc;
-	}
-	else if(!strcmp(name, "Track"))
-	{
-		return codec_mp3->tags->track;
-	}
-	else if(!strcmp(name, "Title"))
-	{
-		return codec_mp3->tags->title;
-	}
-	else if(!strcmp(name, "Genre"))
-	{
-		return codec_mp3->tags->genre;
-	}
-	else if(!strcmp(name, "Year"))
-	{
-		return codec_mp3->tags->year;
-	}
-	else if(!strcmp(name, "Copyright"))
-	{
-		return codec_mp3->tags->copyright;
-	}
-	else if(!strcmp(name, "Comment"))
-	{
-		return codec_mp3->tags->comment;
+		if(!strcmp(name, "Artist"))
+		{
+			return codec_mp3->tags->artist;
+		}
+		else if(!strcmp(name, "Album"))
+		{
+			return codec_mp3->tags->album;
+		}
+		else if(!strcmp(name, "Disc"))
+		{
+			return codec_mp3->tags->disc;
+		}
+		else if(!strcmp(name, "Track"))
+		{
+			return codec_mp3->tags->track;
+		}
+		else if(!strcmp(name, "Title"))
+		{
+			return codec_mp3->tags->title;
+		}
+		else if(!strcmp(name, "Genre"))
+		{
+			return codec_mp3->tags->genre;
+		}
+		else if(!strcmp(name, "Year"))
+		{
+			return codec_mp3->tags->year;
+		}
+		else if(!strcmp(name, "Copyright"))
+		{
+			return codec_mp3->tags->copyright;
+		}
+		else if(!strcmp(name, "Comment"))
+		{
+			return codec_mp3->tags->comment;
+		}
 	}
 	return NULL;
 }
