@@ -608,6 +608,39 @@ static int sort_by_title(const void *e1, const void *e2)
     return sort_by_path(e1, e2);
 }
 
+/*static const char * skip_articles(const char * s)
+{
+    const char * article[5] = {"a", "an", "the"};
+    int i, j, l;
+
+    for(i = 0; i < 3; i++)
+    {
+        l = strlen(article[i]);
+        if(strlen(s) > l + 1)
+        {
+            for(j = 0; j < l; j++)
+            {
+                if(tolower(s[j]) != article[j])
+                {
+                    break;
+                }
+                if(j == )
+            }
+        }
+    }
+    if(strlen(s) > 3)
+    {
+        if(tolower(s[0]) == 't' && tolower(s[0]) == 't')
+    }
+}
+
+static int sort_strcmp(const char * s1, const char * s2)
+{
+    const char * real_s1;
+    const char * real_s2;
+
+} */
+
 static void library_sort_by_track(OMO_LIBRARY * lp)
 {
     library = lp;
@@ -618,6 +651,13 @@ static void library_sort_by_title(OMO_LIBRARY * lp)
 {
     library = lp;
     qsort(lp->song_entry, lp->song_entry_count, sizeof(unsigned long), sort_by_title);
+}
+
+static int sort_names(const void *e1, const void *e2)
+{
+	char ** s1 = (char **)e1;
+	char ** s2 = (char **)e2;
+    return strcasecmp(*s1, *s2);
 }
 
 static bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
@@ -675,6 +715,10 @@ static bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
                 }
             }
         }
+    }
+    if(lp->album_entry_count > 2)
+    {
+        qsort(&lp->album_entry[2], lp->album_entry_count - 2, sizeof(char *), sort_names);
     }
     return true;
 }

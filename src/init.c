@@ -51,6 +51,13 @@ void omo_library_setup_update_proc(const char * fn, void * data)
 	al_restore_state(&old_state);
 }
 
+static int sort_names(const void *e1, const void *e2)
+{
+	char ** s1 = (char **)e1;
+	char ** s2 = (char **)e2;
+    return strcasecmp(*s1, *s2);
+}
+
 bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, void * data))
 {
 	const char * val;
@@ -104,6 +111,10 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 				omo_add_artist_to_library(app->library, val);
 			}
 		}
+		if(app->library->artist_entry_count > 2)
+		{
+			qsort(&app->library->artist_entry[2], app->library->artist_entry_count - 2, sizeof(char *), sort_names);
+		}
 
 		/* tally up albums */
 		omo_add_album_to_library(app->library, "All");
@@ -115,6 +126,10 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 			{
 				omo_add_album_to_library(app->library, val);
 			}
+		}
+		if(app->library->album_entry_count > 2)
+		{
+			qsort(&app->library->album_entry[2], app->library->album_entry_count - 2, sizeof(char *), sort_names);
 		}
 
 		/* make song list */
