@@ -149,7 +149,9 @@ char * ui_artist_list_proc(int index, int *list_size, void * data)
 char * ui_song_list_proc(int index, int *list_size, void * data)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
-	const char * val;
+	const char * title;
+	const char * album;
+	const char * track;
 
     if(index < 0)
     {
@@ -161,10 +163,16 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
     }
     if(app->library && app->library->song_entry)
     {
-		val = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Title");
-		if(val)
+		title = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Title");
+		album = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Album");
+		track = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Track");
+		if(title)
 		{
-			strcpy(ui_song_text, val);
+			strcpy(ui_song_text, title);
+		}
+		else if(album && track)
+		{
+			sprintf(ui_song_text, "%s - Track %s", album, track);
 		}
 		else
 		{
