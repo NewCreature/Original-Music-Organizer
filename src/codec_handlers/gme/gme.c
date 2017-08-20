@@ -81,6 +81,7 @@ static void codec_unload_file(void)
 	emu = NULL;
 }
 
+static char track_buffer[16] = {0};
 static const char * codec_get_tag(const char * name)
 {
 	if(info)
@@ -126,6 +127,14 @@ static const char * codec_get_tag(const char * name)
 			{
 				return info->comment;
 			}
+		}
+		else if(!strcmp(name, "Track"))
+		{
+			if(gme_track_count(emu) > 1)
+			{
+				sprintf(track_buffer, "%d", start_track + 1);
+			}
+			return track_buffer;
 		}
 	}
 	return NULL;
