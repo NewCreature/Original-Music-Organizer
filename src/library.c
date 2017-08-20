@@ -479,8 +479,33 @@ static int sort_by_path(const void *e1, const void *e2)
 {
     int entry1 = *((int *)e1);
     int entry2 = *((int *)e2);
+    char section1[1024];
+    char section2[1024];
 
-    return strcmp(library->entry[entry1]->filename, library->entry[entry2]->filename);
+    strcpy(section1, library->entry[entry1]->filename);
+    if(library->entry[entry1]->sub_filename)
+    {
+        strcat(section1, "/");
+        strcat(section1, library->entry[entry1]->sub_filename);
+    }
+    if(library->entry[entry1]->track)
+    {
+        strcat(section1, ":");
+        strcat(section1, library->entry[entry1]->track);
+    }
+    strcpy(section2, library->entry[entry2]->filename);
+    if(library->entry[entry2]->sub_filename)
+    {
+        strcat(section2, "/");
+        strcat(section2, library->entry[entry2]->sub_filename);
+    }
+    if(library->entry[entry2]->track)
+    {
+        strcat(section2, ":");
+        strcat(section2, library->entry[entry2]->track);
+    }
+
+    return strcmp(section1, section2);
 }
 
 /* sort by artist, album, title */
@@ -488,6 +513,8 @@ static int sort_by_artist_album_title(const void *e1, const void *e2)
 {
     int entry1 = *((int *)e1);
     int entry2 = *((int *)e2);
+    char section1[1024];
+    char section2[1024];
     const char * sort_field[3] = {"Artist", "Album", "Title"};
     int sort_type[3] = {0, 0, 0};
     const char * val1;
@@ -497,8 +524,31 @@ static int sort_by_artist_album_title(const void *e1, const void *e2)
     int i1, i2;
     int i, c;
 
-    id1 = al_get_config_value(library->file_database, library->entry[entry1]->filename, "id");
-    id2 = al_get_config_value(library->file_database, library->entry[entry2]->filename, "id");
+    strcpy(section1, library->entry[entry1]->filename);
+    if(library->entry[entry1]->sub_filename)
+    {
+        strcat(section1, "/");
+        strcat(section1, library->entry[entry1]->sub_filename);
+    }
+    if(library->entry[entry1]->track)
+    {
+        strcat(section1, ":");
+        strcat(section1, library->entry[entry1]->track);
+    }
+    strcpy(section2, library->entry[entry2]->filename);
+    if(library->entry[entry2]->sub_filename)
+    {
+        strcat(section2, "/");
+        strcat(section2, library->entry[entry2]->sub_filename);
+    }
+    if(library->entry[entry2]->track)
+    {
+        strcat(section2, ":");
+        strcat(section2, library->entry[entry2]->track);
+    }
+
+    id1 = al_get_config_value(library->file_database, section1, "id");
+    id2 = al_get_config_value(library->file_database, section2, "id");
 
     if(id1 && id2)
     {
@@ -535,14 +585,38 @@ static int sort_by_track(const void *e1, const void *e2)
 {
     int entry1 = *((int *)e1);
     int entry2 = *((int *)e2);
+    char section1[1024];
+    char section2[1024];
     const char * val1;
     const char * val2;
     const char * id1;
     const char * id2;
     int i1, i2;
 
-    id1 = al_get_config_value(library->file_database, library->entry[entry1]->filename, "id");
-    id2 = al_get_config_value(library->file_database, library->entry[entry2]->filename, "id");
+    strcpy(section1, library->entry[entry1]->filename);
+    if(library->entry[entry1]->sub_filename)
+    {
+        strcat(section1, "/");
+        strcat(section1, library->entry[entry1]->sub_filename);
+    }
+    if(library->entry[entry1]->track)
+    {
+        strcat(section1, ":");
+        strcat(section1, library->entry[entry1]->track);
+    }
+    strcpy(section2, library->entry[entry2]->filename);
+    if(library->entry[entry2]->sub_filename)
+    {
+        strcat(section2, "/");
+        strcat(section2, library->entry[entry2]->sub_filename);
+    }
+    if(library->entry[entry2]->track)
+    {
+        strcat(section2, ":");
+        strcat(section2, library->entry[entry2]->track);
+    }
+    id1 = al_get_config_value(library->file_database, section1, "id");
+    id2 = al_get_config_value(library->file_database, section2, "id");
 
     if(id1 && id2)
     {
