@@ -474,6 +474,7 @@ bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name)
 
 static OMO_LIBRARY * library = NULL;
 
+/* when all else fails, sort by path */
 static int sort_by_path(const void *e1, const void *e2)
 {
     int entry1 = *((int *)e1);
@@ -482,12 +483,13 @@ static int sort_by_path(const void *e1, const void *e2)
     return strcmp(library->entry[entry1]->filename, library->entry[entry2]->filename);
 }
 
-static int sort_by_track(const void *e1, const void *e2)
+/* sort by artist, album, title */
+static int sort_by_artist_album_title(const void *e1, const void *e2)
 {
     int entry1 = *((int *)e1);
     int entry2 = *((int *)e2);
-    const char * sort_field[5] = {"Artist", "Album", "Disc", "Track", "Title"};
-    int sort_type[5] = {0, 0, 1, 1, 0};
+    const char * sort_field[3] = {"Artist", "Album", "Title"};
+    int sort_type[3] = {0, 0, 0};
     const char * val1;
     const char * val2;
     const char * id1;
@@ -500,7 +502,7 @@ static int sort_by_track(const void *e1, const void *e2)
 
     if(id1 && id2)
     {
-        for(i = 0; i < 5; i++)
+        for(i = 0; i < 3; i++)
         {
             val1 = al_get_config_value(library->entry_database, id1, sort_field[i]);
             val2 = al_get_config_value(library->entry_database, id2, sort_field[i]);
@@ -527,6 +529,50 @@ static int sort_by_track(const void *e1, const void *e2)
         }
     }
     return sort_by_path(e1, e2);
+}
+
+static int sort_by_track(const void *e1, const void *e2)
+{
+    int entry1 = *((int *)e1);
+    int entry2 = *((int *)e2);
+    const char * val1;
+    const char * val2;
+    const char * id1;
+    const char * id2;
+    int i1, i2;
+
+    id1 = al_get_config_value(library->file_database, library->entry[entry1]->filename, "id");
+    id2 = al_get_config_value(library->file_database, library->entry[entry2]->filename, "id");
+
+    if(id1 && id2)
+    {
+        /* sort by disc first */
+        val1 = al_get_config_value(library->entry_database, id1, "Disc");
+        val2 = al_get_config_value(library->entry_database, id2, "Disc");
+        if(val1 && val2)
+        {
+            i1 = atoi(val1);
+            i2 = atoi(val2);
+            if(i1 != i2)
+            {
+                return i1 - i2;
+            }
+        }
+
+        /* if discs match, sort by track */
+        val1 = al_get_config_value(library->entry_database, id1, "Track");
+        val2 = al_get_config_value(library->entry_database, id2, "Track");
+        if(val1 && val2)
+        {
+            i1 = atoi(val1);
+            i2 = atoi(val2);
+            if(i1 != i2)
+            {
+                return i1 - i2;
+            }
+        }
+    }
+    return sort_by_artist_album_title(e1, e2);
 }
 
 static int sort_by_title(const void *e1, const void *e2)
