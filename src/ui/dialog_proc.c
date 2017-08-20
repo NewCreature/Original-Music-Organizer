@@ -55,7 +55,17 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
     }
     if(app->player && app->player->queue)
     {
-        sprintf(section, "%s%s%s", app->player->queue->entry[index]->file, app->player->queue->entry[index]->sub_file ? "/" : "", app->player->queue->entry[index]->sub_file ? app->player->queue->entry[index]->sub_file : "");
+		strcpy(section, app->player->queue->entry[index]->file);
+		if(app->player->queue->entry[index]->sub_file)
+		{
+			strcat(section, "/");
+			strcat(section, app->player->queue->entry[index]->sub_file);
+		}
+		if(app->player->queue->entry[index]->track)
+		{
+			strcat(section, ":");
+			strcat(section, app->player->queue->entry[index]->track);
+		}
         if(app->library)
         {
             val = al_get_config_value(app->library->file_database, section, "id");
@@ -73,25 +83,29 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
 			strcat(prefix, track);
 			strcat(prefix, ". ");
 		}
-        if(title)
-        {
-			if(artist && album)
+		if(artist && album)
+		{
+			if(title)
 			{
-            	sprintf(ui_queue_text, "%s%s - %s (%s)", prefix, artist, title, album);
+				sprintf(ui_queue_text, "%s%s - %s (%s)", prefix, artist, title, album);
 			}
-			else if(artist)
+			else if(track)
 			{
-				sprintf(ui_queue_text, "%s%s - %s", prefix, artist, title);
-			}
-			else if(album)
-			{
-				sprintf(ui_queue_text, "%s%s - %s", prefix, album, title);
+				sprintf(ui_queue_text, "%s%s - %s - Track %s", prefix, artist, album, track);
 			}
 			else
 			{
-				sprintf(ui_queue_text, "%s%s", prefix, title);
+				sprintf(ui_queue_text, "%s%s - %s - Unknown", prefix, artist, album);
 			}
-        }
+		}
+		else if(album && track)
+		{
+			sprintf(ui_queue_text, "%s%s - Track %s", prefix, album, track);
+		}
+		else if(title)
+		{
+			sprintf(ui_queue_text, "%s%s", prefix, title);
+		}
         else
         {
             get_path_filename(app->player->queue->entry[index]->file, display_fn);
