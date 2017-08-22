@@ -187,12 +187,12 @@ void omo_logic(void * data)
 					}
 					t3f_key[ALLEGRO_KEY_T] = 0;
 				}
-				if(t3f_key[ALLEGRO_KEY_LEFT])
+				if(t3f_key[ALLEGRO_KEY_Z])
 				{
 					app->button_pressed = 0;
-					t3f_key[ALLEGRO_KEY_LEFT] = 0;
+					t3f_key[ALLEGRO_KEY_Z] = 0;
 				}
-				if(t3f_key[ALLEGRO_KEY_ENTER])
+				if(t3f_key[ALLEGRO_KEY_X])
 				{
 					if(app->player->queue_pos != app->ui->ui_queue_list_element->d1)
 					{
@@ -201,10 +201,27 @@ void omo_logic(void * data)
 						omo_start_player(app->player);
 					}
 				}
-				if(t3f_key[ALLEGRO_KEY_RIGHT])
+				if(t3f_key[ALLEGRO_KEY_C])
+				{
+					if(app->player->state == OMO_PLAYER_STATE_PLAYING)
+					{
+						omo_pause_player(app->player);
+					}
+					else if(app->player->state == OMO_PLAYER_STATE_PAUSED)
+					{
+						omo_resume_player(app->player);
+					}
+					t3f_key[ALLEGRO_KEY_C] = 0;
+				}
+				if(t3f_key[ALLEGRO_KEY_V])
+				{
+					omo_stop_player(app->player);
+					t3f_key[ALLEGRO_KEY_V] = 0;
+				}
+				if(t3f_key[ALLEGRO_KEY_B])
 				{
 					app->button_pressed = 3;
-					t3f_key[ALLEGRO_KEY_RIGHT] = 0;
+					t3f_key[ALLEGRO_KEY_B] = 0;
 				}
 				switch(app->button_pressed)
 				{
