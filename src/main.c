@@ -223,6 +223,32 @@ void omo_logic(void * data)
 					app->button_pressed = 3;
 					t3f_key[ALLEGRO_KEY_B] = 0;
 				}
+				if(t3f_key[ALLEGRO_KEY_DELETE])
+				{
+					if(app->player->queue && app->ui->ui_queue_list_element->d1 < app->player->queue->entry_count)
+					{
+						if(app->ui->ui_queue_list_element->d1 == app->player->queue_pos)
+						{
+							omo_stop_player(app->player);
+						}
+						omo_delete_queue_item(app->player->queue, app->ui->ui_queue_list_element->d1);
+						if(app->player->queue_pos > app->ui->ui_queue_list_element->d1)
+						{
+							app->player->queue_pos--;
+						}
+						if(app->player->queue->entry_count > 0)
+						{
+							omo_start_player(app->player);
+						}
+						else
+						{
+							omo_destroy_queue(app->player->queue);
+							app->player->queue = NULL;
+						}
+					}
+					t3f_key[ALLEGRO_KEY_DELETE] = 0;
+
+				}
 				switch(app->button_pressed)
 				{
 					case 0:
