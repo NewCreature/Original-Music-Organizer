@@ -175,6 +175,7 @@ static bool codec_play(void)
 	gme_set_fade(emu, track_info->length);
 	l = track_info->length / 1000;
 	gme_free_info(track_info);
+	paused = false;
 
 	codec_stream = al_create_audio_stream(4, buf_size, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
 	if(codec_stream)
