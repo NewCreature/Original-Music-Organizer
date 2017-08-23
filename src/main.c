@@ -46,6 +46,96 @@ static void queue_song_list(void * data, OMO_LIBRARY * lp)
 	}
 }
 
+static void omo_toggle_library_view(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	const char * v_x;
+	const char * v_y;
+	const char * v_width;
+	const char * v_height;
+	int c_x, c_y, c_width, c_height, c_old_width;
+	char buf[32] = {0};
+	ALLEGRO_MONITOR_INFO monitor_info;
+
+	t3gui_close_dialog(app->ui->ui_dialog);
+
+	al_get_window_position(t3f_display, &c_x, &c_y);
+	c_width = al_get_display_width(t3f_display);
+	c_height = al_get_display_height(t3f_display);
+
+	app->library_view = !app->library_view;
+	if(app->library_view)
+	{
+		v_x = al_get_config_value(t3f_config, "Settings", "library_view_x");
+		v_y = al_get_config_value(t3f_config, "Settings", "library_view_y");
+		v_width = al_get_config_value(t3f_config, "Settings", "library_view_width");
+		v_height = al_get_config_value(t3f_config, "Settings", "library_view_height");
+		sprintf(buf, "%d", c_x);
+		al_set_config_value(t3f_config, "Settings", "basic_view_x", buf);
+		sprintf(buf, "%d", c_y);
+		al_set_config_value(t3f_config, "Settings", "basic_view_y", buf);
+		sprintf(buf, "%d", c_width);
+		al_set_config_value(t3f_config, "Settings", "basic_view_width", buf);
+		sprintf(buf, "%d", c_height);
+		al_set_config_value(t3f_config, "Settings", "basic_view_height", buf);
+	}
+	else
+	{
+		v_x = al_get_config_value(t3f_config, "Settings", "basic_view_x");
+		v_y = al_get_config_value(t3f_config, "Settings", "basic_view_y");
+		v_width = al_get_config_value(t3f_config, "Settings", "basic_view_width");
+		v_height = al_get_config_value(t3f_config, "Settings", "basic_view_height");
+		sprintf(buf, "%d", c_x);
+		al_set_config_value(t3f_config, "Settings", "library_view_x", buf);
+		sprintf(buf, "%d", c_y);
+		al_set_config_value(t3f_config, "Settings", "library_view_y", buf);
+		sprintf(buf, "%d", c_width);
+		al_set_config_value(t3f_config, "Settings", "library_view_width", buf);
+		sprintf(buf, "%d", c_height);
+		al_set_config_value(t3f_config, "Settings", "library_view_height", buf);
+	}
+	if(v_x && v_y && v_width && v_height)
+	{
+		c_x = atoi(v_x);
+		c_y = atoi(v_y);
+		c_width = atoi(v_width);
+		c_height = atoi(v_height);
+	}
+	else
+	{
+		al_get_monitor_info(0, &monitor_info);
+		if(app->library_view)
+		{
+			c_old_width = c_width;
+			c_width *= 4;
+			if(c_width > monitor_info.x2 - monitor_info.x1)
+			{
+				c_width = monitor_info.x2 - monitor_info.x1;
+			}
+			c_x -= c_width - c_old_width;
+			if(c_x < 0)
+			{
+				c_x = 0;
+				printf("c_x = 0\n");
+			}
+		}
+		else
+		{
+			c_old_width = c_width;
+			c_width /= 4;
+			c_x += c_old_width - c_width;
+			if(c_x + c_width > monitor_info.x2 - monitor_info.x1)
+			{
+				c_x = monitor_info.x2 - c_width;
+			}
+		}
+	}
+	al_set_window_position(t3f_display, c_x, c_y);
+	al_resize_display(t3f_display, c_width, c_height);
+	omo_create_main_dialog(app->ui, app->library_view ? 1 : 0, c_width, c_height, app);
+	t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
+}
+
 /* main logic routine */
 void omo_logic(void * data)
 {
@@ -153,10 +243,7 @@ void omo_logic(void * data)
 				sprintf(app->ui->ui_button_text[5], "+");
 				if(t3f_key[ALLEGRO_KEY_L])
 				{
-					t3gui_close_dialog(app->ui->ui_dialog);
-					app->library_view = !app->library_view;
-					omo_create_main_dialog(app->ui, app->library_view ? 1 : 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), app);
-					t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
+					omo_toggle_library_view(app);
 					t3f_key[ALLEGRO_KEY_L] = 0;
 				}
 				if(t3f_key[ALLEGRO_KEY_T] && app->library && app->player->queue)
