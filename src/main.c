@@ -116,7 +116,6 @@ static void omo_toggle_library_view(void * data)
 			if(c_x < 0)
 			{
 				c_x = 0;
-				printf("c_x = 0\n");
 			}
 		}
 		else
