@@ -40,30 +40,29 @@ static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
         pane_width = width / 4;
         uip->ui_artist_list_element->x = pane_width * 0 + bezel;
         uip->ui_artist_list_element->y = 0 + bezel;
-        uip->ui_artist_list_element->w = pane_width - bezel * 2;
+        uip->ui_artist_list_element->w = pane_width - bezel * 2 + bezel / 2;
         uip->ui_artist_list_element->h = height - bezel * 2;
 
-        uip->ui_album_list_element->x = pane_width * 1 + bezel;
+        uip->ui_album_list_element->x = pane_width * 1 + bezel - bezel / 2;
         uip->ui_album_list_element->y = 0 + bezel;
-        uip->ui_album_list_element->w = pane_width - bezel * 2;
+        uip->ui_album_list_element->w = pane_width - bezel * 2 + bezel;
         uip->ui_album_list_element->h = height - bezel * 2;
 
-        uip->ui_song_list_element->x = pane_width * 2 + bezel;
+        uip->ui_song_list_element->x = pane_width * 2 + bezel - bezel / 2;
         uip->ui_song_list_element->y = 0 + bezel;
-        uip->ui_song_list_element->w = pane_width - bezel * 2;
+        uip->ui_song_list_element->w = pane_width - bezel * 2 + bezel;
         uip->ui_song_list_element->h = height - bezel * 2;
 
-        queue_width = width - 16;
+        uip->ui_queue_list_element->x = pane_width * 3 + bezel - bezel / 2;
+        queue_width = width - uip->ui_queue_list_element->x - bezel;
         queue_height = height - button_height - 16 - 8;
-        button_width = (pane_width - bezel * 2) / 6;
-
-        uip->ui_queue_list_element->x = pane_width * 3 + bezel;
         uip->ui_queue_list_element->y = 0 + bezel;
-        uip->ui_queue_list_element->w = pane_width - bezel * 2;
+        uip->ui_queue_list_element->w = queue_width;
         uip->ui_queue_list_element->h = height - bezel * 2 - button_height - bezel;
+        button_width = queue_width / 6;
         for(i = 0; i < 6; i++)
         {
-            uip->ui_button_element[i]->x = pane_width * 3 + bezel + button_width * i;
+            uip->ui_button_element[i]->x = uip->ui_queue_list_element->x + button_width * i;
             uip->ui_button_element[i]->y = button_y;
             uip->ui_button_element[i]->w = button_width;
             uip->ui_button_element[i]->h = button_height;
