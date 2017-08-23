@@ -179,10 +179,18 @@ void omo_resize_ui(OMO_UI * uip, int mode, int width, int height)
 bool omo_open_tags_dialog(OMO_UI * uip, void * data)
 {
     int y = 8;
+    int h = 8;
     int i;
 
     al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_OPENGL);
-    uip->tags_display = al_create_display(320, 240);
+    for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+    {
+        if(omo_tag_type[i])
+        {
+            h += al_get_font_line_height(uip->ui_list_box_theme->state[0].font) * 3 + 4;
+        }
+    }
+    uip->tags_display = al_create_display(320, h);
     if(uip->tags_display)
     {
         al_register_event_source(t3f_queue, al_get_display_event_source(uip->tags_display));
@@ -205,16 +213,16 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
         uip->tags_dialog = t3gui_create_dialog();
         if(uip->tags_dialog)
         {
-            t3gui_dialog_add_element(uip->tags_dialog, uip->tags_box_theme, t3gui_box_proc, 0, 0, 320, 240, 0, 0, 0, 0, NULL, NULL, NULL);
+            t3gui_dialog_add_element(uip->tags_dialog, uip->tags_box_theme, t3gui_box_proc, 0, 0, 320, h, 0, 0, 0, 0, NULL, NULL, NULL);
             for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
             {
                 if(omo_tag_type[i])
                 {
-                    t3gui_dialog_add_element(uip->tags_dialog, uip->tags_box_theme, t3gui_text_proc, 8, y, 320 - 16, al_get_font_line_height(uip->tags_box_theme->state[0].font), 0, 0, 0, 0, (void *)omo_tag_type[i], NULL, NULL);
-                    y += al_get_font_line_height(uip->tags_box_theme->state[0].font) + 2;
+                    t3gui_dialog_add_element(uip->tags_dialog, uip->tags_list_box_theme, t3gui_text_proc, 8, y, 320 - 16, al_get_font_line_height(uip->tags_list_box_theme->state[0].font), 0, 0, 0, 0, (void *)omo_tag_type[i], NULL, NULL);
+                    y += al_get_font_line_height(uip->tags_list_box_theme->state[0].font) + 2;
                     strcpy(uip->original_tags_text[i], uip->tags_text[i]);
-                    t3gui_dialog_add_element(uip->tags_dialog, uip->tags_list_box_theme, t3gui_edit_proc, 8, y, 320 - 16, al_get_font_line_height(uip->tags_box_theme->state[0].font) + 4, 0, 0, 256, 0, uip->tags_text[i], NULL, NULL);
-                    y += al_get_font_line_height(uip->tags_box_theme->state[0].font) * 2 + 2;
+                    t3gui_dialog_add_element(uip->tags_dialog, uip->tags_list_box_theme, t3gui_edit_proc, 8, y, 320 - 16, al_get_font_line_height(uip->tags_list_box_theme->state[0].font) + 4, 0, 0, 256, 0, uip->tags_text[i], NULL, NULL);
+                    y += al_get_font_line_height(uip->tags_list_box_theme->state[0].font) * 2 + 2;
                 }
             }
             t3gui_show_dialog(uip->tags_dialog, t3f_queue, T3GUI_PLAYER_CLEAR, data);
