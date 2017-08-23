@@ -78,6 +78,7 @@ static void omo_toggle_library_view(void * data)
 		al_set_config_value(t3f_config, "Settings", "basic_view_width", buf);
 		sprintf(buf, "%d", c_height);
 		al_set_config_value(t3f_config, "Settings", "basic_view_height", buf);
+		al_set_config_value(t3f_config, "Settings", "last_view", "library");
 	}
 	else
 	{
@@ -93,6 +94,7 @@ static void omo_toggle_library_view(void * data)
 		al_set_config_value(t3f_config, "Settings", "library_view_width", buf);
 		sprintf(buf, "%d", c_height);
 		al_set_config_value(t3f_config, "Settings", "library_view_height", buf);
+		al_set_config_value(t3f_config, "Settings", "last_view", "basic");
 	}
 	if(v_x && v_y && v_width && v_height)
 	{

@@ -141,6 +141,7 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 /* initialize our app, load graphics, etc. */
 bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 {
+	const char * val;
 	int i;
 
 	/* initialize T3F */
@@ -230,7 +231,16 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		printf("Error settings up dialogs!\n");
 		return false;
 	}
-	if(!omo_create_main_dialog(app->ui, 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), app))
+	t3f_srand(&app->rng_state, time(0));
+	app->state = 0;
+	app->button_pressed = -1;
+	app->library_view = false;
+	val = al_get_config_value(t3f_config, "Settings", "last_view");
+	if(val && !strcmp(val, "library"))
+	{
+		app->library_view = true;
+	}
+	if(!omo_create_main_dialog(app->ui, app->library_view ? 1 : 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), app))
 	{
 		printf("Unable to create main dialog!\n");
 		return false;
@@ -238,9 +248,6 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 
 	t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
 
-	t3f_srand(&app->rng_state, time(0));
-	app->state = 0;
-	app->button_pressed = -1;
 
 	/* set up library */
 	if(!omo_setup_library(app, omo_library_setup_update_proc))
