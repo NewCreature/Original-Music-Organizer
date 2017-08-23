@@ -72,7 +72,7 @@ void t3gui_exit(void)
 {
     if(t3gui_initialized)
     {
-        t3gui_unload_resources();
+        t3gui_unload_resources(NULL, true);
         t3gui_free_resources();
         t3gui_initialized = false;
     }

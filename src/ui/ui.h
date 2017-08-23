@@ -40,5 +40,6 @@ void omo_resize_ui(OMO_UI * uip, int mode, int width, int height);
 bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void * data);
 
 bool omo_open_tags_dialog(OMO_UI * uip, void * data);
+void omo_close_tags_dialog(OMO_UI * uip, void * data);
 
 #endif

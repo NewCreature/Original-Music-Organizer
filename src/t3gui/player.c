@@ -387,7 +387,7 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
 
         case ALLEGRO_EVENT_DISPLAY_HALT_DRAWING:
         {
-            t3gui_unload_resources();
+            t3gui_unload_resources(event->display.source, false);
             al_acknowledge_drawing_halt(event->display.source);
             player->draw_veto = true;
             break;
@@ -396,7 +396,7 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
         case ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING:
         {
             al_acknowledge_drawing_resume(event->display.source);
-            t3gui_reload_resources();
+            t3gui_reload_resources(event->display.source);
             player->draw_veto = false;
             player->redraw = true;
             my_event.user.type = T3GUI_EVENT_REDRAW;
@@ -405,12 +405,12 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
         }
         case ALLEGRO_EVENT_DISPLAY_LOST:
         {
-            t3gui_unload_resources();
+            t3gui_unload_resources(event->display.source, false);
             break;
         }
         case ALLEGRO_EVENT_DISPLAY_FOUND:
         {
-            t3gui_reload_resources();
+            t3gui_reload_resources(event->display.source);
             break;
         }
 

@@ -460,6 +460,7 @@ int main(int argc, char * argv[])
 		{
 			omo_save_library(app.library);
 		}
+		omo_exit(&app);
 		t3gui_exit();
 	}
 	else

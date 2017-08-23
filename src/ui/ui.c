@@ -1,5 +1,6 @@
 #include "../t3f/t3f.h"
 #include "../t3gui/t3gui.h"
+#include "../t3gui/resource.h"
 #include "../instance.h"
 #include "ui.h"
 #include "dialog_proc.h"
@@ -91,6 +92,13 @@ static bool load_ui_data(OMO_UI * uip)
     return true;
 }
 
+static void free_ui_data(OMO_UI * uip)
+{
+    t3gui_destroy_theme(uip->ui_box_theme);
+    t3gui_destroy_theme(uip->ui_button_theme);
+    t3gui_destroy_theme(uip->ui_list_box_theme);
+}
+
 bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void * data)
 {
     int i;
@@ -158,6 +166,7 @@ OMO_UI * omo_create_ui(void)
 
 void omo_destroy_ui(OMO_UI * uip)
 {
+    free_ui_data(uip);
     t3gui_destroy_dialog(uip->ui_dialog);
     free(uip);
 }
@@ -236,4 +245,14 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
         }
     }
     return false;
+}
+
+void omo_close_tags_dialog(OMO_UI * uip, void * data)
+{
+    t3gui_close_dialog(uip->tags_dialog);
+    t3gui_destroy_dialog(uip->tags_dialog);
+    t3gui_destroy_theme(uip->tags_box_theme);
+    t3gui_unload_resources(uip->tags_display, true);
+    al_destroy_display(uip->tags_display);
+    uip->tags_display = NULL;
 }

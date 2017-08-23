@@ -257,3 +257,13 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	}
 	return true;
 }
+
+void omo_exit(APP_INSTANCE * app)
+{
+	if(app->ui->tags_display)
+	{
+		omo_close_tags_dialog(app->ui, app);
+	}
+	t3gui_close_dialog(app->ui->ui_dialog);
+	omo_destroy_ui(app->ui);
+}

@@ -15,17 +15,13 @@ void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 			if(event->display.source == app->ui->tags_display)
 			{
 				for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
-				{
-					if(omo_tag_type[i] && strcmp(app->ui->tags_text[i], app->ui->original_tags_text[i]))
-					{
-						al_set_config_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i], app->ui->tags_text[i]);
-					}
-				}
-				t3gui_close_dialog(app->ui->tags_dialog);
-				t3gui_destroy_dialog(app->ui->tags_dialog);
-				t3gui_destroy_theme(app->ui->tags_box_theme);
-				al_destroy_display(app->ui->tags_display);
-				app->ui->tags_display = NULL;
+			    {
+			        if(omo_tag_type[i] && strcmp(app->ui->tags_text[i], app->ui->original_tags_text[i]))
+			        {
+			            al_set_config_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i], app->ui->tags_text[i]);
+			        }
+			    }
+				omo_close_tags_dialog(app->ui, data);
 			}
 			t3f_event_handler(event);
 			break;

@@ -68,6 +68,10 @@ bool t3gui_load_font(ALLEGRO_FONT ** fp, const char * fn, int size)
 {
     T3GUI_RESOURCE * rp;
 
+    if(t3gui_fonts >= T3GUI_MAX_FONTS)
+    {
+        return false;
+    }
     rp = t3gui_find_resource(fn ? fn : "", size);
     if(rp)
     {
@@ -107,6 +111,10 @@ bool t3gui_load_bitmap(NINE_PATCH_BITMAP ** bp, const char * fn)
 {
     T3GUI_RESOURCE * rp;
 
+    if(t3gui_bitmaps >= T3GUI_MAX_BITMAPS)
+    {
+        return false;
+    }
     rp = t3gui_find_resource(fn, 0);
     if(rp)
     {
@@ -135,6 +143,28 @@ bool t3gui_load_bitmap(NINE_PATCH_BITMAP ** bp, const char * fn)
     return false;
 }
 
+static void t3gui_remove_resource(int type, int index)
+{
+    int i;
+
+    if(type == T3GUI_RESOURCE_TYPE_BITMAP)
+    {
+        for(i = index; i < t3gui_bitmaps - 1; i++)
+        {
+            t3gui_bitmap[i] = t3gui_bitmap[i + 1];
+        }
+        t3gui_bitmaps--;
+    }
+    else if(type == T3GUI_RESOURCE_TYPE_FONT || type == T3GUI_RESOURCE_TYPE_DEFAULT_FONT)
+    {
+        for(i = index; i < t3gui_fonts - 1; i++)
+        {
+            t3gui_font[i] = t3gui_font[i + 1];
+        }
+        t3gui_fonts--;
+    }
+}
+
 static void t3gui_unload_resource(T3GUI_RESOURCE * rp)
 {
     if(rp->data)
@@ -156,15 +186,45 @@ static void t3gui_unload_resource(T3GUI_RESOURCE * rp)
     }
 }
 
-void t3gui_unload_resources(void)
+void t3gui_unload_resources(ALLEGRO_DISPLAY * dp, bool delete)
 {
-    int i;
+    int i, j, r;
 
-    for(i = 0; i < t3gui_resources; i++)
+    r = t3gui_resources;
+    for(i = r - 1; i >= 0; i--)
     {
-        if(t3gui_resource[i])
+        if(t3gui_resource[i] && (!dp || t3gui_resource[i]->display == dp))
         {
             t3gui_unload_resource(t3gui_resource[i]);
+            if(delete)
+            {
+                if(t3gui_resource[i]->type == T3GUI_RESOURCE_TYPE_BITMAP)
+                {
+                    for(j = t3gui_bitmaps - 1; j >= i; j--)
+                    {
+                        if(*t3gui_bitmap[j] == t3gui_resource[i]->data)
+                        {
+                            t3gui_remove_resource(t3gui_resource[i]->type, j);
+                        }
+                    }
+                }
+                else if(t3gui_resource[i]->type == T3GUI_RESOURCE_TYPE_FONT || t3gui_resource[i]->type == T3GUI_RESOURCE_TYPE_DEFAULT_FONT)
+                {
+                    for(j = t3gui_fonts - 1; j >= i; j--)
+                    {
+                        if(*t3gui_font[j] == t3gui_resource[i]->data)
+                        {
+                            t3gui_remove_resource(t3gui_resource[i]->type, j);
+                        }
+                    }
+                }
+                free(t3gui_resource[i]);
+                for(j = i; j < t3gui_resources - 1; j++)
+                {
+                    t3gui_resource[j] = t3gui_resource[j + 1];
+                }
+                t3gui_resources--;
+            }
         }
     }
 }
@@ -227,14 +287,14 @@ bool t3gui_reload_resource(T3GUI_RESOURCE * rp)
     return ret;
 }
 
-bool t3gui_reload_resources(void)
+bool t3gui_reload_resources(ALLEGRO_DISPLAY * dp)
 {
     int i;
     bool ret = true;
 
     for(i = 0; i < t3gui_resources; i++)
     {
-        if(t3gui_resource[i])
+        if(t3gui_resource[i] && t3gui_resource[i]->display == dp)
         {
             if(!t3gui_reload_resource(t3gui_resource[i]))
             {
