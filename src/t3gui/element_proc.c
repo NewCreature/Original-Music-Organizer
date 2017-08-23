@@ -1769,6 +1769,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
             /* Query size of required text box (d1) and size of scroll bar (d3) */
             d->d3 = 16;
             d->id1 = -1;
+            d->id2 = -1;
             //d->d1 = draw_textbox(d, false, &d->d3);
             //printf("%d\n", d->d1);
             break;
@@ -1900,10 +1901,18 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
             {
                 ALLEGRO_COLOR fg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG];
                 const char *text = func(n, NULL, d->dp3);
+                if(n == d->id2)
+                {
+                    fg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_EG];
+                }
                 if(d->d1 == n)
                 {
                     al_draw_filled_rectangle(d->x+2.5,y+1.5,d->x+d->w-1.5,y+al_get_font_line_height(font)+1.5, d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_FG]);
                     fg = d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_BG];
+                    if(n == d->id2)
+                    {
+                        fg = d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_EG];
+                    }
                 }
                 al_draw_text(font, fg, d->x+4, y+2, 0, text);
                 y += al_get_font_line_height(font);
