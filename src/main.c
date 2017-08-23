@@ -322,6 +322,14 @@ void omo_logic(void * data)
 				}
 				app->button_pressed = -1;
 				omo_player_logic(app->player, app->archive_handler_registry, app->codec_handler_registry);
+				if(app->player->state == OMO_PLAYER_STATE_PLAYING || app->player->state == OMO_PLAYER_STATE_PAUSED)
+				{
+					app->ui->ui_queue_list_element->id2 = app->player->queue_pos;
+				}
+				else
+				{
+					app->ui->ui_queue_list_element->id2 = -1;
+				}
 				break;
 			}
 		}

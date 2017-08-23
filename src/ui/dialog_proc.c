@@ -77,7 +77,7 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
 				track = al_get_config_value(app->library->entry_database, val, "Track");
             }
         }
-		sprintf(prefix, "%s", index == app->player->queue_pos ? ">" : " ");
+		sprintf(prefix, "%s", index == app->player->queue_pos ? "" : "");
 		if(track)
 		{
 			strcat(prefix, track);
