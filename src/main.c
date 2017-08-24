@@ -418,6 +418,8 @@ void omo_logic(void * data)
 				{
 					app->ui->ui_queue_list_element->id2 = -1;
 				}
+				app->ui->ui_artist_list_element->id2 = app->ui->ui_artist_list_element->d1;
+				app->ui->ui_album_list_element->id2 = app->ui->ui_album_list_element->d1;
 				break;
 			}
 		}
