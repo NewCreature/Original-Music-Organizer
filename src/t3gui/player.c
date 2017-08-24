@@ -672,7 +672,7 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
         {
             if (player->click_obj >= 0)
             {
-                MESSAGE(player, player->click_obj, MSG_MOUSEUP, event->mouse.button);
+                MESSAGE(player, player->mouse_obj, MSG_MOUSEUP, event->mouse.button);
             }
 
             if (player->click_obj == player->mouse_obj)
