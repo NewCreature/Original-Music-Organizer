@@ -21,7 +21,7 @@ static bool codec_initialize(void)
 static bool codec_load_file(const char * fn, const char * subfn)
 {
 	DUMB_IT_SIGDATA * sd;
-	int start = 20;
+	int start = 0;
 	long length;
 
 	strcpy(player_sub_filename, "");
@@ -39,7 +39,13 @@ static bool codec_load_file(const char * fn, const char * subfn)
 		sd = duh_get_it_sigdata(codec_module);
 		if(sd)
 		{
-			length = dumb_it_build_checkpoints(sd, start);
+			/* getting the correct length from start orders > 0 only supported in
+			   newer versions of DUMB */
+			#if DUMB_MAJOR_VERSION > 0
+				length = dumb_it_build_checkpoints(sd, start);
+			#else
+				length = dumb_it_build_checkpoints(sd);
+			#endif
 			codec_length = (double)length / 65536.0;
 		}
 		return true;
