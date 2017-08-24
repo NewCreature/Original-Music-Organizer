@@ -1,11 +1,11 @@
 #include "t3f/t3f.h"
-#include "t3f/music.h"
 
 #include <vorbis/vorbisfile.h>
 #include <FLAC/metadata.h>
 
 #include "../codec_handler.h"
 
+static ALLEGRO_AUDIO_STREAM * player_stream = NULL;
 static char player_filename[1024] = {0};
 static OMO_CODEC_HANDLER codec_handler;
 static char codec_file_extension[16] = {0};
@@ -15,14 +15,19 @@ static bool codec_load_file(const char * fn, const char * subfn)
 {
 	ALLEGRO_PATH * path;
 
-	strcpy(codec_file_extension, "");
-	path = al_create_path(fn);
-	if(path)
+	player_stream = al_load_audio_stream(fn, 4, 1024);
+	if(player_stream)
 	{
-		strcpy(codec_file_extension, al_get_path_extension(path));
-		al_destroy_path(path);
+		strcpy(codec_file_extension, "");
+		path = al_create_path(fn);
+		if(path)
+		{
+			strcpy(codec_file_extension, al_get_path_extension(path));
+			al_destroy_path(path);
+		}
+		strcpy(player_filename, fn);
+		return true;
 	}
-	strcpy(player_filename, fn);
 	return true;
 }
 
@@ -117,8 +122,7 @@ static int codec_get_track_count(const char * fn)
 
 static bool codec_play(void)
 {
-	t3f_disable_music_looping();
-	if(t3f_play_music(player_filename))
+	if(al_attach_audio_stream_to_mixer(player_stream, al_get_default_mixer()))
 	{
 		return true;
 	}
@@ -127,24 +131,32 @@ static bool codec_play(void)
 
 static bool codec_pause(void)
 {
-	t3f_pause_music();
-	return true;
+	if(al_set_audio_stream_playing(player_stream, false))
+	{
+		return true;
+	}
+	return false;
 }
 
 static bool codec_resume(void)
 {
-	t3f_resume_music();
-	return true;
+	if(al_set_audio_stream_playing(player_stream, true))
+	{
+		return true;
+	}
+	return false;
 }
 
 static void codec_stop(void)
 {
-	t3f_stop_music();
+	al_drain_audio_stream(player_stream);
+	al_destroy_audio_stream(player_stream);
+	player_stream = false;
 }
 
 static float codec_get_position(void)
 {
-	return al_get_audio_stream_position_secs(t3f_stream);
+	return al_get_audio_stream_position_secs(player_stream);
 }
 
 static bool codec_done_playing(void)
