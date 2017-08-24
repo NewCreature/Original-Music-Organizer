@@ -743,9 +743,9 @@ static bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
     lp->album_entry = malloc(sizeof(char *) * lp->entry_count + 2);
     if(lp->album_entry)
     {
-        omo_add_album_to_library(lp, "All");
-        omo_add_album_to_library(lp, "Unknown");
-        if(!strcmp(artist, "All"))
+        omo_add_album_to_library(lp, "All Albums");
+        omo_add_album_to_library(lp, "Unknown Album");
+        if(!strcmp(artist, "All Artists"))
         {
             for(i = 0; i < lp->entry_count; i++)
             {
@@ -756,7 +756,7 @@ static bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
                 }
             }
         }
-        else if(!strcmp(artist, "Unknown"))
+        else if(!strcmp(artist, "Unknown Artist"))
         {
             for(i = 0; i < lp->entry_count; i++)
             {
@@ -807,9 +807,9 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
         free(lp->song_entry);
         lp->song_entry = NULL;
     }
-    if(!strcmp(artist, "All"))
+    if(!strcmp(artist, "All Artists"))
     {
-        if(!strcmp(album, "All"))
+        if(!strcmp(album, "All Albums"))
         {
             lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
             if(lp->song_entry)
@@ -822,7 +822,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
                 library_sort_by_title(lp);
             }
         }
-        else if(!strcmp(album, "Unknown"))
+        else if(!strcmp(album, "Unknown Album"))
         {
             lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
             lp->song_entry_count = 0;
@@ -871,9 +871,9 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
         }
         omo_get_library_album_list(lp, artist);
     }
-    else if(!strcmp(artist, "Unknown"))
+    else if(!strcmp(artist, "Unknown Artist"))
     {
-        if(!strcmp(album, "All"))
+        if(!strcmp(album, "All Albums"))
         {
             lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
             lp->song_entry_count = 0;
@@ -899,7 +899,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
                 library_sort_by_title(lp);
             }
         }
-        else if(!strcmp(album, "Unknown"))
+        else if(!strcmp(album, "Unknown Album"))
         {
             bool unknown_artist;
             lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
@@ -974,7 +974,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
     }
     else
     {
-        if(!strcmp(album, "All"))
+        if(!strcmp(album, "All Albums"))
         {
             lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
             lp->song_entry_count = 0;
@@ -995,7 +995,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
                 library_sort_by_title(lp);
             }
         }
-        else if(!strcmp(album, "Unknown"))
+        else if(!strcmp(album, "Unknown Album"))
         {
             bool artist_match;
 

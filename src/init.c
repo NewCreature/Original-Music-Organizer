@@ -101,8 +101,8 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 		}
 
 		/* tally up artists */
-		omo_add_artist_to_library(app->library, "All");
-		omo_add_artist_to_library(app->library, "Unknown");
+		omo_add_artist_to_library(app->library, "All Artists");
+		omo_add_artist_to_library(app->library, "Unknown Artist");
 		for(i = 0; i < app->library->entry_count; i++)
 		{
 			val = al_get_config_value(app->library->entry_database, app->library->entry[i]->id, "Artist");
@@ -117,8 +117,8 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 		}
 
 		/* tally up albums */
-		omo_add_album_to_library(app->library, "All");
-		omo_add_album_to_library(app->library, "Unknown");
+		omo_add_album_to_library(app->library, "All Albums");
+		omo_add_album_to_library(app->library, "Unknown Album");
 		for(i = 0; i < app->library->entry_count; i++)
 		{
 			val = al_get_config_value(app->library->entry_database, app->library->entry[i]->id, "Album");
@@ -133,7 +133,7 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 		}
 
 		/* make song list */
-		omo_get_library_song_list(app->library, "All", "All");
+		omo_get_library_song_list(app->library, "All Artists", "All Albums");
 	}
 	return true;
 }

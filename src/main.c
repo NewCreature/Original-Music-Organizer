@@ -166,7 +166,7 @@ void omo_logic(void * data)
 					app->ui->ui_album_list_element->d1 = 0;
 					app->ui->ui_song_list_element->d1 = 0;
 					val2 = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, app);
-					omo_get_library_song_list(app->library, val2, "All");
+					omo_get_library_song_list(app->library, val2, "All Albums");
 				}
 				else if(app->ui->ui_album_list_element->d1 != old_album_d1)
 				{
