@@ -225,7 +225,7 @@ int t3gui_button_proc(int msg, T3GUI_ELEMENT *d, int c)
     if (text == NULL) text = "";
 
     int select = D_INTERACT;
-    int hover = D_GOTFOCUS;
+    int hover = D_GOTMOUSE;
 
     switch(msg)
     {
@@ -426,6 +426,24 @@ int t3gui_push_button_proc(int msg, T3GUI_ELEMENT *d, int c)
 
     switch (msg)
     {
+        case MSG_LOSTMOUSE:
+        {
+            if(d->flags & D_INTERACT)
+            {
+                d->flags &= ~D_INTERACT;
+            }
+            break;
+        }
+        case MSG_GOTMOUSE:
+        {
+            ALLEGRO_MOUSE_STATE mouse_state;
+            al_get_mouse_state(&mouse_state);
+            if(mouse_state.buttons)
+            {
+                d->flags |= D_INTERACT;
+            }
+            break;
+        }
         case MSG_MOUSEUP:
         case MSG_KEY:
         {
