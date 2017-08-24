@@ -260,59 +260,6 @@ bool dumba5_player_playback_finished(DUMBA5_PLAYER * pp)
 	return false;
 }
 
-DUMBA5_PLAYER * dumba5_encapsulate_sigrenderer(DUH_SIGRENDERER * sigrenderer, float volume, long bufsize, int freq)
-{
-	DUMBA5_PLAYER * dp;
-	int n_channels;
-	ALLEGRO_CHANNEL_CONF c_conf;
-
-	if (!sigrenderer)
-		return NULL;
-
-	dp = (DUMBA5_PLAYER *) malloc(sizeof(*dp));
-	if (!dp)
-		return NULL;
-
-	n_channels = duh_sigrenderer_get_n_channels(sigrenderer);
-	if(n_channels == 1)
-	{
-		c_conf = ALLEGRO_CHANNEL_CONF_1;
-	}
-	else
-	{
-		c_conf = ALLEGRO_CHANNEL_CONF_2;
-	}
-
-	/* This restriction is imposed by Allegro. */
-	ASSERT(n_channels > 0);
-	ASSERT(n_channels <= 2);
-
-	dp->flags = ADP_PLAYING;
-	dp->bufsize = bufsize;
-	dp->freq = freq;
-
-	dp->stream = al_create_audio_stream(4, bufsize, freq, ALLEGRO_AUDIO_DEPTH_UINT16, c_conf);
-
-	if (!dp->stream) {
-		free(dp);
-		return NULL;
-	}
-
-	dp->stream = al_create_audio_stream(4, bufsize, freq, ALLEGRO_AUDIO_DEPTH_UINT16, c_conf);
-
-	if (!dp->stream) {
-		free(dp);
-		return NULL;
-	}
-
-	dp->volume = volume;
-	dp->silentcount = 0;
-
-	return dp;
-}
-
-
-
 DUH_SIGRENDERER * dumba5_get_module_sigrenderer(DUMBA5_PLAYER * dp)
 {
 	return dp ? dp->sigrenderer : NULL;
