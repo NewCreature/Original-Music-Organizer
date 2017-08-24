@@ -435,6 +435,14 @@ void omo_logic(void * data)
 				app->ui->ui_album_list_element->id2 = app->ui->ui_album_list_element->d1;
 				break;
 			}
+			else
+			{
+				if(t3f_key[ALLEGRO_KEY_ESCAPE])
+				{
+					omo_close_tags_dialog(app->ui, app);
+					t3f_key[ALLEGRO_KEY_ESCAPE] = 0;
+				}
+			}
 		}
 	}
 }
