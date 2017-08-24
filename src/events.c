@@ -6,7 +6,6 @@
 void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	int i;
 
 	switch(event->type)
 	{
@@ -14,13 +13,6 @@ void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 		{
 			if(event->display.source == app->ui->tags_display)
 			{
-				for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
-			    {
-			        if(omo_tag_type[i] && strcmp(app->ui->tags_text[i], app->ui->original_tags_text[i]))
-			        {
-			            al_set_config_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i], app->ui->tags_text[i]);
-			        }
-			    }
 				omo_close_tags_dialog(app->ui, data);
 			}
 			t3f_event_handler(event);

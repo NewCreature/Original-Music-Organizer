@@ -191,6 +191,7 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
             h += al_get_font_line_height(uip->ui_list_box_theme->state[0].font) * 3 + 4;
         }
     }
+    h += 32 + 8;
     uip->tags_display = al_create_display(320, h);
     if(uip->tags_display)
     {
@@ -206,7 +207,7 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
         {
             goto fail;
         }
-        uip->tags_button_theme = t3gui_load_theme("data/themes/basic/button_theme.ini");
+        uip->tags_button_theme = t3gui_load_theme("data/themes/basic/tags_button_theme.ini");
         if(!uip->tags_button_theme)
         {
             goto fail;
@@ -227,6 +228,8 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
                     y += al_get_font_line_height(uip->tags_list_box_theme->state[0].font) * 2 + 2;
                 }
             }
+            uip->tags_ok_button_element = t3gui_dialog_add_element(uip->tags_dialog, uip->tags_button_theme, t3gui_push_button_proc, 8, y, 320 / 2 - 8 - 4, 32, 0, 0, '\n', 0, "Okay", ui_tags_button_proc, data);
+            t3gui_dialog_add_element(uip->tags_dialog, uip->tags_button_theme, t3gui_push_button_proc, 320 / 2 + 4, y, 320 / 2 - 8 - 4, 32, 0, 0, 0, 1, "Cancel", ui_tags_button_proc, data);
             t3gui_show_dialog(uip->tags_dialog, t3f_queue, T3GUI_PLAYER_CLEAR, data);
             return true;
         }

@@ -210,3 +210,11 @@ int ui_player_button_proc(T3GUI_ELEMENT * ep, void * dp3)
 	app->button_pressed = ep->d2;
 	return 0;
 }
+
+int ui_tags_button_proc(T3GUI_ELEMENT * ep, void * dp3)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)dp3;
+
+	app->button_pressed = ep->d2;
+	return 0;
+}

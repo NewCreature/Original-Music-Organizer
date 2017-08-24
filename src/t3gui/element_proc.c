@@ -427,6 +427,7 @@ int t3gui_push_button_proc(int msg, T3GUI_ELEMENT *d, int c)
     switch (msg)
     {
         case MSG_MOUSEUP:
+        case MSG_KEY:
         {
             if(d->flags & D_INTERACT)
             {
