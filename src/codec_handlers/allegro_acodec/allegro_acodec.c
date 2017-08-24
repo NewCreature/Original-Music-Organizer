@@ -60,8 +60,6 @@ static const char * get_tag_name(const char * name)
 
 static const char * codec_get_tag(const char * name)
 {
-	double f_time;
-
 	if(!strcasecmp(codec_file_extension, ".ogg"))
 	{
 		OggVorbis_File vf;
@@ -156,7 +154,7 @@ static void codec_stop(void)
 	player_stream = false;
 }
 
-static float codec_get_position(void)
+static double codec_get_position(void)
 {
 	return al_get_audio_stream_position_secs(player_stream);
 }

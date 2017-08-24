@@ -137,13 +137,13 @@ static bool codec_seek(float pos)
 //	[player currentPosition] = pos;
 }
 
-static float codec_get_position(void)
+static double codec_get_position(void)
 {
 	return 0.0;
 //	return player.currentTime;
 }
 
-static float codec_get_length(void)
+static double codec_get_length(void)
 {
 	return 0.0;
 //	return player.duration;

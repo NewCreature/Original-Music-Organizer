@@ -5,8 +5,8 @@
 
 static DUMBA5_PLAYER * codec_player = NULL;
 static DUH * codec_module = NULL;
+static double codec_length = 0.0;
 
-static char player_filename[1024] = {0};
 static char player_sub_filename[1024] = {0};
 
 static bool codec_initialize(void)
@@ -20,7 +20,10 @@ static bool codec_initialize(void)
 
 static bool codec_load_file(const char * fn, const char * subfn)
 {
-	strcpy(player_filename, fn);
+	DUMB_IT_SIGDATA * sd;
+	int start = 20;
+	long length;
+
 	strcpy(player_sub_filename, "");
 	if(subfn)
 	{
@@ -29,6 +32,16 @@ static bool codec_load_file(const char * fn, const char * subfn)
 	codec_module = dumba5_load_module(fn);
 	if(codec_module)
 	{
+		if(subfn && strlen(subfn) > 0)
+		{
+			start = atoi(subfn);
+		}
+		sd = duh_get_it_sigdata(codec_module);
+		if(sd)
+		{
+			length = dumb_it_build_checkpoints(sd, start);
+			codec_length = (double)length / 65536.0;
+		}
 		return true;
 	}
 	return false;
@@ -127,9 +140,14 @@ static void codec_stop(void)
 	dumba5_stop_player(codec_player);
 }
 
-static float codec_get_position(void)
+static double codec_get_length(void)
 {
-	return (float)dumba5_get_player_position(codec_player) / 65536.0;
+	return codec_length;
+}
+
+static double codec_get_position(void)
+{
+	return (double)dumba5_get_player_position(codec_player) / 65536.0;
 }
 
 static bool codec_done_playing(void)
@@ -152,6 +170,7 @@ OMO_CODEC_HANDLER * omo_codec_dumba5_get_codec_handler(void)
 	codec_handler.resume = codec_resume;
 	codec_handler.stop = codec_stop;
 	codec_handler.seek = NULL;
+	codec_handler.get_length = codec_get_length;
 	codec_handler.get_position = codec_get_position;
 	codec_handler.get_length = NULL;
 	codec_handler.done_playing = codec_done_playing;

@@ -28,8 +28,8 @@ typedef struct
     bool (*resume)(void);
     void (*stop)(void);
     bool (*seek)(float pos);
-    float (*get_position)(void);
-    float (*get_length)(void);
+    double (*get_position)(void);
+    double (*get_length)(void);
     bool (*done_playing)(void);
 
 } OMO_CODEC_HANDLER;
