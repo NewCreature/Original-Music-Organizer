@@ -249,7 +249,7 @@ void omo_logic(void * data)
 				}
 				if(t3f_key[ALLEGRO_KEY_T] && app->library)
 				{
-					if(app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTKEYBOARD)
+					if(app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
 					{
 						j = app->ui->ui_queue_list_element->d1;
 						strcpy(fullfn, app->player->queue->entry[j]->file);
@@ -259,7 +259,7 @@ void omo_logic(void * data)
 							strcat(fullfn, app->player->queue->entry[j]->sub_file);
 						}
 					}
-					else if(app->ui->ui_song_list_element->flags & D_GOTKEYBOARD)
+					else if(app->ui->ui_song_list_element->flags & D_GOTFOCUS)
 					{
 						j = app->ui->ui_song_list_element->d1;
 						strcpy(fullfn, app->library->entry[app->library->song_entry[j]]->filename);

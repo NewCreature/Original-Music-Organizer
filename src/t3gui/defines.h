@@ -75,7 +75,7 @@
 #define D_VSCROLLBAR    0x0200   /* object uses the scrollbar in the next widget entry (vertical) */
 #define D_HSCROLLBAR    0x0400   /* object uses the scrollbar in the second next widget entry (horizontal) */
 #define D_SCROLLBAR     D_VSCROLLBAR
-#define D_GOTKEYBOARD   0x0800   /* from here on is free for your own use */
+//#define D_GOTKEYBOARD   0x0800   /* from here on is free for your own use */
 #define D_INTERACT      0x1000
 #define D_SETFOCUS      0x2000
 
@@ -90,7 +90,7 @@
 #define D_CLOSE         1        /* request to close the dialog */
 #define D_REDRAW        2        /* request to redraw the dialog */
 #define D_REDRAWME      4        /* request to redraw this object */
-#define D_WANTFOCUS     8        /* this object wants the input focus */
+//#define D_WANTFOCUS     8        /* this object wants the input focus */
 #define D_USED_CHAR     16       /* object has used the keypress */
 #define D_USED_KEY      D_USED_CHAR
 #define D_REDRAW_ALL    32       /* request to redraw all active dialogs */

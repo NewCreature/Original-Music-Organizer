@@ -276,7 +276,7 @@ int t3gui_button_proc(int msg, T3GUI_ELEMENT *d, int c)
             {
                 d->flags |= D_INTERACT;
             }
-            return ret | D_WANTFOCUS;
+            return ret | D_WANTKEYBOARD;
         }
 
         case MSG_LOSTFOCUS:
@@ -879,16 +879,16 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
          break;
 
       case MSG_WANTFOCUS:
-         return D_WANTFOCUS;
+         return D_WANTKEYBOARD;
 
       case MSG_LOSTFOCUS:
          if (d->flags & D_TRACKMOUSE)
-            return D_WANTFOCUS;
+            return D_WANTKEYBOARD;
          break;
 
       case MSG_KEY:
          if (!(d->flags & D_GOTFOCUS))
-            return D_WANTFOCUS;
+            return D_WANTKEYBOARD;
          else
             return D_O_K;
 
@@ -1158,7 +1158,7 @@ static int draw_textcursor(T3GUI_ELEMENT *d, bool draw, int *margin, int cursor_
                 y += al_get_font_line_height(font);
                 s++;
                 s_count++;
-                if(s_count == cursor_pos && d->tick % 2 == 0 && (d->flags & D_GOTKEYBOARD))
+                if(s_count == cursor_pos && d->tick % 2 == 0 && (d->flags & D_GOTFOCUS))
                 {
                     al_draw_line(x0 + x + lx + 0.5, y0 + y - 2 + 0.5, x0 + x + lx + 0.5, y0 + y + al_get_font_line_height(font) + 2 + 0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG], 1.0);
                     cursor_drawn = true;
@@ -1202,12 +1202,12 @@ static int draw_textcursor(T3GUI_ELEMENT *d, bool draw, int *margin, int cursor_
                 s_count++;
                 want_cursor_spaces++;
                 lx += al_get_text_width(font, " ");
-                if(s_count == cursor_pos && d->tick % 2 == 0 && (d->flags & D_GOTKEYBOARD))
+                if(s_count == cursor_pos && d->tick % 2 == 0 && (d->flags & D_GOTFOCUS))
                 {
                     want_cursor_lx = lx;
                 }
             }
-            if(want_cursor_lx >= 0 && lx != want_cursor_lx && d->tick % 2 == 0 && (d->flags & D_GOTKEYBOARD))
+            if(want_cursor_lx >= 0 && lx != want_cursor_lx && d->tick % 2 == 0 && (d->flags & D_GOTFOCUS))
             {
                 lx = want_cursor_lx;
                 al_draw_line(x0 + x + lx + 0.5, y0 + y - 2 + 0.5, x0 + x + lx + 0.5, y0 + y +  al_get_font_line_height(font) + 2 + 0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG], 1.0);
@@ -1228,7 +1228,7 @@ draw:
                 for(i = 0; i < ustrlen(p); i++)
                 {
                     usetat(lbuf, 0, ugetat(p, i));
-                    if(s_count == cursor_pos && d->tick % 2 == 0 && (d->flags & D_GOTKEYBOARD))
+                    if(s_count == cursor_pos && d->tick % 2 == 0 && (d->flags & D_GOTFOCUS))
                     {
                         al_draw_line(x0 + x + lx + 0.5, y0 + y - 2 + 0.5, x0 + x + lx + 0.5, y0 + y + al_get_font_line_height(font) + 2 + 0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG], 1.0);
                         cursor_drawn = true;
@@ -1236,7 +1236,7 @@ draw:
                     lx += al_get_text_width(font, lbuf);
                     s_count++;
                 }
-                if(s_count == cursor_pos && d->tick % 2 == 0 && (d->flags & D_GOTKEYBOARD))
+                if(s_count == cursor_pos && d->tick % 2 == 0 && (d->flags & D_GOTFOCUS))
                 {
                     al_draw_line(x0 + x + lx + 0.5, y0 + y - 2 + 0.5, x0 + x + lx + 0.5, y0 + y + al_get_font_line_height(font) + 2 + 0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG], 1.0);
                     cursor_drawn = true;
@@ -1551,7 +1551,7 @@ int t3gui_editbox_proc(int msg, T3GUI_ELEMENT *d, int c)
         case MSG_KEY:
         {
             d->d2 = strlen(d->dp);
-            return D_WANTFOCUS | D_WANTKEYBOARD;
+            return D_WANTKEYBOARD;
         }
         case MSG_GOTMOUSE:
         {
@@ -1778,79 +1778,72 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
         case MSG_KEYDOWN:
         case MSG_KEYREPEAT:
         {
-            if(d->d3 > 0 && dd.d1 > 0 && d->mousex > dd.x)
+            int last_idx = d->d2 + d->h / al_get_font_line_height(font)-1;
+
+            if(c == ALLEGRO_KEY_DOWN)
             {
-                ret |= t3gui_scroll_proc(msg, &dd, c);
+                d->d1++;
+                if(d->d1 > nelem-1) d->d1 = nelem-1;
+                ret |= D_USED_KEY;
             }
-            else
+            else if(c == ALLEGRO_KEY_UP)
             {
-                int last_idx = d->d2 + d->h / al_get_font_line_height(font)-1;
+                d->d1--;
+                if (d->d1 < 0) d->d1 = 0;
+                ret |= D_USED_KEY;
+            }
+            else if(c == ALLEGRO_KEY_PGDN)
+            {
+                d->d1 += visible_elements;
+				if(d->d1 >= nelem)
+				{
+					d->d1 = nelem - 1;
+				}
+				d->d2 += visible_elements - 1;
+				if(d->d2 >= nelem - visible_elements)
+				{
+					d->d2 = nelem - visible_elements - 1;
+				}
+                ret |= D_USED_KEY;
+            }
+            else if(c == ALLEGRO_KEY_PGUP)
+            {
+                d->d1 -= visible_elements;
+				if(d->d1 < 0)
+				{
+					d->d1 = 0;
+				}
+				d->d2 -= visible_elements;
+				if(d->d2 < 0)
+				{
+					d->d2 = 0;
+				}
+                ret |= D_USED_KEY;
+            }
+            else if(c == ALLEGRO_KEY_HOME)
+            {
+                d->d1 = 0;
+                d->d2 = 0;
+                ret |= D_USED_KEY;
+            }
+            else if(c == ALLEGRO_KEY_END)
+            {
+                d->d1 = nelem - 1;
+                d->d2 = nelem - visible_elements - 1;
+                ret |= D_USED_KEY;
+            }
+            else if(c == ALLEGRO_KEY_ENTER)
+            {
+                d->id1 = d->d1;
+                ret |= D_USED_KEY;
+            }
+            if(ret & D_USED_KEY)
+            {
+                if (d->d1 < d->d2) d->d2--;
+                if (d->d1 > last_idx) d->d2++;
+                dd.d2 = d->d2 * al_get_font_line_height(font);
 
-                if(c == ALLEGRO_KEY_DOWN)
-                {
-                    d->d1++;
-                    if(d->d1 > nelem-1) d->d1 = nelem-1;
-                    ret |= D_USED_KEY;
-                }
-                else if(c == ALLEGRO_KEY_UP)
-                {
-                    d->d1--;
-                    if (d->d1 < 0) d->d1 = 0;
-                    ret |= D_USED_KEY;
-                }
-                else if(c == ALLEGRO_KEY_PGDN)
-                {
-                    d->d1 += visible_elements;
-    				if(d->d1 >= nelem)
-    				{
-    					d->d1 = nelem - 1;
-    				}
-    				d->d2 += visible_elements - 1;
-    				if(d->d2 >= nelem - visible_elements)
-    				{
-    					d->d2 = nelem - visible_elements - 1;
-    				}
-                    ret |= D_USED_KEY;
-                }
-                else if(c == ALLEGRO_KEY_PGUP)
-                {
-                    d->d1 -= visible_elements;
-    				if(d->d1 < 0)
-    				{
-    					d->d1 = 0;
-    				}
-    				d->d2 -= visible_elements;
-    				if(d->d2 < 0)
-    				{
-    					d->d2 = 0;
-    				}
-                    ret |= D_USED_KEY;
-                }
-                else if(c == ALLEGRO_KEY_HOME)
-                {
-                    d->d1 = 0;
-                    d->d2 = 0;
-                    ret |= D_USED_KEY;
-                }
-                else if(c == ALLEGRO_KEY_END)
-                {
-                    d->d1 = nelem - 1;
-                    d->d2 = nelem - visible_elements - 1;
-                    ret |= D_USED_KEY;
-                }
-                else if(c == ALLEGRO_KEY_ENTER)
-                {
-                    d->id1 = d->d1;
-                    ret |= D_USED_KEY;
-                }
-                if(ret & D_USED_KEY)
-                {
-                    if (d->d1 < d->d2) d->d2--;
-                    if (d->d1 > last_idx) d->d2++;
-                    dd.d2 = d->d2 * al_get_font_line_height(font);
-
-                    ret |= D_REDRAWME;
-                }
+                ret |= D_REDRAWME;
             }
             break;
         }
@@ -1881,6 +1874,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
                     ret |= D_REDRAWME;
                 }
             }
+            ret |= D_WANTKEYBOARD;
             break;
         }
 
@@ -1910,7 +1904,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
                 {
                     fg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_EG];
                 }
-                if(d->d1 == n && d->flags & D_GOTKEYBOARD)
+                if(d->d1 == n && d->flags & D_GOTFOCUS)
                 {
                     al_draw_filled_rectangle(d->x+2.5,y+1.5,d->x+d->w-1.5,y+al_get_font_line_height(font)+1.5, d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_FG]);
                     fg = d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_BG];
@@ -1946,7 +1940,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
         case MSG_LOSTFOCUS:
         case MSG_KEY:
         {
-            return D_WANTFOCUS | D_WANTKEYBOARD;
+            return D_WANTKEYBOARD;
         }
         default:
         {
@@ -2048,7 +2042,7 @@ int t3gui_edit_proc(int msg, T3GUI_ELEMENT *d, int c)
             w = al_get_text_width(font, buf);
             if (x+4+w > d->w - 4)
                break;
-            f = ((p == d->d2) && (d->flags & D_GOTKEYBOARD));
+            f = ((p == d->d2) && (d->flags & D_GOTFOCUS));
             tc = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG];
 
             if (f && d->tick % 2 == 0) {
@@ -2086,7 +2080,7 @@ int t3gui_edit_proc(int msg, T3GUI_ELEMENT *d, int c)
       case MSG_LOSTFOCUS:
       case MSG_KEY:
       {
-          return D_WANTFOCUS;
+          return D_WANTKEYBOARD;
       }
      case MSG_GOTMOUSE:
      {

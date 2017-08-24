@@ -238,8 +238,8 @@ static int offer_focus(T3GUI_ELEMENT *dialog, int obj, int *focus_obj, int force
    /* check if object wants the focus */
    if (obj >= 0) {
       res = t3gui_object_message(dialog+obj, MSG_WANTFOCUS, 0);
-      if (res & D_WANTFOCUS)
-         res ^= D_WANTFOCUS;
+      if (res & D_WANTKEYBOARD)
+         res ^= D_WANTKEYBOARD;
       else
          obj = -1;
    }
@@ -248,11 +248,11 @@ static int offer_focus(T3GUI_ELEMENT *dialog, int obj, int *focus_obj, int force
       /* take focus away from old object */
       if (*focus_obj >= 0) {
          res |= t3gui_object_message(dialog+*focus_obj, MSG_LOSTFOCUS, 0);
-         if (res & D_WANTFOCUS) {
+         if (res & D_WANTKEYBOARD) {
             if (obj < 0)
                return D_O_K;
             else
-               res &= ~D_WANTFOCUS;
+               res &= ~D_WANTKEYBOARD;
          }
          dialog[*focus_obj].flags &= ~D_GOTFOCUS;
          res |= D_REDRAW_ALL;
@@ -435,11 +435,11 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
                 {
                     if (player->joy_x > 0)
                     {
-                        player->res |= move_focus(player->dialog, ALLEGRO_KEY_RIGHT, 0, &player->focus_obj);
+                        player->res |= move_focus(player->dialog, ALLEGRO_KEY_RIGHT, 0, &player->keyboard_obj);
                     }
                     else
                     {
-                        player->res |= move_focus(player->dialog, ALLEGRO_KEY_LEFT, 0, &player->focus_obj);
+                        player->res |= move_focus(player->dialog, ALLEGRO_KEY_LEFT, 0, &player->keyboard_obj);
                     }
                 }
 
@@ -447,19 +447,19 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
                 {
                     if(player->joy_y > 0)
                     {
-                        player->res |= move_focus(player->dialog, ALLEGRO_KEY_UP, 0, &player->focus_obj);
+                        player->res |= move_focus(player->dialog, ALLEGRO_KEY_UP, 0, &player->keyboard_obj);
                     }
                     else
                     {
-                        player->res |= move_focus(player->dialog, ALLEGRO_KEY_DOWN, 0, &player->focus_obj);
+                        player->res |= move_focus(player->dialog, ALLEGRO_KEY_DOWN, 0, &player->keyboard_obj);
                     }
                 }
 
                 if(player->joy_b)
                 {
-                    if (player->focus_obj >= 0)
+                    if (player->keyboard_obj >= 0)
                     {
-                        MESSAGE(player, player->focus_obj, MSG_KEY, 0);
+                        MESSAGE(player, player->keyboard_obj, MSG_KEY, 0);
                     }
                 }
 
@@ -573,13 +573,7 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
                     case ALLEGRO_KEY_DOWN:
                     case ALLEGRO_KEY_UP:
                     {
-                        player->res |= move_focus(player->dialog, event->keyboard.keycode, player->shift, &player->focus_obj);
-                        if(player->keyboard_obj >= 0)
-                        {
-                            player->dialog[player->keyboard_obj].flags &= ~D_GOTKEYBOARD;
-                        }
-                        player->keyboard_obj = player->focus_obj;
-                        player->dialog[player->keyboard_obj].flags |= D_GOTKEYBOARD;
+                        player->res |= move_focus(player->dialog, event->keyboard.keycode, player->shift, &player->keyboard_obj);
                         break;
                     }
 
@@ -658,14 +652,14 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
             if (player->click_obj >= 0)
             {
                 MESSAGE(player, player->mouse_obj, MSG_MOUSEDOWN, event->mouse.button);
-                if(player->res == D_WANTKEYBOARD)
+                if(player->res &= D_WANTKEYBOARD)
                 {
                     if(player->keyboard_obj >= 0)
                     {
-                        player->dialog[player->keyboard_obj].flags &= ~D_GOTKEYBOARD;
+                        player->dialog[player->keyboard_obj].flags &= ~D_GOTFOCUS;
                     }
                     player->keyboard_obj = player->obj;
-                    player->dialog[player->obj].flags |= D_GOTKEYBOARD;
+                    player->dialog[player->obj].flags |= D_GOTFOCUS;
                 }
             }
             break;
@@ -712,9 +706,9 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
                 player->mouse_obj = mouse_obj;
 
                 /* move the input focus as well? */
-                if ((player->focus_follows_mouse) && (player->mouse_obj != player->focus_obj))
+                if ((player->focus_follows_mouse) && (player->mouse_obj != player->keyboard_obj))
                 {
-                    player->res |= offer_focus(player->dialog, player->mouse_obj, &player->focus_obj, true);
+                    player->res |= offer_focus(player->dialog, player->mouse_obj, &player->mouse_obj, true);
                 }
             }
 
@@ -926,7 +920,7 @@ T3GUI_PLAYER *t3gui_init_dialog(T3GUI_ELEMENT *dialog, int focus_obj, int flags,
 
     /* Clear focus flag from all objects */
     for (c=0; dialog[c].proc; c++)
-        dialog[c].flags &= ~(D_GOTFOCUS | D_GOTMOUSE | D_TRACKMOUSE | D_INTERNAL | D_GOTKEYBOARD);
+        dialog[c].flags &= ~(D_GOTFOCUS | D_GOTMOUSE | D_TRACKMOUSE | D_INTERNAL);
 
     /* Find object that has the mouse */
     ALLEGRO_MOUSE_STATE mouse_state;
@@ -937,13 +931,13 @@ T3GUI_PLAYER *t3gui_init_dialog(T3GUI_ELEMENT *dialog, int focus_obj, int flags,
 
     /* If no focus object has been specified it defaults to the mouse object */
     if (focus_obj < 0) focus_obj = player->mouse_obj;
-    player->focus_obj = focus_obj;
+    player->keyboard_obj = focus_obj;
     player->keyboard_obj = focus_obj;
 
     /* Offer focus to the focus object */
-    if ((focus_obj >= 0) && ((t3gui_object_message(dialog+focus_obj, MSG_WANTFOCUS, 0)) & D_WANTFOCUS))
+    if ((focus_obj >= 0) && ((t3gui_object_message(dialog+focus_obj, MSG_WANTFOCUS, 0)) & D_WANTKEYBOARD))
     {
-        dialog[focus_obj].flags |= (D_GOTFOCUS | D_GOTKEYBOARD);
+        dialog[focus_obj].flags |= (D_GOTFOCUS);
     }
 
     /* Set default "grey-out" colour */
