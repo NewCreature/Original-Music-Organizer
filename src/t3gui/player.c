@@ -606,12 +606,15 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
                 if (event->keyboard.keycode == ALLEGRO_KEY_BACKSPACE) keychar = 8;
                 if (event->keyboard.keycode == ALLEGRO_KEY_DELETE) keychar = 127;
                 //printf("%d %d %d %d\n", event.keyboard.unichar, event.keyboard.keycode, ALLEGRO_KEY_DELETE, ALLEGRO_KEY_BACKSPACE);
-                if (keychar) for (c=0; player->dialog[c].proc; c++)
+                if (keychar)
                 {
-                    if ( (utolower(player->dialog[c].key) == utolower(keychar)) && (player->dialog[c].key == keychar) && (!(player->dialog[c].flags & (D_HIDDEN | D_DISABLED))))
+                    for (c=0; player->dialog[c].proc; c++)
                     {
-                        MESSAGE(player, c, MSG_KEY, 0);
-                        break;
+                        if (utolower(player->dialog[c].key) == utolower(player->dialog[c].key) && player->dialog[c].key == keychar && (!(player->dialog[c].flags & (D_HIDDEN | D_DISABLED))))
+                        {
+                            MESSAGE(player, c, MSG_KEY, 0);
+                            break;
+                        }
                     }
                 }
             }

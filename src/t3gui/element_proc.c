@@ -432,20 +432,17 @@ int t3gui_push_button_proc(int msg, T3GUI_ELEMENT *d, int c)
             if(d->flags & D_INTERACT)
             {
                 d->flags &= ~D_INTERACT;
+            }
 
-                ALLEGRO_MOUSE_STATE mouse_state;
-                al_get_mouse_state(&mouse_state);
-
-                if(d->dp2)
-                {
-                    getbuttonfuncptr *func = d->dp2;
-                    func(d, d->dp3);
-                }
-                if(d->flags & D_EXIT)
-                {
-                    d->flags ^= D_SELECTED;
-                    return D_CLOSE;
-                }
+            if(d->dp2)
+            {
+                getbuttonfuncptr *func = d->dp2;
+                func(d, d->dp3);
+            }
+            if(d->flags & D_EXIT)
+            {
+                d->flags ^= D_SELECTED;
+                return D_CLOSE;
             }
             break;
         }

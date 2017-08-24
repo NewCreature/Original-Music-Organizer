@@ -228,7 +228,7 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
                     y += al_get_font_line_height(uip->tags_list_box_theme->state[0].font) * 2 + 2;
                 }
             }
-            uip->tags_ok_button_element = t3gui_dialog_add_element(uip->tags_dialog, uip->tags_button_theme, t3gui_push_button_proc, 8, y, 320 / 2 - 8 - 4, 32, 0, 0, '\n', 0, "Okay", ui_tags_button_proc, data);
+            uip->tags_ok_button_element = t3gui_dialog_add_element(uip->tags_dialog, uip->tags_button_theme, t3gui_push_button_proc, 8, y, 320 / 2 - 8 - 4, 32, '\r', 0, 0, 0, "Okay", ui_tags_button_proc, data);
             t3gui_dialog_add_element(uip->tags_dialog, uip->tags_button_theme, t3gui_push_button_proc, 320 / 2 + 4, y, 320 / 2 - 8 - 4, 32, 0, 0, 0, 1, "Cancel", ui_tags_button_proc, data);
             t3gui_show_dialog(uip->tags_dialog, t3f_queue, T3GUI_PLAYER_CLEAR, data);
             return true;
