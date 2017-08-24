@@ -247,14 +247,27 @@ void omo_logic(void * data)
 					omo_toggle_library_view(app);
 					t3f_key[ALLEGRO_KEY_L] = 0;
 				}
-				if(t3f_key[ALLEGRO_KEY_T] && app->library && app->player->queue)
+				if(t3f_key[ALLEGRO_KEY_T] && app->library)
 				{
-					j = app->ui->ui_queue_list_element->d1;
-					strcpy(fullfn, app->player->queue->entry[j]->file);
-					if(app->player->queue->entry[j]->sub_file)
+					if(app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTKEYBOARD)
 					{
-						strcat(fullfn, "/");
-						strcat(fullfn, app->player->queue->entry[j]->sub_file);
+						j = app->ui->ui_queue_list_element->d1;
+						strcpy(fullfn, app->player->queue->entry[j]->file);
+						if(app->player->queue->entry[j]->sub_file)
+						{
+							strcat(fullfn, "/");
+							strcat(fullfn, app->player->queue->entry[j]->sub_file);
+						}
+					}
+					else if(app->ui->ui_song_list_element->flags & D_GOTKEYBOARD)
+					{
+						j = app->ui->ui_song_list_element->d1;
+						strcpy(fullfn, app->library->entry[app->library->song_entry[j]]->filename);
+						if(app->library->entry[app->library->song_entry[j]]->sub_filename)
+						{
+							strcat(fullfn, "/");
+							strcat(fullfn, app->library->entry[app->library->song_entry[j]]->sub_filename);
+						}
 					}
 					app->ui->tags_entry = al_get_config_value(app->library->file_database, fullfn, "id");
 					if(app->ui->tags_entry)
