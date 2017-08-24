@@ -171,7 +171,16 @@ bool omo_add_file(const char * fn, void * data)
 					c2 = atoi(val2);
 					for(j = 0; j < c2; j++)
 					{
-						sprintf(buf2, "%d", j);
+						sprintf(buf2, "entry_%d_track_%d", i, j);
+						val2 = al_get_config_value(app->library->file_database, fn, buf2);
+						if(val2)
+						{
+							sprintf(buf2, "%s", val2);
+						}
+						else
+						{
+							sprintf(buf2, "%d", j);
+						}
 						ret = omo_add_file_to_library(app->library, fn, buf, c2 > 1 ? buf2 : NULL, app->archive_handler_registry, app->codec_handler_registry);
 					}
 				}
@@ -198,7 +207,16 @@ bool omo_add_file(const char * fn, void * data)
 			}
 			for(i = 0; i < c; i++)
 			{
-				sprintf(buf, "%d", i);
+				sprintf(buf2, "track_%d", i);
+				val2 = al_get_config_value(app->library->file_database, fn, buf2);
+				if(val2)
+				{
+					sprintf(buf, "%s", val2);
+				}
+				else
+				{
+					sprintf(buf, "%d", i);
+				}
 				ret = omo_add_file_to_library(app->library, fn, NULL, c > 1 ? buf : NULL, app->archive_handler_registry, app->codec_handler_registry);
 			}
 		}
