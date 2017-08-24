@@ -1838,6 +1838,11 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
                     d->d2 = nelem - visible_elements - 1;
                     ret |= D_USED_KEY;
                 }
+                else if(c == ALLEGRO_KEY_ENTER)
+                {
+                    d->id1 = d->d1;
+                    ret |= D_USED_KEY;
+                }
                 if(ret & D_USED_KEY)
                 {
                     if (d->d1 < d->d2) d->d2--;
@@ -1905,7 +1910,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
                 {
                     fg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_EG];
                 }
-                if(d->d1 == n)
+                if(d->d1 == n && d->flags & D_GOTKEYBOARD)
                 {
                     al_draw_filled_rectangle(d->x+2.5,y+1.5,d->x+d->w-1.5,y+al_get_font_line_height(font)+1.5, d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_FG]);
                     fg = d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_BG];
@@ -1937,6 +1942,12 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
             break;
         }
 
+        case MSG_WANTFOCUS:
+        case MSG_LOSTFOCUS:
+        case MSG_KEY:
+        {
+            return D_WANTFOCUS | D_WANTKEYBOARD;
+        }
         default:
         {
             if(d->d3 > 0 && dd.d1 > 0)
