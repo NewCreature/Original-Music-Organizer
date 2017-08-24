@@ -215,7 +215,7 @@ void omo_logic(void * data)
 						app->ui->ui_song_list_element->id1 = -1;
 					}
 				}
-				else if(app->player->queue && app->ui->ui_queue_list_element->id1 >= 0)
+				if(app->player->queue && app->ui->ui_queue_list_element->id1 >= 0)
 				{
 					if(app->player->state == OMO_PLAYER_STATE_PLAYING)
 					{
