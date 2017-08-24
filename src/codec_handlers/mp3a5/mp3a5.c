@@ -4,7 +4,8 @@
 #include "MP3A5/mp3a5.h"
 
 static OMO_CODEC_HANDLER codec_handler;
-static MP3A5_MP3 * codec_mp3 = NULL;;
+static MP3A5_MP3 * codec_mp3 = NULL;
+static char tag_buffer[1024] = {0};
 
 static bool codec_initialize(void)
 {
@@ -40,7 +41,22 @@ static int codec_get_track_count(const char * fn)
 
 static const char * codec_get_tag(const char * name)
 {
-	if(codec_mp3->tags)
+	if(!strcmp(name, "Loop Start"))
+	{
+		sprintf(tag_buffer, "0.0");
+		return tag_buffer;
+	}
+	else if(!strcmp(name, "Loop End"))
+	{
+		sprintf(tag_buffer, "%f", codec_mp3->length);
+		return tag_buffer;
+	}
+	else if(!strcmp(name, "Fade Time"))
+	{
+		sprintf(tag_buffer, "0.0");
+		return tag_buffer;
+	}
+	else if(codec_mp3->tags)
 	{
 		if(!strcmp(name, "Artist"))
 		{

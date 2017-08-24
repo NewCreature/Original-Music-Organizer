@@ -66,6 +66,17 @@ static bool codec_load_file(const char * fn, const char * subfn)
 	if(!gme_open_file(fn, &emu, 44100))
 	{
 		gme_track_info(emu, &info, start_track);
+		if(info)
+		{
+			if(info->length <= 0)
+			{
+				info->length = info->intro_length + info->loop_length * 2;
+			}
+			if(info->length <= 0)
+			{
+				info->length = (long) (2.5 * 60 * 1000);
+			}
+		}
 		return true;
 	}
 	return false;
@@ -82,6 +93,8 @@ static void codec_unload_file(void)
 }
 
 static char track_buffer[16] = {0};
+static char tag_buffer[1024] = {0};
+
 static const char * codec_get_tag(const char * name)
 {
 	if(info)
@@ -136,6 +149,21 @@ static const char * codec_get_tag(const char * name)
 			}
 			return track_buffer;
 		}
+		else if(!strcmp(name, "Loop Start"))
+		{
+			sprintf(tag_buffer, "%f", (double)info->intro_length / 1000.0);
+			return tag_buffer;
+		}
+		else if(!strcmp(name, "Loop End"))
+		{
+			sprintf(tag_buffer, "%f", (double)info->length / 1000.0);
+			return tag_buffer;
+		}
+		else if(!strcmp(name, "Fade Time"))
+		{
+			sprintf(tag_buffer, "0.0");
+			return tag_buffer;
+		}
 	}
 	return NULL;
 }
@@ -156,25 +184,10 @@ static int codec_get_track_count(const char * fn)
 
 static bool codec_play(void)
 {
-	gme_info_t * track_info;
-	int l;
-
 	gme_start_track(emu, start_track);
 
-	gme_track_info(emu, &track_info, start_track);
-
 	/* calculate track length */
-	if(track_info->length <= 0)
-	{
-		track_info->length = track_info->intro_length + track_info->loop_length * 2;
-	}
-	if(track_info->length <= 0)
-	{
-		track_info->length = (long) (2.5 * 60 * 1000);
-	}
-	gme_set_fade(emu, track_info->length);
-	l = track_info->length / 1000;
-	gme_free_info(track_info);
+	gme_set_fade(emu, info->length);
 	paused = false;
 
 	codec_stream = al_create_audio_stream(4, buf_size, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);

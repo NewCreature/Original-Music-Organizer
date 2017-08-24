@@ -11,6 +11,7 @@ static OMO_CODEC_HANDLER codec_handler;
 static double start_time;
 static double pause_start;
 static double pause_total;
+static char codec_tag_buffer[1024] = {0};
 
 static bool codec_load_file(const char * fn, const char * subfn)
 {
@@ -27,6 +28,26 @@ static void codec_unload_file(void)
 {
 	[player release];
 	player = NULL;
+}
+
+static const char * codec_get_tag(const char * name)
+{
+	if(!strcmp(name, "Loop Start"))
+	{
+		sprintf(codec_tag_buffer, "0.0");
+		return codec_tag_buffer;
+	}
+	else if(!strcmp(name, "Loop End"))
+	{
+		sprintf(codec_tag_buffer, "%f", player.duration);
+		return codec_tag_buffer;
+	}
+	else if(!strcmp(name, "Fade Time"))
+	{
+		sprintf(codec_tag_buffer, "0.0");
+		return codec_tag_buffer;
+	}
+	return NULL;
 }
 
 static int codec_get_track_count(const char * fn)
@@ -92,6 +113,7 @@ OMO_CODEC_HANDLER * omo_codec_avmidiplayer_get_codec_handler(void)
 	codec_handler.initialize = NULL;
 	codec_handler.load_file = codec_load_file;
 	codec_handler.unload_file = codec_unload_file;
+	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;

@@ -74,6 +74,20 @@ static void get_lines(mpg123_string *inlines, char * buffer)
 
 static char mp3a5_tag_buffer[1024] = {0};
 
+static void mp3a5_get_length(MP3A5_MP3 * mp3)
+{
+    unsigned long length;
+    int channels;
+    int encoding;
+    long freq;
+
+    if(mpg123_getformat(mp3->mp3, &freq, &channels, &encoding) == MPG123_OK)
+    {
+        length = mpg123_length(mp3->mp3);
+        mp3->length = (double)length / ((double)freq);
+    }
+}
+
 static MP3A5_MP3_TAGS * mp3a5_get_tags(const char * filename, MP3A5_MP3 * mp3)
 {
     mpg123_id3v1 * id3_v1 = NULL;
@@ -87,6 +101,8 @@ static MP3A5_MP3_TAGS * mp3a5_get_tags(const char * filename, MP3A5_MP3 * mp3)
     if(mpg123_open(mp3->mp3, filename) == MPG123_OK)
     {
         mpg123_scan(mp3->mp3);
+        mpg123_seek(mp3->mp3, 0, SEEK_SET);
+        mp3a5_get_length(mp3);
         mpg123_seek(mp3->mp3, 0, SEEK_SET);
         meta = mpg123_meta_check(mp3->mp3);
         if(meta & MPG123_ID3)

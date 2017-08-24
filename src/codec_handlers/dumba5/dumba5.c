@@ -47,9 +47,26 @@ static const char * codec_get_tag(const char * name)
 	const char * tag;
 	const unsigned char * comment;
 	DUMB_IT_SIGDATA * sd;
+	double f_time;
 	int i;
 
-	if(!strcmp(name, "Title"))
+	if(!strcmp(name, "Loop Start"))
+	{
+		sprintf(tag_buffer, "0.0");
+		return tag_buffer;
+	}
+	else if(!strcmp(name, "Loop End"))
+	{
+		f_time = (double)duh_get_length(codec_module) / 65536.0;
+		sprintf(tag_buffer, "%f", f_time);
+		return tag_buffer;
+	}
+	else if(!strcmp(name, "Fade Time"))
+	{
+		sprintf(tag_buffer, "0.0");
+		return tag_buffer;
+	}
+	else if(!strcmp(name, "Title"))
 	{
 		tag = duh_get_tag(codec_module, "TITLE");
 		if(tag && strlen(tag))

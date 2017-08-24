@@ -343,22 +343,22 @@ DUH * dumba5_load_module(const char * fn)
 	DUH * dp = NULL;
 
 	#if DUMB_MAJOR_VERSION > 0
-		dp = dumb_load_any_quick(fn, 0, 0);
+		dp = dumb_load_any(fn, 0, 0);
 		if(!dp)
 		{
 			return NULL;
 		}
 	#else
-		dp = dumb_load_xm_quick(fn);
+		dp = dumb_load_xm(fn);
 		if(!dp)
 		{
-			dp = dumb_load_it_quick(fn);
+			dp = dumb_load_it(fn);
 			if(!dp)
 			{
-				dp = dumb_load_mod_quick(fn);
+				dp = dumb_load_mod(fn);
 				if(!dp)
 				{
-					dp = dumb_load_s3m_quick(fn);
+					dp = dumb_load_s3m(fn);
 					if(!dp)
 					{
 						return NULL;

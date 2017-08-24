@@ -31,6 +31,7 @@ typedef struct
     mpg123_handle * mp3;
     MP3A5_MP3_TAGS * tags;
     ALLEGRO_THREAD * thread;
+    double length;
     int buffer_size;
     bool paused;
     bool done;
