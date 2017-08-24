@@ -62,23 +62,7 @@ static const char * codec_get_tag(const char * name)
 {
 	double f_time;
 
-	if(!strcmp(name, "Loop Start"))
-	{
-		sprintf(codec_tag_buffer, "0.0");
-		return codec_tag_buffer;
-	}
-	else if(!strcmp(name, "Loop End"))
-	{
-		f_time = al_get_audio_stream_length_secs(player_stream);
-		sprintf(codec_tag_buffer, "%f", f_time);
-		return codec_tag_buffer;
-	}
-	else if(!strcmp(name, "Fade Time"))
-	{
-		sprintf(codec_tag_buffer, "0.0");
-		return codec_tag_buffer;
-	}
-	else if(!strcasecmp(codec_file_extension, ".ogg"))
+	if(!strcasecmp(codec_file_extension, ".ogg"))
 	{
 		OggVorbis_File vf;
 		vorbis_comment * vf_comment;

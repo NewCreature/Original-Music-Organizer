@@ -66,22 +66,6 @@ static const char * codec_get_tag(const char * name)
 	const char * avplayer_tag_name[OMO_MAX_TAG_TYPES] = {"id3/TPE2", "id3/TPE1", "id3/TALB", "id3/TPOS", "id3/TRCK", "id3/TIT2", "id3/TCON", "id3/TYER", "id3/TCOP", "id3/COMM"};
 	int i;
 
-	if(!strcmp(name, "Loop Start"))
-	{
-		sprintf(tag_buffer, "0.0");
-		return tag_buffer;
-	}
-	else if(!strcmp(name, "Loop End"))
-	{
-		sprintf(tag_buffer, "%f", player.duration);
-		return tag_buffer;
-	}
-	else if(!strcmp(name, "Fade Time"))
-	{
-		sprintf(tag_buffer, "0.0");
-		return tag_buffer;
-	}
-
 	AVAsset *asset = [AVURLAsset URLAssetWithURL:[NSURL fileURLWithPath:path] options:nil];
 	if(asset)
 	{
