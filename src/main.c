@@ -293,14 +293,14 @@ void omo_logic(void * data)
 					{
 						for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 						{
-							val2 = al_get_config_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i]);
-							if(val2)
+							strcpy(app->ui->tags_text[i], "");
+							if(omo_tag_type[i])
 							{
-								strcpy(app->ui->tags_text[i], val2);
-							}
-							else
-							{
-								strcpy(app->ui->tags_text[i], "");
+								val2 = al_get_config_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i]);
+								if(val2)
+								{
+									strcpy(app->ui->tags_text[i], val2);
+								}
 							}
 						}
 						omo_open_tags_dialog(app->ui, app);
