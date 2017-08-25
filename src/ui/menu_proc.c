@@ -7,63 +7,7 @@
 #include "../queue.h"
 #include "../library.h"
 #include "../init.h"
-
-static void file_chooser_thread_helper(void * data)
-{
-  APP_INSTANCE * app = (APP_INSTANCE *)data;
-
-  if(al_show_native_file_dialog(al_get_current_display(), app->file_chooser))
-  {
-    app->file_chooser_done = true;
-  }
-  else
-  {
-    al_destroy_native_file_dialog(app->file_chooser);
-    app->file_chooser = NULL;
-  }
-}
-
-static void * file_chooser_thread_proc(ALLEGRO_THREAD * thread, void * arg)
-{
-  file_chooser_thread_helper(arg);
-	return NULL;
-}
-
-static bool omo_start_file_chooser(void * data, const char * title, const char * types, int mode)
-{
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
-    const char * last_music_filename = al_get_config_value(t3f_config, "App Settings", "last_music_filename");
-    bool non_threaded = false;
-
-    #ifdef ALLEGRO_WINDOWS
-      if(mode == ALLEGRO_FILECHOOSER_FOLDER)
-      {
-        non_threaded = true;
-      }
-    #endif
-
-    app->file_chooser = al_create_native_file_dialog(last_music_filename, title, types, mode);
-    if(!app->file_chooser)
-    {
-        return false;
-    }
-    if(non_threaded)
-    {
-      file_chooser_thread_helper(data);
-    }
-    else
-    {
-      app->file_chooser_thread = al_create_thread(file_chooser_thread_proc, data);
-      if(!app->file_chooser_thread)
-      {
-        al_destroy_native_file_dialog(app->file_chooser);
-        app->file_chooser = NULL;
-        return false;
-      }
-      al_start_thread(app->file_chooser_thread);
-    }
-    return true;
-}
+#include "../file_chooser.h"
 
 static char type_buf[1024] = {0};
 
@@ -101,7 +45,7 @@ int omo_menu_file_play_files(void * data)
 
     app->file_chooser_mode = 0;
     app->file_chooser_done = false;
-    omo_start_file_chooser(data, "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE);
+    omo_start_file_chooser(data, "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE, true);
     return 1;
 }
 
@@ -111,7 +55,7 @@ int omo_menu_file_queue_files(void * data)
 
     app->file_chooser_mode = 1;
     app->file_chooser_done = false;
-    omo_start_file_chooser(data, "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE);
+    omo_start_file_chooser(data, "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE, true);
     return 1;
 }
 
@@ -121,7 +65,7 @@ int omo_menu_file_play_folder(void * data)
 
     app->file_chooser_mode = 2;
     app->file_chooser_done = false;
-    omo_start_file_chooser(data, "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER);
+    omo_start_file_chooser(data, "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER, true);
     return 1;
 }
 
@@ -131,7 +75,7 @@ int omo_menu_file_queue_folder(void * data)
 
     app->file_chooser_mode = 3;
     app->file_chooser_done = false;
-    omo_start_file_chooser(data, "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER);
+    omo_start_file_chooser(data, "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER, true);
     return 1;
 }
 
@@ -141,7 +85,7 @@ int omo_menu_file_add_library_folder(void * data)
 
     app->file_chooser_mode = 4;
     app->file_chooser_done = false;
-    omo_start_file_chooser(data, "Select library folder.", al_get_config_value(t3f_config, "Settings", "last_music_folder"), ALLEGRO_FILECHOOSER_FOLDER);
+    omo_start_file_chooser(data, "Select library folder.", al_get_config_value(t3f_config, "Settings", "last_music_folder"), ALLEGRO_FILECHOOSER_FOLDER, true);
     return 1;
 }
 

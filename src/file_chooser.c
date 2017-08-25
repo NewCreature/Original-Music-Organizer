@@ -4,6 +4,62 @@
 #include "file_helpers.h"
 #include "init.h"
 
+static void file_chooser_thread_helper(void * data)
+{
+  APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+  if(al_show_native_file_dialog(al_get_current_display(), app->file_chooser))
+  {
+    app->file_chooser_done = true;
+  }
+  else
+  {
+    al_destroy_native_file_dialog(app->file_chooser);
+    app->file_chooser = NULL;
+  }
+}
+
+static void * file_chooser_thread_proc(ALLEGRO_THREAD * thread, void * arg)
+{
+    file_chooser_thread_helper(arg);
+	return NULL;
+}
+
+bool omo_start_file_chooser(void * data, const char * title, const char * types, int mode, bool threaded)
+{
+    APP_INSTANCE * app = (APP_INSTANCE *)data;
+    const char * last_music_filename = al_get_config_value(t3f_config, "App Settings", "last_music_filename");
+
+    #ifdef ALLEGRO_WINDOWS
+      if(mode == ALLEGRO_FILECHOOSER_FOLDER)
+      {
+        threaded = false;
+      }
+    #endif
+
+    app->file_chooser = al_create_native_file_dialog(last_music_filename, title, types, mode);
+    if(!app->file_chooser)
+    {
+        return false;
+    }
+    if(!threaded)
+    {
+      file_chooser_thread_helper(data);
+    }
+    else
+    {
+      app->file_chooser_thread = al_create_thread(file_chooser_thread_proc, data);
+      if(!app->file_chooser_thread)
+      {
+        al_destroy_native_file_dialog(app->file_chooser);
+        app->file_chooser = NULL;
+        return false;
+      }
+      al_start_thread(app->file_chooser_thread);
+    }
+    return true;
+}
+
 static int omo_get_total_files(ALLEGRO_FILECHOOSER * fc, void * data)
 {
     int i;
