@@ -6,85 +6,114 @@
 
 #include "../codec_handler.h"
 
-static AVMIDIPlayer * player = NULL;
-static OMO_CODEC_HANDLER codec_handler;
-static double start_time;
-static double pause_start;
-static double pause_total;
+typedef struct
+{
 
-static bool codec_load_file(const char * fn, const char * subfn)
+	AVMIDIPlayer * player;
+	double start_time;
+	double pause_start;
+	double pause_total;
+
+} CODEC_DATA;
+
+static void * codec_load_file(const char * fn, const char * subfn)
 {
 	NSString * fnstring = [NSString stringWithUTF8String:fn];
+	CODEC_DATA * data;
 
-//	player = [[AVMIDIPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:@"data/test.mid"] soundBankURL:nil error:nil];
-	player = [[AVMIDIPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:fnstring] soundBankURL:nil error:nil];
-	[player prepareToPlay];
+	data = malloc(sizeof(CODEC_DATA));
+	if(data)
+	{
+		memset(data, 0, sizeof(CODEC_DATA));
+		data->player = [[AVMIDIPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:fnstring] soundBankURL:nil error:nil];
+		[data->player prepareToPlay];
+	}
 
-	return true;
+	return data;
 }
 
-static void codec_unload_file(void)
+static void codec_unload_file(void * data)
 {
-	[player release];
-	player = NULL;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	[codec_data->player release];
+	codec_data->player = NULL;
+	free(data);
 }
 
-static int codec_get_track_count(const char * fn)
+static int codec_get_track_count(void * data, const char * fn)
 {
 	return 1;
 }
 
-static bool codec_play(void)
+static bool codec_play(void * data)
 {
-	[player play:nil];
-	start_time = al_get_time();
-	pause_total = 0.0;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	[codec_data->player play:nil];
+	codec_data->start_time = al_get_time();
+	codec_data->pause_total = 0.0;
 	return true;
 }
 
-static bool codec_pause(void)
+static bool codec_pause(void * data)
 {
-	[player stop];
-	pause_start = al_get_time();
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	[codec_data->player stop];
+	codec_data->pause_start = al_get_time();
 	return true;
 }
 
-static bool codec_resume(void)
+static bool codec_resume(void * data)
 {
-	pause_total += al_get_time() - pause_start;
-	[player play:nil];
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->pause_total += al_get_time() - codec_data->pause_start;
+	[codec_data->player play:nil];
 	return true;
 }
 
-static void codec_stop(void)
+static void codec_stop(void * data)
 {
-	if(player)
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	if(codec_data->player)
 	{
-		[player stop];
+		[codec_data->player stop];
 	}
 }
 
-static bool codec_seek(float pos)
+static bool codec_seek(void * data, double pos)
 {
-	player.currentPosition = pos;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->player.currentPosition = pos;
 	return true;
-//	[player currentPosition] = pos;
 }
 
-static double codec_get_position(void)
+static double codec_get_position(void * data)
 {
-	return player.currentPosition;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return codec_data->player.currentPosition;
 }
 
-static double codec_get_length(void)
+static double codec_get_length(void * data)
 {
-	return player.duration;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return codec_data->player.duration;
 }
 
-static bool codec_done_playing(void)
+static bool codec_done_playing(void * data)
 {
-	return al_get_time() - (start_time + pause_total) >= player.duration;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return al_get_time() - (codec_data->start_time + codec_data->pause_total) >= codec_data->player.duration;
 }
+
+static OMO_CODEC_HANDLER codec_handler;
 
 OMO_CODEC_HANDLER * omo_codec_avmidiplayer_get_codec_handler(void)
 {

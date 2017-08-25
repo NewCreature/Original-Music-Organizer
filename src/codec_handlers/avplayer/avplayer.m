@@ -8,33 +8,45 @@
 #include "../../constants.h"
 #include "../codec_handler.h"
 
-static AVAudioPlayer * player = NULL;
-static char player_filename[1024] = {0};
-static double start_time;
-static double pause_start;
-static double pause_total;
+typedef struct
+{
 
-static bool codec_load_file(const char * fn, const char * subfn)
+	AVAudioPlayer * player;
+	char player_filename[1024];
+	double start_time;
+	double pause_start;
+	double pause_total;
+	char tag_buffer[1024];
+
+} CODEC_DATA;
+
+static void * codec_load_file(const char * fn, const char * subfn)
 {
 	NSString * fnstring = [NSString stringWithUTF8String:fn];
+	CODEC_DATA * data;
 
-	player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:fnstring] error:nil];
-	if(player)
+	data = malloc(sizeof(CODEC_DATA));
+	if(data)
 	{
-		strcpy(player_filename, fn);
-		[player prepareToPlay];
-		return true;
+		memset(data, 0, sizeof(CODEC_DATA));
+		data->player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:fnstring] error:nil];
+		if(data->player)
+		{
+			strcpy(data->player_filename, fn);
+			[data->player prepareToPlay];
+		}
 	}
-	return false;
+	return data;
 }
 
-static void codec_unload_file(void)
+static void codec_unload_file(void * data)
 {
-	[player release];
-	player = NULL;
-}
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-static char tag_buffer[1024] = {0};
+	[codec_data->player release];
+	codec_data->player = NULL;
+	free(data);
+}
 
 static void codec_strcpy(char * dest, const char * src, int limit)
 {
@@ -55,15 +67,17 @@ static void codec_strcpy(char * dest, const char * src, int limit)
 	dest[limit - 1] = 0;
 }
 
-static const char * codec_get_tag(const char * name)
+static const char * codec_get_tag(void * data, const char * name)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	NSString * path = [NSString stringWithUTF8String:player_filename];
+	NSString * path = [NSString stringWithUTF8String:codec_data->player_filename];
 	const char * utf8_key;
 	const char * utf8_val;
 	const char * tag_name[OMO_MAX_TAG_TYPES] = {"Album Artist", "Artist", "Album", "Disc", "Track", "Title", "Genre", "Year", "Copyright", "Comment"};
 	const char * avplayer_tag_name[OMO_MAX_TAG_TYPES] = {"id3/TPE2", "id3/TPE1", "id3/TALB", "id3/TPOS", "id3/TRCK", "id3/TIT2", "id3/TCON", "id3/TYER", "id3/TCOP", "id3/COMM"};
+
 	int i;
 
 	AVAsset *asset = [AVURLAsset URLAssetWithURL:[NSURL fileURLWithPath:path] options:nil];
@@ -85,9 +99,9 @@ static const char * codec_get_tag(const char * name)
 			utf8_val = [value UTF8String];
 			if(!strcasecmp(utf8_key, avplayer_tag_name[i]))
 			{
-				codec_strcpy(tag_buffer, utf8_val, 1024);
+				codec_strcpy(codec_data->tag_buffer, utf8_val, 1024);
 				[pool release];
-				return tag_buffer;
+				return codec_data->tag_buffer;
 			}
 		}
 	}
@@ -95,63 +109,77 @@ static const char * codec_get_tag(const char * name)
 	return NULL;
 }
 
-static int codec_get_track_count(const char * fn)
+static int codec_get_track_count(void * data, const char * fn)
 {
 	return 1;
 }
 
-static bool codec_play(void)
+static bool codec_play(void * data)
 {
-	[player play];
-	start_time = al_get_time();
-	pause_total = 0.0;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	[codec_data->player play];
+	codec_data->start_time = al_get_time();
+	codec_data->pause_total = 0.0;
 	return true;
 }
 
-static bool codec_pause(void)
+static bool codec_pause(void * data)
 {
-	[player stop];
-	pause_start = al_get_time();
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	[codec_data->player stop];
+	codec_data->pause_start = al_get_time();
 	return true;
 }
 
-static bool codec_resume(void)
+static bool codec_resume(void * data)
 {
-	pause_total += al_get_time() - pause_start;
-	[player play];
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->pause_total += al_get_time() - codec_data->pause_start;
+	[codec_data->player play];
 	return true;
 }
 
-static void codec_stop(void)
+static void codec_stop(void * data)
 {
-	if(player)
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	if(codec_data->player)
 	{
-		[player stop];
+		[codec_data->player stop];
 	}
 }
 
-static bool codec_seek(float pos)
+static bool codec_seek(void * data, double pos)
 {
-//	player.currentTime = pos;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->player.currentTime = pos;
 	return true;
 //	[player currentPosition] = pos;
 }
 
-static double codec_get_position(void)
+static double codec_get_position(void * data)
 {
-	return 0.0;
-//	return player.currentTime;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return codec_data->player.currentTime;
 }
 
-static double codec_get_length(void)
+static double codec_get_length(void * data)
 {
-	return 0.0;
-//	return player.duration;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return codec_data->player.duration;
 }
 
-static bool codec_done_playing(void)
+static bool codec_done_playing(void * data)
 {
-	return al_get_time() - (start_time + pause_total) >= player.duration;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return al_get_time() - (codec_data->start_time + codec_data->pause_total) >= codec_data->player.duration;
 }
 
 static OMO_CODEC_HANDLER codec_handler;

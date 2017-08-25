@@ -200,6 +200,7 @@ bool omo_save_library(OMO_LIBRARY * lp)
 static bool get_tags(OMO_LIBRARY * lp, const char * id, const char * fn, const char * track, OMO_CODEC_HANDLER_REGISTRY * crp)
 {
     OMO_CODEC_HANDLER * codec_handler;
+    void * codec_data;
     const char * val;
     int i;
 
@@ -208,13 +209,14 @@ static bool get_tags(OMO_LIBRARY * lp, const char * id, const char * fn, const c
     {
         if(codec_handler->get_tag)
         {
-            if(codec_handler->load_file(fn, track))
+            codec_data = codec_handler->load_file(fn, track);
+            if(codec_data)
             {
                 for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
                 {
                     if(omo_tag_type[i])
                     {
-                        val = codec_handler->get_tag(omo_tag_type[i]);
+                        val = codec_handler->get_tag(codec_data, omo_tag_type[i]);
                         if(val && strlen(val))
                         {
                             al_set_config_value(lp->entry_database, id, omo_tag_type[i], val);
@@ -224,7 +226,7 @@ static bool get_tags(OMO_LIBRARY * lp, const char * id, const char * fn, const c
             }
             if(codec_handler->unload_file)
             {
-                codec_handler->unload_file();
+                codec_handler->unload_file(codec_data);
             }
             return true;
         }

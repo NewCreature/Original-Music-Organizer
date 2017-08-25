@@ -3,11 +3,16 @@
 
 #include "../codec_handler.h"
 
-static DUMBA5_PLAYER * codec_player = NULL;
-static DUH * codec_module = NULL;
-static double codec_length = 0.0;
+typedef struct
+{
 
-static char player_sub_filename[1024] = {0};
+	DUMBA5_PLAYER * codec_player;
+	DUH * codec_module;
+	double codec_length;
+	char player_sub_filename[1024];
+	char tag_buffer[1024];
+
+} CODEC_DATA;
 
 static bool codec_initialize(void)
 {
@@ -18,59 +23,66 @@ static bool codec_initialize(void)
 	return false;
 }
 
-static bool codec_load_file(const char * fn, const char * subfn)
+static void * codec_load_file(const char * fn, const char * subfn)
 {
 	DUMB_IT_SIGDATA * sd;
 	int start = 0;
 	long length;
+	CODEC_DATA * data;
 
-	strcpy(player_sub_filename, "");
-	if(subfn)
+	data = malloc(sizeof(CODEC_DATA));
+	if(data)
 	{
-		strcpy(player_sub_filename, subfn);
-	}
-	codec_module = dumba5_load_module(fn);
-	if(codec_module)
-	{
-		if(subfn && strlen(subfn) > 0)
+		memset(data, 0, sizeof(CODEC_DATA));
+		strcpy(data->player_sub_filename, "");
+		if(subfn)
 		{
-			start = atoi(subfn);
+			strcpy(data->player_sub_filename, subfn);
 		}
-		sd = duh_get_it_sigdata(codec_module);
-		if(sd)
+		data->codec_module = dumba5_load_module(fn);
+		if(data->codec_module)
 		{
-			/* getting the correct length from start orders > 0 only supported in
-			   newer versions of DUMB */
-			#if DUMB_MAJOR_VERSION > 0
-				length = dumb_it_build_checkpoints(sd, start);
-			#else
-				length = dumb_it_build_checkpoints(sd);
-			#endif
-			codec_length = (double)length / 65536.0;
+			if(subfn && strlen(subfn) > 0)
+			{
+				start = atoi(subfn);
+			}
+			sd = duh_get_it_sigdata(data->codec_module);
+			if(sd)
+			{
+				/* getting the correct length from start orders > 0 only supported in
+				   newer versions of DUMB */
+				#if DUMB_MAJOR_VERSION > 0
+					length = dumb_it_build_checkpoints(sd, start);
+				#else
+					length = dumb_it_build_checkpoints(sd);
+				#endif
+				data->codec_length = (double)length / 65536.0;
+			}
 		}
-		return true;
 	}
-	return false;
+	return data;
 }
 
-static void codec_unload_file(void)
+static void codec_unload_file(void * data)
 {
-	unload_duh(codec_module);
-	codec_module = NULL;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	unload_duh(codec_data->codec_module);
+	codec_data->codec_module = NULL;
+	free(data);
 }
 
-static char tag_buffer[1024] = {0};
-
-static const char * codec_get_tag(const char * name)
+static const char * codec_get_tag(void * data, const char * name)
 {
 	const char * tag;
 	const unsigned char * comment;
 	DUMB_IT_SIGDATA * sd;
 	int i;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
 	if(!strcmp(name, "Title"))
 	{
-		tag = duh_get_tag(codec_module, "TITLE");
+		tag = duh_get_tag(codec_data->codec_module, "TITLE");
 		if(tag && strlen(tag))
 		{
 			return tag;
@@ -78,87 +90,100 @@ static const char * codec_get_tag(const char * name)
 	}
 	else if(!strcmp(name, "Comment"))
 	{
-		sd = duh_get_it_sigdata(codec_module);
+		sd = duh_get_it_sigdata(codec_data->codec_module);
 		if(sd)
 		{
 			comment = dumb_it_sd_get_song_message(sd);
 			if(comment && strlen((char *)comment))
 			{
-				strcpy(tag_buffer, "");
+				strcpy(codec_data->tag_buffer, "");
 				for(i = 0; i < strlen((char *)comment) && i < 1023; i++)
 				{
 					if(comment[i] < 128)
 					{
-						tag_buffer[i] = comment[i];
+						codec_data->tag_buffer[i] = comment[i];
 					}
 					else
 					{
-						tag_buffer[i] = '_';
+						codec_data->tag_buffer[i] = '_';
 					}
-					if(tag_buffer[i] == '\r')
+					if(codec_data->tag_buffer[i] == '\r')
 					{
-						tag_buffer[i] = ' ';
+						codec_data->tag_buffer[i] = ' ';
 					}
 				}
-				return tag_buffer;
+				return codec_data->tag_buffer;
 			}
 		}
 	}
 	return NULL;
 }
 
-static int codec_get_track_count(const char * fn)
+static int codec_get_track_count(void * data, const char * fn)
 {
 	return 1;
 }
 
-static bool codec_play(void)
+static bool codec_play(void * data)
 {
 	int start = 0;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	if(strlen(player_sub_filename) > 0)
+	if(strlen(codec_data->player_sub_filename) > 0)
 	{
-		start = atoi(player_sub_filename);
+		start = atoi(codec_data->player_sub_filename);
 	}
-	codec_player = dumba5_create_player(codec_module, start, false, 4096, 44100, true);
-	if(codec_player)
+	codec_data->codec_player = dumba5_create_player(codec_data->codec_module, start, false, 4096, 44100, true);
+	if(codec_data->codec_player)
 	{
-		dumba5_start_player(codec_player);
+		dumba5_start_player(codec_data->codec_player);
 		return true;
 	}
 	return false;
 }
 
-static bool codec_pause(void)
+static bool codec_pause(void * data)
 {
-	dumba5_pause_player(codec_player);
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	dumba5_pause_player(codec_data->codec_player);
 	return true;
 }
 
-static bool codec_resume(void)
+static bool codec_resume(void * data)
 {
-	dumba5_resume_player(codec_player);
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	dumba5_resume_player(codec_data->codec_player);
 	return true;
 }
 
-static void codec_stop(void)
+static void codec_stop(void * data)
 {
-	dumba5_stop_player(codec_player);
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	dumba5_stop_player(codec_data->codec_player);
 }
 
-static double codec_get_length(void)
+static double codec_get_length(void * data)
 {
-	return codec_length;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return codec_data->codec_length;
 }
 
-static double codec_get_position(void)
+static double codec_get_position(void * data)
 {
-	return (double)dumba5_get_player_position(codec_player) / 65536.0;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return (double)dumba5_get_player_position(codec_data->codec_player) / 65536.0;
 }
 
-static bool codec_done_playing(void)
+static bool codec_done_playing(void * data)
 {
-	return dumba5_player_playback_finished(codec_player);
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return dumba5_player_playback_finished(codec_data->codec_player);
 }
 
 static OMO_CODEC_HANDLER codec_handler;

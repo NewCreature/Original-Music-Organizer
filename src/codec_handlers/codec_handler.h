@@ -17,20 +17,23 @@ typedef struct
     void (*exit)(void);
 
     /* file operations */
-    bool (*load_file)(const char * fn, const char * subfn);
-    void (*unload_file)(void);
-    int (*get_track_count)(const char * fn);
-    const char * (*get_tag)(const char * name);
+    void * (*load_file)(const char * fn, const char * subfn);
+    void (*unload_file)(void * data);
+    int (*get_track_count)(void * data, const char * fn);
+    const char * (*get_tag)(void * data, const char * name);
 
     /* playback functions */
-    bool (*play)(void);
-    bool (*pause)(void);
-    bool (*resume)(void);
-    void (*stop)(void);
-    bool (*seek)(float pos);
-    double (*get_position)(void);
-    double (*get_length)(void);
-    bool (*done_playing)(void);
+    bool (*play)(void * data);
+    bool (*pause)(void * data);
+    bool (*resume)(void * data);
+    void (*stop)(void * data);
+    bool (*seek)(void * data, double pos);
+    double (*get_position)(void * data);
+    double (*get_length)(void * data);
+    bool (*done_playing)(void * data);
+
+    /* instance data */
+    void * data;
 
 } OMO_CODEC_HANDLER;
 

@@ -93,7 +93,7 @@ bool omo_count_file(const char * fn, void * data)
 					extracted_fn = archive_handler->extract_file(fn, i);
 					if(extracted_fn)
 					{
-						c2 = codec_handler->get_track_count(extracted_fn);
+						c2 = codec_handler->get_track_count(NULL, extracted_fn);
 						al_remove_filename(extracted_fn);
 						sprintf(buf2, "%d", c2);
 						al_set_config_value(app->library->file_database, fn, buf, buf2);
@@ -115,7 +115,7 @@ bool omo_count_file(const char * fn, void * data)
 			}
 			else
 			{
-				c2 = codec_handler->get_track_count(fn);
+				c2 = codec_handler->get_track_count(NULL, fn);
 				sprintf(buf2, "%d", c2);
 				al_set_config_value(app->library->file_database, fn, "tracks", buf2);
 			}
@@ -203,7 +203,7 @@ bool omo_add_file(const char * fn, void * data)
 			}
 			else
 			{
-				c = codec_handler->get_track_count(fn);
+				c = codec_handler->get_track_count(NULL, fn);
 			}
 			for(i = 0; i < c; i++)
 			{
@@ -281,7 +281,7 @@ bool omo_queue_file(const char * fn, void * data)
 					extracted_fn = archive_handler->extract_file(fn, i);
 					if(extracted_fn)
 					{
-						c2 = codec_handler->get_track_count(extracted_fn);
+						c2 = codec_handler->get_track_count(NULL, extracted_fn);
 			            al_remove_filename(extracted_fn);
 					}
 				}
@@ -305,7 +305,7 @@ bool omo_queue_file(const char * fn, void * data)
 			}
 			else
 			{
-				c = codec_handler->get_track_count(fn);
+				c = codec_handler->get_track_count(NULL, fn);
 			}
 			for(i = 0; i < c; i++)
 			{

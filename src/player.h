@@ -15,6 +15,7 @@ typedef struct
     int queue_pos;
     char extracted_filename[1024];
     OMO_CODEC_HANDLER * codec_handler;
+    void * codec_data;
     int state;
 
 } OMO_PLAYER;

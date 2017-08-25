@@ -3,22 +3,29 @@
 
 #include "../codec_handler.h"
 
-static OMO_CODEC_HANDLER codec_handler;
-static Music_Emu * emu = NULL;
-static gme_info_t * info;
-static bool paused = false;
 static int buf_size = 1024;
-static ALLEGRO_THREAD * codec_thread = NULL;
-static ALLEGRO_AUDIO_STREAM * codec_stream = NULL;
-static int start_track;
+
+typedef struct
+{
+	Music_Emu * emu;
+	gme_info_t * info;
+	bool paused;
+	ALLEGRO_THREAD * codec_thread;
+	ALLEGRO_AUDIO_STREAM * codec_stream;
+	int start_track;
+	char track_buffer[16];
+	char tag_buffer[1024];
+
+} CODEC_DATA;
 
 static void * gme_update_thread(ALLEGRO_THREAD * thread, void * arg)
 {
+	CODEC_DATA * codec_data = (CODEC_DATA *)arg;
 	ALLEGRO_EVENT_QUEUE * queue;
 	short *fragment;
 
 	queue = al_create_event_queue();
-	al_register_event_source(queue, al_get_audio_stream_event_source(codec_stream));
+	al_register_event_source(queue, al_get_audio_stream_event_source(codec_data->codec_stream));
 
 	while(1)
 	{
@@ -28,18 +35,18 @@ static void * gme_update_thread(ALLEGRO_THREAD * thread, void * arg)
 
 		if(event.type == ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT)
 		{
-			fragment = (short *)al_get_audio_stream_fragment(codec_stream);
+			fragment = (short *)al_get_audio_stream_fragment(codec_data->codec_stream);
 			if(fragment)
 			{
-				if(paused)
+				if(codec_data->paused)
 				{
 					memset(fragment, 0, sizeof(short) * buf_size * 2);
 				}
 				else
 				{
-					gme_play(emu, buf_size * 2, fragment);
+					gme_play(codec_data->emu, buf_size * 2, fragment);
 				}
-				if(!al_set_audio_stream_fragment(codec_stream, fragment))
+				if(!al_set_audio_stream_fragment(codec_data->codec_stream, fragment))
 				{
 				}
 			}
@@ -55,120 +62,128 @@ static void * gme_update_thread(ALLEGRO_THREAD * thread, void * arg)
 	return NULL;
 }
 
-static bool codec_load_file(const char * fn, const char * subfn)
+static void * codec_load_file(const char * fn, const char * subfn)
 {
-	start_track = 0;
-	if(subfn)
-	{
-		start_track = atoi(subfn);
-	}
+	CODEC_DATA * data;
 
-	if(!gme_open_file(fn, &emu, 44100))
+	data = malloc(sizeof(CODEC_DATA));
+	if(data)
 	{
-		gme_track_info(emu, &info, start_track);
-		if(info)
+		memset(data, 0, sizeof(CODEC_DATA));
+		data->start_track = 0;
+		if(subfn)
 		{
-			if(info->length <= 0)
+			data->start_track = atoi(subfn);
+		}
+
+		if(!gme_open_file(fn, &(data->emu), 44100))
+		{
+			gme_track_info(data->emu, &(data->info), data->start_track);
+			if(data->info)
 			{
-				info->length = info->intro_length + info->loop_length * 2;
-			}
-			if(info->length <= 0)
-			{
-				info->length = (long) (2.5 * 60 * 1000);
+				if(data->info->length <= 0)
+				{
+					data->info->length = data->info->intro_length + data->info->loop_length * 2;
+				}
+				if(data->info->length <= 0)
+				{
+					data->info->length = (long) (2.5 * 60 * 1000);
+				}
 			}
 		}
-		return true;
 	}
-	return false;
+	return data;
 }
 
-static void codec_unload_file(void)
+static void codec_unload_file(void * data)
 {
-	if(info)
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	if(codec_data->info)
 	{
-		gme_free_info(info);
+		gme_free_info(codec_data->info);
 	}
-	gme_delete(emu);
-	emu = NULL;
+	gme_delete(codec_data->emu);
+	codec_data->emu = NULL;
+	free(data);
 }
 
-static char track_buffer[16] = {0};
-static char tag_buffer[1024] = {0};
-
-static const char * codec_get_tag(const char * name)
+static const char * codec_get_tag(void * data, const char * name)
 {
-	if(info)
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	if(codec_data->info)
 	{
 		if(!strcmp(name, "Album"))
 		{
-			if(strlen(info->game))
+			if(strlen(codec_data->info->game))
 			{
-				return info->game;
+				return codec_data->info->game;
 			}
 		}
 		else if(!strcmp(name, "Artist"))
 		{
-			if(strlen(info->author))
+			if(strlen(codec_data->info->author))
 			{
-				return info->author;
+				return codec_data->info->author;
 			}
 		}
 		else if(!strcmp(name, "Album"))
 		{
-			if(strlen(info->game))
+			if(strlen(codec_data->info->game))
 			{
-				return info->game;
+				return codec_data->info->game;
 			}
 		}
 		else if(!strcmp(name, "Title"))
 		{
-			if(strlen(info->song))
+			if(strlen(codec_data->info->song))
 			{
-				return info->song;
+				return codec_data->info->song;
 			}
 		}
 		else if(!strcmp(name, "Copyright"))
 		{
-			if(strlen(info->copyright))
+			if(strlen(codec_data->info->copyright))
 			{
-				return info->copyright;
+				return codec_data->info->copyright;
 			}
 		}
 		else if(!strcmp(name, "Comment"))
 		{
-			if(strlen(info->comment))
+			if(strlen(codec_data->info->comment))
 			{
-				return info->comment;
+				return codec_data->info->comment;
 			}
 		}
 		else if(!strcmp(name, "Track"))
 		{
-			if(gme_track_count(emu) > 1)
+			if(gme_track_count(codec_data->emu) > 1)
 			{
-				sprintf(track_buffer, "%d", start_track + 1);
+				sprintf(codec_data->track_buffer, "%d", codec_data->start_track + 1);
 			}
-			return track_buffer;
+			return codec_data->track_buffer;
 		}
 		else if(!strcmp(name, "Loop Start"))
 		{
-			sprintf(tag_buffer, "%f", (double)info->intro_length / 1000.0);
-			return tag_buffer;
+			sprintf(codec_data->tag_buffer, "%f", (double)codec_data->info->intro_length / 1000.0);
+			return codec_data->tag_buffer;
 		}
 		else if(!strcmp(name, "Loop End"))
 		{
-			sprintf(tag_buffer, "%f", (double)info->length / 1000.0);
-			return tag_buffer;
+			sprintf(codec_data->tag_buffer, "%f", (double)codec_data->info->length / 1000.0);
+			return codec_data->tag_buffer;
 		}
 		else if(!strcmp(name, "Fade Time"))
 		{
-			sprintf(tag_buffer, "0.0");
-			return tag_buffer;
+			sprintf(codec_data->tag_buffer, "0.0");
+			return codec_data->tag_buffer;
 		}
 	}
 	return NULL;
 }
 
-static int codec_get_track_count(const char * fn)
+static int codec_get_track_count(void * data, const char * fn)
 {
 	Music_Emu * local_emu = NULL;
 	int count = 0;
@@ -182,46 +197,54 @@ static int codec_get_track_count(const char * fn)
 	return count;
 }
 
-static bool codec_play(void)
+static bool codec_play(void * data)
 {
-	gme_start_track(emu, start_track);
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	gme_start_track(codec_data->emu, codec_data->start_track);
 
 	/* calculate track length */
-	gme_set_fade(emu, info->length);
-	paused = false;
+	gme_set_fade(codec_data->emu, codec_data->info->length);
+	codec_data->paused = false;
 
-	codec_stream = al_create_audio_stream(4, buf_size, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
-	if(codec_stream)
+	codec_data->codec_stream = al_create_audio_stream(4, buf_size, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
+	if(codec_data->codec_stream)
 	{
-		al_attach_audio_stream_to_mixer(codec_stream, al_get_default_mixer());
-		codec_thread = al_create_thread(gme_update_thread, NULL);
-		if(codec_thread)
+		al_attach_audio_stream_to_mixer(codec_data->codec_stream, al_get_default_mixer());
+		codec_data->codec_thread = al_create_thread(gme_update_thread, codec_data);
+		if(codec_data->codec_thread)
 		{
-			al_start_thread(codec_thread);
+			al_start_thread(codec_data->codec_thread);
 			return true;
 		}
 	}
 	return false;
 }
 
-static bool codec_pause(void)
+static bool codec_pause(void * data)
 {
-	paused = true;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->paused = true;
 	return true;
 }
 
-static bool codec_resume(void)
+static bool codec_resume(void * data)
 {
-	paused = false;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->paused = false;
 	return true;
 }
 
-static void codec_stop(void)
+static void codec_stop(void * data)
 {
-	al_join_thread(codec_thread, NULL);
-	codec_thread = NULL;
-	al_destroy_audio_stream(codec_stream);
-	codec_stream = NULL;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	al_join_thread(codec_data->codec_thread, NULL);
+	codec_data->codec_thread = NULL;
+	al_destroy_audio_stream(codec_data->codec_stream);
+	codec_data->codec_stream = NULL;
 }
 
 /*static float codec_get_position(void)
@@ -229,14 +252,18 @@ static void codec_stop(void)
 	return al_get_audio_stream_position_secs(t3f_stream);
 } */
 
-static bool codec_done_playing(void)
+static bool codec_done_playing(void * data)
 {
-	if(gme_track_ended(emu))
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	if(gme_track_ended(codec_data->emu))
 	{
 		return true;
 	}
 	return false;
 }
+
+static OMO_CODEC_HANDLER codec_handler;
 
 OMO_CODEC_HANDLER * omo_codec_gme_get_codec_handler(void)
 {
