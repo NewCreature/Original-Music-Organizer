@@ -4,8 +4,6 @@
 
 #include "../archive_handler.h"
 
-static OMO_ARCHIVE_HANDLER archive_handler;
-
 static int count_files(const char * fn)
 {
 	struct archive *a;
@@ -39,9 +37,7 @@ static int count_files(const char * fn)
 	return total;
 }
 
-static char returnfn[1024];
-
-static const char * get_file(const char * fn, int index)
+static const char * get_file(const char * fn, int index, char * buffer)
 {
 	struct archive *a;
 	struct archive_entry *entry;
@@ -61,7 +57,7 @@ static const char * get_file(const char * fn, int index)
 			{
 				if(total == index)
 				{
-					strcpy(returnfn, archive_entry_pathname(entry));
+					strcpy(buffer, archive_entry_pathname(entry));
 					break;
 				}
 				total++;
@@ -75,7 +71,7 @@ static const char * get_file(const char * fn, int index)
 		archive_read_free(a);  // Note 3
 	}
 
-	return returnfn;
+	return buffer;
 }
 
 static int copy_data(struct archive *ar, struct archive *aw)
@@ -132,14 +128,14 @@ static const char * extract_current_file(struct archive * a, struct archive_entr
 	return NULL;
 }
 
-static const char * extract_file(const char * fn, int index)
+static const char * extract_file(const char * fn, int index, char * buffer)
 {
 	struct archive *a;
 	struct archive_entry *entry;
 	int r, r2;
 	int total = 0;
 	char * cwd = al_get_current_directory();
-	strcpy(returnfn, "");
+	strcpy(buffer, "");
 	al_change_directory(al_path_cstr(t3f_data_path, '/'));
 
 	a = archive_read_new();
@@ -156,7 +152,7 @@ static const char * extract_file(const char * fn, int index)
 				if(total == index)
 				{
 					extract_current_file(a, entry);
-					strcpy(returnfn, t3f_get_filename(t3f_data_path, archive_entry_pathname(entry)));
+					strcpy(buffer, t3f_get_filename(t3f_data_path, archive_entry_pathname(entry)));
 					break;
 				}
 				total++;
@@ -172,8 +168,10 @@ static const char * extract_file(const char * fn, int index)
 	al_change_directory(cwd);
 	free(cwd);
 
-	return returnfn;
+	return buffer;
 }
+
+static OMO_ARCHIVE_HANDLER archive_handler;
 
 OMO_ARCHIVE_HANDLER * omo_get_libarchive_archive_handler(void)
 {

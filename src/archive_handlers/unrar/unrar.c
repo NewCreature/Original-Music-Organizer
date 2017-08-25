@@ -67,8 +67,6 @@ static int count_files(const char * fn)
 	return line_count - 12;
 }
 
-static char returnfn[1024] = {0};
-
 static void remove_line_endings(char * buffer)
 {
 	int i;
@@ -94,7 +92,7 @@ static void remove_line_endings(char * buffer)
 	}
 }
 
-static const char * get_file(const char * fn, int index)
+static const char * get_file(const char * fn, int index, char * buffer)
 {
 	ALLEGRO_FILE * fp;
 	char system_command[1024];
@@ -144,20 +142,20 @@ static const char * get_file(const char * fn, int index)
 				}
 				if(line_count - skip_lines == index)
 				{
-					strcpy(returnfn, &line_buffer[fn_offset]);
+					strcpy(buffer, &line_buffer[fn_offset]);
 
 					/* remove leading or trailing characters depending on version */
 					if(version != '4')
 					{
-						remove_line_endings(returnfn);
+						remove_line_endings(buffer);
 					}
 					else
 					{
-						for(i = 0; i < strlen(returnfn); i++)
+						for(i = 0; i < strlen(buffer); i++)
 						{
-							if(returnfn[i] == ' ')
+							if(buffer[i] == ' ')
 							{
-								returnfn[i] = 0;
+								buffer[i] = 0;
 								break;
 							}
 						}
@@ -172,10 +170,10 @@ static const char * get_file(const char * fn, int index)
 		al_fclose(fp);
 	}
 
-	return returnfn;
+	return buffer;
 }
 
-static const char * extract_file(const char * fn, int index)
+static const char * extract_file(const char * fn, int index, char * buffer)
 {
 	char system_command[1024];
 	char subfile[1024];
@@ -187,12 +185,12 @@ static const char * extract_file(const char * fn, int index)
 		path_separator = '/';
 	#endif
 
-	strcpy(subfile, get_file(fn, index));
+	strcpy(subfile, get_file(fn, index, buffer));
 	sprintf(system_command, "%sunrar x -inul -y \"%s\" \"%s\" \"%s\"", command_prefix, fn, subfile, al_path_cstr(t3f_data_path, path_separator));
 //	printf(">%s\n", system_command);
 	my_system(system_command);
-	strcpy(returnfn, t3f_get_filename(t3f_data_path, subfile));
-	return returnfn;
+	strcpy(buffer, t3f_get_filename(t3f_data_path, subfile));
+	return buffer;
 }
 
 OMO_ARCHIVE_HANDLER * omo_get_unrar_archive_handler(void)

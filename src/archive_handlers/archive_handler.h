@@ -14,9 +14,12 @@ typedef struct
 
     /* archive handling functions */
     int (*count_files)(const char * fn);
-    const char * (*get_file)(const char * fn, int index);
-    const char * (*extract_file)(const char * fn, int index);
+    const char * (*get_file)(const char * fn, int index, char * buffer);
+    const char * (*extract_file)(const char * fn, int index, char * buffer);
 //    const char * (*get_temp_file)(const char * fn, )
+
+    /* instance data */
+    void * data;
 
 } OMO_ARCHIVE_HANDLER;
 

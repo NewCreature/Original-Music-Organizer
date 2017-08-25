@@ -112,6 +112,7 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
     OMO_ARCHIVE_HANDLER * archive_handler;
 	const char * subfile;
     bool next_file = false;
+    char fn_buffer[1024] = {0};
 
     if(pp->queue && pp->state == OMO_PLAYER_STATE_PLAYING)
     {
@@ -140,10 +141,10 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
                         strcpy(pp->extracted_filename, "");
                         if(pp->queue->entry[pp->queue_pos]->sub_file)
                         {
-                            pp->codec_handler = omo_get_codec_handler(codec_handler_registry, archive_handler->get_file(pp->queue->entry[pp->queue_pos]->file, atoi(pp->queue->entry[pp->queue_pos]->sub_file)));
+                            pp->codec_handler = omo_get_codec_handler(codec_handler_registry, archive_handler->get_file(pp->queue->entry[pp->queue_pos]->file, atoi(pp->queue->entry[pp->queue_pos]->sub_file), fn_buffer));
                             if(pp->codec_handler)
                             {
-                                subfile = archive_handler->extract_file(pp->queue->entry[pp->queue_pos]->file, atoi(pp->queue->entry[pp->queue_pos]->sub_file));
+                                subfile = archive_handler->extract_file(pp->queue->entry[pp->queue_pos]->file, atoi(pp->queue->entry[pp->queue_pos]->sub_file), fn_buffer);
                                 if(strlen(subfile) > 0)
                                 {
                                     strcpy(pp->extracted_filename, subfile);
