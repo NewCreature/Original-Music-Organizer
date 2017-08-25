@@ -1134,7 +1134,7 @@ bool t3gui_draw_dialog(T3GUI_PLAYER *player)
    al_use_transform(&identity);
    if(player->flags & T3GUI_PLAYER_CLEAR)
    {
-       al_clear_to_color(al_map_rgb(0, 0, rand() % 256));
+       al_clear_to_color(al_map_rgb(0, 0, 0));
    }
    player->res |= t3gui_dialog_message(player->dialog, MSG_DRAW, 0, &player->obj);
    al_set_clipping_rectangle(clip_x, clip_y, clip_w, clip_h);
