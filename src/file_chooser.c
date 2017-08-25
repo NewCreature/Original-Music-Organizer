@@ -223,7 +223,6 @@ void omo_file_chooser_logic(void * data)
                         {
                             if(!strcmp(val, al_get_native_file_dialog_path(app->file_chooser, 0)))
                             {
-                                printf("dupe\n");
                                 break;
                             }
                         }
