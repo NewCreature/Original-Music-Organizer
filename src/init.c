@@ -12,10 +12,7 @@
 #include "codec_handlers/dumba5/dumba5.h"
 #include "codec_handlers/allegro_acodec/allegro_acodec.h"
 #include "codec_handlers/gme/gme.h"
-
-#ifndef ALLEGRO_MACOSX
-	#include "codec_handlers/mp3a5/mp3a5.h"
-#endif
+#include "codec_handlers/mp3a5/mp3a5.h"
 
 /* Mac OS X codecs */
 #ifdef ALLEGRO_MACOSX
@@ -179,16 +176,14 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		printf("Error setting up player registry!\n");
 		return false;
 	}
-	omo_register_codec_handler(app->codec_handler_registry, omo_codec_dumba5_get_codec_handler());
-	omo_register_codec_handler(app->codec_handler_registry, omo_codec_allegro_acodec_get_codec_handler());
-	omo_register_codec_handler(app->codec_handler_registry, omo_codec_gme_get_codec_handler());
-	#ifndef ALLEGRO_MACOSX
-		omo_register_codec_handler(app->codec_handler_registry, omo_codec_mp3a5_get_codec_handler());
-	#endif
 	#ifdef ALLEGRO_MACOSX
 		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avmidiplayer_get_codec_handler());
 		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avplayer_get_codec_handler());
 	#endif
+	omo_register_codec_handler(app->codec_handler_registry, omo_codec_dumba5_get_codec_handler());
+	omo_register_codec_handler(app->codec_handler_registry, omo_codec_allegro_acodec_get_codec_handler());
+	omo_register_codec_handler(app->codec_handler_registry, omo_codec_gme_get_codec_handler());
+	omo_register_codec_handler(app->codec_handler_registry, omo_codec_mp3a5_get_codec_handler());
 
 	app->player = omo_create_player();
 	if(!app->player)
