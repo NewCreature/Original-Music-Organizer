@@ -56,6 +56,7 @@ OMO_CODEC_HANDLER * omo_get_codec_handler(OMO_CODEC_HANDLER_REGISTRY * rp, const
                 if(!strcasecmp(extension, rp->codec_handler[i].type[j]))
                 {
                     codec_handler = &rp->codec_handler[i];
+                    i = rp->codec_handlers;
                     break;
                 }
             }
