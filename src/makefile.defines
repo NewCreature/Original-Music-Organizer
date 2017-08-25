@@ -1,7 +1,7 @@
 include makefile.include
 
 T3GUI_OBJECTS = t3gui/dialog.o t3gui/element_proc.o t3gui/nine_patch.o t3gui/player.o t3gui/resource.o t3gui/t3gui.o t3gui/theme.o t3gui/unicode.o
-CODEC_OBJECTS = codec_handlers/dumba5/DUMBA5/dumba5.o codec_handlers/dumba5/dumba5.o codec_handlers/allegro_acodec/allegro_acodec.o codec_handlers/gme/gme.o codec_handlers/codec_handler.o codec_handlers/registry.o
+CODEC_OBJECTS = codec_handlers/dumba5/DUMBA5/dumba5.o codec_handlers/dumba5/dumba5.o codec_handlers/allegro_acodec/allegro_acodec.o codec_handlers/gme/gme.o codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o codec_handlers/codec_handler.o codec_handlers/registry.o
 ARCHIVE_HANDLER_OBJECTS = archive_handlers/libarchive/libarchive.o archive_handlers/unrar/unrar.o archive_handlers/archive_handler.o archive_handlers/registry.o
 
 #########################
@@ -21,7 +21,7 @@ APP_COPYRIGHT = Copyright\ (C)\ 2017\ T\^3\ Software
 APP_ANDROID_PACKAGE = com.t3i.omo
 APP_URL = http://www.t3-i.com
 APP_OBJECTS = $(T3GUI_OBJECTS) $(CODEC_OBJECTS) $(ARCHIVE_HANDLER_OBJECTS) queue.o library.o md5.o ui/menu_init.o ui/menu_proc.o ui/ui.o ui/dialog_proc.o player.o main.o file_chooser.o constants.o init.o events.o file_helpers.o
-APP_LIBS = -ldumb -lgme -lstdc++
+APP_LIBS = -ldumb -lgme -lstdc++ -logg -lvorbis -lvorbisfile -lmpg123
 #APP_CFLAGS =
 APP_PACKAGE_DIR = ../packages
 #APP_EXTRA_TARGET =
@@ -46,18 +46,18 @@ MACOSX_DEPEND_LIBS = -lbz2 -liconv -lxml2 -larchive
 # Linux stuff #
 ###############
 #LINUX_CFLAGS =
-LINUX_PLATFORM_OBJECTS = codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o
+LINUX_PLATFORM_OBJECTS =
 #LINUX_PLATFORM_LIBS =
-LINUX_DEPEND_LIBS = -lmpg123 -larchive
+LINUX_DEPEND_LIBS = -larchive
 #LINUX_PLATFORM_TARGET =
 
 ################################################
 # Linux static stuff (for binary distrubution) #
 ################################################
 #LINUX_STATIC_CFLAGS =
-LINUX_STATIC_PLATFORM_OBJECTS = codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o
+LINUX_STATIC_PLATFORM_OBJECTS =
 #LINUX_STATIC_PLATFORM_LIBS =
-LINUX_STATIC_DEPEND_LIBS = -lmpg123 -larchive
+LINUX_STATIC_DEPEND_LIBS = -larchive
 #LINUX_STATIC_PLATFORM_TARGET =
 
 ##############################
@@ -66,7 +66,7 @@ LINUX_STATIC_DEPEND_LIBS = -lmpg123 -larchive
 #MINGW_CROSS_CFLAGS =
 MINGW_CROSS_PLATFORM_OBJECTS = codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o
 #MINGW_CROSS_PLATFORM_LIBS =
-MINGW_CROSS_DEPEND_LIBS = -lmpg123 -larchive_static
+MINGW_CROSS_DEPEND_LIBS = -larchive_static
 #MINGW_CROSS_PLATFORM_TARGET =
 
 ###############
@@ -75,7 +75,7 @@ MINGW_CROSS_DEPEND_LIBS = -lmpg123 -larchive_static
 #MINGW_CFLAGS =
 MINGW_PLATFORM_OBJECTS = codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o
 #MINGW_PLATFORM_LIBS =
-MINGW_DEPEND_LIBS = -lmpg123 -larchive_static
+MINGW_DEPEND_LIBS = -larchive_static
 #MINGW_PLATFORM_TARGET =
 
 #################
