@@ -64,7 +64,7 @@ LINUX_STATIC_DEPEND_LIBS = -larchive
 # MinGW cross-compiler stuff #
 ##############################
 #MINGW_CROSS_CFLAGS =
-MINGW_CROSS_PLATFORM_OBJECTS = codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o
+MINGW_CROSS_PLATFORM_OBJECTS =
 #MINGW_CROSS_PLATFORM_LIBS =
 MINGW_CROSS_DEPEND_LIBS = -larchive_static
 #MINGW_CROSS_PLATFORM_TARGET =
@@ -73,7 +73,7 @@ MINGW_CROSS_DEPEND_LIBS = -larchive_static
 # MinGW stuff #
 ###############
 #MINGW_CFLAGS =
-MINGW_PLATFORM_OBJECTS = codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o
+MINGW_PLATFORM_OBJECTS =
 #MINGW_PLATFORM_LIBS =
 MINGW_DEPEND_LIBS = -larchive_static
 #MINGW_PLATFORM_TARGET =
