@@ -195,13 +195,21 @@ int t3gui_box_proc(int msg, T3GUI_ELEMENT *d, int c)
 {
     int ret = D_O_K;
     assert(d);
+    int i;
+
     //printf("t3gui_box received message 0x%04x\n", msg);
     if (msg==MSG_DRAW)
     {
-        NINE_PATCH_BITMAP *p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[0];
-        int w = max(d->w, get_nine_patch_bitmap_min_width(p9));
-        int h = max(d->h, get_nine_patch_bitmap_min_height(p9));
-        draw_nine_patch_bitmap(p9, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG], d->x, d->y, w, h);
+        for(i = 0; i < T3GUI_THEME_MAX_BITMAPS; i++)
+        {
+            NINE_PATCH_BITMAP *p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[i];
+            if(p9)
+            {
+                int w = max(d->w, get_nine_patch_bitmap_min_width(p9));
+                int h = max(d->h, get_nine_patch_bitmap_min_height(p9));
+                draw_nine_patch_bitmap(p9, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG], d->x, d->y, w, h);
+            }
+        }
     }
 
     return ret;
