@@ -187,6 +187,10 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
         al_register_event_source(t3f_queue, al_get_display_event_source(uip->tags_display));
         al_set_target_bitmap(al_get_backbuffer(uip->tags_display));
         uip->popup_theme = omo_load_theme("data/themes/basic/omo_theme.ini", 1);
+        if(!uip->popup_theme)
+        {
+            goto fail;
+        }
         uip->tags_dialog = t3gui_create_dialog();
         if(uip->tags_dialog)
         {
