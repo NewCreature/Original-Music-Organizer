@@ -264,7 +264,14 @@ int t3gui_button_proc(int msg, T3GUI_ELEMENT *d, int c)
             int w = max(d->w, get_nine_patch_bitmap_min_width(p9));
             int h = max(d->h, get_nine_patch_bitmap_min_height(p9));
             draw_nine_patch_bitmap(p9, c2, d->x+0.5, d->y+0.5, w, h);
-            al_draw_text(font, c1, d->x+d->w/2+g, d->y+d->h/2-al_get_font_line_height(font)/2+g, ALLEGRO_ALIGN_CENTRE, text);
+            if(d->dp3)
+            {
+                al_draw_tinted_bitmap(d->dp3, c1, d->x + d->w / 2 - al_get_bitmap_width(d->dp3) / 2, d->y + d->h / 2 - al_get_bitmap_height(d->dp3) / 2, 0);
+            }
+            else
+            {
+                al_draw_text(font, c1, d->x+d->w/2+g, d->y+d->h/2-al_get_font_line_height(font)/2+g, ALLEGRO_ALIGN_CENTRE, text);
+            }
             break;
         }
 
@@ -455,7 +462,7 @@ int t3gui_push_button_proc(int msg, T3GUI_ELEMENT *d, int c)
             if(d->dp2)
             {
                 getbuttonfuncptr *func = d->dp2;
-                func(d, d->dp3);
+                func(d, d->user_data);
             }
             if(d->flags & D_EXIT)
             {

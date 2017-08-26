@@ -1,6 +1,8 @@
 #ifndef OMO_UI_H
 #define OMO_UI_H
 
+#include "theme.h"
+
 #define OMO_UI_MAX_TAGS         16
 #define OMO_UI_MAX_TAG_LENGTH 1024
 
@@ -25,12 +27,8 @@ typedef struct
     T3GUI_ELEMENT * tags_ok_button_element;
 
     /* theme data */
-    T3GUI_THEME * ui_box_theme;
-	T3GUI_THEME * ui_list_box_theme;
-	T3GUI_THEME * ui_button_theme;
-    T3GUI_THEME * tags_box_theme;
-    T3GUI_THEME * tags_list_box_theme;
-    T3GUI_THEME * tags_button_theme;
+    OMO_THEME * main_theme;
+    OMO_THEME * popup_theme;
 	char ui_button_text[6][8];
 
 } OMO_UI;

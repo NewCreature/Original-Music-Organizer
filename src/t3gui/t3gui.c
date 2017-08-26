@@ -230,6 +230,10 @@ bool t3gui_show_dialog_init(T3GUI_DIALOG * dp, ALLEGRO_EVENT_QUEUE * qp, int fla
     /* initialize the player */
     for(i = 0; i < dp->elements; i++)
     {
+        dp->element[i].user_data = user_data;
+    }
+    for(i = 0; i < dp->elements; i++)
+    {
         if(dp->element[i].flags & D_SETFOCUS)
         {
             focus = i;

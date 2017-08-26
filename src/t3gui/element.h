@@ -17,6 +17,7 @@ typedef struct T3GUI_ELEMENT
   uint64_t flags;               /* flags about the object state */
   int d1, d2;                   /* any data the object might require */
   void *dp, *dp2, *dp3;         /* pointers to more object data */
+  void * user_data;
 
   uint32_t id;                  /* Unique ID by which to find this widget */
   T3GUI_DIALOG_PROC callback;

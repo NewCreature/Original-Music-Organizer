@@ -36,7 +36,7 @@ void omo_library_setup_update_proc(const char * fn, void * data)
 	al_identity_transform(&identity);
 	al_use_transform(&identity);
 	al_draw_filled_rectangle(0, 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), al_map_rgba_f(0.0, 0.0, 0.0, 0.5));
-	font = app->ui->ui_button_theme->state[0].font;
+	font = app->ui->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font;
 	path = al_create_path(fn);
 	if(path)
 	{
