@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "theme.h"
 #include "resource.h"
 

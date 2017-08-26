@@ -1,6 +1,7 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_audio.h>
 #include <mpg123.h>
+#include <stdio.h>
 #include "mp3a5.h"
 
 bool mp3a5_init(void)
