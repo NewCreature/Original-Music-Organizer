@@ -172,7 +172,7 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
     int i;
     int edit_flags = D_SETFOCUS;
 
-    al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_OPENGL);
+    al_set_new_display_flags(ALLEGRO_WINDOWED);
     for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
     {
         if(omo_tag_type[i])
@@ -233,7 +233,8 @@ void omo_close_tags_dialog(OMO_UI * uip, void * data)
 {
     t3gui_close_dialog(uip->tags_dialog);
     t3gui_destroy_dialog(uip->tags_dialog);
-    t3gui_destroy_theme(uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON]);
+    omo_destroy_theme(uip->popup_theme);
+    uip->popup_theme = NULL;
     t3gui_unload_resources(uip->tags_display, true);
     al_destroy_display(uip->tags_display);
     uip->tags_display = NULL;
