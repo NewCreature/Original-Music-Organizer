@@ -899,7 +899,7 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 		al_set_window_title(t3f_display, t3f_window_title);
 	}
 	#ifdef ALLEGRO_WINDOWS
-		t3f_set_windows_icon();
+		t3f_set_windows_icon("allegro_icon");
 	#endif
 	return ret;
 }
