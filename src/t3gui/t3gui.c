@@ -72,8 +72,8 @@ void t3gui_exit(void)
 {
     if(t3gui_initialized)
     {
+        t3gui_destroy_theme(t3gui_get_default_theme());
         t3gui_unload_resources(NULL, true);
-        t3gui_free_resources();
         t3gui_initialized = false;
     }
 }

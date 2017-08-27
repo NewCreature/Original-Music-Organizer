@@ -194,5 +194,21 @@ T3GUI_THEME * t3gui_load_theme(const char * fn)
 
 void t3gui_destroy_theme(T3GUI_THEME * tp)
 {
-    free(tp);
+    int i, j;
+
+    for(i = 0; i < T3GUI_ELEMENT_STATES; i++)
+    {
+        for(j = 0; j < T3GUI_THEME_MAX_BITMAPS; j++)
+        {
+            if(tp->state[i].bitmap[j])
+            {
+                t3gui_remove_bitmap_reference(&tp->state[i].bitmap[j]);
+            }
+        }
+        t3gui_remove_font_reference(&tp->state[i].font);
+    }
+    if(tp != &t3gui_default_theme)
+    {
+        free(tp);
+    }
 }
