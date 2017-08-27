@@ -1,5 +1,6 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
+#include <stdio.h>
 #include "resource.h"
 
 static T3GUI_RESOURCE * t3gui_resource[T3GUI_MAX_RESOURCES] = {NULL};
@@ -149,19 +150,27 @@ static void t3gui_remove_resource(int type, int index)
 
     if(type == T3GUI_RESOURCE_TYPE_BITMAP)
     {
-        for(i = index; i < t3gui_bitmaps - 1; i++)
+        if(t3gui_bitmaps > 0)
         {
-            t3gui_bitmap[i] = t3gui_bitmap[i + 1];
+            for(i = index; i < t3gui_bitmaps - 1; i++)
+            {
+                t3gui_bitmap[i] = t3gui_bitmap[i + 1];
+            }
+            t3gui_bitmaps--;
+            t3gui_bitmap[t3gui_bitmaps] = NULL;
         }
-        t3gui_bitmaps--;
     }
     else if(type == T3GUI_RESOURCE_TYPE_FONT || type == T3GUI_RESOURCE_TYPE_DEFAULT_FONT)
     {
-        for(i = index; i < t3gui_fonts - 1; i++)
+        if(t3gui_fonts > 0)
         {
-            t3gui_font[i] = t3gui_font[i + 1];
+            for(i = index; i < t3gui_fonts - 1; i++)
+            {
+                t3gui_font[i] = t3gui_font[i + 1];
+            }
+            t3gui_fonts--;
+            t3gui_font[t3gui_fonts] = NULL;
         }
-        t3gui_fonts--;
     }
 }
 
@@ -173,13 +182,19 @@ static void t3gui_unload_resource(T3GUI_RESOURCE * rp)
         {
             case T3GUI_RESOURCE_TYPE_BITMAP:
             {
-                destroy_nine_patch_bitmap(rp->data);
+                if(rp->data)
+                {
+                    destroy_nine_patch_bitmap(rp->data);
+                }
                 break;
             }
             case T3GUI_RESOURCE_TYPE_FONT:
             case T3GUI_RESOURCE_TYPE_DEFAULT_FONT:
             {
-                al_destroy_font(rp->data);
+                if(rp->data)
+                {
+                    al_destroy_font(rp->data);
+                }
                 break;
             }
         }
@@ -190,19 +205,19 @@ void t3gui_unload_resources(ALLEGRO_DISPLAY * dp, bool delete)
 {
     int i, j, r;
 
-    r = t3gui_resources;
-    for(i = r - 1; i >= 0; i--)
+    /* delete references first */
+    if(delete)
     {
-        if(t3gui_resource[i] && (!dp || t3gui_resource[i]->display == dp))
+        r = t3gui_resources;
+        for(i = r - 1; i >= 0; i--)
         {
-            t3gui_unload_resource(t3gui_resource[i]);
-            if(delete)
+            if(t3gui_resource[i] && (!dp || t3gui_resource[i]->display == dp))
             {
                 if(t3gui_resource[i]->type == T3GUI_RESOURCE_TYPE_BITMAP)
                 {
-                    for(j = t3gui_bitmaps - 1; j >= i; j--)
+                    for(j = t3gui_bitmaps - 1; j >= 0; j--)
                     {
-                        if(*t3gui_bitmap[j] == t3gui_resource[i]->data)
+                        if(t3gui_bitmap[j] && *t3gui_bitmap[j] == t3gui_resource[i]->data)
                         {
                             t3gui_remove_resource(t3gui_resource[i]->type, j);
                         }
@@ -210,9 +225,9 @@ void t3gui_unload_resources(ALLEGRO_DISPLAY * dp, bool delete)
                 }
                 else if(t3gui_resource[i]->type == T3GUI_RESOURCE_TYPE_FONT || t3gui_resource[i]->type == T3GUI_RESOURCE_TYPE_DEFAULT_FONT)
                 {
-                    for(j = t3gui_fonts - 1; j >= i; j--)
+                    for(j = t3gui_fonts - 1; j >= 0; j--)
                     {
-                        if(*t3gui_font[j] == t3gui_resource[i]->data)
+                        if(t3gui_font[j] && *t3gui_font[j] == t3gui_resource[i]->data)
                         {
                             t3gui_remove_resource(t3gui_resource[i]->type, j);
                         }
@@ -225,6 +240,22 @@ void t3gui_unload_resources(ALLEGRO_DISPLAY * dp, bool delete)
                 }
                 t3gui_resources--;
             }
+        }
+    }
+
+    /* unload resources from memory */
+    r = t3gui_resources;
+    for(i = r - 1; i >= 0; i--)
+    {
+        if(t3gui_resource[i] && (!dp || t3gui_resource[i]->display == dp))
+        {
+            t3gui_unload_resource(t3gui_resource[i]);
+            free(t3gui_resource[i]);
+            for(j = i; j < t3gui_resources - 1; j++)
+            {
+                t3gui_resource[j] = t3gui_resource[j + 1];
+            }
+            t3gui_resources--;
         }
     }
 }
