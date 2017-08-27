@@ -251,9 +251,9 @@ void omo_close_tags_dialog(OMO_UI * uip, void * data)
 {
     t3gui_close_dialog(uip->tags_dialog);
     t3gui_destroy_dialog(uip->tags_dialog);
+    t3gui_unload_resources(uip->tags_display, true);
     omo_destroy_theme(uip->popup_theme);
     uip->popup_theme = NULL;
-    t3gui_unload_resources(uip->tags_display, true);
     al_destroy_display(uip->tags_display);
     uip->tags_display = NULL;
 }
