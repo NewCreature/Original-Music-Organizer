@@ -2,7 +2,7 @@ CC = i586-mingw32msvc-gcc
 CFLAGS = $(GLOBAL_CFLAGS) $(APP_CFLAGS) $(MINGW_CROSS_CFLAGS)
 LFLAGS = -mwindows
 LIB_SUFFIX = -static
-PLATFORM_OBJECTS = t3f/menu.o icon.o $(MINGW_CROSS_PLATFORM_OBJECTS)
+PLATFORM_OBJECTS = t3f/menu.o t3f/windows.o icon.o $(MINGW_CROSS_PLATFORM_OBJECTS)
 PLATFORM_LIBS = -lallegro_dialog$(LIB_SUFFIX) $(MINGW_CROSS_PLATFORM_LIBS)
 DEPEND_LIBS = $(MINGW_CROSS_DEPEND_LIBS) -luuid -lkernel32 -lwinmm -lpsapi\
               -lopengl32 -lglu32 -luser32 -lcomdlg32 -lgdi32 -lshell32 -lole32\
