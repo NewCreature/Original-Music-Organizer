@@ -169,6 +169,9 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
 {
     int y = 8;
     int h = 8;
+    int row = 0;
+    int rows = 0;
+    int column = 0;
     int i;
     int edit_flags = D_SETFOCUS;
 
@@ -177,11 +180,18 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
     {
         if(omo_tag_type[i])
         {
-            h += al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font) * 3 + 4;
+            rows++;
         }
     }
-    h += 32 + 8;
-    uip->tags_display = al_create_display(320, h);
+    if(rows % 2)
+    {
+        rows++;
+    }
+    h = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font) * 3 + 4;
+    h *= rows / 2;
+    h += 8;
+//    h += 32 + 8;
+    uip->tags_display = al_create_display(640, h);
     if(uip->tags_display)
     {
         al_register_event_source(t3f_queue, al_get_display_event_source(uip->tags_display));
@@ -194,21 +204,29 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
         uip->tags_dialog = t3gui_create_dialog();
         if(uip->tags_dialog)
         {
-            t3gui_dialog_add_element(uip->tags_dialog, uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, 320, h, 0, 0, 0, 0, NULL, NULL, NULL);
+            t3gui_dialog_add_element(uip->tags_dialog, uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, 640, h, 0, 0, 0, 0, NULL, NULL, NULL);
             for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
             {
                 if(omo_tag_type[i])
                 {
-                    t3gui_dialog_add_element(uip->tags_dialog, uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, 8, y, 320 - 16, al_get_font_line_height(uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font), 0, 0, 0, 0, (void *)omo_tag_type[i], NULL, NULL);
+                    row++;
+                    if(row > rows / 2)
+                    {
+                        row = 0;
+                        column = 1;
+                        y = 8;
+                    }
+                    t3gui_dialog_add_element(uip->tags_dialog, uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, 8 + 320 * column, y, 320 - 16, al_get_font_line_height(uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font), 0, 0, 0, 0, (void *)omo_tag_type[i], NULL, NULL);
                     y += al_get_font_line_height(uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font) + 2;
                     strcpy(uip->original_tags_text[i], uip->tags_text[i]);
-                    t3gui_dialog_add_element(uip->tags_dialog, uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_edit_proc, 8, y, 320 - 16, al_get_font_line_height(uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font) + 4, 0, edit_flags, 256, 0, uip->tags_text[i], NULL, NULL);
+                    t3gui_dialog_add_element(uip->tags_dialog, uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_edit_proc, 8 + 320 * column, y, 320 - 16, al_get_font_line_height(uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font) + 4, 0, edit_flags, 256, 0, uip->tags_text[i], NULL, NULL);
                     edit_flags = 0;
                     y += al_get_font_line_height(uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font) * 2 + 2;
                 }
             }
-            uip->tags_ok_button_element = t3gui_dialog_add_element(uip->tags_dialog, uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8, y, 320 / 2 - 8 - 4, 32, '\r', 0, 0, 0, "Okay", ui_tags_button_proc, NULL);
-            t3gui_dialog_add_element(uip->tags_dialog, uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 320 / 2 + 4, y, 320 / 2 - 8 - 4, 32, 0, 0, 0, 1, "Cancel", ui_tags_button_proc, NULL);
+            y += 12;
+            uip->tags_ok_button_element = t3gui_dialog_add_element(uip->tags_dialog, uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8 + 320 * column, y, 320 / 2 - 8 - 4, 32, '\r', 0, 0, 0, "Okay", ui_tags_button_proc, NULL);
+            t3gui_dialog_add_element(uip->tags_dialog, uip->popup_theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 320 * column + 320 / 2 + 4, y, 320 / 2 - 8 - 4, 32, 0, 0, 0, 1, "Cancel", ui_tags_button_proc, NULL);
             t3gui_show_dialog(uip->tags_dialog, t3f_queue, T3GUI_PLAYER_CLEAR, data);
             return true;
         }
