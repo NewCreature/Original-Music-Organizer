@@ -17,6 +17,13 @@ typedef struct
 typedef struct
 {
 
+    /* two databases, one for storing file paths and one for storing song
+       information that the file database references by id */
+    char * file_database_fn;
+    ALLEGRO_CONFIG * file_database;
+    char * entry_database_fn;
+    ALLEGRO_CONFIG * entry_database;
+
     OMO_LIBRARY_ENTRY ** entry;
     unsigned long entry_size;
     unsigned long entry_count;
@@ -33,13 +40,6 @@ typedef struct
     unsigned long * song_entry;
     int song_entry_size;
     int song_entry_count;
-
-    /* two databases, one for storing file paths and one for storing song
-       information that the file database references by id */
-    char * file_database_fn;
-    ALLEGRO_CONFIG * file_database;
-    char * entry_database_fn;
-    ALLEGRO_CONFIG * entry_database;
 
 } OMO_LIBRARY;
 
