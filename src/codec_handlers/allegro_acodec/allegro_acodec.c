@@ -43,6 +43,10 @@ static void * codec_load_file(const char * fn, const char * subfn)
 
 static void codec_unload_file(void * data)
 {
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	al_destroy_audio_stream(codec_data->player_stream);
+	codec_data->player_stream = NULL;
 	free(data);
 }
 
@@ -175,8 +179,6 @@ static void codec_stop(void * data)
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
 	al_drain_audio_stream(codec_data->player_stream);
-	al_destroy_audio_stream(codec_data->player_stream);
-	codec_data->player_stream = NULL;
 }
 
 static double codec_get_position(void * data)
