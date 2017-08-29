@@ -62,7 +62,7 @@ debian_package: $(APP_EXE_NAME) ../debian/control_gen
 	rm -f ../temp/DEBIAN/md5sums-pre
 	mv ../temp/DEBIAN ../temp/debian_temp
 	fakeroot dpkg-deb --build ../temp/debian_temp
-	mv ../temp/debian_temp.deb ../$(DEBIAN_APP_NAME)_$(APP_VERSION)_`dpkg-architecture -l -qDEB_BUILD_ARCH`.deb
+	mv ../temp/debian_temp.deb $(APP_PACKAGE_DIR)/$(DEBIAN_APP_NAME)_$(APP_VERSION)_`dpkg-architecture -l -qDEB_BUILD_ARCH`.deb
 	echo Cleaning up...
 	rm -rf ../temp
 	rm -f ../debian/control
@@ -71,4 +71,4 @@ debian_package: $(APP_EXE_NAME) ../debian/control_gen
 	rm -f ../debian/control_gen
 	rm -f ../debian/control_gen.o
 	echo Testing package...
-	lintian ../$(DEBIAN_APP_NAME)_$(APP_VERSION)_`dpkg-architecture -l -qDEB_BUILD_ARCH`.deb
+	lintian $(APP_PACKAGE_DIR)/$(DEBIAN_APP_NAME)_$(APP_VERSION)_`dpkg-architecture -l -qDEB_BUILD_ARCH`.deb
