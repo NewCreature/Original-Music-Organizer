@@ -1037,6 +1037,7 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
 
       case MSG_MOUSEDOWN:
          d->flags |= D_TRACKMOUSE;
+         break;
 
       case MSG_MOUSEMOVE:
          msx = d->mousex;
@@ -1881,10 +1882,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
 
         case MSG_MOUSEUP:
         {
-            if(d->d3 > 0 && dd.d1 > 0 && d->mousex > dd.x)
-            {
-                ret |= t3gui_scroll_proc(msg, &dd, c);
-            }
+            ret |= t3gui_scroll_proc(msg, &dd, c);
             break;
         }
 
