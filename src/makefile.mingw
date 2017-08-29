@@ -18,3 +18,7 @@ include makefile.common
 
 icon.o : ../icons/windows_icon.ico ../win32/icon.rc
 	windres --include-dir=../icons -o icon.o ../win32/icon.rc
+
+windows_zip: $(APP_EXE_NAME)
+	cd ../bin && zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip * && cd ../win32/blobs && zip -9 ../$(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip * && cd ../.. && md win32\\docs && xcopy docs win32\\docs /E && cd win32/docs && rename changelog history.txt && rename README readme.txt && rename copyright license.txt && cd .. && zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip docs && rmdir /S /Q docs
+	@echo Windows package created!
