@@ -200,7 +200,7 @@ bool omo_save_library(OMO_LIBRARY * lp)
 static bool get_tags(OMO_LIBRARY * lp, const char * id, const char * fn, const char * track, OMO_CODEC_HANDLER_REGISTRY * crp)
 {
     OMO_CODEC_HANDLER * codec_handler;
-    void * codec_data;
+    void * codec_data = NULL;
     const char * val;
     int i;
 
@@ -223,12 +223,12 @@ static bool get_tags(OMO_LIBRARY * lp, const char * id, const char * fn, const c
                         }
                     }
                 }
+                if(codec_handler->unload_file)
+                {
+                    codec_handler->unload_file(codec_data);
+                }
+                return true;
             }
-            if(codec_handler->unload_file)
-            {
-                codec_handler->unload_file(codec_data);
-            }
-            return true;
         }
     }
     return false;
