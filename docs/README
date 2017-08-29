@@ -1,15 +1,8 @@
 OMO
 ---
 
-Note: this program is in early development. The current version is very minimal
-and is only able to do basic playback of files in supported formats (see below
-for a list of supported formats).
-
 To-do:
 
-    Implement player UI.
-    Implement library.
-    Implement tag editor.
     Implement tag scraper.
     Add support for more formats.
 
@@ -19,10 +12,13 @@ Supported Formats
 
 OMO currently supports playing back files in these formats on all supported
 platforms: MOD, S3M, XM, IT, WAV, OGG, FLAC, AY, GBS, GYM, HES, KSS, NSF, SAP,
-SPC, and VGM.
+SPC, VGM, and VGZ.
 
 Additional support for these formats is available on MacOS: MP2, MP3, MP4, M4A,
 AAC, and MID.
+
+Linux and MacOS also support these additional formats: 669, AMF, MTM, OKT, PSM,
+PTM, and STM.
 
 Supported for more formats on all platforms will be added in the future.
 
@@ -37,9 +33,8 @@ its extensive support for audio formats through input plugins.
 
 Since moving away from Windows several years ago, I've not really had a good
 way to play back a large portion of my music collection. I seek to change that
-situation with Original Music Organizer. That music disk I downloaded from a
-BBS 25 years ago will live happily alongside that album I downloaded from
-Amazon last week.
+situation with OMO. That music disk I downloaded from a BBS 25 years ago will
+live happily alongside that album I downloaded from Amazon last week.
 
 OMO will leverage the power of the Internet to help you organize your
 collection by pulling tags submitted by others. Tag your own untagged music and
@@ -49,16 +44,42 @@ submit those tags so others don't have to duplicate the work.
 Installation
 ------------
 
-Instructions will be added once we get the project far enough along to be able
-to provide packages.
+MacOS: Open the DMG and drag the OMO application to the Applications folder.
+
+Linux: Use dpkg -i <package_file>, then apt-get install -f.
+
+Windows: Extract the ZIP file wherever you want and create a shortcut to
+         omo.exe.
 
 
 Getting Started
 ---------------
 
-Use the menu items in the File menu to select files to play or add to the
-queue. OMO will play back the queued songs. You can also move forward or
-backward in the queue with the left and right arrow keys.
+The first time you run OMO, you will be presented with a simple queue window.
+You can add music to the queue by using the menu items, or the Open or Add
+buttons in the queue window. When opening files, playback will automatically
+begin. Use the playback buttons in the queue window to move between tracks,
+pause, or stop playback.
+
+To toggle library view, press the L key. If you haven't already added a library
+folder, OMO will ask you to select one before it will show the library view.
+Note: the library scanning process can take a long time for larger libraries
+due to the amount of information it has to process. Data on scanned files is
+cached, so subsequent scans are much quicker (usually just a few seconds for
+large libraries).
+
+The library scanner will retrieve as much metadata on each file as it can find.
+The tag sharing feature is not implemented yet, so tags cannot be retrieved
+from online sources at this time.
+
+Once you have set up a library folder, you can start tagging your music. To
+open the tags editor, select a file in the song list pane in library view
+(pane 3) or the queue list and press T.
+
+Note: when using the library view, selecting All Artists or All Albums might
+seem to freeze OMO if you have a large library. The list generation code has
+not been optimized yet, so it can take a long time to generate the album and
+song lists.
 
 
 Contacting Us
