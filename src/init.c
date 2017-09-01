@@ -245,10 +245,13 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 
 
 	/* set up library */
-	if(!omo_setup_library(app, omo_library_setup_update_proc))
+	if(argc < 2)
 	{
-		printf("Failed to set up library!\n");
-		return false;
+		if(!omo_setup_library(app, omo_library_setup_update_proc))
+		{
+			printf("Failed to set up library!\n");
+			return false;
+		}
 	}
 	return true;
 }
