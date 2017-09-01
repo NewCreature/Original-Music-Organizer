@@ -277,6 +277,11 @@ void omo_logic(void * data)
 							strcat(fullfn, "/");
 							strcat(fullfn, app->player->queue->entry[j]->sub_file);
 						}
+						if(app->player->queue->entry[j]->track)
+						{
+							strcat(fullfn, ":");
+							strcat(fullfn, app->player->queue->entry[j]->track);
+						}
 					}
 					else if(app->ui->ui_song_list_element->flags & D_GOTFOCUS)
 					{
@@ -286,6 +291,11 @@ void omo_logic(void * data)
 						{
 							strcat(fullfn, "/");
 							strcat(fullfn, app->library->entry[app->library->song_entry[j]]->sub_filename);
+						}
+						if(app->library->entry[app->library->song_entry[j]]->track)
+						{
+							strcat(fullfn, ":");
+							strcat(fullfn, app->library->entry[app->library->song_entry[j]]->track);
 						}
 					}
 					app->ui->tags_entry = al_get_config_value(app->library->file_database, fullfn, "id");
