@@ -54,6 +54,7 @@ bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn, 
         qp->entry[qp->entry_count] = malloc(sizeof(OMO_QUEUE_ENTRY));
         if(qp->entry[qp->entry_count])
         {
+            memset(qp->entry[qp->entry_count], 0, sizeof(OMO_QUEUE_ENTRY));
             qp->entry[qp->entry_count]->file = malloc(strlen(fn) + 1);
             if(qp->entry[qp->entry_count]->file)
             {
@@ -266,6 +267,60 @@ static int sort_by_title(const void *e1, const void *e2)
 
     }
     return sort_by_path(e1, e2);
+}
+
+void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp)
+{
+    char section[1024];
+    const char * val;
+    const char * artist = NULL;
+    const char * album = NULL;
+    const char * title = NULL;
+    const char * track = NULL;
+    const char * extracted_fn = NULL;
+    int i;
+
+    for(i = 0; i < qp->entry_count; i++)
+    {
+        if(lp)
+        {
+            strcpy(section, qp->entry[i]->file);
+            if(qp->entry[i]->sub_file)
+            {
+                strcat(section, "/");
+                strcat(section, qp->entry[i]->sub_file);
+            }
+            if(qp->entry[i]->track)
+            {
+                strcat(section, ":");
+                strcat(section, qp->entry[i]->track);
+            }
+            val = al_get_config_value(lp->file_database, section, "id");
+            if(val)
+            {
+				artist = al_get_config_value(lp->entry_database, val, "Artist");
+				album = al_get_config_value(lp->entry_database, val, "Album");
+                title = al_get_config_value(lp->entry_database, val, "Title");
+				track = al_get_config_value(lp->entry_database, val, "Track");
+                if(artist)
+                {
+                    strcpy(qp->entry[i]->tags.artist, artist);
+                }
+                if(album)
+                {
+                    strcpy(qp->entry[i]->tags.album, album);
+                }
+                if(title)
+                {
+                    strcpy(qp->entry[i]->tags.title, title);
+                }
+                if(track)
+                {
+                    strcpy(qp->entry[i]->tags.track, track);
+                }
+            }
+        }
+    }
 }
 
 void omo_sort_queue(OMO_QUEUE * qp, OMO_LIBRARY * lp, int mode, int start_index, int count)

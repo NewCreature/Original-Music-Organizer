@@ -119,6 +119,7 @@ void omo_file_chooser_logic(void * data)
 				    {
 				        add_files_to_queue(app->file_chooser, app->player->queue, data);
                         omo_sort_queue(app->player->queue, app->library, 0, 0, app->player->queue->entry_count);
+                        omo_get_queue_tags(app->player->queue, app->library);
 				        app->player->queue_pos = 0;
 				        app->player->state = OMO_PLAYER_STATE_PLAYING;
 				    }
@@ -142,6 +143,7 @@ void omo_file_chooser_logic(void * data)
                         add_files_to_queue(app->file_chooser, new_queue, data);
                         app->player->queue = new_queue;
                         omo_sort_queue(app->player->queue, app->library, 0, old_queue_size, app->player->queue->entry_count - old_queue_size);
+                        omo_get_queue_tags(app->player->queue, app->library);
                     }
 					break;
 				}
@@ -167,6 +169,7 @@ void omo_file_chooser_logic(void * data)
                                 omo_sort_queue(app->player->queue, app->library, 0, 0, app->player->queue->entry_count);
                                 app->player->queue_pos = 0;
                                 app->player->state = OMO_PLAYER_STATE_PLAYING;
+                                omo_get_queue_tags(app->player->queue, app->library);
                             }
                         }
                     }
@@ -202,6 +205,7 @@ void omo_file_chooser_logic(void * data)
                                     omo_destroy_queue(old_queue);
                                 }
                                 omo_sort_queue(app->player->queue, app->library, 0, old_queue_size, app->player->queue->entry_count - old_queue_size);
+                                omo_get_queue_tags(app->player->queue, app->library);
                             }
                         }
                     }
