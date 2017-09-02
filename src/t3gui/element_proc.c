@@ -271,7 +271,7 @@ int t3gui_button_proc(int msg, T3GUI_ELEMENT *d, int c)
 
             int w = max(d->w, get_nine_patch_bitmap_min_width(p9));
             int h = max(d->h, get_nine_patch_bitmap_min_height(p9));
-            draw_nine_patch_bitmap(p9, c2, d->x+0.5, d->y+0.5, w, h);
+            draw_nine_patch_bitmap(p9, c2, d->x, d->y, w, h);
             if(d->dp3)
             {
                 al_draw_tinted_bitmap(d->dp3, c1, d->x + d->w / 2 - al_get_bitmap_width(d->dp3) / 2 + g, d->y + d->h / 2 - al_get_bitmap_height(d->dp3) / 2 + g, 0);
