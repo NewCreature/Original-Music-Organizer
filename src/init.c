@@ -196,14 +196,20 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		omo_reset_file_count();
 		for(i = 1; i < argc; i++)
 		{
-			omo_count_file(argv[i], app);
+			if(!t3f_scan_files(argv[i], omo_count_file, false, NULL, app))
+			{
+				omo_count_file(argv[i], app);
+			}
 		}
 		app->player->queue = omo_create_queue(omo_get_file_count());
 		if(app->player->queue)
 		{
 			for(i = 1; i < argc; i++)
 			{
-				omo_queue_file(argv[i], app);
+				if(!t3f_scan_files(argv[i], omo_queue_file, false, NULL, app))
+				{
+					omo_queue_file(argv[i], app);
+				}
 			}
 			if(app->player->queue->entry_count)
 			{
