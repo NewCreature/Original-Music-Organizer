@@ -20,6 +20,10 @@
 	#include "codec_handlers/avplayer/avplayer.h"
 #endif
 
+#ifdef ALLEGRO_WINDOWS
+	#include "codec_handlers/midiout/midiout.h"
+#endif
+
 void omo_library_setup_update_proc(const char * fn, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
@@ -179,6 +183,9 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	#ifdef ALLEGRO_MACOSX
 		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avmidiplayer_get_codec_handler());
 		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avplayer_get_codec_handler());
+	#endif
+	#ifdef ALLEGRO_WINDOWS
+		omo_register_codec_handler(app->codec_handler_registry, omo_codec_midiout_get_codec_handler());
 	#endif
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_dumba5_get_codec_handler());
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_allegro_acodec_get_codec_handler());
