@@ -19,19 +19,21 @@ void omo_queue_list_logic(void * data)
         }
         app->ui->ui_queue_list_element->id1 = -1;
     }
-    sprintf(app->ui->ui_button_text[0], "|<");
+    strcpy(app->ui->ui_button_text[0], strlen(app->ui->main_theme->text[0]) ? app->ui->main_theme->text[0] : "|<");
     if(app->player->state == OMO_PLAYER_STATE_PLAYING)
     {
-        sprintf(app->ui->ui_button_text[1], "||");
+        app->ui->ui_button_element[1]->dp3 = app->ui->main_theme->bitmap[OMO_THEME_BITMAP_PAUSE];
+        strcpy(app->ui->ui_button_text[1], strlen(app->ui->main_theme->text[1]) ? app->ui->main_theme->text[1] : "||");
     }
     else
     {
-        sprintf(app->ui->ui_button_text[1], ">");
+        app->ui->ui_button_element[1]->dp3 = app->ui->main_theme->bitmap[OMO_THEME_BITMAP_PLAY];
+        strcpy(app->ui->ui_button_text[1], strlen(app->ui->main_theme->text[2]) ? app->ui->main_theme->text[2] : ">");
     }
-    sprintf(app->ui->ui_button_text[2], "[]");
-    sprintf(app->ui->ui_button_text[3], ">|");
-    sprintf(app->ui->ui_button_text[4], "^");
-    sprintf(app->ui->ui_button_text[5], "+");
+    strcpy(app->ui->ui_button_text[2], strlen(app->ui->main_theme->text[3]) ? app->ui->main_theme->text[3] : "[]");
+    strcpy(app->ui->ui_button_text[3], strlen(app->ui->main_theme->text[4]) ? app->ui->main_theme->text[4] : ">|");
+    strcpy(app->ui->ui_button_text[4], strlen(app->ui->main_theme->text[5]) ? app->ui->main_theme->text[5] : "^");
+    strcpy(app->ui->ui_button_text[5], strlen(app->ui->main_theme->text[6]) ? app->ui->main_theme->text[6] : "+");
     switch(app->button_pressed)
     {
         case 0:
