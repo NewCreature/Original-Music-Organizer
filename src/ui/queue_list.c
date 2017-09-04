@@ -1,4 +1,5 @@
 #include "../instance.h"
+#include "menu_proc.h"
 
 void omo_queue_list_logic(void * data)
 {

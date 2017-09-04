@@ -29,6 +29,7 @@ typedef struct
 	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;
 	OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry;
 	OMO_LIBRARY * library;
+	OMO_LIBRARY * loading_library;
 	OMO_PLAYER * player;
 	T3F_RNG_STATE rng_state;
 
