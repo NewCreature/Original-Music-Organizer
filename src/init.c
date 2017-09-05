@@ -61,6 +61,7 @@ static int sort_names(const void *e1, const void *e2)
 
 bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, void * data))
 {
+	OMO_FILE_HELPER_DATA file_helper_data;
 	const char * val;
 	char file_db_fn[1024];
 	char entry_db_fn[1024];
@@ -81,23 +82,23 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 	if(val)
 	{
 		c = atoi(val);
-		omo_reset_file_count();
+		omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue);
 		for(j = 0; j < c; j++)
 		{
 			sprintf(buffer, "library_folder_%d", j);
 			val = al_get_config_value(t3f_config, "Settings", buffer);
 			if(val)
 			{
-				t3f_scan_files(val, omo_count_file, false, NULL, app);
+				t3f_scan_files(val, omo_count_file, false, NULL, &file_helper_data);
 				omo_save_library(app->library);
 			}
 		}
-		omo_allocate_library(app->library, omo_get_file_count());
+		omo_allocate_library(app->library, file_helper_data.file_count);
 		for(j = 0; j < c; j++)
 		{
 			sprintf(buffer, "library_folder_%d", j);
 			val = al_get_config_value(t3f_config, "Settings", buffer);
-			t3f_scan_files(val, omo_add_file, false, update_proc, app);
+			t3f_scan_files(val, omo_add_file, false, update_proc, &file_helper_data);
 			omo_save_library(app->library);
 		}
 
@@ -142,6 +143,7 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 /* initialize our app, load graphics, etc. */
 bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 {
+	OMO_FILE_HELPER_DATA file_helper_data;
 	const char * val;
 	int i;
 
@@ -200,22 +202,23 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	}
 	if(argc > 1)
 	{
-		omo_reset_file_count();
+		omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue);
 		for(i = 1; i < argc; i++)
 		{
-			if(!t3f_scan_files(argv[i], omo_count_file, false, NULL, app))
+			if(!t3f_scan_files(argv[i], omo_count_file, false, NULL, &file_helper_data))
 			{
-				omo_count_file(argv[i], app);
+				omo_count_file(argv[i], &file_helper_data);
 			}
 		}
-		app->player->queue = omo_create_queue(omo_get_file_count());
+		app->player->queue = omo_create_queue(file_helper_data.file_count);
 		if(app->player->queue)
 		{
+			file_helper_data.queue = app->player->queue;
 			for(i = 1; i < argc; i++)
 			{
-				if(!t3f_scan_files(argv[i], omo_queue_file, false, NULL, app))
+				if(!t3f_scan_files(argv[i], omo_queue_file, false, NULL, &file_helper_data))
 				{
-					omo_queue_file(argv[i], app);
+					omo_queue_file(argv[i], &file_helper_data);
 				}
 			}
 			if(app->player->queue->entry_count)
