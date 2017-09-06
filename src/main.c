@@ -27,6 +27,11 @@ void omo_logic(void * data)
 	{
 		default:
 		{
+			if(app->library_thread && app->loading_library_file_helper_data.scan_done)
+			{
+				al_destroy_thread(app->library_thread);
+				app->library_thread = NULL;
+			}
 			omo_file_chooser_logic(data);
 			omo_library_pre_gui_logic(data);
 			t3gui_logic();

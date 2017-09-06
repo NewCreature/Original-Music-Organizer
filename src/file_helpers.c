@@ -9,6 +9,8 @@ void omo_setup_file_helper_data(OMO_FILE_HELPER_DATA * fhdp, OMO_ARCHIVE_HANDLER
 	fhdp->library = lp;
 	fhdp->queue = qp;
 	fhdp->file_count = 0;
+	fhdp->cancel_scan = false;
+	fhdp->scan_done = false;
 }
 
 static bool file_needs_scan(const char * fn, OMO_LIBRARY * lp)
@@ -62,6 +64,10 @@ bool omo_count_file(const char * fn, void * data)
 	char buf2[32] = {0};
 	char fn_buffer[1024] = {0};
 
+	if(file_helper_data->cancel_scan)
+	{
+		return false;
+	}
 	archive_handler = omo_get_archive_handler(file_helper_data->archive_handler_registry, fn);
 	if(archive_handler)
 	{
@@ -189,6 +195,10 @@ bool omo_add_file(const char * fn, void * data)
 	const char * target_fn = NULL;
 	int ret = 2; // don't update unless we get update signal from library function
 
+	if(file_helper_data->cancel_scan)
+	{
+		return false;
+	}
 	archive_handler = omo_get_archive_handler(file_helper_data->archive_handler_registry, fn);
 	if(archive_handler)
 	{
@@ -288,6 +298,10 @@ bool omo_queue_file(const char * fn, void * data)
 	const char * extracted_fn;
 	char fn_buffer[1024] = {0};
 
+	if(file_helper_data->cancel_scan)
+	{
+		return false;
+	}
 	archive_handler = omo_get_archive_handler(file_helper_data->archive_handler_registry, fn);
 	if(archive_handler)
 	{

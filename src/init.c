@@ -61,7 +61,6 @@ static int sort_names(const void *e1, const void *e2)
 
 bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, void * data))
 {
-	OMO_FILE_HELPER_DATA file_helper_data;
 	const char * val;
 	char file_db_fn[1024];
 	char entry_db_fn[1024];
@@ -71,8 +70,12 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 	/* load the library databases */
 	strcpy(file_db_fn, t3f_get_filename(t3f_data_path, "files.ini"));
 	strcpy(entry_db_fn, t3f_get_filename(t3f_data_path, "database.ini"));
-	app->library = omo_create_library(file_db_fn, entry_db_fn);
-	if(!app->library)
+	app->loading_library = omo_create_library(file_db_fn, entry_db_fn);
+	if(!app->loading_library)
+	{
+		return false;
+	}
+	if(app->loading_library_file_helper_data.cancel_scan)
 	{
 		return false;
 	}
@@ -82,63 +85,100 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 	if(val)
 	{
 		c = atoi(val);
-		omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue);
+		omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->loading_library, app->player->queue);
 		for(j = 0; j < c; j++)
 		{
 			sprintf(buffer, "library_folder_%d", j);
 			val = al_get_config_value(t3f_config, "Settings", buffer);
 			if(val)
 			{
-				t3f_scan_files(val, omo_count_file, false, NULL, &file_helper_data);
-				omo_save_library(app->library);
+				t3f_scan_files(val, omo_count_file, false, NULL, &app->loading_library_file_helper_data);
+				omo_save_library(app->loading_library);
 			}
 		}
-		omo_allocate_library(app->library, file_helper_data.file_count);
+		omo_allocate_library(app->loading_library, app->loading_library_file_helper_data.file_count);
 		for(j = 0; j < c; j++)
 		{
 			sprintf(buffer, "library_folder_%d", j);
 			val = al_get_config_value(t3f_config, "Settings", buffer);
-			t3f_scan_files(val, omo_add_file, false, update_proc, &file_helper_data);
-			omo_save_library(app->library);
+			if(app->loading_library_file_helper_data.cancel_scan)
+			{
+				return false;
+			}
+			t3f_scan_files(val, omo_add_file, false, update_proc, &app->loading_library_file_helper_data);
+			omo_save_library(app->loading_library);
 		}
 
 		/* tally up artists */
-		omo_add_artist_to_library(app->library, "All Artists");
-		omo_add_artist_to_library(app->library, "Unknown Artist");
-		for(i = 0; i < app->library->entry_count; i++)
+		if(app->loading_library_file_helper_data.cancel_scan)
 		{
-			val = al_get_config_value(app->library->entry_database, app->library->entry[i]->id, "Artist");
+			return false;
+		}
+		omo_add_artist_to_library(app->loading_library, "All Artists");
+		omo_add_artist_to_library(app->loading_library, "Unknown Artist");
+		for(i = 0; i < app->loading_library->entry_count; i++)
+		{
+			val = al_get_config_value(app->loading_library->entry_database, app->loading_library->entry[i]->id, "Artist");
 			if(val)
 			{
-				omo_add_artist_to_library(app->library, val);
+				omo_add_artist_to_library(app->loading_library, val);
 			}
 		}
-		if(app->library->artist_entry_count > 2)
+		if(app->loading_library_file_helper_data.cancel_scan)
 		{
-			qsort(&app->library->artist_entry[2], app->library->artist_entry_count - 2, sizeof(char *), sort_names);
+			return false;
+		}
+		if(app->loading_library->artist_entry_count > 2)
+		{
+			qsort(&app->loading_library->artist_entry[2], app->loading_library->artist_entry_count - 2, sizeof(char *), sort_names);
 		}
 
 		/* tally up albums */
-		omo_add_album_to_library(app->library, "All Albums");
-		omo_add_album_to_library(app->library, "Unknown Album");
-		for(i = 0; i < app->library->entry_count; i++)
+		if(app->loading_library_file_helper_data.cancel_scan)
 		{
-			val = al_get_config_value(app->library->entry_database, app->library->entry[i]->id, "Album");
+			return false;
+		}
+		omo_add_album_to_library(app->loading_library, "All Albums");
+		omo_add_album_to_library(app->loading_library, "Unknown Album");
+		for(i = 0; i < app->loading_library->entry_count; i++)
+		{
+			val = al_get_config_value(app->loading_library->entry_database, app->loading_library->entry[i]->id, "Album");
 			if(val)
 			{
-				omo_add_album_to_library(app->library, val);
+				omo_add_album_to_library(app->loading_library, val);
 			}
 		}
-		if(app->library->album_entry_count > 2)
+		if(app->loading_library_file_helper_data.cancel_scan)
 		{
-			qsort(&app->library->album_entry[2], app->library->album_entry_count - 2, sizeof(char *), sort_names);
+			return false;
+		}
+		if(app->loading_library->album_entry_count > 2)
+		{
+			qsort(&app->loading_library->album_entry[2], app->loading_library->album_entry_count - 2, sizeof(char *), sort_names);
 		}
 
 		/* make song list */
-		omo_get_library_song_list(app->library, "All Artists", "All Albums");
+		if(app->loading_library_file_helper_data.cancel_scan)
+		{
+			return false;
+		}
+		omo_get_library_song_list(app->loading_library, "All Artists", "All Albums");
 	}
+	app->loading_library_file_helper_data.scan_done = true;
 	return true;
 }
+
+static void * library_setup_thread_proc(ALLEGRO_THREAD * thread, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	if(omo_setup_library(app, NULL))
+	{
+		app->library = app->loading_library;
+	}
+	return NULL;
+}
+
 
 /* initialize our app, load graphics, etc. */
 bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
@@ -261,19 +301,20 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 
 
 	/* set up library */
-	if(argc < 2)
+	app->library_thread = al_create_thread(library_setup_thread_proc, app);
+	if(app->library_thread)
 	{
-		if(!omo_setup_library(app, omo_library_setup_update_proc))
-		{
-			printf("Failed to set up library!\n");
-			return false;
-		}
+		al_start_thread(app->library_thread);
 	}
 	return true;
 }
 
 void omo_exit(APP_INSTANCE * app)
 {
+	if(app->library_thread)
+	{
+		al_join_thread(app->library_thread, NULL);
+	}
 	if(app->ui->tags_display)
 	{
 		omo_close_tags_dialog(app->ui, app);

@@ -14,6 +14,8 @@ typedef struct
     OMO_LIBRARY * library;
     OMO_QUEUE * queue;
     unsigned long file_count;
+    bool cancel_scan;
+    bool scan_done;
 
 } OMO_FILE_HELPER_DATA;
 

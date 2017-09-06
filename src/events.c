@@ -15,6 +15,10 @@ void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 			{
 				omo_close_tags_dialog(app->ui, data);
 			}
+			else
+			{
+				app->loading_library_file_helper_data.cancel_scan = true;
+			}
 			t3f_event_handler(event);
 			break;
 		}
