@@ -70,6 +70,7 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 	/* load the library databases */
 	strcpy(file_db_fn, t3f_get_filename(t3f_data_path, "files.ini"));
 	strcpy(entry_db_fn, t3f_get_filename(t3f_data_path, "database.ini"));
+	sprintf(app->library_loading_message, "Loading library databases...");
 	app->loading_library = omo_create_library(file_db_fn, entry_db_fn);
 	if(!app->loading_library)
 	{
@@ -88,11 +89,13 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 		omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->loading_library, app->player->queue);
 		for(j = 0; j < c; j++)
 		{
+			sprintf(app->library_loading_message, "Scanning folder %d of %d...", j + 1, c);
 			sprintf(buffer, "library_folder_%d", j);
 			val = al_get_config_value(t3f_config, "Settings", buffer);
 			if(val)
 			{
 				t3f_scan_files(val, omo_count_file, false, NULL, &app->loading_library_file_helper_data);
+				sprintf(app->library_loading_message, "Saving progress...");
 				omo_save_library(app->loading_library);
 			}
 		}
@@ -105,8 +108,10 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 			{
 				return false;
 			}
+			sprintf(app->library_loading_message, "Scanning folder %d of %d...", j + 1, c);
 			t3f_scan_files(val, omo_add_file, false, update_proc, &app->loading_library_file_helper_data);
 			omo_save_library(app->loading_library);
+			sprintf(app->library_loading_message, "Saving progress...");
 		}
 
 		/* tally up artists */
@@ -114,6 +119,7 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 		{
 			return false;
 		}
+		sprintf(app->library_loading_message, "Creating artist list...");
 		omo_add_artist_to_library(app->loading_library, "All Artists");
 		omo_add_artist_to_library(app->loading_library, "Unknown Artist");
 		for(i = 0; i < app->loading_library->entry_count; i++)
@@ -128,6 +134,7 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 		{
 			return false;
 		}
+		sprintf(app->library_loading_message, "Sorting artist list...");
 		if(app->loading_library->artist_entry_count > 2)
 		{
 			qsort(&app->loading_library->artist_entry[2], app->loading_library->artist_entry_count - 2, sizeof(char *), sort_names);
@@ -138,6 +145,7 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 		{
 			return false;
 		}
+		sprintf(app->library_loading_message, "Creating album list...");
 		omo_add_album_to_library(app->loading_library, "All Albums");
 		omo_add_album_to_library(app->loading_library, "Unknown Album");
 		for(i = 0; i < app->loading_library->entry_count; i++)
@@ -154,6 +162,7 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 		}
 		if(app->loading_library->album_entry_count > 2)
 		{
+			sprintf(app->library_loading_message, "Sorting album list...");
 			qsort(&app->loading_library->album_entry[2], app->loading_library->album_entry_count - 2, sizeof(char *), sort_names);
 		}
 
@@ -162,6 +171,7 @@ bool omo_setup_library(APP_INSTANCE * app, void (*update_proc)(const char * fn, 
 		{
 			return false;
 		}
+		sprintf(app->library_loading_message, "Creating song list...");
 		omo_get_library_song_list(app->loading_library, "All Artists", "All Albums");
 	}
 	app->loading_library_file_helper_data.scan_done = true;
@@ -301,6 +311,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 
 
 	/* set up library */
+	strcpy(app->library_loading_message, "");
 	app->library_thread = al_create_thread(library_setup_thread_proc, app);
 	if(app->library_thread)
 	{

@@ -108,14 +108,19 @@ char * ui_artist_list_proc(int index, int *list_size, void * data)
         {
             *list_size = app->library->artist_entry_count;
         }
+		else
+		{
+			*list_size = 1;
+		}
         return NULL;
     }
     if(app->library && app->library->artist_entry)
     {
 		sprintf(ui_artist_text, "%s", app->library->artist_entry[index]);
 		return ui_artist_text;
-   }
-   return NULL;
+	}
+	strcpy(ui_artist_text, app->library_loading_message);
+	return ui_artist_text;
 }
 
 char * ui_song_list_proc(int index, int *list_size, void * data)
