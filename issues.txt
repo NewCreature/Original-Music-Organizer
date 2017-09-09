@@ -29,3 +29,5 @@ OMO Issues
 
 [ ]Ensure we are spawning the library scanning thread in all places the library
    setup routing is being called.
+
+[ ]Fix queue list display swapping album and title.
