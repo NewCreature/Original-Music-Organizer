@@ -14,3 +14,18 @@ OMO Issues
    current item is now past the bottom of the visible part of the list.
 
 [ ]Improve default theme button graphics.
+
+[ ]Implement window constraints. Use theme data to calculate a good minimum
+   window size.
+
+[ ]Add more detailed scanning info to the library view. Show which file is
+   currently being scanned and total progress.
+
+[ ]Don't require user to select a library folder if they press L and haven't
+   set a library folder yet.
+
+[ ]Show text indicating no library has been set up in library view when
+   appropriate.
+
+[ ]Ensure we are spawning the library scanning thread in all places the library
+   setup routing is being called.
