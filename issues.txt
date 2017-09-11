@@ -3,6 +3,11 @@ OMO Issues
 
 [X]Fix queue list display swapping album and title.
 
+[X]Fix queue list not scrolling to keep up with the currently playing queue
+   item. If the current item is on screen when it finishes playing,
+   automatically scroll the list to put the new current item at the top if the
+   current item is now past the bottom of the visible part of the list.
+
 [ ]Get tags for queued files using codec handler if library has not been loaded
    yet.
 
@@ -12,11 +17,6 @@ OMO Issues
 
    [ ]Tags need to be updated with the info from the library if the library
       gets finished loading.
-
-[ ]Fix queue list not scrolling to keep up with the currently playing queue
-   item. If the current item is on screen when it finishes playing,
-   automatically scroll the list to put the new current item at the top if the
-   current item is now past the bottom of the visible part of the list.
 
 [ ]Improve default theme button graphics.
 
