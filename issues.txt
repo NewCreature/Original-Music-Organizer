@@ -3,6 +3,9 @@ OMO Issues
 
 [X]Fix queue list display swapping album and title.
 
+[ ]Get tags for queued files using codec handler if library has not been loaded
+   yet.
+
 [ ]Keep queue list tags updated.
 
    [ ]When editing tags, the new tags need to be displayed upon okaying them.
