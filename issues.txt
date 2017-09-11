@@ -1,6 +1,8 @@
 OMO Issues
 ----------
 
+[X]Fix queue list display swapping album and title.
+
 [ ]Keep queue list tags updated.
 
    [ ]When editing tags, the new tags need to be displayed upon okaying them.
@@ -29,8 +31,6 @@ OMO Issues
 
 [ ]Ensure we are spawning the library scanning thread in all places the library
    setup routing is being called.
-
-[ ]Fix queue list display swapping album and title.
 
 [ ]See if we can add some stuff to info.plist to make associating music files
    with OMO work correctly.
