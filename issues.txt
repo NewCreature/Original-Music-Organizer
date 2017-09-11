@@ -31,3 +31,6 @@ OMO Issues
    setup routing is being called.
 
 [ ]Fix queue list display swapping album and title.
+
+[ ]See if we can add some stuff to info.plist to make associating music files
+   with OMO work correctly.
