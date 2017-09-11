@@ -59,7 +59,7 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
 		{
 			if(strlen(app->player->queue->entry[index]->tags.title))
 			{
-				sprintf(ui_queue_text, "%s%s - %s (%s)", prefix, app->player->queue->entry[index]->tags.artist, app->player->queue->entry[index]->tags.album, app->player->queue->entry[index]->tags.title);
+				sprintf(ui_queue_text, "%s%s - %s (%s)", prefix, app->player->queue->entry[index]->tags.artist, app->player->queue->entry[index]->tags.title, app->player->queue->entry[index]->tags.album);
 			}
 			else if(strlen(app->player->queue->entry[index]->tags.track))
 			{
