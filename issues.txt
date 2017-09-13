@@ -1,6 +1,23 @@
 OMO Issues
 ----------
 
+v0.3
+----
+
+[ ]Implement track split dialog and tag system. We need a way to store track
+   split data in the base file's metedata so we can keep it in the online
+   database instead of requiring each user to split tracks on their own.
+
+[ ]Implement track looping.
+
+   [ ]Add codec handler function for setting up the loop for a loaded track.
+      The codec handler will be responsible for keeping track of this data and
+      ensuring playback respects the passed loop settings.
+
+
+v0.2
+----
+
 [X]Fix queue list display swapping album and title.
 
 [X]Fix queue list not scrolling to keep up with the currently playing queue
@@ -37,3 +54,13 @@ OMO Issues
 
 [ ]See if we can add some stuff to info.plist to make associating music files
    with OMO work correctly.
+
+[ ]Specify where archive handlers extract files to. We need the library scanner
+   to extract to a different location than the player so we don't get conflicts
+   that cause playback or scanning errors.
+
+[ ]Add 'Shuffle All' item to song list.
+
+[ ]Allow Shift+Double-Click to add items to the queue instead of replacing it.
+
+[ ]Update menus to include items for all current functionality.
