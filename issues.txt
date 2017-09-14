@@ -25,6 +25,15 @@ v0.2
    automatically scroll the list to put the new current item at the top if the
    current item is now past the bottom of the visible part of the list.
 
+[X]Don't require user to select a library folder if they press L and haven't
+   set a library folder yet.
+
+[X]Show text indicating no library has been set up in library view when
+   appropriate.
+
+[X]Ensure we are spawning the library scanning thread in all places the library
+   setup routing is being called.
+
 [ ]Get tags for queued files using codec handler if library has not been loaded
    yet.
 
@@ -42,15 +51,6 @@ v0.2
 
 [ ]Add more detailed scanning info to the library view. Show which file is
    currently being scanned and total progress.
-
-[ ]Don't require user to select a library folder if they press L and haven't
-   set a library folder yet.
-
-[ ]Show text indicating no library has been set up in library view when
-   appropriate.
-
-[ ]Ensure we are spawning the library scanning thread in all places the library
-   setup routing is being called.
 
 [ ]See if we can add some stuff to info.plist to make associating music files
    with OMO work correctly.
