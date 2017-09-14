@@ -245,8 +245,13 @@ void omo_file_chooser_logic(void * data)
                         library_folders++;
                         sprintf(buffer, "%d", library_folders);
                         al_set_config_value(t3f_config, "Settings", "library_folders", buffer);
-                        omo_destroy_library(app->library);
-                        omo_setup_library(app, omo_library_setup_update_proc);
+                        omo_cancel_library_setup(app);
+                        if(app->library)
+                        {
+                            omo_destroy_library(app->library);
+                            app->library = NULL;
+                        }
+                        omo_setup_library(app);
                     }
                     break;
                 }

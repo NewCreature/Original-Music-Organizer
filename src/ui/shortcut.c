@@ -99,32 +99,12 @@ void omo_shortcut_logic(void * data)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
     char fullfn[1024];
-    const char * val;
     const char * val2;
     int i, j;
 
     if(t3f_key[ALLEGRO_KEY_L])
     {
-        if(!app->library_view)
-        {
-            val = al_get_config_value(t3f_config, "Settings", "library_folders");
-            if(!val || atoi(val) < 1)
-            {
-                omo_start_file_chooser(data, "Select library folder.", al_get_config_value(t3f_config, "Settings", "last_music_folder"), ALLEGRO_FILECHOOSER_FOLDER, false);
-                if(app->file_chooser && al_get_native_file_dialog_count(app->file_chooser))
-                {
-                    al_set_config_value(t3f_config, "Settings", "library_folder_0", al_get_native_file_dialog_path(app->file_chooser, 0));
-                    al_set_config_value(t3f_config, "Settings", "library_folders", "1");
-                    omo_destroy_library(app->library);
-                    omo_setup_library(app, omo_library_setup_update_proc);
-                }
-            }
-        }
-        val = al_get_config_value(t3f_config, "Settings", "library_folders");
-        if(val && atoi(val) > 0)
-        {
-            omo_toggle_library_view(app);
-        }
+        omo_toggle_library_view(app);
         t3f_key[ALLEGRO_KEY_L] = 0;
     }
     if(t3f_key[ALLEGRO_KEY_T] && app->library)

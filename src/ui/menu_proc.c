@@ -96,8 +96,13 @@ int omo_menu_file_clear_library_folders(void * data)
 
     sprintf(buf, "%d", 0);
     al_set_config_value(t3f_config, "Settings", "library_folders", buf);
-    omo_destroy_library(app->library);
-    omo_setup_library(app, omo_library_setup_update_proc);
+    omo_cancel_library_setup(app);
+    if(app->library)
+    {
+        omo_destroy_library(app->library);
+        app->library = NULL;
+    }
+    sprintf(app->library_loading_message, "No Library Folders");
     return 0;
 }
 
