@@ -6,11 +6,7 @@
 
 static OMO_ARCHIVE_HANDLER archive_handler;
 static char cached_rar_file[1024];
-#ifdef ALLEGRO_MACOSX
-	static const char * command_prefix = "/usr/local/bin/";
-#else
-	static const char * command_prefix = "";
-#endif
+static char command_prefix[1024];
 
 static int my_system(char * command)
 {
@@ -34,6 +30,20 @@ static int my_system(char * command)
 	return ret;
 }
 
+static void get_command_prefix(void)
+{
+	strcpy(command_prefix, "");
+	#ifdef ALLEGRO_MACOSX
+		ALLEGRO_PATH * path = al_get_standard_path(ALLEGRO_EXENAME_PATH);
+		if(path)
+		{
+			al_set_path_filename(path, "");
+			strcpy(command_prefix, al_path_cstr(path, '/'));
+			al_destroy_path(path);
+		}
+	#endif
+}
+
 static int count_files(const char * fn)
 {
 	ALLEGRO_FILE * fp;
@@ -41,9 +51,10 @@ static int count_files(const char * fn)
 	char line_buffer[256];
 	char * line_pointer;
 	int line_count = 0;
+	get_command_prefix();
 	if(strcmp(fn, cached_rar_file))
 	{
-		sprintf(system_command, "%sunrar l \"%s\" > \"%s\"", command_prefix, fn, t3f_get_filename(t3f_data_path, "rarlist.txt"));
+		sprintf(system_command, "\"%sunrar\" l \"%s\" > \"%s\"", command_prefix, fn, t3f_get_filename(t3f_data_path, "rarlist.txt"));
 		my_system(system_command);
 		strcpy(cached_rar_file, fn);
 	}
@@ -71,6 +82,7 @@ static void remove_line_endings(char * buffer)
 {
 	int i;
 
+	get_command_prefix();
 	for(i = 0; i < strlen(buffer); i++)
 	{
 		if(buffer[i] == '\r' || buffer[i] == '\n')
@@ -104,9 +116,10 @@ static const char * get_file(const char * fn, int index, char * buffer)
 	int version, subversion;
 	int i;
 
+	get_command_prefix();
 	if(strcmp(fn, cached_rar_file))
 	{
-		sprintf(system_command, "%sunrar l \"%s\" > \"%s\"", command_prefix, fn, t3f_get_filename(t3f_data_path, "rarlist.txt"));
+		sprintf(system_command, "\"%sunrar\" l \"%s\" > \"%s\"", command_prefix, fn, t3f_get_filename(t3f_data_path, "rarlist.txt"));
 		my_system(system_command);
 		strcpy(cached_rar_file, fn);
 	}
@@ -185,9 +198,9 @@ static const char * extract_file(const char * fn, int index, char * buffer)
 		path_separator = '/';
 	#endif
 
+	get_command_prefix();
 	strcpy(subfile, get_file(fn, index, buffer));
-	sprintf(system_command, "%sunrar x -inul -y \"%s\" \"%s\" \"%s\"", command_prefix, fn, subfile, al_path_cstr(t3f_data_path, path_separator));
-//	printf(">%s\n", system_command);
+	sprintf(system_command, "\"%sunrar\" x -inul -y \"%s\" \"%s\" \"%s\"", command_prefix, fn, subfile, al_path_cstr(t3f_data_path, path_separator));
 	my_system(system_command);
 	strcpy(buffer, t3f_get_filename(t3f_data_path, subfile));
 	return buffer;
