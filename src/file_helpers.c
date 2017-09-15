@@ -337,10 +337,10 @@ bool omo_queue_file(const char * fn, void * data)
 			codec_handler = omo_get_codec_handler(file_helper_data->codec_handler_registry, target_fn);
 			if(codec_handler)
 			{
+				sprintf(buf, "%d", i); // reference by index instead of filename
 				val2 = NULL;
 				if(file_helper_data->library)
 				{
-					sprintf(buf, "%d", i); // reference by index instead of filename
 					sprintf(buf2, "entry_%d_tracks", i);
 					val2 = al_get_config_value(file_helper_data->library->file_database, fn, buf2);
 				}
