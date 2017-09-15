@@ -40,3 +40,4 @@ Thumbs.db
 docs/changelog
 src/makefile.config
 bin/omo
+bin/unrar
