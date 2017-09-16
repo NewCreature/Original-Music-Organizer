@@ -68,7 +68,7 @@ bool omo_setup_library_helper(APP_INSTANCE * app)
 	int c, i, j;
 
 	/* load the library databases */
-	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->player->queue);
+	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->player->queue, NULL);
 	strcpy(file_db_fn, t3f_get_filename(t3f_data_path, "files.ini"));
 	strcpy(entry_db_fn, t3f_get_filename(t3f_data_path, "database.ini"));
 	sprintf(app->library_loading_message, "Loading library databases...");
@@ -93,7 +93,7 @@ bool omo_setup_library_helper(APP_INSTANCE * app)
 		return false;
 	}
 	c = atoi(val);
-	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->loading_library, app->player->queue);
+	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->loading_library, app->player->queue, app->library_temp_path);
 	for(j = 0; j < c; j++)
 	{
 		sprintf(app->library_loading_message, "Scanning folder %d of %d...", j + 1, c);
@@ -226,6 +226,43 @@ void omo_setup_library(APP_INSTANCE * app)
 	}
 }
 
+static bool setup_temp_folder(ALLEGRO_PATH ** path, const char * name)
+{
+	*path = al_clone_path(t3f_data_path);
+	if(*path)
+	{
+		al_append_path_component(*path, name);
+		if(al_make_directory(al_path_cstr(*path, '/')))
+		{
+			return true;
+		}
+		al_destroy_path(*path);
+		*path = NULL;
+	}
+	return false;
+}
+
+static bool setup_temp_folders(APP_INSTANCE * app)
+{
+	if(!setup_temp_folder(&app->library_temp_path, "library_temp"))
+	{
+		return false;
+	}
+	if(!setup_temp_folder(&app->queue_temp_path, "queue_temp"))
+	{
+		return false;
+	}
+	if(!setup_temp_folder(&app->queue_tags_temp_path, "queue_tags_temp"))
+	{
+		return false;
+	}
+	if(!setup_temp_folder(&app->player_temp_path, "player_temp"))
+	{
+		return false;
+	}
+	return true;
+}
+
 /* initialize our app, load graphics, etc. */
 bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 {
@@ -240,6 +277,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		return false;
 	}
 	t3f_set_event_handler(omo_event_handler);
+
 	if(!t3gui_init())
 	{
 		printf("Error initializing T3GUI!\n");
@@ -250,6 +288,8 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	al_set_config_value(t3f_config, "T3F", "save_window_pos", "true");
 
 	memset(app, 0, sizeof(APP_INSTANCE));
+
+	setup_temp_folders(app);
 
 	/* register archive handlers */
 	app->archive_handler_registry = omo_create_archive_handler_registry();
@@ -288,7 +328,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	}
 	if(argc > 1)
 	{
-		omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue);
+		omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path);
 		for(i = 1; i < argc; i++)
 		{
 			if(!t3f_scan_files(argv[i], omo_count_file, false, NULL, &file_helper_data))

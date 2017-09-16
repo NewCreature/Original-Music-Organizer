@@ -30,6 +30,6 @@ void omo_resume_player(OMO_PLAYER * pp);
 bool omo_play_previous_song(OMO_PLAYER * pp);
 bool omo_play_next_song(OMO_PLAYER * pp);
 
-void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry);
+void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, ALLEGRO_PATH * temp_path);
 
 #endif

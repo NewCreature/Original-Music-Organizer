@@ -2,13 +2,14 @@
 #include "instance.h"
 #include "file_helpers.h"
 
-void omo_setup_file_helper_data(OMO_FILE_HELPER_DATA * fhdp, OMO_ARCHIVE_HANDLER_REGISTRY * ahrp, OMO_CODEC_HANDLER_REGISTRY * chrp, OMO_LIBRARY * lp, OMO_QUEUE * qp)
+void omo_setup_file_helper_data(OMO_FILE_HELPER_DATA * fhdp, OMO_ARCHIVE_HANDLER_REGISTRY * ahrp, OMO_CODEC_HANDLER_REGISTRY * chrp, OMO_LIBRARY * lp, OMO_QUEUE * qp, ALLEGRO_PATH * temp_path)
 {
 	fhdp->archive_handler_registry = ahrp;
 	fhdp->codec_handler_registry = chrp;
 	fhdp->library = lp;
 	fhdp->queue = qp;
 	fhdp->file_count = 0;
+	fhdp->temp_path = temp_path;
 	fhdp->cancel_scan = false;
 	fhdp->scan_done = false;
 }
@@ -163,7 +164,7 @@ bool omo_count_file(const char * fn, void * data)
 	archive_handler = omo_get_archive_handler(file_helper_data->archive_handler_registry, fn);
 	if(archive_handler)
 	{
-		archive_handler_data = archive_handler->open_archive(fn, t3f_data_path);
+		archive_handler_data = archive_handler->open_archive(fn, file_helper_data->temp_path);
 		if(archive_handler_data)
 		{
 			omo_count_archive_files(fn, archive_handler, archive_handler_data, file_helper_data);
@@ -254,12 +255,12 @@ bool omo_add_file(const char * fn, void * data)
 						{
 							sprintf(buf2, "%d", j);
 						}
-						ret = omo_add_file_to_library(file_helper_data->library, fn, buf, c2 > 1 ? buf2 : NULL, file_helper_data->archive_handler_registry, file_helper_data->codec_handler_registry);
+						ret = omo_add_file_to_library(file_helper_data->library, fn, buf, c2 > 1 ? buf2 : NULL, file_helper_data->archive_handler_registry, file_helper_data->codec_handler_registry, file_helper_data->temp_path);
 					}
 				}
 				else
 				{
-					ret = omo_add_file_to_library(file_helper_data->library, fn, buf, NULL, file_helper_data->archive_handler_registry, file_helper_data->codec_handler_registry);
+					ret = omo_add_file_to_library(file_helper_data->library, fn, buf, NULL, file_helper_data->archive_handler_registry, file_helper_data->codec_handler_registry, file_helper_data->temp_path);
 				}
 			}
 		}
@@ -290,7 +291,7 @@ bool omo_add_file(const char * fn, void * data)
 				{
 					sprintf(buf, "%d", i);
 				}
-				ret = omo_add_file_to_library(file_helper_data->library, fn, NULL, c > 1 ? buf : NULL, file_helper_data->archive_handler_registry, file_helper_data->codec_handler_registry);
+				ret = omo_add_file_to_library(file_helper_data->library, fn, NULL, c > 1 ? buf : NULL, file_helper_data->archive_handler_registry, file_helper_data->codec_handler_registry, file_helper_data->temp_path);
 			}
 		}
 	}
@@ -324,7 +325,7 @@ bool omo_queue_file(const char * fn, void * data)
 	archive_handler = omo_get_archive_handler(file_helper_data->archive_handler_registry, fn);
 	if(archive_handler)
 	{
-		archive_handler_data = archive_handler->open_archive(fn, t3f_data_path);
+		archive_handler_data = archive_handler->open_archive(fn, file_helper_data->temp_path);
 		if(archive_handler_data)
 		{
 			val = NULL;

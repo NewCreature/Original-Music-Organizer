@@ -12,7 +12,7 @@ OMO_QUEUE * omo_create_queue(int files)
         if(!qp->entry)
         {
             free(qp);
-            qp = NULL;
+            return NULL;
         }
         else
         {

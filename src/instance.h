@@ -37,6 +37,11 @@ typedef struct
 	OMO_PLAYER * player;
 	T3F_RNG_STATE rng_state;
 
+	ALLEGRO_PATH * library_temp_path;
+	ALLEGRO_PATH * queue_temp_path;
+	ALLEGRO_PATH * queue_tags_temp_path;
+	ALLEGRO_PATH * player_temp_path;
+
 } APP_INSTANCE;
 
 #endif

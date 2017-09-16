@@ -107,7 +107,7 @@ bool omo_play_next_song(OMO_PLAYER * pp)
     return true;
 }
 
-void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry)
+void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, ALLEGRO_PATH * temp_path)
 {
     OMO_ARCHIVE_HANDLER * archive_handler;
     void * archive_handler_data;
@@ -139,7 +139,7 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
                     archive_handler = omo_get_archive_handler(archive_handler_registry, pp->queue->entry[pp->queue_pos]->file);
                     if(archive_handler)
                     {
-                        archive_handler_data = archive_handler->open_archive(pp->queue->entry[pp->queue_pos]->file, t3f_data_path);
+                        archive_handler_data = archive_handler->open_archive(pp->queue->entry[pp->queue_pos]->file, temp_path);
                         if(archive_handler_data)
                         {
                             strcpy(pp->extracted_filename, "");

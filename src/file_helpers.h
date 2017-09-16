@@ -16,10 +16,11 @@ typedef struct
     unsigned long file_count;
     bool cancel_scan;
     bool scan_done;
+    ALLEGRO_PATH * temp_path;
 
 } OMO_FILE_HELPER_DATA;
 
-void omo_setup_file_helper_data(OMO_FILE_HELPER_DATA * fhdp, OMO_ARCHIVE_HANDLER_REGISTRY * ahrp, OMO_CODEC_HANDLER_REGISTRY * chrp, OMO_LIBRARY * lp, OMO_QUEUE * qp);
+void omo_setup_file_helper_data(OMO_FILE_HELPER_DATA * fhdp, OMO_ARCHIVE_HANDLER_REGISTRY * ahrp, OMO_CODEC_HANDLER_REGISTRY * chrp, OMO_LIBRARY * lp, OMO_QUEUE * qp, ALLEGRO_PATH * temp_path);
 bool omo_count_file(const char * fn, void * data);
 bool omo_add_file(const char * fn, void * data);
 

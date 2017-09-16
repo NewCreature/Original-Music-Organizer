@@ -160,6 +160,7 @@ void omo_destroy_library(OMO_LIBRARY * lp)
             }
             free(lp->entry[i]);
         }
+        free(lp->entry);
     }
     if(lp->artist_entry)
     {
@@ -178,7 +179,6 @@ void omo_destroy_library(OMO_LIBRARY * lp)
     al_destroy_config(lp->file_database);
     free(lp->entry_database_fn);
     al_destroy_config(lp->entry_database);
-    free(lp->entry);
     free(lp);
 }
 
@@ -248,7 +248,7 @@ static unsigned long get_file_size(const char * fn)
     return size;
 }
 
-int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subfn, const char * track, OMO_ARCHIVE_HANDLER_REGISTRY * rp, OMO_CODEC_HANDLER_REGISTRY * crp)
+int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subfn, const char * track, OMO_ARCHIVE_HANDLER_REGISTRY * rp, OMO_CODEC_HANDLER_REGISTRY * crp, ALLEGRO_PATH * temp_path)
 {
     const char * val = NULL;
     const char * val2 = NULL;
@@ -289,7 +289,7 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
                 archive_handler = omo_get_archive_handler(rp, fn);
                 if(archive_handler)
                 {
-                    archive_handler_data = archive_handler->open_archive(fn, t3f_data_path);
+                    archive_handler_data = archive_handler->open_archive(fn, temp_path);
                     if(archive_handler_data)
                     {
                         extracted_filename = archive_handler->extract_file(archive_handler_data, atoi(subfn), fn_buffer);
