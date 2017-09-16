@@ -13,7 +13,7 @@ typedef struct
     int types;
 
     /* archive handling functions */
-    void * (*open_archive)(const char * fn);
+    void * (*open_archive)(const char * fn, ALLEGRO_PATH * temp_path);
     void (*close_archive)(void * data);
     int (*count_files)(void * data);
     const char * (*get_file)(void * data, int index, char * buffer);

@@ -8,10 +8,11 @@ typedef struct
 {
 
 	const char * filename;
+	ALLEGRO_PATH * temp_path;
 
 } ARCHIVE_HANDLER_DATA;
 
-static void * open_archive(const char * fn)
+static void * open_archive(const char * fn, ALLEGRO_PATH * temp_path)
 {
 	ARCHIVE_HANDLER_DATA * data;
 
@@ -19,6 +20,7 @@ static void * open_archive(const char * fn)
 	if(data)
 	{
 		data->filename = fn;
+		data->temp_path = temp_path;
 	}
 	return data;
 }
@@ -163,7 +165,7 @@ static const char * extract_file(void * data, int index, char * buffer)
 	int total = 0;
 	char * cwd = al_get_current_directory();
 	strcpy(buffer, "");
-	al_change_directory(al_path_cstr(t3f_data_path, '/'));
+	al_change_directory(al_path_cstr(archive_data->temp_path, '/'));
 
 	a = archive_read_new();
 	archive_read_support_filter_all(a);
@@ -179,7 +181,7 @@ static const char * extract_file(void * data, int index, char * buffer)
 				if(total == index)
 				{
 					extract_current_file(a, entry);
-					strcpy(buffer, t3f_get_filename(t3f_data_path, archive_entry_pathname(entry)));
+					strcpy(buffer, t3f_get_filename(archive_data->temp_path, archive_entry_pathname(entry)));
 					break;
 				}
 				total++;

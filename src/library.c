@@ -289,7 +289,7 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
                 archive_handler = omo_get_archive_handler(rp, fn);
                 if(archive_handler)
                 {
-                    archive_handler_data = archive_handler->open_archive(fn);
+                    archive_handler_data = archive_handler->open_archive(fn, t3f_data_path);
                     if(archive_handler_data)
                     {
                         extracted_filename = archive_handler->extract_file(archive_handler_data, atoi(subfn), fn_buffer);

@@ -163,7 +163,7 @@ bool omo_count_file(const char * fn, void * data)
 	archive_handler = omo_get_archive_handler(file_helper_data->archive_handler_registry, fn);
 	if(archive_handler)
 	{
-		archive_handler_data = archive_handler->open_archive(fn);
+		archive_handler_data = archive_handler->open_archive(fn, t3f_data_path);
 		if(archive_handler_data)
 		{
 			omo_count_archive_files(fn, archive_handler, archive_handler_data, file_helper_data);
@@ -324,7 +324,7 @@ bool omo_queue_file(const char * fn, void * data)
 	archive_handler = omo_get_archive_handler(file_helper_data->archive_handler_registry, fn);
 	if(archive_handler)
 	{
-		archive_handler_data = archive_handler->open_archive(fn);
+		archive_handler_data = archive_handler->open_archive(fn, t3f_data_path);
 		if(archive_handler_data)
 		{
 			val = NULL;

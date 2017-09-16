@@ -8,6 +8,7 @@ typedef struct
 {
 
 	const char * filename;
+	ALLEGRO_PATH * temp_path;
 	char cached_rar_file[1024];
 	char command_prefix[1024];
 
@@ -51,7 +52,7 @@ static void get_command_prefix(void * data)
 	#endif
 }
 
-static void * open_archive(const char * fn)
+static void * open_archive(const char * fn, ALLEGRO_PATH * temp_path)
 {
 	ARCHIVE_HANDLER_DATA * data;
 
@@ -59,6 +60,7 @@ static void * open_archive(const char * fn)
 	if(data)
 	{
 		data->filename = fn;
+		data->temp_path = temp_path;
 		get_command_prefix(data);
 	}
 	return data;
@@ -80,11 +82,11 @@ static int count_files(void * data)
 
 	if(strcmp(archive_data->filename, archive_data->cached_rar_file))
 	{
-		sprintf(system_command, "\"%sunrar\" l \"%s\" > \"%s\"", archive_data->command_prefix, archive_data->filename, t3f_get_filename(t3f_data_path, "rarlist.txt"));
+		sprintf(system_command, "\"%sunrar\" l \"%s\" > \"%s\"", archive_data->command_prefix, archive_data->filename, t3f_get_filename(archive_data->temp_path, "rarlist.txt"));
 		my_system(system_command);
 		strcpy(archive_data->cached_rar_file, archive_data->filename);
 	}
-	fp = al_fopen(t3f_get_filename(t3f_data_path, "rarlist.txt"), "r");
+	fp = al_fopen(t3f_get_filename(archive_data->temp_path, "rarlist.txt"), "r");
 	if(fp)
 	{
 		while(1)
@@ -144,11 +146,11 @@ static const char * get_file(void * data, int index, char * buffer)
 
 	if(strcmp(archive_data->filename, archive_data->cached_rar_file))
 	{
-		sprintf(system_command, "\"%sunrar\" l \"%s\" > \"%s\"", archive_data->command_prefix, archive_data->filename, t3f_get_filename(t3f_data_path, "rarlist.txt"));
+		sprintf(system_command, "\"%sunrar\" l \"%s\" > \"%s\"", archive_data->command_prefix, archive_data->filename, t3f_get_filename(archive_data->temp_path, "rarlist.txt"));
 		my_system(system_command);
 		strcpy(archive_data->cached_rar_file, archive_data->filename);
 	}
-	fp = al_fopen(t3f_get_filename(t3f_data_path, "rarlist.txt"), "r");
+	fp = al_fopen(t3f_get_filename(archive_data->temp_path, "rarlist.txt"), "r");
 	if(fp)
 	{
 		while(1)
@@ -225,9 +227,9 @@ static const char * extract_file(void * data, int index, char * buffer)
 	#endif
 
 	strcpy(subfile, get_file(archive_data, index, buffer));
-	sprintf(system_command, "\"%sunrar\" x -inul -y \"%s\" \"%s\" \"%s\"", archive_data->command_prefix, archive_data->filename, subfile, al_path_cstr(t3f_data_path, path_separator));
+	sprintf(system_command, "\"%sunrar\" x -inul -y \"%s\" \"%s\" \"%s\"", archive_data->command_prefix, archive_data->filename, subfile, al_path_cstr(archive_data->temp_path, path_separator));
 	my_system(system_command);
-	strcpy(buffer, t3f_get_filename(t3f_data_path, subfile));
+	strcpy(buffer, t3f_get_filename(archive_data->temp_path, subfile));
 	return buffer;
 }
 
