@@ -13,9 +13,11 @@ typedef struct
     int types;
 
     /* archive handling functions */
-    int (*count_files)(const char * fn);
-    const char * (*get_file)(const char * fn, int index, char * buffer);
-    const char * (*extract_file)(const char * fn, int index, char * buffer);
+    void * (*open_archive)(const char * fn);
+    void (*close_archive)(void * data);
+    int (*count_files)(void * data);
+    const char * (*get_file)(void * data, int index, char * buffer);
+    const char * (*extract_file)(void * data, int index, char * buffer);
 //    const char * (*get_temp_file)(const char * fn, )
 
     /* instance data */

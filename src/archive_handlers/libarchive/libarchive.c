@@ -4,8 +4,33 @@
 
 #include "../archive_handler.h"
 
-static int count_files(const char * fn)
+typedef struct
 {
+
+	const char * filename;
+
+} ARCHIVE_HANDLER_DATA;
+
+static void * open_archive(const char * fn)
+{
+	ARCHIVE_HANDLER_DATA * data;
+
+	data = malloc(sizeof(ARCHIVE_HANDLER_DATA));
+	if(data)
+	{
+		data->filename = fn;
+	}
+	return data;
+}
+
+static void close_archive(void * data)
+{
+	free(data);
+}
+
+static int count_files(void * data)
+{
+	ARCHIVE_HANDLER_DATA * archive_data = (ARCHIVE_HANDLER_DATA *)data;
 	struct archive *a;
 	struct archive_entry *entry;
 	int r, r2;
@@ -14,7 +39,7 @@ static int count_files(const char * fn)
 	a = archive_read_new();
 	archive_read_support_filter_all(a);
 	archive_read_support_format_all(a);
-	r = archive_read_open_filename(a, fn, 10240); // Note 1
+	r = archive_read_open_filename(a, archive_data->filename, 10240); // Note 1
 	if(r == ARCHIVE_OK)
 	{
 		while(1)
@@ -37,8 +62,9 @@ static int count_files(const char * fn)
 	return total;
 }
 
-static const char * get_file(const char * fn, int index, char * buffer)
+static const char * get_file(void * data, int index, char * buffer)
 {
+	ARCHIVE_HANDLER_DATA * archive_data = (ARCHIVE_HANDLER_DATA *)data;
 	struct archive *a;
 	struct archive_entry *entry;
 	int r, r2;
@@ -47,7 +73,7 @@ static const char * get_file(const char * fn, int index, char * buffer)
 	a = archive_read_new();
 	archive_read_support_filter_all(a);
 	archive_read_support_format_all(a);
-	r = archive_read_open_filename(a, fn, 10240); // Note 1
+	r = archive_read_open_filename(a, archive_data->filename, 10240); // Note 1
 	if(r == ARCHIVE_OK)
 	{
 		while(1)
@@ -128,8 +154,9 @@ static const char * extract_current_file(struct archive * a, struct archive_entr
 	return NULL;
 }
 
-static const char * extract_file(const char * fn, int index, char * buffer)
+static const char * extract_file(void * data, int index, char * buffer)
 {
+	ARCHIVE_HANDLER_DATA * archive_data = (ARCHIVE_HANDLER_DATA *)data;
 	struct archive *a;
 	struct archive_entry *entry;
 	int r, r2;
@@ -141,7 +168,7 @@ static const char * extract_file(const char * fn, int index, char * buffer)
 	a = archive_read_new();
 	archive_read_support_filter_all(a);
 	archive_read_support_format_all(a);
-	r = archive_read_open_filename(a, fn, 10240); // Note 1
+	r = archive_read_open_filename(a, archive_data->filename, 10240); // Note 1
 	if(r == ARCHIVE_OK)
 	{
 		while(1)
@@ -176,6 +203,8 @@ static OMO_ARCHIVE_HANDLER archive_handler;
 OMO_ARCHIVE_HANDLER * omo_get_libarchive_archive_handler(void)
 {
 	memset(&archive_handler, 0, sizeof(OMO_ARCHIVE_HANDLER));
+	archive_handler.open_archive = open_archive;
+	archive_handler.close_archive = close_archive;
 	archive_handler.count_files = count_files;
 	archive_handler.get_file = get_file;
 	archive_handler.extract_file = extract_file;

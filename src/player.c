@@ -110,6 +110,7 @@ bool omo_play_next_song(OMO_PLAYER * pp)
 void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry)
 {
     OMO_ARCHIVE_HANDLER * archive_handler;
+    void * archive_handler_data;
 	const char * subfile;
     bool next_file = false;
     char fn_buffer[1024] = {0};
@@ -138,26 +139,31 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
                     archive_handler = omo_get_archive_handler(archive_handler_registry, pp->queue->entry[pp->queue_pos]->file);
                     if(archive_handler)
                     {
-                        strcpy(pp->extracted_filename, "");
-                        if(pp->queue->entry[pp->queue_pos]->sub_file)
+                        archive_handler_data = archive_handler->open_archive(pp->queue->entry[pp->queue_pos]->file);
+                        if(archive_handler_data)
                         {
-                            pp->codec_handler = omo_get_codec_handler(codec_handler_registry, archive_handler->get_file(pp->queue->entry[pp->queue_pos]->file, atoi(pp->queue->entry[pp->queue_pos]->sub_file), fn_buffer));
-                            if(pp->codec_handler)
+                            strcpy(pp->extracted_filename, "");
+                            if(pp->queue->entry[pp->queue_pos]->sub_file)
                             {
-                                subfile = archive_handler->extract_file(pp->queue->entry[pp->queue_pos]->file, atoi(pp->queue->entry[pp->queue_pos]->sub_file), fn_buffer);
-                                if(strlen(subfile) > 0)
+                                pp->codec_handler = omo_get_codec_handler(codec_handler_registry, archive_handler->get_file(archive_handler_data, atoi(pp->queue->entry[pp->queue_pos]->sub_file), fn_buffer));
+                                if(pp->codec_handler)
                                 {
-                                    strcpy(pp->extracted_filename, subfile);
-                                    pp->codec_data = pp->codec_handler->load_file(pp->extracted_filename, pp->queue->entry[pp->queue_pos]->track);
-                                    if(pp->codec_data)
+                                    subfile = archive_handler->extract_file(archive_handler_data, atoi(pp->queue->entry[pp->queue_pos]->sub_file), fn_buffer);
+                                    if(strlen(subfile) > 0)
                                     {
-                                        if(pp->codec_handler->play(pp->codec_data))
+                                        strcpy(pp->extracted_filename, subfile);
+                                        pp->codec_data = pp->codec_handler->load_file(pp->extracted_filename, pp->queue->entry[pp->queue_pos]->track);
+                                        if(pp->codec_data)
                                         {
-                                            break;
+                                            if(pp->codec_handler->play(pp->codec_data))
+                                            {
+                                                break;
+                                            }
                                         }
                                     }
                                 }
                             }
+                            archive_handler->close_archive(archive_handler_data);
                         }
                     }
                     else

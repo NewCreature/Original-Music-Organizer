@@ -258,6 +258,7 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
     int retval = 2;
     const char * extracted_filename = NULL;
     OMO_ARCHIVE_HANDLER * archive_handler;
+    void * archive_handler_data;
     bool hashed = false;
     unsigned long file_size;
     const char * md5_hash = NULL;
@@ -288,7 +289,12 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
                 archive_handler = omo_get_archive_handler(rp, fn);
                 if(archive_handler)
                 {
-                    extracted_filename = archive_handler->extract_file(fn, atoi(subfn), fn_buffer);
+                    archive_handler_data = archive_handler->open_archive(fn);
+                    if(archive_handler_data)
+                    {
+                        extracted_filename = archive_handler->extract_file(archive_handler_data, atoi(subfn), fn_buffer);
+                        archive_handler->close_archive(archive_handler_data);
+                    }
                 }
             }
             if(extracted_filename)
