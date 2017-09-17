@@ -1,6 +1,12 @@
 OMO Issues
 ----------
 
+v0.4
+----
+
+[ ]Implement tags submission and retrieval.
+
+
 v0.3
 ----
 
