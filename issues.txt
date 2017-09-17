@@ -45,7 +45,7 @@ v0.2
    to extract to a different location than the player so we don't get conflicts
    that cause playback or scanning errors.
 
-[ ]Get tags for queued files using codec handler if library has not been loaded
+[X]Get tags for queued files using codec handler if library has not been loaded
    yet.
 
 [ ]Improve default theme button graphics.
