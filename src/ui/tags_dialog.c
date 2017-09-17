@@ -28,7 +28,7 @@ void omo_tags_dialog_logic(void * data)
         }
         else
         {
-            omo_get_queue_tags(app->player->queue, app->library);
+            omo_get_queue_tags(app->player->queue, app->library, data);
         }
         app->button_pressed = -1;
         t3f_key[ALLEGRO_KEY_ENTER] = 0;

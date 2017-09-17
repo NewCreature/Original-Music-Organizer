@@ -1,4 +1,5 @@
 #include "t3f/t3f.h"
+#include "instance.h"
 #include "queue.h"
 
 OMO_QUEUE * omo_create_queue(int files)
@@ -8,6 +9,7 @@ OMO_QUEUE * omo_create_queue(int files)
     qp = malloc(sizeof(OMO_QUEUE));
     if(qp)
     {
+        memset(qp, 0, sizeof(OMO_QUEUE));
         qp->entry = malloc(sizeof(OMO_QUEUE_ENTRY *) * files);
         if(!qp->entry)
         {
@@ -44,6 +46,10 @@ void omo_destroy_queue(OMO_QUEUE * qp)
         free(qp->entry[i]);
     }
     free(qp->entry);
+    if(qp->thread)
+    {
+        al_destroy_thread(qp->thread);
+    }
     free(qp);
 }
 
@@ -106,6 +112,70 @@ void omo_delete_queue_item(OMO_QUEUE * qp, int index)
         }
         qp->entry_count--;
     }
+}
+
+bool omo_copy_queue_item(OMO_QUEUE_ENTRY * ep, OMO_QUEUE * qp)
+{
+    if(qp->entry_count < qp->entry_size)
+    {
+        qp->entry[qp->entry_count] = malloc(sizeof(OMO_QUEUE_ENTRY));
+        if(qp->entry[qp->entry_count])
+        {
+            memset(qp->entry[qp->entry_count], 0, sizeof(OMO_QUEUE_ENTRY));
+            if(ep->file)
+            {
+                qp->entry[qp->entry_count]->file = malloc(strlen(ep->file) + 1);
+                if(qp->entry[qp->entry_count]->file)
+                {
+                    strcpy(qp->entry[qp->entry_count]->file, ep->file);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            if(ep->sub_file)
+            {
+                qp->entry[qp->entry_count]->sub_file = malloc(strlen(ep->sub_file) + 1);
+                if(qp->entry[qp->entry_count]->sub_file)
+                {
+                    strcpy(qp->entry[qp->entry_count]->sub_file, ep->sub_file);
+                }
+                else
+                {
+                    if(qp->entry[qp->entry_count]->file)
+                    {
+                        free(qp->entry[qp->entry_count]->file);
+                    }
+                    return false;
+                }
+            }
+            if(ep->track)
+            {
+                qp->entry[qp->entry_count]->track = malloc(strlen(ep->track) + 1);
+                if(qp->entry[qp->entry_count]->track)
+                {
+                    strcpy(qp->entry[qp->entry_count]->track, ep->track);
+                }
+                else
+                {
+                    if(qp->entry[qp->entry_count]->file)
+                    {
+                        free(qp->entry[qp->entry_count]->file);
+                    }
+                    if(qp->entry[qp->entry_count]->sub_file)
+                    {
+                        free(qp->entry[qp->entry_count]->sub_file);
+                    }
+                    return false;
+                }
+            }
+            memcpy(&qp->entry[qp->entry_count]->tags, &ep->tags, sizeof(OMO_QUEUE_TAGS));
+            qp->entry_count++;
+            return true;
+        }
+    }
+    return false;
 }
 
 static OMO_LIBRARY * library = NULL;
@@ -289,7 +359,6 @@ void omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
     const char * album = NULL;
     const char * title = NULL;
     const char * track = NULL;
-    const char * extracted_fn = NULL;
 
     if(lp)
     {
@@ -331,15 +400,103 @@ void omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
     }
 }
 
-void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp)
+static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+    OMO_ARCHIVE_HANDLER * archive_handler;
+    void * archive_handler_data;
+    OMO_CODEC_HANDLER * codec_handler;
+    void * codec_handler_data;
+    char fn_buffer[1024];
+    const char * extracted_fn;
+    const char * target_fn;
+    const char * tag;
+    int i;
+
+    for(i = 0; i < app->player->queue->entry_count && !al_get_thread_should_stop(thread); i++)
+	{
+        if(!strlen(app->player->queue->entry[i]->tags.artist) && !strlen(app->player->queue->entry[i]->tags.album) && !strlen(app->player->queue->entry[i]->tags.title) && !strlen(app->player->queue->entry[i]->tags.track))
+        {
+            extracted_fn = NULL;
+            target_fn = NULL;
+            archive_handler = omo_get_archive_handler(app->archive_handler_registry, app->player->queue->entry[i]->file);
+            if(archive_handler && app->player->queue->entry[i]->sub_file)
+            {
+                archive_handler_data = archive_handler->open_archive(app->player->queue->entry[i]->file, app->queue_tags_temp_path);
+                if(archive_handler_data)
+                {
+                    extracted_fn = archive_handler->extract_file(archive_handler_data, atoi(app->player->queue->entry[i]->sub_file), fn_buffer);
+                    target_fn = extracted_fn;
+                    archive_handler->close_archive(archive_handler_data);
+                }
+            }
+            else
+            {
+                target_fn = app->player->queue->entry[i]->file;
+            }
+            codec_handler = omo_get_codec_handler(app->codec_handler_registry, target_fn);
+            if(codec_handler)
+            {
+                codec_handler_data = codec_handler->load_file(target_fn, app->player->queue->entry[i]->track);
+                if(codec_handler_data)
+                {
+                    tag = codec_handler->get_tag(codec_handler_data, "Artist");
+                    if(tag)
+                    {
+                        strcpy(app->player->queue->entry[i]->tags.artist, tag);
+                    }
+                    tag = codec_handler->get_tag(codec_handler_data, "Album");
+                    if(tag)
+                    {
+                        strcpy(app->player->queue->entry[i]->tags.album, tag);
+                    }
+                    tag = codec_handler->get_tag(codec_handler_data, "Title");
+                    if(tag)
+                    {
+                        strcpy(app->player->queue->entry[i]->tags.title, tag);
+                    }
+                    tag = codec_handler->get_tag(codec_handler_data, "Track");
+                    if(tag)
+                    {
+                        strcpy(app->player->queue->entry[i]->tags.track, tag);
+                    }
+                    codec_handler->unload_file(codec_handler_data);
+                }
+            }
+            if(extracted_fn)
+            {
+                al_remove_filename(extracted_fn);
+            }
+        }
+	}
+	return NULL;
+}
+
+void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp, void * data)
 {
     int i;
 
     if(qp)
     {
-        for(i = 0; i < qp->entry_count; i++)
+        if(lp)
         {
-            omo_get_queue_entry_tags(qp, i, lp);
+            for(i = 0; i < qp->entry_count; i++)
+            {
+                omo_get_queue_entry_tags(qp, i, lp);
+            }
+        }
+        else
+        {
+            if(qp->thread)
+            {
+                al_join_thread(qp->thread, NULL);
+                al_destroy_thread(qp->thread);
+            }
+            qp->thread = al_create_thread(get_queue_tags_thread_proc, data);
+            if(qp->thread)
+            {
+                al_start_thread(qp->thread);
+            }
         }
     }
 }

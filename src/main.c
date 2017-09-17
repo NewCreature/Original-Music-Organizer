@@ -45,7 +45,7 @@ void omo_logic(void * data)
 				app->library_thread = NULL;
                 if(app->library && app->player->queue)
                 {
-                    omo_get_queue_tags(app->player->queue, app->library);
+                    omo_get_queue_tags(app->player->queue, app->library, app);
                 }
 			}
 			omo_file_chooser_logic(data);

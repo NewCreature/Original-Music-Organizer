@@ -17,7 +17,7 @@ static void queue_song_list(void * data, OMO_LIBRARY * lp)
 		{
 			omo_add_file_to_queue(new_queue, lp->entry[lp->song_entry[i]]->filename, lp->entry[lp->song_entry[i]]->sub_filename, lp->entry[lp->song_entry[i]]->track);
 		}
-		omo_get_queue_tags(new_queue, lp);
+		omo_get_queue_tags(new_queue, lp, app);
 		switch(app->player->state)
 		{
 			case OMO_PLAYER_STATE_PLAYING:
