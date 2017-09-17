@@ -20,6 +20,11 @@ v0.3
       The codec handler will be responsible for keeping track of this data and
       ensuring playback respects the passed loop settings.
 
+[ ]Implement font size override. The user should be able to specify a preferred
+   font size to override a theme's font size. This override should cause the
+   theme system to load the font in the correct size so we get a properly sized
+   font throughout the GUI system.
+
 
 v0.2
 ----
