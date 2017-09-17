@@ -41,6 +41,10 @@ v0.2
    [X]Tags need to be updated with the info from the library if the library
       gets finished loading.
 
+[X]Specify where archive handlers extract files to. We need the library scanner
+   to extract to a different location than the player so we don't get conflicts
+   that cause playback or scanning errors.
+
 [ ]Get tags for queued files using codec handler if library has not been loaded
    yet.
 
@@ -54,10 +58,6 @@ v0.2
 
 [ ]See if we can add some stuff to info.plist to make associating music files
    with OMO work correctly.
-
-[ ]Specify where archive handlers extract files to. We need the library scanner
-   to extract to a different location than the player so we don't get conflicts
-   that cause playback or scanning errors.
 
 [ ]Add 'Shuffle All' item to song list.
 
