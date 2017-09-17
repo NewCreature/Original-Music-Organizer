@@ -109,6 +109,7 @@ void omo_shortcut_logic(void * data)
     }
     if(t3f_key[ALLEGRO_KEY_T] && app->library)
     {
+		app->ui->tags_queue_entry = -1;
         if(app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
         {
             j = app->ui->ui_queue_list_element->d1;
@@ -123,6 +124,7 @@ void omo_shortcut_logic(void * data)
                 strcat(fullfn, ":");
                 strcat(fullfn, app->player->queue->entry[j]->track);
             }
+			app->ui->tags_queue_entry = app->ui->ui_queue_list_element->d1;
         }
         else if(app->ui->ui_song_list_element->flags & D_GOTFOCUS)
         {

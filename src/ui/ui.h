@@ -25,6 +25,7 @@ typedef struct
     char tags_text[OMO_UI_MAX_TAGS][OMO_UI_MAX_TAG_LENGTH];
     const char * tags_entry;
     T3GUI_ELEMENT * tags_ok_button_element;
+    int tags_queue_entry;
 
     /* theme data */
     OMO_THEME * main_theme;

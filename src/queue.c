@@ -281,7 +281,7 @@ static int sort_by_title(const void *e1, const void *e2)
     return sort_by_path(e1, e2);
 }
 
-void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp)
+void omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 {
     char section[1024];
     const char * val;
@@ -290,47 +290,56 @@ void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp)
     const char * title = NULL;
     const char * track = NULL;
     const char * extracted_fn = NULL;
+
+    if(lp)
+    {
+        strcpy(section, qp->entry[i]->file);
+        if(qp->entry[i]->sub_file)
+        {
+            strcat(section, "/");
+            strcat(section, qp->entry[i]->sub_file);
+        }
+        if(qp->entry[i]->track)
+        {
+            strcat(section, ":");
+            strcat(section, qp->entry[i]->track);
+        }
+        val = al_get_config_value(lp->file_database, section, "id");
+        if(val)
+        {
+            artist = al_get_config_value(lp->entry_database, val, "Artist");
+            album = al_get_config_value(lp->entry_database, val, "Album");
+            title = al_get_config_value(lp->entry_database, val, "Title");
+            track = al_get_config_value(lp->entry_database, val, "Track");
+            if(artist)
+            {
+                strcpy(qp->entry[i]->tags.artist, artist);
+            }
+            if(album)
+            {
+                strcpy(qp->entry[i]->tags.album, album);
+            }
+            if(title)
+            {
+                strcpy(qp->entry[i]->tags.title, title);
+            }
+            if(track)
+            {
+                strcpy(qp->entry[i]->tags.track, track);
+            }
+        }
+    }
+}
+
+void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp)
+{
     int i;
 
-    for(i = 0; i < qp->entry_count; i++)
+    if(qp)
     {
-        if(lp)
+        for(i = 0; i < qp->entry_count; i++)
         {
-            strcpy(section, qp->entry[i]->file);
-            if(qp->entry[i]->sub_file)
-            {
-                strcat(section, "/");
-                strcat(section, qp->entry[i]->sub_file);
-            }
-            if(qp->entry[i]->track)
-            {
-                strcat(section, ":");
-                strcat(section, qp->entry[i]->track);
-            }
-            val = al_get_config_value(lp->file_database, section, "id");
-            if(val)
-            {
-				artist = al_get_config_value(lp->entry_database, val, "Artist");
-				album = al_get_config_value(lp->entry_database, val, "Album");
-                title = al_get_config_value(lp->entry_database, val, "Title");
-				track = al_get_config_value(lp->entry_database, val, "Track");
-                if(artist)
-                {
-                    strcpy(qp->entry[i]->tags.artist, artist);
-                }
-                if(album)
-                {
-                    strcpy(qp->entry[i]->tags.album, album);
-                }
-                if(title)
-                {
-                    strcpy(qp->entry[i]->tags.title, title);
-                }
-                if(track)
-                {
-                    strcpy(qp->entry[i]->tags.track, track);
-                }
-            }
+            omo_get_queue_entry_tags(qp, i, lp);
         }
     }
 }
