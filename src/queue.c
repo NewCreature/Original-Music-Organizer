@@ -171,6 +171,7 @@ bool omo_copy_queue_item(OMO_QUEUE_ENTRY * ep, OMO_QUEUE * qp)
                 }
             }
             memcpy(&qp->entry[qp->entry_count]->tags, &ep->tags, sizeof(OMO_QUEUE_TAGS));
+            qp->entry[qp->entry_count]->tags_retrieved = ep->tags_retrieved;
             qp->entry_count++;
             return true;
         }
@@ -351,7 +352,7 @@ static int sort_by_title(const void *e1, const void *e2)
     return sort_by_path(e1, e2);
 }
 
-void omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
+bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 {
     char section[1024];
     const char * val;
@@ -359,7 +360,9 @@ void omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
     const char * album = NULL;
     const char * title = NULL;
     const char * track = NULL;
+    bool ret = false;
 
+    qp->entry[i]->tags_retrieved = false;
     if(lp)
     {
         strcpy(section, qp->entry[i]->file);
@@ -383,21 +386,30 @@ void omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
             if(artist)
             {
                 strcpy(qp->entry[i]->tags.artist, artist);
+                ret = true;
             }
             if(album)
             {
                 strcpy(qp->entry[i]->tags.album, album);
+                ret = true;
             }
             if(title)
             {
                 strcpy(qp->entry[i]->tags.title, title);
+                ret = true;
             }
             if(track)
             {
                 strcpy(qp->entry[i]->tags.track, track);
+                ret = true;
             }
         }
     }
+    if(ret)
+    {
+        qp->entry[i]->tags_retrieved = true;
+    }
+    return ret;
 }
 
 static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
@@ -415,7 +427,7 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 
     for(i = 0; i < app->player->queue->entry_count && !al_get_thread_should_stop(thread); i++)
 	{
-        if(!strlen(app->player->queue->entry[i]->tags.artist) && !strlen(app->player->queue->entry[i]->tags.album) && !strlen(app->player->queue->entry[i]->tags.title) && !strlen(app->player->queue->entry[i]->tags.track))
+        if(!app->player->queue->entry[i]->tags_retrieved && !strlen(app->player->queue->entry[i]->tags.artist) && !strlen(app->player->queue->entry[i]->tags.album) && !strlen(app->player->queue->entry[i]->tags.title) && !strlen(app->player->queue->entry[i]->tags.track))
         {
             extracted_fn = NULL;
             target_fn = NULL;
@@ -461,6 +473,7 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
                         strcpy(app->player->queue->entry[i]->tags.track, tag);
                     }
                     codec_handler->unload_file(codec_handler_data);
+                    app->player->queue->entry[i]->tags_retrieved = true;
                 }
             }
             if(extracted_fn)
@@ -475,6 +488,7 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp, void * data)
 {
     int i;
+    bool rescan = false;
 
     if(qp)
     {
@@ -488,10 +502,13 @@ void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp, void * data)
         {
             for(i = 0; i < qp->entry_count; i++)
             {
-                omo_get_queue_entry_tags(qp, i, lp);
+                if(!omo_get_queue_entry_tags(qp, i, lp))
+                {
+                    rescan = true;
+                }
             }
         }
-        else
+        if(!lp || rescan)
         {
             qp->thread = al_create_thread(get_queue_tags_thread_proc, data);
             if(qp->thread)
