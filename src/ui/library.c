@@ -57,13 +57,16 @@ void omo_library_logic(void * data)
     if(app->ui->ui_artist_list_element->d1 != old_artist_d1)
     {
         app->ui->ui_album_list_element->d1 = 0;
+		app->ui->ui_album_list_element->d2 = 0;
         app->ui->ui_song_list_element->d1 = 0;
+		app->ui->ui_song_list_element->d2 = 0;
         val2 = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, app);
         omo_get_library_song_list(app->library, val2, "All Albums");
     }
     else if(app->ui->ui_album_list_element->d1 != old_album_d1)
     {
         app->ui->ui_song_list_element->d1 = 0;
+		app->ui->ui_song_list_element->d2 = 0;
         val = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, app);
         val2 = ui_album_list_proc(app->ui->ui_album_list_element->d1, NULL, app);
         omo_get_library_song_list(app->library, val, val2);
