@@ -478,6 +478,12 @@ void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp, void * data)
 
     if(qp)
     {
+        if(qp->thread)
+        {
+            al_join_thread(qp->thread, NULL);
+            al_destroy_thread(qp->thread);
+            qp->thread = NULL;
+        }
         if(lp)
         {
             for(i = 0; i < qp->entry_count; i++)
@@ -487,11 +493,6 @@ void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp, void * data)
         }
         else
         {
-            if(qp->thread)
-            {
-                al_join_thread(qp->thread, NULL);
-                al_destroy_thread(qp->thread);
-            }
             qp->thread = al_create_thread(get_queue_tags_thread_proc, data);
             if(qp->thread)
             {
