@@ -28,6 +28,24 @@ v0.3
 [ ]Save queue data on exit and reload on open so users can continue where they
    left off.
 
+[ ]Split off library list generation from library loading. We should be able to
+   use library features that aren't tied to the artist, album, and song lists
+   without waiting for those to generate. We should, of course, perform this
+   function in a separate thread so we can continue to use the program while
+   the lists generate.
+
+[ ]Add status bar to library view. We should show library-related messages in
+   this status bar instead of using the list box.
+
+[ ]Split queue list and player controls into separate modules so we can make a
+   compact view.
+
+[ ]Add volume and seek controls to the player module.
+
+[ ]Add song info to the player module. The plan is to have 2 lines for this,
+   one line for the artist, title, etc. of the currently playing song and
+   another for track-specific info from the codec handler.
+
 
 v0.2
 ----
