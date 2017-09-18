@@ -38,6 +38,10 @@ void omo_logic(void * data)
 		    {
 		        old_queue_list_pos = app->player->queue_pos;
 				visible = queue_list_visible_elements(app->ui->ui_queue_list_element);
+                if(visible > app->player->queue->entry_count)
+                {
+                    visible = app->player->queue->entry_count;
+                }
 		    }
 			if(app->library_thread && app->loading_library_file_helper_data.scan_done)
 			{
