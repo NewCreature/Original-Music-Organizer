@@ -476,7 +476,7 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
                 target_fn = app->player->queue->entry[i]->file;
             }
             codec_handler = omo_get_codec_handler(app->codec_handler_registry, target_fn);
-            if(codec_handler)
+            if(codec_handler && codec_handler->get_tag)
             {
                 codec_handler_data = codec_handler->load_file(target_fn, app->player->queue->entry[i]->track);
                 if(codec_handler_data)
