@@ -2,7 +2,7 @@
 #include "instance.h"
 #include "file_helpers.h"
 
-void omo_setup_file_helper_data(OMO_FILE_HELPER_DATA * fhdp, OMO_ARCHIVE_HANDLER_REGISTRY * ahrp, OMO_CODEC_HANDLER_REGISTRY * chrp, OMO_LIBRARY * lp, OMO_QUEUE * qp, ALLEGRO_PATH * temp_path)
+void omo_setup_file_helper_data(OMO_FILE_HELPER_DATA * fhdp, OMO_ARCHIVE_HANDLER_REGISTRY * ahrp, OMO_CODEC_HANDLER_REGISTRY * chrp, OMO_LIBRARY * lp, OMO_QUEUE * qp, ALLEGRO_PATH * temp_path, void * user_data)
 {
 	fhdp->archive_handler_registry = ahrp;
 	fhdp->codec_handler_registry = chrp;
@@ -10,6 +10,7 @@ void omo_setup_file_helper_data(OMO_FILE_HELPER_DATA * fhdp, OMO_ARCHIVE_HANDLER
 	fhdp->queue = qp;
 	fhdp->file_count = 0;
 	fhdp->temp_path = temp_path;
+	fhdp->user_data = user_data;
 	fhdp->cancel_scan = false;
 	fhdp->scan_done = false;
 }
@@ -201,11 +202,26 @@ bool omo_count_file(const char * fn, void * data)
     return false;
 }
 
+static const char * get_fn(const char * fn)
+{
+	int i;
+
+	for(i = strlen(fn) - 1; i >= 0; i--)
+	{
+		if(fn[i] == '/' || fn[i] == '\\')
+		{
+			return &fn[i + 1];
+		}
+	}
+	return fn;
+}
+
 bool omo_add_file(const char * fn, void * data)
 {
 	OMO_FILE_HELPER_DATA * file_helper_data = (OMO_FILE_HELPER_DATA *)data;
 	OMO_ARCHIVE_HANDLER * archive_handler;
 	OMO_CODEC_HANDLER * codec_handler;
+	char * message = (char *)file_helper_data->user_data;
 	int i, j, c = 0, c2 = 0;
 	char buf[32] = {0};
 	char buf2[32] = {0};
@@ -217,6 +233,10 @@ bool omo_add_file(const char * fn, void * data)
 	if(file_helper_data->cancel_scan)
 	{
 		return false;
+	}
+	if(message && file_helper_data->library)
+	{
+		sprintf(message, "Adding (%lu/%lu): %s", file_helper_data->library->entry_count, file_helper_data->library->entry_size, get_fn(fn));
 	}
 	archive_handler = omo_get_archive_handler(file_helper_data->archive_handler_registry, fn);
 	if(archive_handler)

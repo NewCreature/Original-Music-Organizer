@@ -68,7 +68,7 @@ bool omo_setup_library_helper(APP_INSTANCE * app)
 	int c, i, j;
 
 	/* load the library databases */
-	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->player->queue, NULL);
+	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->player->queue, NULL, app->library_loading_message);
 	strcpy(file_db_fn, t3f_get_filename(t3f_data_path, "files.ini"));
 	strcpy(entry_db_fn, t3f_get_filename(t3f_data_path, "database.ini"));
 	sprintf(app->library_loading_message, "Loading library databases...");
@@ -93,7 +93,7 @@ bool omo_setup_library_helper(APP_INSTANCE * app)
 		return false;
 	}
 	c = atoi(val);
-	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->loading_library, app->player->queue, app->library_temp_path);
+	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->loading_library, app->player->queue, app->library_temp_path, app->library_loading_message);
 	for(j = 0; j < c; j++)
 	{
 		sprintf(app->library_loading_message, "Scanning folder %d of %d...", j + 1, c);
@@ -328,7 +328,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	}
 	if(argc > 1)
 	{
-		omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path);
+		omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
 		for(i = 1; i < argc; i++)
 		{
 			if(!t3f_scan_files(argv[i], omo_count_file, false, NULL, &file_helper_data))

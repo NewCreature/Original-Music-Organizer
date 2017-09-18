@@ -66,7 +66,7 @@ static int omo_get_total_files(ALLEGRO_FILECHOOSER * fc, void * data)
     OMO_FILE_HELPER_DATA file_helper_data;
     int i;
 
-    omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path);
+    omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
     for(i = 0; i < al_get_native_file_dialog_count(fc); i++)
     {
         omo_count_file(al_get_native_file_dialog_path(fc, i), &file_helper_data);
@@ -83,7 +83,7 @@ static void add_files_to_queue(ALLEGRO_FILECHOOSER * fc, OMO_QUEUE * queue, void
 
     old_queue = app->player->queue;
     app->player->queue = queue;
-    omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path);
+    omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
     for(i = 0; i < al_get_native_file_dialog_count(fc); i++)
     {
         omo_queue_file(al_get_native_file_dialog_path(fc, i), &file_helper_data);
@@ -155,7 +155,7 @@ void omo_file_chooser_logic(void * data)
                     {
                         omo_destroy_queue(app->player->queue);
                     }
-                    omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path);
+                    omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
                     if(t3f_scan_files(al_get_native_file_dialog_path(app->file_chooser, 0), omo_count_file, false, NULL, &file_helper_data))
                     {
                         app->player->queue = omo_create_queue(file_helper_data.file_count);
@@ -179,7 +179,7 @@ void omo_file_chooser_logic(void * data)
 				}
 				case 3:
 				{
-                    omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path);
+                    omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
                     if(t3f_scan_files(al_get_native_file_dialog_path(app->file_chooser, 0), omo_count_file, false, NULL, &file_helper_data))
                     {
                         if(app->player->queue)
