@@ -39,6 +39,7 @@ typedef struct
 
 OMO_QUEUE * omo_create_queue(int files);
 void omo_destroy_queue(OMO_QUEUE * qp);
+bool omo_resize_queue(OMO_QUEUE ** qp, int files);
 bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn, const char * track);
 void omo_delete_queue_item(OMO_QUEUE * qp, int index);
 bool omo_copy_queue_item(OMO_QUEUE_ENTRY * ep, OMO_QUEUE * qp);

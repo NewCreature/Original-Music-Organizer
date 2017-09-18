@@ -53,6 +53,35 @@ void omo_destroy_queue(OMO_QUEUE * qp)
     free(qp);
 }
 
+bool omo_resize_queue(OMO_QUEUE ** qp, int files)
+{
+    OMO_QUEUE * new_queue;
+    bool ret = true;
+    int i;
+
+    if(files > (*qp)->entry_count)
+    {
+        new_queue = omo_create_queue(files);
+        if(new_queue)
+        {
+            for(i = 0; i < (*qp)->entry_count; i++)
+            {
+                if(!omo_copy_queue_item((*qp)->entry[i], new_queue))
+                {
+                    ret = false;
+                }
+            }
+            omo_destroy_queue(*qp);
+            *qp = new_queue;
+        }
+        else
+        {
+            ret = false;
+        }
+    }
+    return ret;
+}
+
 bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn, const char * track)
 {
     if(qp->entry_count < qp->entry_size)
