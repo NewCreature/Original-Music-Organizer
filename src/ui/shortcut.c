@@ -128,18 +128,21 @@ void omo_shortcut_logic(void * data)
         }
         else if(app->ui->ui_song_list_element->flags & D_GOTFOCUS)
         {
-            j = app->ui->ui_song_list_element->d1;
-            strcpy(fullfn, app->library->entry[app->library->song_entry[j]]->filename);
-            if(app->library->entry[app->library->song_entry[j]]->sub_filename)
-            {
-                strcat(fullfn, "/");
-                strcat(fullfn, app->library->entry[app->library->song_entry[j]]->sub_filename);
-            }
-            if(app->library->entry[app->library->song_entry[j]]->track)
-            {
-                strcat(fullfn, ":");
-                strcat(fullfn, app->library->entry[app->library->song_entry[j]]->track);
-            }
+            j = app->ui->ui_song_list_element->d1 - 1;
+			if(j >= 0)
+			{
+	            strcpy(fullfn, app->library->entry[app->library->song_entry[j]]->filename);
+	            if(app->library->entry[app->library->song_entry[j]]->sub_filename)
+	            {
+	                strcat(fullfn, "/");
+	                strcat(fullfn, app->library->entry[app->library->song_entry[j]]->sub_filename);
+	            }
+	            if(app->library->entry[app->library->song_entry[j]]->track)
+	            {
+	                strcat(fullfn, ":");
+	                strcat(fullfn, app->library->entry[app->library->song_entry[j]]->track);
+	            }
+			}
         }
         app->ui->tags_entry = al_get_config_value(app->library->file_database, fullfn, "id");
         if(app->ui->tags_entry)
