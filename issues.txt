@@ -85,6 +85,8 @@ v0.2
 
 [X]Add 'Shuffle All' item to song list.
 
+[X]Allow Shift+Double-Click to add items to the queue instead of replacing it.
+
 [ ]Improve default theme button graphics.
 
 [ ]Implement window constraints. Use theme data to calculate a good minimum
@@ -92,7 +94,5 @@ v0.2
 
 [ ]See if we can add some stuff to info.plist to make associating music files
    with OMO work correctly.
-
-[ ]Allow Shift+Double-Click to add items to the queue instead of replacing it.
 
 [ ]Update menus to include items for all current functionality.
