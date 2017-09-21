@@ -134,26 +134,34 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
     {
         if(list_size && app->library && app->library->song_entry)
         {
-            *list_size = app->library->song_entry_count;
+            *list_size = app->library->song_entry_count + 1;
         }
         return NULL;
     }
     if(app->library && app->library->song_entry)
     {
-		title = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Title");
-		album = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Album");
-		track = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Track");
-		if(title)
+		if(index == 0)
 		{
-			strcpy(ui_song_text, title);
-		}
-		else if(album && track)
-		{
-			sprintf(ui_song_text, "%s - Track %s", album, track);
+			strcpy(ui_song_text, "Shuffle All");
 		}
 		else
 		{
-			strcpy(ui_song_text, app->library->entry[app->library->song_entry[index]]->filename);
+			index--;
+			title = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Title");
+			album = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Album");
+			track = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Track");
+			if(title)
+			{
+				strcpy(ui_song_text, title);
+			}
+			else if(album && track)
+			{
+				sprintf(ui_song_text, "%s - Track %s", album, track);
+			}
+			else
+			{
+				strcpy(ui_song_text, app->library->entry[app->library->song_entry[index]]->filename);
+			}
 		}
 		return ui_song_text;
    }

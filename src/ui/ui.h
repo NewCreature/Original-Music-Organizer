@@ -16,6 +16,7 @@ typedef struct
     T3GUI_ELEMENT * ui_artist_list_element;
     T3GUI_ELEMENT * ui_album_list_element;
     T3GUI_ELEMENT * ui_song_list_element;
+    int selected_song;
     int mode;
 
     /* tags dialog */
