@@ -5,39 +5,6 @@
 static int old_artist_d1 = -1;
 static int old_album_d1 = -1;
 
-static void queue_song_list(void * data, OMO_LIBRARY * lp)
-{
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	OMO_QUEUE * new_queue;
-	int i;
-
-	new_queue = omo_create_queue(lp->song_entry_count);
-	if(new_queue)
-	{
-		for(i = 0; i < lp->song_entry_count; i++)
-		{
-			omo_add_file_to_queue(new_queue, lp->entry[lp->song_entry[i]]->filename, lp->entry[lp->song_entry[i]]->sub_filename, lp->entry[lp->song_entry[i]]->track);
-		}
-		omo_get_queue_tags(new_queue, lp, app);
-		switch(app->player->state)
-		{
-			case OMO_PLAYER_STATE_PLAYING:
-			case OMO_PLAYER_STATE_PAUSED:
-			{
-				omo_stop_player(app->player);
-				break;
-			}
-		}
-		if(app->player->queue)
-		{
-			omo_destroy_queue(app->player->queue);
-		}
-		app->player->queue = new_queue;
-		app->player->queue_pos = 0;
-		omo_start_player(app->player);
-	}
-}
-
 void omo_library_pre_gui_logic(void * data)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
@@ -47,6 +14,87 @@ void omo_library_pre_gui_logic(void * data)
         old_artist_d1 = app->ui->ui_artist_list_element->d1;
         old_album_d1 = app->ui->ui_album_list_element->d1;
     }
+}
+
+static void maybe_stop_player(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	if(!t3f_key[ALLEGRO_KEY_LSHIFT] && !t3f_key[ALLEGRO_KEY_RSHIFT])
+	{
+		switch(app->player->state)
+		{
+			case OMO_PLAYER_STATE_PLAYING:
+			case OMO_PLAYER_STATE_PAUSED:
+			{
+				omo_stop_player(app->player);
+				break;
+			}
+		}
+	}
+}
+
+static void maybe_start_player(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	if(!t3f_key[ALLEGRO_KEY_LSHIFT] && !t3f_key[ALLEGRO_KEY_RSHIFT])
+	{
+		app->player->queue_pos = 0;
+		omo_start_player(app->player);
+	}
+}
+
+static bool prepare_queue(void * data, int count)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	int final_count = count;
+
+	if(t3f_key[ALLEGRO_KEY_LSHIFT] || t3f_key[ALLEGRO_KEY_RSHIFT])
+	{
+		if(app->player->queue)
+		{
+			final_count += app->player->queue->entry_count;
+		}
+	}
+	if(app->player->queue)
+	{
+		if(final_count == count)
+		{
+			omo_destroy_queue(app->player->queue);
+			app->player->queue = NULL;
+		}
+		else if(!omo_resize_queue(&app->player->queue, final_count))
+		{
+			return false;
+		}
+	}
+	if(!app->player->queue)
+	{
+		app->player->queue = omo_create_queue(final_count);
+	}
+	if(app->player->queue)
+	{
+		return true;
+	}
+	return false;
+}
+
+static void queue_song_list(void * data, OMO_LIBRARY * lp)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	int i;
+
+	maybe_stop_player(app);
+	if(prepare_queue(app, lp->song_entry_count))
+	{
+		for(i = 0; i < lp->song_entry_count; i++)
+		{
+			omo_add_file_to_queue(app->player->queue, lp->entry[lp->song_entry[i]]->filename, lp->entry[lp->song_entry[i]]->sub_filename, lp->entry[lp->song_entry[i]]->track);
+		}
+		maybe_start_player(app);
+		omo_get_queue_tags(app->player->queue, lp, app);
+	}
 }
 
 void omo_library_logic(void * data)
@@ -86,42 +134,23 @@ void omo_library_logic(void * data)
     }
     else if(app->ui->ui_song_list_element->id1 >= 0)
     {
-        switch(app->player->state)
-        {
-            case OMO_PLAYER_STATE_PLAYING:
-            case OMO_PLAYER_STATE_PAUSED:
-            {
-                omo_stop_player(app->player);
-                break;
-            }
-        }
-        if(app->player->queue)
-        {
-            omo_destroy_queue(app->player->queue);
-        }
-		if(app->ui->selected_song < 0)
+		maybe_stop_player(app);
+		if(prepare_queue(app, app->ui->selected_song < 0 ? app->library->song_entry_count : 1))
 		{
-			app->player->queue = omo_create_queue(app->library->song_entry_count);
-			if(app->player->queue)
+			if(app->ui->selected_song < 0)
 			{
 				for(i = 0; i < app->library->song_entry_count; i++)
 				{
 					omo_add_file_to_queue(app->player->queue, app->library->entry[app->library->song_entry[i]]->filename, app->library->entry[app->library->song_entry[i]]->sub_filename, app->library->entry[app->library->song_entry[i]]->track);
 				}
 				omo_menu_playback_shuffle(app);
-				app->player->queue_pos = 0;
-				omo_start_player(app->player);
 			}
-		}
-		else
-		{
-	        app->player->queue = omo_create_queue(1);
-	        if(app->player->queue)
-	        {
+			else
+			{
 	            omo_add_file_to_queue(app->player->queue, app->library->entry[app->library->song_entry[app->ui->selected_song]]->filename, app->library->entry[app->library->song_entry[app->ui->selected_song]]->sub_filename, app->library->entry[app->library->song_entry[app->ui->selected_song]]->track);
-	            app->player->queue_pos = 0;
-	            omo_start_player(app->player);
 	        }
+			omo_get_queue_tags(app->player->queue, app->library, app);
+			maybe_start_player(app);
 		}
         app->ui->ui_song_list_element->id1 = -1;
     }
