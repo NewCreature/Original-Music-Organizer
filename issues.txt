@@ -87,10 +87,13 @@ v0.2
 
 [X]Allow Shift+Double-Click to add items to the queue instead of replacing it.
 
-[ ]Improve default theme button graphics.
-
-[ ]Implement window constraints. Use theme data to calculate a good minimum
+[X]Implement window constraints. Use theme data to calculate a good minimum
    window size.
+
+[ ]Figure out why window position settings aren't restored properly when
+   switching back to player-only view.
+
+[ ]Improve default theme button graphics.
 
 [ ]See if we can add some stuff to info.plist to make associating music files
    with OMO work correctly.
