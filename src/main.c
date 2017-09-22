@@ -30,6 +30,7 @@ void omo_logic(void * data)
 	int old_queue_list_pos = -1;
 	int visible = 0;
 
+    t3f_refresh_menus();
 	switch(app->state)
 	{
 		default:
