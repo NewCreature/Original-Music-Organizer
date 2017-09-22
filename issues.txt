@@ -90,7 +90,7 @@ v0.2
 [X]Implement window constraints. Use theme data to calculate a good minimum
    window size.
 
-[ ]Figure out why window position settings aren't restored properly when
+[X]Figure out why window position settings aren't restored properly when
    switching back to player-only view.
 
 [ ]Improve default theme button graphics.
