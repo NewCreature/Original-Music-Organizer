@@ -99,3 +99,7 @@ v0.2
    with OMO work correctly.
 
 [ ]Update menus to include items for all current functionality.
+
+[ ]Update version numbers.
+
+[ ]Update changelog.
