@@ -93,12 +93,12 @@ v0.2
 [X]Figure out why window position settings aren't restored properly when
    switching back to player-only view.
 
+[X]Update menus to include items for all current functionality.
+
 [ ]Improve default theme button graphics.
 
 [ ]See if we can add some stuff to info.plist to make associating music files
    with OMO work correctly.
-
-[ ]Update menus to include items for all current functionality.
 
 [ ]Update version numbers.
 
