@@ -92,6 +92,7 @@ static void omo_toggle_library_view(void * data)
 	al_set_window_position(t3f_display, c_x, c_y);
 	al_resize_display(t3f_display, c_width, c_height);
 	omo_create_main_dialog(app->ui, app->library_view ? 1 : 0, c_width, c_height, app);
+	omo_set_window_constraints(app);
 	t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
 }
 

@@ -263,6 +263,63 @@ static bool setup_temp_folders(APP_INSTANCE * app)
 	return true;
 }
 
+void omo_set_window_constraints(APP_INSTANCE * app)
+{
+	int min_width = 0;
+	int min_height = 0;
+	int bitmap_index[6] = {OMO_THEME_BITMAP_PREVIOUS_TRACK, OMO_THEME_BITMAP_PLAY, OMO_THEME_BITMAP_STOP, OMO_THEME_BITMAP_NEXT_TRACK, OMO_THEME_BITMAP_OPEN, OMO_THEME_BITMAP_ADD};
+	int i;
+
+	/* calculate miminum width for current theme */
+	for(i = 0; i < 6; i++)
+	{
+		if(app->ui->main_theme->bitmap[bitmap_index[i]])
+		{
+			min_width += al_get_bitmap_width(app->ui->main_theme->bitmap[bitmap_index[i]]) + 4;
+		}
+		else
+		{
+			if(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font)
+			{
+				min_width += al_get_text_width(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font, app->ui->main_theme->text[bitmap_index[i]]) + 4;
+			}
+		}
+	}
+	if(app->library_view)
+	{
+		min_width *= 4;
+	}
+	min_width += 16; // borders
+	if(app->library_view)
+	{
+		min_width += 24;
+	}
+
+	/* calculate minimum height for current theme */
+	if(app->ui->main_theme->bitmap[0])
+	{
+		min_height += al_get_bitmap_height(app->ui->main_theme->bitmap[0]) + 4;
+	}
+	else
+	{
+		if(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font)
+		{
+			min_height += al_get_font_line_height(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font) + 4;
+		}
+	}
+	if(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font)
+	{
+		min_height += al_get_font_line_height(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font) * 8;
+	}
+	min_height += 24; // borders
+
+	al_set_window_constraints(t3f_display, min_width, min_height, 0, 0);
+	if(al_get_display_width(t3f_display) < min_width || al_get_display_height(t3f_display) < min_height)
+	{
+		al_resize_display(t3f_display, al_get_display_width(t3f_display) < min_width ? min_width : al_get_display_width(t3f_display), al_get_display_height(t3f_display) < min_height ? min_height : al_get_display_height(t3f_display));
+	}
+}
+
 /* initialize our app, load graphics, etc. */
 bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 {
@@ -383,6 +440,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		return false;
 	}
 
+	omo_set_window_constraints(app);
 	t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
 
 	/* set up library */
