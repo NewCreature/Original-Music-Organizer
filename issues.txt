@@ -95,10 +95,10 @@ v0.2
 
 [X]Update menus to include items for all current functionality.
 
-[ ]Improve default theme button graphics.
-
-[ ]See if we can add some stuff to info.plist to make associating music files
+[X]See if we can add some stuff to info.plist to make associating music files
    with OMO work correctly.
+
+[ ]Improve default theme button graphics.
 
 [ ]Update version numbers.
 
