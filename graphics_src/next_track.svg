@@ -16,7 +16,7 @@
    version="1.1"
    inkscape:version="0.91 r13725"
    sodipodi:docname="next_track.svg"
-   inkscape:export-filename="/Users/toddcope/T3/Projects/Apps/OMO/bin/data/themes/basic/previous_track.png"
+   inkscape:export-filename="/Users/toddcope/T3/Projects/Apps/OMO/bin/data/themes/basic/next_track.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -29,7 +29,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="22.4"
-     inkscape:cx="21.415757"
+     inkscape:cx="14.161293"
      inkscape:cy="17.672129"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -52,7 +52,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -64,8 +64,8 @@
     <rect
        style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-opacity:0.5"
        id="rect3371"
-       width="1"
-       height="16"
+       width="2"
+       height="16.000017"
        x="-24"
        y="1028.3622"
        rx="0"
