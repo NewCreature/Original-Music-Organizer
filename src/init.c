@@ -267,6 +267,7 @@ void omo_set_window_constraints(APP_INSTANCE * app)
 {
 	int min_width = 0;
 	int min_height = 0;
+	int new_width, new_height;
 	int bitmap_index[6] = {OMO_THEME_BITMAP_PREVIOUS_TRACK, OMO_THEME_BITMAP_PLAY, OMO_THEME_BITMAP_STOP, OMO_THEME_BITMAP_NEXT_TRACK, OMO_THEME_BITMAP_OPEN, OMO_THEME_BITMAP_ADD};
 	int i;
 
@@ -316,7 +317,10 @@ void omo_set_window_constraints(APP_INSTANCE * app)
 	al_set_window_constraints(t3f_display, min_width, min_height, 0, 0);
 	if(al_get_display_width(t3f_display) < min_width || al_get_display_height(t3f_display) < min_height)
 	{
-		al_resize_display(t3f_display, al_get_display_width(t3f_display) < min_width ? min_width : al_get_display_width(t3f_display), al_get_display_height(t3f_display) < min_height ? min_height : al_get_display_height(t3f_display));
+		new_width = al_get_display_width(t3f_display) < min_width ? min_width : al_get_display_width(t3f_display);
+		new_height = al_get_display_height(t3f_display) < min_height ? min_height : al_get_display_height(t3f_display);
+		al_resize_display(t3f_display, new_width, new_height);
+		omo_resize_ui(app->ui, app->library_view ? 1 : 0, new_width, new_height);
 	}
 }
 
