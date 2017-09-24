@@ -1,5 +1,34 @@
-appname (0.1) maverick; urgency=low
+omo (BUILD_VERSION) maverick; urgency=low
 
-  * Changes...
+  * Fix opening tags dialog for songs that are part of multi-track files.
+  * Fix opening files through the command line.
+  * Allow queueing up folders from the command line.
+  * Fix GUI button press animation.
+  * Add midiout codec handler which uses Windows' midiOut functionality and
+    Rhythm Toolkit to play MIDI files.
+  * Add pause button graphic and make play button turn into pause button when
+    appropriate.
+  * Run library setup in a separate thread. You can now use the player to play
+    files while the library is being set up.
+  * Scroll queue list when changing songs, if necessary, to keep the currently
+    playing song visible.
+  * Update queue list tags when accepting changes made to tags for items in the
+    queue list.
+  * Load tags from queued files if library isn't loaded.
+  * Fix potential crash bug in AVPlayer codec handler related to reading
+    metadata tags.
+  * Add 'Shuffle All' item to song list to simplify creating randomized queue
+    lists.
+  * Holding Shift while double-clicking in the library will append the desired
+    songs to the queue instead of replacing it.
+  * Implement window constraints to prevent the user from making the program
+    window too small.
+  * Update menus to reflect current functionality.
 
- -- Author Name <e@mail.com>  BUILD_DATE +0000
+ -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
+
+omo (0.1) maverick; urgency=low
+
+  * Initial release.
+
+ -- Todd Cope <todd@t3-i.com>  Tue, 29 Aug 2017 18:30:00 +0000
