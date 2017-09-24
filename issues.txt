@@ -102,4 +102,4 @@ v0.2
 
 [X]Update changelog.
 
-[ ]Improve default theme button graphics.
+[X]Improve default theme button graphics.
