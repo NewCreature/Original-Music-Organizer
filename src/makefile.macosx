@@ -33,6 +33,9 @@ $(APP_PACKAGE_DIR)/$(APP_TITLE).app : $(APP_EXE_NAME)
 	@cp ../macosx/Pkginfo $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents
 	@sed -i '' "s|T3F_APP_EXECUTABLE|$(APP_TITLE)|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Info.plist
 	@sed -i '' "s|T3F_APP_ICON|$(APP_TITLE).icns|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Info.plist
+	@sed -i '' "s|T3F_APP_DISPLAY_NAME|$(APP_TITLE)|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Info.plist
+	@sed -i '' "s|T3F_APP_VERSION|$(APP_VERSION)|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Info.plist
+	@sed -i '' "s|T3F_APP_PACKAGE|$(APP_ANDROID_PACKAGE)|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Info.plist
 	@echo Application bundle created!
 
 mac_package: $(APP_PACKAGE_DIR)/$(APP_TITLE).app
