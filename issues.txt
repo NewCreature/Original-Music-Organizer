@@ -46,6 +46,10 @@ v0.3
    one line for the artist, title, etc. of the currently playing song and
    another for track-specific info from the codec handler.
 
+[ ]Check modification date of library folders to determine if we need to rescan
+   them. Save a binary cache of the library files, artist, album, and song
+   lists and reload that cache if the library folders haven't changed.
+
 
 v0.2
 ----
