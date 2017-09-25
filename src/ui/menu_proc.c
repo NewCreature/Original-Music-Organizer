@@ -117,11 +117,11 @@ int omo_menu_playback_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 
     if(app->player->queue)
     {
-        al_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
+        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
     }
     else
     {
-        al_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
+        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
     }
     return 1;
 }
@@ -132,11 +132,11 @@ int omo_menu_playback_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * 
 
     if(app->library && app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
     {
-        al_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
+        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
     }
     else
     {
-        al_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
+        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
     }
     return 1;
 }
@@ -243,11 +243,11 @@ int omo_menu_library_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * d
 
     if(app->library && app->ui->ui_song_list_element->flags & D_GOTFOCUS)
     {
-        al_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
+        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
     }
     else
     {
-        al_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
+        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
     }
     return 1;
 }
@@ -316,11 +316,11 @@ int omo_menu_view_basic_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 
     if(app->library_view)
     {
-        al_set_menu_item_flags(mp, item, 0);
+        t3f_set_menu_item_flags(mp, item, 0);
     }
     else
     {
-        al_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_CHECKED);
+        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_CHECKED);
     }
     return 1;
 }
@@ -331,11 +331,11 @@ int omo_menu_view_library_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 
     if(app->library_view)
     {
-        al_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_CHECKED);
+        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_CHECKED);
     }
     else
     {
-        al_set_menu_item_flags(mp, item, 0);
+        t3f_set_menu_item_flags(mp, item, 0);
     }
     return 1;
 }
