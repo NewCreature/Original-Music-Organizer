@@ -35,6 +35,16 @@ int t3f_add_menu_item(ALLEGRO_MENU * mp, const char * text, int flags, ALLEGRO_M
     return ret_item;
 }
 
+void t3f_set_menu_item_flags(ALLEGRO_MENU * mp, int item, int flags)
+{
+    int old_flags = al_get_menu_item_flags(mp, item) & ~ALLEGRO_MENU_ITEM_CHECKBOX;
+
+    if(flags != old_flags)
+    {
+        al_set_menu_item_flags(mp, item, flags);
+    }
+}
+
 int t3f_process_menu_click(int id, void * data)
 {
     if(t3f_menus_allowed)
