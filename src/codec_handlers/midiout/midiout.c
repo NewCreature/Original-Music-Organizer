@@ -125,7 +125,7 @@ static unsigned long get_next_event_tick(RTK_MIDI * mp, unsigned long current_ti
 	shortest_tick = largest_tick;
 	for(i = 0; i < mp->tracks; i++)
 	{
-		if(track_event[i] < mp->track[i]->events && track_tick[i] < shortest_tick)
+		if(track_event[i] < mp->track[i]->events && track_tick[i] <= shortest_tick)
 		{
 			shortest_tick = track_tick[i];
 			shortest_time = track_time[i];
