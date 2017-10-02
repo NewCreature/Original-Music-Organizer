@@ -70,6 +70,7 @@ typedef struct
 	char text[RTK_MAX_MIDI_EVENT_DATA_LENGTH];
 	char data[RTK_MAX_MIDI_EVENT_DATA_LENGTH];
 	unsigned long data_i[RTK_MAX_MIDI_EVENT_DATA]; /* data such as note number or velocity, depends on event type */
+	int data_length;
 
 	int flags;
 

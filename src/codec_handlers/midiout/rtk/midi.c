@@ -204,6 +204,7 @@ static int rtk_parse_midi(RTK_MIDI * mp, int pass)
 							if(pass == 1)
 							{
 								memcpy(mp->track[i]->event[track_event]->text, &mp->raw_data->track[i].data[track_pos], d1);
+								mp->track[i]->event[track_event]->data_length = d1;
 							}
 							track_pos += d1;
 							break;
@@ -443,9 +444,10 @@ static void rtk_get_track_names(RTK_MIDI * mp)
 	{
 		for(j = 0; j < mp->track[i]->events; j++)
 		{
-			if(mp->track[i]->event[j]->meta_type == RTK_MIDI_EVENT_META_TYPE_TRACK_NAME)
+			if(mp->track[i]->event[j]->meta_type == RTK_MIDI_EVENT_META_TYPE_TRACK_NAME && mp->track[i]->event[j]->data_length < RTK_MAX_MIDI_TRACK_NAME_LENGTH - 1)
 			{
-				strcpy(mp->track[i]->name, mp->track[i]->event[j]->text);
+				memcpy(mp->track[i]->name, mp->track[i]->event[j]->text, mp->track[i]->event[j]->data_length);
+				mp->track[i]->name[mp->track[i]->event[j]->data_length] = 0;
 			}
 		}
 	}
