@@ -421,7 +421,11 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		printf("Error setting up menus!\n");
 		return false;
 	}
-	t3f_attach_menu(app->menu[OMO_MENU_MAIN]);
+	val = al_get_config_value(t3f_config, "App Settings", "disable_menu");
+	if(!val || strcmp(val, "true"))
+	{
+		t3f_attach_menu(app->menu[OMO_MENU_MAIN]);
+	}
 
 	app->ui = omo_create_ui();
 	if(!app->ui)
