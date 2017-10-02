@@ -17,6 +17,7 @@ typedef struct
 	double elapsed_time;
 	double end_time;
 	ALLEGRO_THREAD * thread;
+	char tag_buffer[1024];
 
 } CODEC_DATA;
 
@@ -64,7 +65,34 @@ static void codec_unload_file(void * data)
 static const char * codec_get_tag(void * data, const char * name)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	int i, j;
 
+	if(!strcmp(name, "Copyright"))
+	{
+		i = 0;
+		for(j = 0; j < codec_data->midi->track[i]->events; j++)
+		{
+			if(codec_data->midi->track[i]->event[j]->type == RTK_MIDI_EVENT_TYPE_META && codec_data->midi->track[i]->event[j]->meta_type == RTK_MIDI_EVENT_META_TYPE_COPYRIGHT)
+			{
+				memcpy(codec_data->tag_buffer, codec_data->midi->track[i]->event[j]->text, codec_data->midi->track[i]->event[j]->data_length);
+				codec_data->tag_buffer[codec_data->midi->track[i]->event[j]->data_length] = 0;
+				return codec_data->tag_buffer;
+			}
+		}
+	}
+	else if(!strcmp(name, "Title"))
+	{
+		i = 0;
+		for(j = 0; j < codec_data->midi->track[i]->events; j++)
+		{
+			if(codec_data->midi->track[i]->event[j]->type == RTK_MIDI_EVENT_TYPE_META && codec_data->midi->track[i]->event[j]->meta_type == RTK_MIDI_EVENT_META_TYPE_TRACK_NAME)
+			{
+				memcpy(codec_data->tag_buffer, codec_data->midi->track[i]->event[j]->text, codec_data->midi->track[i]->event[j]->data_length);
+				codec_data->tag_buffer[codec_data->midi->track[i]->event[j]->data_length] = 0;
+				return codec_data->tag_buffer;
+			}
+		}
+	}
 	return NULL;
 }
 
