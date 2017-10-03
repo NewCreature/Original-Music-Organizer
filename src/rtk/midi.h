@@ -1,10 +1,9 @@
 #ifndef LIBRTK_MIDI_H
 #define LIBRTK_MIDI_H
 
-#define RTK_MAX_MIDI_TRACKS               32
-#define RTK_MAX_MIDI_EVENT_DATA_LENGTH   256
+//#define RTK_MAX_MIDI_EVENT_DATA_LENGTH   256
 #define RTK_MAX_MIDI_EVENT_DATA           16
-#define RTK_MAX_MIDI_TRACK_NAME_LENGTH    64
+//#define RTK_MAX_MIDI_TRACK_NAME_LENGTH    64
 #define RTK_MAX_MIDI_EVENTS            65536
 
 /* event types */
@@ -50,7 +49,7 @@ typedef struct
 
 	int divisions;                      /* number of ticks per quarter note */
 	int tracks;
-	RTK_RAW_MIDI_TRACK track[RTK_MAX_MIDI_TRACKS];
+	RTK_RAW_MIDI_TRACK * track;
 
 } RTK_MIDI_DATA;
 
@@ -61,16 +60,14 @@ typedef struct
 	int type, channel, meta_type;
 
 	int tick; /* absolute MIDI tick */
-	char raw_data[RTK_MAX_MIDI_EVENT_DATA_LENGTH]; /* event data as provided through MIDI */
 
 	/* real time position */
 	double pos_sec;
 	unsigned long pos_msec;
 
-	char text[RTK_MAX_MIDI_EVENT_DATA_LENGTH];
-	char data[RTK_MAX_MIDI_EVENT_DATA_LENGTH];
+	char * text;
+	char * data;
 	unsigned long data_i[RTK_MAX_MIDI_EVENT_DATA]; /* data such as note number or velocity, depends on event type */
-	int data_length;
 
 	int flags;
 
@@ -80,7 +77,7 @@ typedef struct
 typedef struct
 {
 
-	char name[RTK_MAX_MIDI_TRACK_NAME_LENGTH];
+	char * name;
 
 	RTK_MIDI_EVENT ** event; /* dynamically allocated array of events */
 	int events;
