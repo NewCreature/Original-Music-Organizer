@@ -1,6 +1,6 @@
 #include "t3f/t3f.h"
-#include "rtk/io_allegro.h"
-#include "rtk/midi.h"
+#include "../../rtk/io_allegro.h"
+#include "../../rtk/midi.h"
 
 #include <windows.h>
 #include <mmsystem.h>
@@ -72,10 +72,9 @@ static const char * codec_get_tag(void * data, const char * name)
 		i = 0;
 		for(j = 0; j < codec_data->midi->track[i]->events; j++)
 		{
-			if(codec_data->midi->track[i]->event[j]->type == RTK_MIDI_EVENT_TYPE_META && codec_data->midi->track[i]->event[j]->meta_type == RTK_MIDI_EVENT_META_TYPE_COPYRIGHT)
+			if(codec_data->midi->track[i]->event[j]->type == RTK_MIDI_EVENT_TYPE_META && codec_data->midi->track[i]->event[j]->meta_type == RTK_MIDI_EVENT_META_TYPE_COPYRIGHT && codec_data->midi->track[i]->event[j]->text)
 			{
-				memcpy(codec_data->tag_buffer, codec_data->midi->track[i]->event[j]->text, codec_data->midi->track[i]->event[j]->data_length);
-				codec_data->tag_buffer[codec_data->midi->track[i]->event[j]->data_length] = 0;
+				strcpy(codec_data->tag_buffer, codec_data->midi->track[i]->event[j]->text);
 				return codec_data->tag_buffer;
 			}
 		}
@@ -85,10 +84,9 @@ static const char * codec_get_tag(void * data, const char * name)
 		i = 0;
 		for(j = 0; j < codec_data->midi->track[i]->events; j++)
 		{
-			if(codec_data->midi->track[i]->event[j]->type == RTK_MIDI_EVENT_TYPE_META && codec_data->midi->track[i]->event[j]->meta_type == RTK_MIDI_EVENT_META_TYPE_TRACK_NAME)
+			if(codec_data->midi->track[i]->event[j]->type == RTK_MIDI_EVENT_TYPE_META && codec_data->midi->track[i]->event[j]->meta_type == RTK_MIDI_EVENT_META_TYPE_TRACK_NAME && codec_data->midi->track[i]->event[j]->text)
 			{
-				memcpy(codec_data->tag_buffer, codec_data->midi->track[i]->event[j]->text, codec_data->midi->track[i]->event[j]->data_length);
-				codec_data->tag_buffer[codec_data->midi->track[i]->event[j]->data_length] = 0;
+				strcpy(codec_data->tag_buffer, codec_data->midi->track[i]->event[j]->text);
 				return codec_data->tag_buffer;
 			}
 		}
