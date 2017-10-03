@@ -505,7 +505,7 @@ RTK_MIDI * rtk_load_midi(const char * fn)
 	}
 
 	data = rtk_io_mgetw(fp);                    /* beat divisions */
-	midi->raw_data->divisions = abs(data);
+	midi->raw_data->divisions = abs((int)data);
 
 	for(c=0; c < midi->raw_data->tracks; c++)
 	{            /* read each track */
@@ -572,7 +572,6 @@ int rtk_sec_to_tick(RTK_MIDI * mp, float sec)
 	double tick_sec = rtk_get_tick_sec(mp, 120.0);
 	int tick = 0;
 	int tempo_change = 0;
-	int i;
 
 	while(cur_sec < sec)
 	{
