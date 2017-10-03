@@ -3,18 +3,28 @@
 //#include <CoreMIDI/CoreMIDI.h>
 #include <Foundation/Foundation.h>
 #include <AVFoundation/AVFoundation.h>
+#include "../../rtk/io_allegro.h"
+#include "../../rtk/midi.h"
 
 #include "../codec_handler.h"
 
 typedef struct
 {
 
+	RTK_MIDI * midi;
 	AVMIDIPlayer * player;
 	double start_time;
 	double pause_start;
 	double pause_total;
+	char tag_buffer[1024];
 
 } CODEC_DATA;
+
+static bool codec_init(void)
+{
+	rtk_io_set_allegro_driver();
+	return true;
+}
 
 static void * codec_load_file(const char * fn, const char * subfn)
 {
@@ -26,7 +36,15 @@ static void * codec_load_file(const char * fn, const char * subfn)
 	{
 		memset(data, 0, sizeof(CODEC_DATA));
 		data->player = [[AVMIDIPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:fnstring] soundBankURL:nil error:nil];
-		[data->player prepareToPlay];
+		if(data->player)
+		{
+			data->midi = rtk_load_midi(fn);
+			[data->player prepareToPlay];
+		}
+		else
+		{
+			return NULL;
+		}
 	}
 
 	return data;
@@ -36,9 +54,48 @@ static void codec_unload_file(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
+	if(codec_data->midi)
+	{
+		rtk_destroy_midi(codec_data->midi);
+	}
 	[codec_data->player release];
 	codec_data->player = NULL;
 	free(data);
+}
+
+static const char * codec_get_tag(void * data, const char * name)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	int i, j;
+
+	if(codec_data->midi)
+	{
+		if(!strcmp(name, "Copyright"))
+		{
+			i = 0;
+			for(j = 0; j < codec_data->midi->track[i]->events; j++)
+			{
+				if(codec_data->midi->track[i]->event[j]->type == RTK_MIDI_EVENT_TYPE_META && codec_data->midi->track[i]->event[j]->meta_type == RTK_MIDI_EVENT_META_TYPE_COPYRIGHT && codec_data->midi->track[i]->event[j]->text)
+				{
+					strcpy(codec_data->tag_buffer, codec_data->midi->track[i]->event[j]->text);
+					return codec_data->tag_buffer;
+				}
+			}
+		}
+		else if(!strcmp(name, "Title"))
+		{
+			i = 0;
+			for(j = 0; j < codec_data->midi->track[i]->events; j++)
+			{
+				if(codec_data->midi->track[i]->event[j]->type == RTK_MIDI_EVENT_TYPE_META && codec_data->midi->track[i]->event[j]->meta_type == RTK_MIDI_EVENT_META_TYPE_TRACK_NAME && codec_data->midi->track[i]->event[j]->text)
+				{
+					strcpy(codec_data->tag_buffer, codec_data->midi->track[i]->event[j]->text);
+					return codec_data->tag_buffer;
+				}
+			}
+		}
+	}
+	return NULL;
 }
 
 static int codec_get_track_count(void * data, const char * fn)
@@ -118,9 +175,10 @@ static OMO_CODEC_HANDLER codec_handler;
 OMO_CODEC_HANDLER * omo_codec_avmidiplayer_get_codec_handler(void)
 {
 	memset(&codec_handler, 0, sizeof(OMO_CODEC_HANDLER));
-	codec_handler.initialize = NULL;
+	codec_handler.initialize = codec_init;
 	codec_handler.load_file = codec_load_file;
 	codec_handler.unload_file = codec_unload_file;
+	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;
@@ -133,5 +191,9 @@ OMO_CODEC_HANDLER * omo_codec_avmidiplayer_get_codec_handler(void)
 	codec_handler.types = 0;
 	omo_codec_handler_add_type(&codec_handler, ".mid");
 
-	return &codec_handler;
+	if(codec_handler.initialize())
+	{
+		return &codec_handler;
+	}
+	return NULL;
 }
