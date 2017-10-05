@@ -26,6 +26,10 @@ $(APP_EXE_NAME) : $(PROJECT_OBJECTS) update_changelog
 	$(CC) $(LFLAGS) $(PROJECT_OBJECTS) $(PLATFORM_LIBS) $(APP_LIBS) $(T3F_DEPEND_LIBS) $(DEPEND_LIBS) -o $(APP_EXE_NAME)
 	@echo Executable built!
 
+makefile.config:
+	touch makefile.config
+	@echo Generated empty 'makefile.config'.
+
 #Unix way of updating the changelog, will be overwritten by MinGW build script under Windows
 update_changelog: ../changelog
 	$(COPY_COMMAND) $(subst /,$(PATH_SEPARATOR),../changelog ../docs)
