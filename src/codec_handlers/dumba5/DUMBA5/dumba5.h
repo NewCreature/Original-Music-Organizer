@@ -21,6 +21,7 @@
 #define DUMBA5_H
 
 #include <allegro5/allegro5.h>
+#define DUMB_OFF_T_CUSTOM int64_t
 #include <dumb.h>
 
 #ifdef __cplusplus
