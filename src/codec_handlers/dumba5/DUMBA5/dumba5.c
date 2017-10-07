@@ -80,35 +80,34 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 		if(event.type == ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT)
 		{
 			fragment = (unsigned short *)al_get_audio_stream_fragment(dp->stream);
-			if(!fragment)
+			if(fragment)
 			{
-				return NULL;
-			}
-			n = duh_render(dp->sigrenderer, 16, 0, dp->volume, 65536.0 / dp->freq, dp->bufsize, fragment);
+				n = duh_render(dp->sigrenderer, 16, 0, dp->volume, 65536.0 / dp->freq, dp->bufsize, fragment);
 
-			if (n == 0)
-			{
-				if (++dp->silentcount >= 2)
+				if (n == 0)
 				{
-					duh_end_sigrenderer(dp->sigrenderer);
-					if(!al_set_audio_stream_fragment(dp->stream, fragment))
+					if (++dp->silentcount >= 2)
 					{
+						duh_end_sigrenderer(dp->sigrenderer);
+						if(!al_set_audio_stream_fragment(dp->stream, fragment))
+						{
+						}
+						al_destroy_audio_stream(dp->stream);
+						dp->sigrenderer = NULL;
+						return NULL;
 					}
-					al_destroy_audio_stream(dp->stream);
-					dp->sigrenderer = NULL;
-					return NULL;
 				}
-			}
 
-			n_channels = duh_sigrenderer_get_n_channels(dp->sigrenderer);
-			n *= n_channels;
-			size = dp->bufsize * n_channels;
-			for (; n < size; n++)
-			{
-				fragment[n] = 0x8000;
-			}
-			if(!al_set_audio_stream_fragment(dp->stream, fragment))
-			{
+				n_channels = duh_sigrenderer_get_n_channels(dp->sigrenderer);
+				n *= n_channels;
+				size = dp->bufsize * n_channels;
+				for (; n < size; n++)
+				{
+					fragment[n] = 0x8000;
+				}
+				if(!al_set_audio_stream_fragment(dp->stream, fragment))
+				{
+				}
 			}
 		}
 		if(al_get_thread_should_stop(thread))
