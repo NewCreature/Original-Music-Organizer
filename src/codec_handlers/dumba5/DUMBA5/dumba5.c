@@ -330,6 +330,7 @@ DUMBA5_PLAYER * dumba5_create_player(DUH * dp, int pattern, bool loop, int bufsi
 	DUMBA5_PLAYER * player;
 	ALLEGRO_CHANNEL_CONF c_conf;
 	int n_channels = 2;
+	DUMB_IT_SIGDATA * sd;
 
 	/* This restriction is imposed by Allegro. */
 	ASSERT(n_channels > 0);
@@ -396,6 +397,15 @@ DUMBA5_PLAYER * dumba5_create_player(DUH * dp, int pattern, bool loop, int bufsi
 	player->silentcount = 0;
 	player->duh = dp;
 	player->done_playing = false;
+	sd = duh_get_it_sigdata(player->duh);
+	if(sd)
+	{
+		int vol = dumb_it_sd_get_mixing_volume(sd);
+		if(vol > 64)
+		{
+			dumb_it_sd_set_mixing_volume(sd, 64);
+		}
+	}
 
 	return player;
 }
