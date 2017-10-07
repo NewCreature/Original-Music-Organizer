@@ -73,7 +73,7 @@ MINGW_CROSS_DEPEND_LIBS = -larchive_static
 # MinGW stuff #
 ###############
 #MINGW_CFLAGS =
-MINGW_PLATFORM_OBJECTS = codec_handlers/midiout/rtk/io.o codec_handlers/midiout/rtk/io_allegro.o codec_handlers/midiout/rtk/midi.o codec_handlers/midiout/midiout.o
+MINGW_PLATFORM_OBJECTS = codec_handlers/midiout/midiout.o
 #MINGW_PLATFORM_LIBS =
 MINGW_DEPEND_LIBS = -larchive_static
 #MINGW_PLATFORM_TARGET =
