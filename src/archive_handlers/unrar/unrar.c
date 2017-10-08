@@ -11,26 +11,35 @@ typedef struct
 	ALLEGRO_PATH * temp_path;
 	char cached_rar_file[1024];
 	char command_prefix[1024];
+	char command_postfix[8];
 
 } ARCHIVE_HANDLER_DATA;
 
-static int my_system(char * command)
+static int my_system(char * command, const char * log_file)
 {
 	int ret;
 
 	#ifdef ALLEGRO_WINDOWS
 		STARTUPINFO si = {0};
 		PROCESS_INFORMATION pi = {0};
+		SECURITY_ATTRIBUTES sa;
+		sa.nLength = sizeof(sa);
+		sa.lpSecurityDescriptor = NULL;
+		sa.bInheritHandle = TRUE;
+		HANDLE log_handle = CreateFile(log_file, GENERIC_WRITE, FILE_SHARE_WRITE | FILE_SHARE_READ, &sa, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 		si.cb = sizeof(si);
 		si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
-		si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
-		si.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-		si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+		si.hStdInput = NULL;
+		si.hStdOutput = log_handle;
+		si.hStdError = log_handle;
 		si.wShowWindow = SW_HIDE;
-		ret = CreateProcess(NULL, command, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+		ret = CreateProcess(NULL, command, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi);
 		WaitForSingleObject(pi.hProcess, INFINITE);
+
 	#else
-		ret = system(command);
+		char final_command[1024];
+		sprintf(final_command, "%s %s %s", command, log_file ? ">" : "", log_file ? log_file : "");
+		ret = system(final_command);
 	#endif
 
 	return ret;
@@ -41,12 +50,14 @@ static void get_command_prefix(void * data)
 	ARCHIVE_HANDLER_DATA * archive_data = (ARCHIVE_HANDLER_DATA *)data;
 
 	strcpy(archive_data->command_prefix, "");
+	strcpy(archive_data->command_postfix, "");
 	#ifdef ALLEGRO_MACOSX
 		ALLEGRO_PATH * path = al_get_standard_path(ALLEGRO_EXENAME_PATH);
 		if(path)
 		{
 			al_set_path_filename(path, "");
-			strcpy(archive_data->command_prefix, al_path_cstr(path, '/'));
+			sprintf(archive_data->command_prefix, "\"%s", al_path_cstr(path, '/'));
+			strcpy(archive_data->command_postfix, "\"")
 			al_destroy_path(path);
 		}
 	#endif
@@ -82,8 +93,8 @@ static int count_files(void * data)
 
 	if(strcmp(archive_data->filename, archive_data->cached_rar_file))
 	{
-		sprintf(system_command, "\"%sunrar\" l \"%s\" > \"%s\"", archive_data->command_prefix, archive_data->filename, t3f_get_filename(archive_data->temp_path, "rarlist.txt"));
-		my_system(system_command);
+		sprintf(system_command, "%sunrar%s l \"%s\"", archive_data->command_prefix, archive_data->command_postfix, archive_data->filename);
+		my_system(system_command, t3f_get_filename(archive_data->temp_path, "rarlist.txt"));
 		strcpy(archive_data->cached_rar_file, archive_data->filename);
 	}
 	fp = al_fopen(t3f_get_filename(archive_data->temp_path, "rarlist.txt"), "r");
@@ -144,10 +155,11 @@ static const char * get_file(void * data, int index, char * buffer)
 	int version, subversion;
 	int i;
 
+	strcpy(buffer, "");
 	if(strcmp(archive_data->filename, archive_data->cached_rar_file))
 	{
-		sprintf(system_command, "\"%sunrar\" l \"%s\" > \"%s\"", archive_data->command_prefix, archive_data->filename, t3f_get_filename(archive_data->temp_path, "rarlist.txt"));
-		my_system(system_command);
+		sprintf(system_command, "%sunrar%s l \"%s\"", archive_data->command_prefix, archive_data->command_postfix, archive_data->filename);
+		my_system(system_command, t3f_get_filename(archive_data->temp_path, "rarlist.txt"));
 		strcpy(archive_data->cached_rar_file, archive_data->filename);
 	}
 	fp = al_fopen(t3f_get_filename(archive_data->temp_path, "rarlist.txt"), "r");
@@ -227,8 +239,8 @@ static const char * extract_file(void * data, int index, char * buffer)
 	#endif
 
 	strcpy(subfile, get_file(archive_data, index, buffer));
-	sprintf(system_command, "\"%sunrar\" x -inul -y \"%s\" \"%s\" \"%s\"", archive_data->command_prefix, archive_data->filename, subfile, al_path_cstr(archive_data->temp_path, path_separator));
-	my_system(system_command);
+	sprintf(system_command, "%sunrar%s x -inul -y \"%s\" \"%s\" \"%s\"", archive_data->command_prefix, archive_data->command_postfix, archive_data->filename, subfile, al_path_cstr(archive_data->temp_path, path_separator));
+	my_system(system_command, NULL);
 	strcpy(buffer, t3f_get_filename(archive_data->temp_path, subfile));
 	return buffer;
 }
