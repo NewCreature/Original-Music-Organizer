@@ -92,18 +92,25 @@ static int count_files(void * data)
 {
 	ARCHIVE_HANDLER_DATA * archive_data = (ARCHIVE_HANDLER_DATA *)data;
 	ALLEGRO_FILE * fp;
+	ALLEGRO_PATH * path;
 	char system_command[1024];
 	char line_buffer[256];
 	char * line_pointer;
 	int line_count = 0;
 
+	path = al_clone_path(archive_data->temp_path);
+	if(!path)
+	{
+		return 0;
+	}
+	al_set_path_filename(path, "rarlist.txt");
 	if(strcmp(archive_data->filename, archive_data->cached_rar_file))
 	{
 		sprintf(system_command, "%sunrar%s l \"%s\"", archive_data->command_prefix, archive_data->command_postfix, archive_data->filename);
-		my_system(system_command, t3f_get_filename(archive_data->temp_path, "rarlist.txt"));
+		my_system(system_command, al_path_cstr(path, '/'));
 		strcpy(archive_data->cached_rar_file, archive_data->filename);
 	}
-	fp = al_fopen(t3f_get_filename(archive_data->temp_path, "rarlist.txt"), "r");
+	fp = al_fopen(al_path_cstr(path, '/'), "r");
 	if(fp)
 	{
 		while(1)
@@ -120,6 +127,7 @@ static int count_files(void * data)
 		}
 		al_fclose(fp);
 	}
+	al_destroy_path(path);
 	return line_count - 12;
 }
 
@@ -152,23 +160,31 @@ static const char * get_file(void * data, int index, char * buffer)
 {
 	ARCHIVE_HANDLER_DATA * archive_data = (ARCHIVE_HANDLER_DATA *)data;
 	ALLEGRO_FILE * fp;
+	ALLEGRO_PATH * path;
 	char system_command[1024];
 	char line_buffer[256];
 	char * line_pointer;
 	int line_count = 0;
 	int skip_lines = 9;
 	int fn_offset;
-	int version, subversion;
+	int version = 0, subversion;
 	int i;
+
+	path = al_clone_path(archive_data->temp_path);
+	if(!path)
+	{
+		return NULL;
+	}
+	al_set_path_filename(path, "rarlist.txt");
 
 	strcpy(buffer, "");
 	if(strcmp(archive_data->filename, archive_data->cached_rar_file))
 	{
 		sprintf(system_command, "%sunrar%s l \"%s\"", archive_data->command_prefix, archive_data->command_postfix, archive_data->filename);
-		my_system(system_command, t3f_get_filename(archive_data->temp_path, "rarlist.txt"));
+		my_system(system_command, al_path_cstr(path, '/'));
 		strcpy(archive_data->cached_rar_file, archive_data->filename);
 	}
-	fp = al_fopen(t3f_get_filename(archive_data->temp_path, "rarlist.txt"), "r");
+	fp = al_fopen(al_path_cstr(path, '/'), "r");
 	if(fp)
 	{
 		while(1)
@@ -198,7 +214,7 @@ static const char * get_file(void * data, int index, char * buffer)
 						}
 					}
 				}
-				if(line_count - skip_lines == index)
+				if(version && line_count - skip_lines == index)
 				{
 					strcpy(buffer, &line_buffer[fn_offset]);
 
@@ -227,6 +243,7 @@ static const char * get_file(void * data, int index, char * buffer)
 		}
 		al_fclose(fp);
 	}
+	al_destroy_path(path);
 
 	return buffer;
 }
@@ -234,6 +251,7 @@ static const char * get_file(void * data, int index, char * buffer)
 static const char * extract_file(void * data, int index, char * buffer)
 {
 	ARCHIVE_HANDLER_DATA * archive_data = (ARCHIVE_HANDLER_DATA *)data;
+	ALLEGRO_PATH * path;
 	char system_command[1024];
 	char subfile[1024];
 	char path_separator;
@@ -244,10 +262,19 @@ static const char * extract_file(void * data, int index, char * buffer)
 		path_separator = '/';
 	#endif
 
+	path = al_clone_path(archive_data->temp_path);
+	if(!path)
+	{
+		return 0;
+	}
+	al_set_path_filename(path, subfile);
+
 	strcpy(subfile, get_file(archive_data, index, buffer));
 	sprintf(system_command, "%sunrar%s x -inul -y \"%s\" \"%s\" \"%s\"", archive_data->command_prefix, archive_data->command_postfix, archive_data->filename, subfile, al_path_cstr(archive_data->temp_path, path_separator));
 	my_system(system_command, NULL);
-	strcpy(buffer, t3f_get_filename(archive_data->temp_path, subfile));
+	strcpy(buffer, al_path_cstr(path, '/'));
+	al_destroy_path(path);
+
 	return buffer;
 }
 
