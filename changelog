@@ -29,6 +29,7 @@ omo (BUILD_VERSION) maverick; urgency=low
   * Support more module formats on Windows.
   * Support retrieving Title and Copyright tags from MIDI files.
   * Add configuration option to disable the menu.
+  * Speed up AVPlayer tag retrieval.
   * Other bug fixes and improvements.
 
  -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
