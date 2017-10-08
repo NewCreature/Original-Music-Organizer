@@ -129,11 +129,16 @@ static int copy_data(struct archive *ar, struct archive *aw)
 	}
 }
 
-static const char * extract_current_file(struct archive * a, struct archive_entry * entry)
+static const char * extract_current_file(struct archive * a, struct archive_entry * entry, ALLEGRO_PATH * temp_path)
 {
 	struct archive *ext;
 	int flags;
 	int r;
+	ALLEGRO_PATH * out_path = al_clone_path(temp_path);
+	if(!out_path)
+	{
+		return NULL;
+	}
 
 	flags = ARCHIVE_EXTRACT_TIME;
 	flags |= ARCHIVE_EXTRACT_PERM;
@@ -143,7 +148,8 @@ static const char * extract_current_file(struct archive * a, struct archive_entr
 	ext = archive_write_disk_new();
 	archive_write_disk_set_options(ext, flags);
 	archive_write_disk_set_standard_lookup(ext);
-//	archive_entry_set_pathname(entry, "test");
+	al_set_path_filename(out_path, archive_entry_pathname(entry));
+	archive_entry_set_pathname(entry, al_path_cstr(out_path, '/'));
 	r = archive_write_header(ext, entry);
     if(r == ARCHIVE_OK)
 	{
@@ -153,6 +159,7 @@ static const char * extract_current_file(struct archive * a, struct archive_entr
 		}
 		r = archive_write_finish_entry(ext);
 	}
+	al_destroy_path(out_path);
 	return NULL;
 }
 
@@ -163,9 +170,7 @@ static const char * extract_file(void * data, int index, char * buffer)
 	struct archive_entry *entry;
 	int r, r2;
 	int total = 0;
-	char * cwd = al_get_current_directory();
 	strcpy(buffer, "");
-	al_change_directory(al_path_cstr(archive_data->temp_path, '/'));
 
 	a = archive_read_new();
 	archive_read_support_filter_all(a);
@@ -180,8 +185,8 @@ static const char * extract_file(void * data, int index, char * buffer)
 			{
 				if(total == index)
 				{
-					extract_current_file(a, entry);
-					strcpy(buffer, t3f_get_filename(archive_data->temp_path, archive_entry_pathname(entry)));
+					extract_current_file(a, entry, archive_data->temp_path);
+					strcpy(buffer, archive_entry_pathname(entry));
 					break;
 				}
 				total++;
@@ -194,8 +199,6 @@ static const char * extract_file(void * data, int index, char * buffer)
 		}
 		archive_read_free(a);  // Note 3
 	}
-	al_change_directory(cwd);
-	free(cwd);
 
 	return buffer;
 }
