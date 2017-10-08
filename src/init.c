@@ -413,6 +413,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 				app->player->queue_pos = 0;
 				omo_start_player(app->player);
 			}
+			omo_get_queue_tags(app->player->queue, app->library, app);
 		}
 	}
 
