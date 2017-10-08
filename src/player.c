@@ -191,4 +191,8 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
             }
         }
     }
+    else if(pp->state == OMO_PLAYER_STATE_PLAYING)
+    {
+        pp->state = OMO_PLAYER_STATE_STOPPED;
+    }
 }
