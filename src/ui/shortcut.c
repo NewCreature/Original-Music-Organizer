@@ -100,6 +100,10 @@ void omo_shortcut_logic(void * data)
             }
         }
         t3f_key[ALLEGRO_KEY_DELETE] = 0;
-
     }
+	if(t3f_key[ALLEGRO_KEY_S])
+	{
+		omo_menu_playback_shuffle(app);
+		t3f_key[ALLEGRO_KEY_S] = 0;
+	}
 }
