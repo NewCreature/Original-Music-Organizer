@@ -148,12 +148,27 @@ static void omo_count_archive_files(const char * fn, OMO_ARCHIVE_HANDLER * archi
 	}
 }
 
+static const char * get_fn(const char * fn)
+{
+	int i;
+
+	for(i = strlen(fn) - 1; i >= 0; i--)
+	{
+		if(fn[i] == '/' || fn[i] == '\\')
+		{
+			return &fn[i + 1];
+		}
+	}
+	return fn;
+}
+
 bool omo_count_file(const char * fn, void * data)
 {
 	OMO_FILE_HELPER_DATA * file_helper_data = (OMO_FILE_HELPER_DATA *)data;
 	OMO_ARCHIVE_HANDLER * archive_handler;
 	void * archive_handler_data = NULL;
 	OMO_CODEC_HANDLER * codec_handler;
+	char * message = (char *)file_helper_data->user_data;
 	int c2 = 0;
 	const char * val;
 	char buf2[32] = {0};
@@ -165,6 +180,10 @@ bool omo_count_file(const char * fn, void * data)
 	archive_handler = omo_get_archive_handler(file_helper_data->archive_handler_registry, fn);
 	if(archive_handler)
 	{
+		if(message)
+		{
+			sprintf(message, "Scanning archive: %s", get_fn(fn));
+		}
 		archive_handler_data = archive_handler->open_archive(fn, file_helper_data->temp_path);
 		if(archive_handler_data)
 		{
@@ -200,20 +219,6 @@ bool omo_count_file(const char * fn, void * data)
 	}
 
     return false;
-}
-
-static const char * get_fn(const char * fn)
-{
-	int i;
-
-	for(i = strlen(fn) - 1; i >= 0; i--)
-	{
-		if(fn[i] == '/' || fn[i] == '\\')
-		{
-			return &fn[i + 1];
-		}
-	}
-	return fn;
 }
 
 bool omo_add_file(const char * fn, void * data)
