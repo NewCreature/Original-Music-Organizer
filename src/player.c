@@ -159,6 +159,15 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
                                             {
                                                 break;
                                             }
+                                            else
+                                            {
+                                                pp->codec_handler->unload_file(pp->codec_data);
+                                                pp->codec_handler = NULL;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            pp->codec_handler = NULL;
                                         }
                                     }
                                 }
@@ -178,6 +187,15 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
                                 {
                                     break;
                                 }
+                                else
+                                {
+                                    pp->codec_handler->unload_file(pp->codec_data);
+                                    pp->codec_handler = NULL;
+                                }
+                            }
+                            else
+                            {
+                                pp->codec_handler = NULL;
                             }
                         }
                     }
