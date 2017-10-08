@@ -26,6 +26,9 @@ omo (BUILD_VERSION) maverick; urgency=low
   * Update menus to reflect current functionality.
   * Improve default theme button graphics.
   * Bundle unrar with MacOS X version.
+  * Support more module formats on Windows.
+  * Support retrieving Title and Copyright tags from MIDI files.
+  * Add configuration option to disable the menu.
   * Other bug fixes and improvements.
 
  -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
