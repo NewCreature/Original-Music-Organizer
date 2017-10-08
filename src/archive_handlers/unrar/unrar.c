@@ -38,7 +38,13 @@ static int my_system(char * command, const char * log_file)
 
 	#else
 		char final_command[1024];
-		sprintf(final_command, "%s %s %s", command, log_file ? ">" : "", log_file ? log_file : "");
+		strcpy(final_command, command);
+		if(log_file)
+		{
+			strcat(final_command, "> \"");
+			strcat(final_command, log_file);
+			strcat(final_command, "\"");
+		}
 		ret = system(final_command);
 	#endif
 
