@@ -57,7 +57,7 @@ static void get_command_prefix(void * data)
 		{
 			al_set_path_filename(path, "");
 			sprintf(archive_data->command_prefix, "\"%s", al_path_cstr(path, '/'));
-			strcpy(archive_data->command_postfix, "\"")
+			strcpy(archive_data->command_postfix, "\"");
 			al_destroy_path(path);
 		}
 	#endif
