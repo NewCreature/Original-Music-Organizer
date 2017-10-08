@@ -39,7 +39,6 @@ static void * codec_load_file(const char * fn, const char * subfn)
 		if(data->player)
 		{
 			data->midi = rtk_load_midi(fn);
-			[data->player prepareToPlay];
 		}
 		else
 		{
@@ -107,6 +106,7 @@ static bool codec_play(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
+	[codec_data->player prepareToPlay];
 	[codec_data->player play:nil];
 	codec_data->start_time = al_get_time();
 	codec_data->pause_total = 0.0;

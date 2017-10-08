@@ -33,7 +33,6 @@ static void * codec_load_file(const char * fn, const char * subfn)
 		if(data->player)
 		{
 			strcpy(data->player_filename, fn);
-			[data->player prepareToPlay];
 		}
 	}
 	return data;
@@ -121,6 +120,7 @@ static bool codec_play(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
+	[codec_data->player prepareToPlay];
 	[codec_data->player play];
 	codec_data->start_time = al_get_time();
 	codec_data->pause_total = 0.0;
