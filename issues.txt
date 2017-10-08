@@ -107,3 +107,5 @@ v0.2
 [X]Update changelog.
 
 [X]Improve default theme button graphics.
+
+[ ]Don't use t3f_get_filename() in multi-threaded situations.
