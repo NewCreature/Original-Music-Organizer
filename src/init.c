@@ -62,17 +62,13 @@ static int sort_names(const void *e1, const void *e2)
 bool omo_setup_library_helper(APP_INSTANCE * app)
 {
 	const char * val;
-	char file_db_fn[1024];
-	char entry_db_fn[1024];
 	char buffer[64];
 	int c, i, j;
 
 	/* load the library databases */
 	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->player->queue, NULL, app->library_loading_message);
-	strcpy(file_db_fn, t3f_get_filename(t3f_data_path, "files.ini"));
-	strcpy(entry_db_fn, t3f_get_filename(t3f_data_path, "database.ini"));
 	sprintf(app->library_loading_message, "Loading library databases...");
-	app->loading_library = omo_create_library(file_db_fn, entry_db_fn);
+	app->loading_library = omo_create_library(app->file_database_fn, app->entry_database_fn);
 	if(!app->loading_library)
 	{
 		app->loading_library_file_helper_data.scan_done = true;
@@ -216,8 +212,10 @@ void omo_cancel_library_setup(APP_INSTANCE * app)
 	}
 }
 
-void omo_setup_library(APP_INSTANCE * app)
+void omo_setup_library(APP_INSTANCE * app, const char * file_database_fn, const char * entry_database_fn)
 {
+	strcpy(app->file_database_fn, file_database_fn);
+	strcpy(app->entry_database_fn, entry_database_fn);
 	strcpy(app->library_loading_message, "");
 	app->library_thread = al_create_thread(library_setup_thread_proc, app);
 	if(app->library_thread)
@@ -328,6 +326,8 @@ void omo_set_window_constraints(APP_INSTANCE * app)
 bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 {
 	OMO_FILE_HELPER_DATA file_helper_data;
+	char file_database_fn[1024];
+	char entry_database_fn[1024];
 	const char * val;
 	int i;
 
@@ -453,7 +453,9 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
 
 	/* set up library */
-	omo_setup_library(app);
+	strcpy(file_database_fn, t3f_get_filename(t3f_data_path, "files.ini"));
+	strcpy(entry_database_fn, t3f_get_filename(t3f_data_path, "database.ini"));
+	omo_setup_library(app, file_database_fn, entry_database_fn);
 	return true;
 }
 
