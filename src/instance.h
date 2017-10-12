@@ -26,11 +26,14 @@ typedef struct
 	int state;
 	int button_pressed;
 	bool library_view;
+	bool test_mode;
 
 	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;
 	OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry;
 	char file_database_fn[1024];
 	char entry_database_fn[1024];
+	char test_path[1024];
+	ALLEGRO_CONFIG * library_config;
 	OMO_LIBRARY * library;
 	OMO_LIBRARY * loading_library;
 	OMO_FILE_HELPER_DATA loading_library_file_helper_data;

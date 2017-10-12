@@ -236,7 +236,7 @@ void omo_file_chooser_logic(void * data)
                             omo_destroy_library(app->library);
                             app->library = NULL;
                         }
-                        omo_setup_library(app);
+                        omo_setup_library(app, app->file_database_fn, app->entry_database_fn, NULL);
                     }
                     break;
                 }

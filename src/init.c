@@ -5,6 +5,7 @@
 #include "events.h"
 #include "ui/menu_init.h"
 #include "file_helpers.h"
+#include "test.h"
 
 #include "archive_handlers/libarchive/libarchive.h"
 #include "archive_handlers/unrar/unrar.h"
@@ -81,7 +82,7 @@ bool omo_setup_library_helper(APP_INSTANCE * app)
 	}
 
 	/* scan library paths */
-	val = al_get_config_value(t3f_config, "Settings", "library_folders");
+	val = al_get_config_value(app->library_config, "Settings", "library_folders");
 	if(!val || atoi(val) < 1)
 	{
 		sprintf(app->library_loading_message, "No Library Folders");
@@ -94,7 +95,7 @@ bool omo_setup_library_helper(APP_INSTANCE * app)
 	{
 		sprintf(app->library_loading_message, "Scanning folder %d of %d...", j + 1, c);
 		sprintf(buffer, "library_folder_%d", j);
-		val = al_get_config_value(t3f_config, "Settings", buffer);
+		val = al_get_config_value(app->library_config, "Settings", buffer);
 		if(val)
 		{
 			t3f_scan_files(val, omo_count_file, false, NULL, &app->loading_library_file_helper_data);
@@ -106,7 +107,7 @@ bool omo_setup_library_helper(APP_INSTANCE * app)
 	for(j = 0; j < c; j++)
 	{
 		sprintf(buffer, "library_folder_%d", j);
-		val = al_get_config_value(t3f_config, "Settings", buffer);
+		val = al_get_config_value(app->library_config, "Settings", buffer);
 		if(app->loading_library_file_helper_data.cancel_scan)
 		{
 			app->loading_library_file_helper_data.scan_done = true;
@@ -212,10 +213,15 @@ void omo_cancel_library_setup(APP_INSTANCE * app)
 	}
 }
 
-void omo_setup_library(APP_INSTANCE * app, const char * file_database_fn, const char * entry_database_fn)
+void omo_setup_library(APP_INSTANCE * app, const char * file_database_fn, const char * entry_database_fn, ALLEGRO_CONFIG * config)
 {
 	strcpy(app->file_database_fn, file_database_fn);
 	strcpy(app->entry_database_fn, entry_database_fn);
+	app->library_config = t3f_config;
+	if(config)
+	{
+		app->library_config = config;
+	}
 	strcpy(app->library_loading_message, "");
 	app->library_thread = al_create_thread(library_setup_thread_proc, app);
 	if(app->library_thread)
@@ -330,6 +336,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	char entry_database_fn[1024];
 	bool used_arg[1024] = {false};
 	const char * val;
+	int test_path;
 	int i;
 
 	/* initialize T3F */
@@ -390,39 +397,61 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	}
 	if(argc > 1)
 	{
-		omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
+		/* check for command line options */
 		for(i = 1; i < argc; i++)
 		{
-			if(!used_arg[i])
+			if(!strcmp(argv[i], "--test"))
 			{
-				if(!t3f_scan_files(argv[i], omo_count_file, false, NULL, &file_helper_data))
+				if(argc < i + 2)
 				{
-					omo_count_file(argv[i], &file_helper_data);
+					printf("Usage: omo --test <test_files_path>\n\n");
+					return false;
+				}
+				else
+				{
+					test_path = i + 1;
+					app->test_mode = true;
 				}
 			}
 		}
-		if(file_helper_data.file_count > 0)
+
+		/* don't add files if we are running the test suite */
+		if(!app->test_mode)
 		{
-			app->player->queue = omo_create_queue(file_helper_data.file_count);
-			if(app->player->queue)
+			omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
+			for(i = 1; i < argc; i++)
 			{
-				file_helper_data.queue = app->player->queue;
-				for(i = 1; i < argc; i++)
+				if(!used_arg[i])
 				{
-					if(!used_arg[i])
+					if(!t3f_scan_files(argv[i], omo_count_file, false, NULL, &file_helper_data))
 					{
-						if(!t3f_scan_files(argv[i], omo_queue_file, false, NULL, &file_helper_data))
-						{
-							omo_queue_file(argv[i], &file_helper_data);
-						}
+						omo_count_file(argv[i], &file_helper_data);
 					}
 				}
-				if(app->player->queue->entry_count)
+			}
+			if(file_helper_data.file_count > 0)
+			{
+				app->player->queue = omo_create_queue(file_helper_data.file_count);
+				if(app->player->queue)
 				{
-					app->player->queue_pos = 0;
-					omo_start_player(app->player);
+					file_helper_data.queue = app->player->queue;
+					for(i = 1; i < argc; i++)
+					{
+						if(!used_arg[i])
+						{
+							if(!t3f_scan_files(argv[i], omo_queue_file, false, NULL, &file_helper_data))
+							{
+								omo_queue_file(argv[i], &file_helper_data);
+							}
+						}
+					}
+					if(app->player->queue->entry_count)
+					{
+						app->player->queue_pos = 0;
+						omo_start_player(app->player);
+					}
+					omo_get_queue_tags(app->player->queue, app->library, app);
 				}
-				omo_get_queue_tags(app->player->queue, app->library, app);
 			}
 		}
 	}
@@ -463,9 +492,16 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
 
 	/* set up library */
-	strcpy(file_database_fn, t3f_get_filename(t3f_data_path, "files.ini"));
-	strcpy(entry_database_fn, t3f_get_filename(t3f_data_path, "database.ini"));
-	omo_setup_library(app, file_database_fn, entry_database_fn);
+	if(app->test_mode)
+	{
+		omo_test_init(app, 0, argv[test_path]);
+	}
+	else
+	{
+		strcpy(file_database_fn, t3f_get_filename(t3f_data_path, "files.ini"));
+		strcpy(entry_database_fn, t3f_get_filename(t3f_data_path, "database.ini"));
+		omo_setup_library(app, file_database_fn, entry_database_fn, NULL);
+	}
 	return true;
 }
 

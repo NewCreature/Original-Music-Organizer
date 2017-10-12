@@ -17,6 +17,7 @@
 #include "ui/library.h"
 #include "ui/tags_dialog.h"
 #include "ui/shortcut.h"
+#include "test.h"
 
 static int queue_list_visible_elements(T3GUI_ELEMENT * element)
 {
@@ -31,6 +32,10 @@ void omo_logic(void * data)
 	int visible = 0;
 
     t3f_refresh_menus();
+    if(app->test_mode)
+    {
+        omo_test_logic(app);
+    }
 	switch(app->state)
 	{
 		default:
@@ -149,10 +154,6 @@ int main(int argc, char * argv[])
 		}
 		omo_exit(&app);
 		t3gui_exit();
-	}
-	else
-	{
-		printf("Error: could not initialize T3F!\n");
 	}
 	return 0;
 }
