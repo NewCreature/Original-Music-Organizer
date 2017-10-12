@@ -1,3 +1,5 @@
+#include "t3f/t3f.h"
+#include "t3f/file_utils.h"
 #include "instance.h"
 #include "test.h"
 #include "init.h"
@@ -36,6 +38,7 @@ bool omo_test_logic(void * data)
 {
     APP_INSTANCE * app = (APP_INSTANCE *)data;
     ALLEGRO_CONFIG * config;
+    OMO_FILE_HELPER_DATA file_helper_data;
 
     switch(omo_test_state)
     {
@@ -66,17 +69,60 @@ bool omo_test_logic(void * data)
                 printf("Library loaded. Destroying library.\n");
                 omo_destroy_library(app->library);
                 app->library = NULL;
-                printf("Exiting test suite.\n");
-                omo_test_state = OMO_TEST_STATE_EXIT;
+                printf("Set test state: QUEUE_LOAD\n");
+                omo_test_state = OMO_TEST_STATE_QUEUE_LOAD;
             }
             break;
         }
         case OMO_TEST_STATE_QUEUE_LOAD:
         {
+            omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
+
+            printf("Counting files.\n");
+			if(!t3f_scan_files(app->test_path, omo_count_file, false, NULL, &file_helper_data))
+			{
+                printf("Failed to count files.\n");
+                return false;
+			}
+			if(file_helper_data.file_count > 0)
+			{
+                printf("Creating queue for %lu files.\n", file_helper_data.file_count);
+				app->player->queue = omo_create_queue(file_helper_data.file_count);
+                if(!app->player->queue)
+                {
+                    printf("Failed to create queue.\n");
+                    return false;
+                }
+				file_helper_data.queue = app->player->queue;
+                printf("Adding files to queue.\n");
+				if(!t3f_scan_files(app->test_path, omo_queue_file, false, NULL, &file_helper_data))
+				{
+                    printf("Failed to add files to queue.\n");
+				}
+				if(app->player->queue->entry_count)
+				{
+                    printf("Getting tags for queued files.\n");
+                    omo_get_queue_tags(app->player->queue, app->library, app);
+				}
+                else
+                {
+                    printf("No files in queue!\n");
+                    return false;
+                }
+                printf("Set test state: QUEUE\n");
+                omo_test_state = OMO_TEST_STATE_QUEUE;
+			}
             break;
         }
         case OMO_TEST_STATE_QUEUE:
         {
+            if(app->player->queue->thread_done)
+            {
+                printf("Queue tags scanner thread finished, destroying queue.\n");
+                omo_destroy_queue(app->player->queue);
+                app->player->queue = NULL;
+                printf("Testing complete.\n");
+            }
             break;
         }
         case OMO_TEST_STATE_PLAYER:

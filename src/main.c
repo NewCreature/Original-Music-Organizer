@@ -34,7 +34,11 @@ void omo_logic(void * data)
     t3f_refresh_menus();
     if(app->test_mode)
     {
-        omo_test_logic(app);
+        if(!omo_test_logic(app))
+        {
+            printf("Testing ended prematurely!\n");
+            t3f_exit();
+        }
     }
 	switch(app->state)
 	{

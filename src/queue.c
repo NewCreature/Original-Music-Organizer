@@ -511,6 +511,7 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
             }
         }
 	}
+    app->player->queue->thread_done = true;
 	return NULL;
 }
 
@@ -542,6 +543,7 @@ void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp, void * data)
             qp->thread = al_create_thread(get_queue_tags_thread_proc, data);
             if(qp->thread)
             {
+                qp->thread_done = false;
                 al_start_thread(qp->thread);
             }
         }

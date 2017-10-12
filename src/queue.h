@@ -34,6 +34,7 @@ typedef struct
     int entry_count;
 
     ALLEGRO_THREAD * thread; // tags scanner thread
+    bool thread_done;
 
 } OMO_QUEUE;
 
