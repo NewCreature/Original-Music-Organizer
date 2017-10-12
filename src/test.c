@@ -121,7 +121,8 @@ bool omo_test_logic(void * data)
                 printf("Queue tags scanner thread finished, destroying queue.\n");
                 omo_destroy_queue(app->player->queue);
                 app->player->queue = NULL;
-                printf("Testing complete.\n");
+                printf("Set test state: EXIT\n");
+                omo_test_state = OMO_TEST_STATE_EXIT;
             }
             break;
         }
