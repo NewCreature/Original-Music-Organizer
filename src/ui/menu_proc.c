@@ -196,6 +196,8 @@ int omo_menu_playback_shuffle(void * data)
         new_queue = omo_create_queue(app->player->queue->entry_count);
         if(new_queue)
         {
+            al_destroy_thread(app->player->queue->thread);
+            app->player->queue->thread = NULL;
             for(i = 0; i < new_queue->entry_size; i++)
             {
                 r = t3f_rand(&app->rng_state) % app->player->queue->entry_count;
