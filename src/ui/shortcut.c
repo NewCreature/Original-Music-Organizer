@@ -91,6 +91,7 @@ void omo_shortcut_logic(void * data)
             }
             if(app->player->queue->entry_count > 0)
             {
+				omo_get_queue_tags(app->player->queue, app->library, app);
                 omo_start_player(app->player);
             }
             else

@@ -47,7 +47,7 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
         }
         return NULL;
     }
-    if(app->player && app->player->queue)
+    if(app->player && app->player->queue && index < app->player->queue->entry_count)
     {
 		sprintf(prefix, "%s", index == app->player->queue_pos ? "" : "");
 		if(strlen(app->player->queue->entry[index]->tags.track))
@@ -93,7 +93,7 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
 				strcat(ui_queue_text, app->player->queue->entry[index]->track);
 			}
         }
-       return ui_queue_text;
+		return ui_queue_text;
    }
    return NULL;
 }

@@ -126,6 +126,11 @@ void omo_delete_queue_item(OMO_QUEUE * qp, int index)
 
     if(index < qp->entry_count)
     {
+        if(qp->thread)
+        {
+            al_destroy_thread(qp->thread);
+            qp->thread = NULL;
+        }
         if(qp->entry[index]->file)
         {
             free(qp->entry[index]->file);
