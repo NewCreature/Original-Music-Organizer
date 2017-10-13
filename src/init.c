@@ -507,6 +507,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 
 void omo_exit(APP_INSTANCE * app)
 {
+	omo_destroy_player(app->player);
 	omo_cancel_library_setup(app);
 	if(app->ui->tags_display)
 	{
