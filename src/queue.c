@@ -29,6 +29,10 @@ void omo_destroy_queue(OMO_QUEUE * qp)
 {
     int i;
 
+    if(qp->thread)
+    {
+        al_destroy_thread(qp->thread);
+    }
     for(i = 0; i < qp->entry_count; i++)
     {
         if(qp->entry[i]->file)
@@ -46,10 +50,6 @@ void omo_destroy_queue(OMO_QUEUE * qp)
         free(qp->entry[i]);
     }
     free(qp->entry);
-    if(qp->thread)
-    {
-        al_destroy_thread(qp->thread);
-    }
     free(qp);
 }
 
