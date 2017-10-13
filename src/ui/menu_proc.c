@@ -207,6 +207,7 @@ int omo_menu_playback_shuffle(void * data)
             omo_destroy_queue(app->player->queue);
             app->player->queue = new_queue;
             app->player->queue_pos = 0;
+            omo_get_queue_tags(app->player->queue, app->library, app);
         }
     }
     return 1;
