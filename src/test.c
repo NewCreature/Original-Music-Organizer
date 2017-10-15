@@ -8,6 +8,8 @@ static bool omo_test_mode;
 static int omo_test_state;
 static const char * omo_test_path;
 static unsigned long omo_test_tick;
+static int omo_test_count;
+static int omo_test_player_state;
 
 static void omo_test_delete_library_files(void)
 {
@@ -118,16 +120,147 @@ bool omo_test_logic(void * data)
         {
             if(app->player->queue->thread_done)
             {
-                printf("Queue tags scanner thread finished, destroying queue.\n");
-                omo_destroy_queue(app->player->queue);
-                app->player->queue = NULL;
-                printf("Set test state: EXIT\n");
-                omo_test_state = OMO_TEST_STATE_EXIT;
+//                printf("Queue tags scanner thread finished, destroying queue.\n");
+//                omo_destroy_queue(app->player->queue);
+//                app->player->queue = NULL;
+                printf("Set test state: PLAYER\n");
+                omo_test_player_state = 0;
+                omo_test_state = OMO_TEST_STATE_PLAYER;
             }
             break;
         }
         case OMO_TEST_STATE_PLAYER:
         {
+            switch(omo_test_player_state)
+            {
+                case 0:
+                {
+                    printf("Player test: PLAY\n");
+                    app->player->queue_pos = 0;
+                    omo_start_player(app->player);
+                    omo_test_player_state = 1;
+                    break;
+                }
+                case 1:
+                {
+                    if(app->player->queue_pos > 0)
+                    {
+                        printf("Player test: SONG_FINISHED\n");
+                        omo_test_tick = 0;
+                        omo_test_count = 0;
+                        omo_test_player_state = 2;
+                        break;
+                    }
+                    break;
+                }
+                case 2:
+                {
+                    omo_test_tick++;
+                    if(omo_test_tick % 300 == 0)
+                    {
+                        printf("Player test: NEXT_SONG\n");
+                        omo_play_next_song(app->player);
+                        omo_test_count++;
+                        if(omo_test_count >= 5)
+                        {
+                            omo_test_tick = 0;
+                            omo_test_count = 0;
+                            omo_test_player_state = 3;
+                        }
+                    }
+                    break;
+                }
+                case 3:
+                {
+                    omo_test_tick++;
+                    if(omo_test_tick % 300 == 0)
+                    {
+                        printf("Player test: PREVIOUS_SONG\n");
+                        omo_play_previous_song(app->player);
+                        omo_test_count++;
+                        if(omo_test_count >= 5)
+                        {
+                            omo_test_tick = 0;
+                            omo_test_count = 0;
+                            omo_test_player_state = 4;
+                        }
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    omo_test_tick++;
+                    if(omo_test_tick == 300)
+                    {
+                        printf("Player test: PAUSE\n");
+                        omo_pause_player(app->player);
+                    }
+                    else if(omo_test_tick == 600)
+                    {
+                        printf("Player test: RESUME\n");
+                        omo_resume_player(app->player);
+                    }
+                    else if(omo_test_tick == 900)
+                    {
+                        printf("Player test: PAUSE\n");
+                        omo_pause_player(app->player);
+                    }
+                    else if(omo_test_tick == 1200)
+                    {
+                        printf("Player test: PAUSE\n");
+                        omo_pause_player(app->player);
+                    }
+                    else if(omo_test_tick == 1500)
+                    {
+                        printf("Player test: RESUME\n");
+                        omo_resume_player(app->player);
+                    }
+                    else if(omo_test_tick == 1800)
+                    {
+                        printf("Player test: RESUME\n");
+                        omo_resume_player(app->player);
+                    }
+                    else if(omo_test_tick == 2100)
+                    {
+                        printf("Player test: STOP\n");
+                        omo_stop_player(app->player);
+                    }
+                    else if(omo_test_tick == 2400)
+                    {
+                        printf("Player test: PLAY\n");
+                        app->player->queue_pos = 0;
+                        omo_start_player(app->player);
+                    }
+                    else if(omo_test_tick == 2700)
+                    {
+                        printf("Player test: STOP\n");
+                        omo_stop_player(app->player);
+                    }
+                    else if(omo_test_tick == 3000)
+                    {
+                        printf("Player test: STOP\n");
+                        omo_stop_player(app->player);
+                    }
+                    else if(omo_test_tick == 3300)
+                    {
+                        printf("Player test: PLAY\n");
+                        app->player->queue_pos = 0;
+                        omo_start_player(app->player);
+                    }
+                    else if(omo_test_tick == 3600)
+                    {
+                        printf("Player test: PLAY\n");
+                        omo_start_player(app->player);
+                    }
+                    else if(omo_test_tick == 3900)
+                    {
+                        printf("Player test: STOP\n");
+                        omo_stop_player(app->player);
+                        printf("Set test state: EXIT\n");
+                        omo_test_state = OMO_TEST_STATE_EXIT;
+                    }
+                }
+            }
             break;
         }
         case OMO_TEST_STATE_LIBRARY_AND_PLAYER:
