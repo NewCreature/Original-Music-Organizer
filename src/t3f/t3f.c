@@ -851,6 +851,9 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 			dw = 800;
 			dh = 480;
 		#endif
+		#ifdef ALLEGRO_WINDOWS
+			al_set_config_value(t3f_config, "T3F", "save_window_pos", "false");
+		#endif
 		cvalue = al_get_config_value(t3f_config, "T3F", "save_window_pos");
 		if(cvalue)
 		{
