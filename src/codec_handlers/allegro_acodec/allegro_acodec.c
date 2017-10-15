@@ -124,7 +124,6 @@ static const char * codec_get_tag(void * data, const char * name)
 						strcpy(codec_data->codec_tag_buffer, (char *)&flac_metadata->data.vorbis_comment.comments[entry].entry[i]);
 					}
 				}
-				printf("%s\n", codec_data->codec_tag_buffer);
 			}
 			FLAC__metadata_object_delete(flac_metadata);
 			if(entry >= 0)
