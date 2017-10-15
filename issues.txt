@@ -120,8 +120,7 @@ v0.2
 
 [X]Don't use t3f_get_filename() in multi-threaded situations.
 
-[ ]Show All/Unknown Artists/Albums even if there are no Artists and/or albums
-   in the library.
-
 [ ]Don't restore window positions on Windows since we can't guarantee the
    window position will be correct.
+
+[ ]Stop timer when performing actions that can take a long time.
