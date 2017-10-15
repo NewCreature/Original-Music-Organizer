@@ -60,6 +60,7 @@ v0.3
    them. Save a binary cache of the library files, artist, album, and song
    lists and reload that cache if the library folders haven't changed.
 
+[ ]Stop timer when performing actions that can take a long time.
 
 v0.2
 ----
@@ -120,7 +121,5 @@ v0.2
 
 [X]Don't use t3f_get_filename() in multi-threaded situations.
 
-[ ]Don't restore window positions on Windows since we can't guarantee the
+[X]Don't restore window positions on Windows since we can't guarantee the
    window position will be correct.
-
-[ ]Stop timer when performing actions that can take a long time.
