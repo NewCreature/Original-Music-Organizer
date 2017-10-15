@@ -11,14 +11,13 @@ Supported Formats
 -----------------
 
 OMO currently supports playing back files in these formats on all supported
-platforms: MP3, MP2, MPG, MOD, S3M, XM, IT, WAV, OGG, FLAC, AY, GBS, GYM, HES,
-KSS, NSF, SAP, SPC, VGM, and VGZ.
+platforms: MP3, MP2, MPG, MOD, S3M, XM, IT, 669, AMF, MTM, OKT, PSM, PTM, STM,
+WAV, OGG, FLAC, AY, GBS, GYM, HES, KSS, NSF, SAP, SPC, VGM, and VGZ.
 
 Additional support for these formats is available on MacOS: MP4, M4A, AAC, and
 MID.
 
-Linux and MacOS also support these additional formats: 669, AMF, MTM, OKT, PSM,
-PTM, and STM.
+Additional support for these formats is available on Windows: MID.
 
 Supported for more formats on all platforms will be added in the future.
 
@@ -61,12 +60,17 @@ buttons in the queue window. When opening files, playback will automatically
 begin. Use the playback buttons in the queue window to move between tracks,
 pause, or stop playback.
 
-To toggle library view, press the L key. If you haven't already added a library
-folder, OMO will ask you to select one before it will show the library view.
-Note: the library scanning process can take a long time for larger libraries
-due to the amount of information it has to process. Data on scanned files is
-cached, so subsequent scans are much quicker (usually just a few seconds for
-large libraries).
+To use the library features, you must first tell OMO where your music is
+located. Use 'Library->Add Music Folder' and select a folder where OMO can find
+your music files. You can add as many folders as you like and OMO will check
+them all.
+
+Once you have told OMO where to find your music, it will scan your music
+collection. This process will be performed in the background so you can
+continue to use OMO to play back your music files. The library scanning process
+can take a long time if you have a large library. You can check the progress by
+opening up the library view ('View->Library'). If you quit close OMO, it will
+resume scanning your library next time you open it.
 
 The library scanner will retrieve as much metadata on each file as it can find.
 The tag sharing feature is not implemented yet, so tags cannot be retrieved
