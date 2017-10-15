@@ -10,7 +10,7 @@
 #define OMO_TEST_STATE_ALL                6
 #define OMO_TEST_STATE_EXIT               7
 
-#define OMO_TEST_INTERVAL                60
+#define OMO_TEST_INTERVAL               300
 
 bool omo_test_init(void * data, int mode, const char * path);
 bool omo_test_logic(void * data);
