@@ -2,6 +2,7 @@
 #include "t3gui/t3gui.h"
 #include "instance.h"
 #include "constants.h"
+#include "init.h"
 
 void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 {
@@ -17,7 +18,7 @@ void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 			}
 			else
 			{
-				app->loading_library_file_helper_data.cancel_scan = true;
+				omo_cancel_library_setup(app);
 			}
 			t3f_event_handler(event);
 			break;
