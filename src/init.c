@@ -209,6 +209,7 @@ void omo_cancel_library_setup(APP_INSTANCE * app)
 	{
 		app->loading_library_file_helper_data.cancel_scan = true;
 		al_join_thread(app->library_thread, NULL);
+		al_destroy_thread(app->library_thread);
 		app->library_thread = NULL;
 	}
 }
@@ -337,6 +338,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	bool used_arg[1024] = {false};
 	const char * val;
 	int test_path;
+	int test_mode = 0;
 	int i;
 
 	/* initialize T3F */
@@ -411,6 +413,20 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 				{
 					test_path = i + 1;
 					app->test_mode = true;
+				}
+			}
+			else if(!strcmp(argv[i], "--quick-test"))
+			{
+				if(argc < i + 2)
+				{
+					printf("Usage: omo --quick-test <test_files_path>\n\n");
+					return false;
+				}
+				else
+				{
+					test_path = i + 1;
+					app->test_mode = true;
+					test_mode = 1;
 				}
 			}
 		}
@@ -494,7 +510,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	/* set up library */
 	if(app->test_mode)
 	{
-		omo_test_init(app, 0, argv[test_path]);
+		omo_test_init(app, test_mode, argv[test_path]);
 	}
 	else
 	{
