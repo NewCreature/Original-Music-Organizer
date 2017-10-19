@@ -16,9 +16,17 @@ v0.4
    copy their music collection to a thumb drive and use it on multiple machines
    without having to generate library databases for each machine.
 
+[ ]Look into adding a lyrics window.
+
 
 v0.3
 ----
+
+[ ]Factor out library setup routines.
+
+[ ]Factor out queue helper routines.
+
+[ ]Fix mixed tabs/spaces.
 
 [ ]Implement track split dialog and tag system. We need a way to store track
    split data in the base file's metedata so we can keep it in the online
