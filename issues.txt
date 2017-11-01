@@ -24,7 +24,7 @@ v0.3
 
 [X]Factor out library setup routines.
 
-[ ]Factor out queue helper routines.
+[X]Factor out queue helper routines.
 
 [ ]Fix mixed tabs/spaces.
 
