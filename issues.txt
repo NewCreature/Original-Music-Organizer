@@ -22,7 +22,7 @@ v0.4
 v0.3
 ----
 
-[ ]Factor out library setup routines.
+[X]Factor out library setup routines.
 
 [ ]Factor out queue helper routines.
 
