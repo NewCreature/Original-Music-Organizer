@@ -18,6 +18,7 @@
 #include "ui/tags_dialog.h"
 #include "ui/shortcut.h"
 #include "test.h"
+#include "queue_helpers.h"
 
 static int queue_list_visible_elements(T3GUI_ELEMENT * element)
 {

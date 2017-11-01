@@ -45,8 +45,4 @@ bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn, 
 void omo_delete_queue_item(OMO_QUEUE * qp, int index);
 bool omo_copy_queue_item(OMO_QUEUE_ENTRY * ep, OMO_QUEUE * qp);
 
-bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp);
-void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp, void * data);
-void omo_sort_queue(OMO_QUEUE * qp, OMO_LIBRARY * lp, int mode, int start_index, int count);
-
 #endif

@@ -9,6 +9,7 @@
 #include "../init.h"
 #include "../file_chooser.h"
 #include "../constants.h"
+#include "../queue_helpers.h"
 
 static char type_buf[1024] = {0};
 

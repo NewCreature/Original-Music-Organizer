@@ -3,6 +3,7 @@
 #include "../file_chooser.h"
 #include "../init.h"
 #include "../constants.h"
+#include "../queue_helpers.h"
 #include "menu_proc.h"
 
 static void omo_toggle_library_view(void * data)

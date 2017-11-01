@@ -2,7 +2,8 @@
 #include "t3f/file_utils.h"
 #include "instance.h"
 #include "file_helpers.h"
-#include "init.h"
+#include "library_helpers.h"
+#include "queue_helpers.h"
 
 static void file_chooser_thread_helper(void * data)
 {

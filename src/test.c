@@ -3,6 +3,7 @@
 #include "instance.h"
 #include "test.h"
 #include "init.h"
+#include "queue_helpers.h"
 
 static bool omo_test_mode;
 static int omo_test_state;

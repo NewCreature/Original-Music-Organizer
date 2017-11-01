@@ -1,6 +1,7 @@
 #include "../t3f/t3f.h"
 #include "../instance.h"
 #include "../constants.h"
+#include "../queue_helpers.h"
 
 void omo_tags_dialog_logic(void * data)
 {

@@ -7,6 +7,7 @@
 #include "file_helpers.h"
 #include "test.h"
 #include "library_helpers.h"
+#include "queue_helpers.h"
 
 #include "archive_handlers/libarchive/libarchive.h"
 #include "archive_handlers/unrar/unrar.h"

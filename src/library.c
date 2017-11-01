@@ -6,6 +6,7 @@
 #include "defines.h"
 #include "constants.h"
 #include "md5.h"
+#include "queue_helpers.h"
 
 static char last_artist_name[256] = {0};
 static char last_album_name[256] = {0};
