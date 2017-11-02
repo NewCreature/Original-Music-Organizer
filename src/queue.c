@@ -2,6 +2,8 @@
 #include "instance.h"
 #include "queue.h"
 
+static const char * omo_queue_file_header = "OQ01";
+
 OMO_QUEUE * omo_create_queue(int files)
 {
     OMO_QUEUE * qp = NULL;
@@ -23,6 +25,263 @@ OMO_QUEUE * omo_create_queue(int files)
         }
     }
     return qp;
+}
+
+static bool omo_save_string_f(ALLEGRO_FILE * fp, const char * sp)
+{
+    short l;
+
+    if(!sp)
+    {
+        if(al_fwrite16le(fp, 0) < 2)
+        {
+            return false;
+        }
+        return true;
+    }
+    l = strlen(sp);
+    if(al_fwrite16le(fp, l) < 2)
+    {
+        return false;
+    }
+    if(al_fwrite(fp, sp, l) != l)
+    {
+        return false;
+    }
+    return true;
+}
+
+static bool omo_save_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE_ENTRY * ep)
+{
+    int c = ep->tags_retrieved ? 1 : 0;
+    if(!omo_save_string_f(fp, ep->file))
+    {
+        return false;
+    }
+    if(!omo_save_string_f(fp, ep->sub_file))
+    {
+        return false;
+    }
+    if(!omo_save_string_f(fp, ep->track))
+    {
+        return false;
+    }
+    if(al_fputc(fp, c) == EOF)
+    {
+        return false;
+    }
+    if(c)
+    {
+        if(!omo_save_string_f(fp, ep->tags.artist))
+        {
+            return false;
+        }
+        if(!omo_save_string_f(fp, ep->tags.album))
+        {
+            return false;
+        }
+        if(!omo_save_string_f(fp, ep->tags.title))
+        {
+            return false;
+        }
+        if(!omo_save_string_f(fp, ep->tags.track))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool omo_save_queue(OMO_QUEUE * qp, const char * fn)
+{
+    ALLEGRO_FILE * fp;
+    int i, l;
+
+    fp = al_fopen(fn, "wb");
+    if(fp)
+    {
+        l = strlen(omo_queue_file_header);
+        if(al_fwrite(fp, omo_queue_file_header, l) != l)
+        {
+            goto fail;
+        }
+        if(al_fwrite32le(fp, qp->entry_count) < 4)
+        {
+            goto fail;
+        }
+        for(i = 0; i < qp->entry_count; i++)
+        {
+            if(!omo_save_queue_entry_f(fp, qp->entry[i]))
+            {
+                goto fail;
+            }
+        }
+        al_fclose(fp);
+        return true;
+    }
+
+    fail:
+    {
+        if(fp)
+        {
+            al_fclose(fp);
+        }
+    }
+    return false;
+}
+
+static char * omo_load_string_f(ALLEGRO_FILE * fp)
+{
+    char * sp;
+    short l;
+
+    l = al_fread16le(fp);
+    if(al_feof(fp))
+    {
+        return NULL;
+    }
+    sp = malloc(l + 1);
+    if(!sp)
+    {
+        return NULL;
+    }
+    al_fread(fp, sp, l);
+    sp[l] = '\0';
+
+    return sp;
+}
+
+static bool omo_load_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE * qp)
+{
+    char * file = NULL;
+    char * sub_file = NULL;
+    char * track = NULL;
+    char * tag = NULL;
+    int c;
+
+    file = omo_load_string_f(fp);
+    if(!file)
+    {
+        goto fail;
+    }
+    sub_file = omo_load_string_f(fp);
+    if(!sub_file)
+    {
+        goto fail;
+    }
+    track = omo_load_string_f(fp);
+    if(!track)
+    {
+        goto fail;
+    }
+    if(!omo_add_file_to_queue(qp, file, sub_file, track))
+    {
+        goto fail;
+    }
+    free(track);
+    free(sub_file);
+    free(file);
+    c = al_fgetc(fp);
+    if(c == EOF)
+    {
+        goto fail;
+    }
+    if(c)
+    {
+        tag = omo_load_string_f(fp);
+        if(!tag)
+        {
+            goto fail;
+        }
+        strcpy(qp->entry[qp->entry_count - 1]->tags.artist, tag);
+        tag = omo_load_string_f(fp);
+        if(!tag)
+        {
+            goto fail;
+        }
+        strcpy(qp->entry[qp->entry_count - 1]->tags.album, tag);
+        tag = omo_load_string_f(fp);
+        if(!tag)
+        {
+            goto fail;
+        }
+        strcpy(qp->entry[qp->entry_count - 1]->tags.title, tag);
+        tag = omo_load_string_f(fp);
+        if(!tag)
+        {
+            goto fail;
+        }
+        strcpy(qp->entry[qp->entry_count - 1]->tags.track, tag);
+    }
+    return true;
+
+    fail:
+    {
+        if(track)
+        {
+            free(track);
+        }
+        if(sub_file)
+        {
+            free(sub_file);
+        }
+        if(file)
+        {
+            free(file);
+        }
+    }
+    return false;
+}
+
+OMO_QUEUE * omo_load_queue(const char * fn)
+{
+    ALLEGRO_FILE * fp = NULL;
+    OMO_QUEUE * qp = NULL;
+    int i, c;
+
+    fp = al_fopen(fn, "rb");
+    if(fp)
+    {
+        for(i = 0; i < strlen(omo_queue_file_header); i++)
+        {
+            c = al_fgetc(fp);
+            if(c != omo_queue_file_header[i])
+            {
+                goto fail;
+            }
+        }
+        c = al_fread32le(fp);
+        if(al_feof(fp))
+        {
+            goto fail;
+        }
+        qp = omo_create_queue(c);
+        if(!qp)
+        {
+            goto fail;
+        }
+        for(i = 0; i < c; i++)
+        {
+            if(!omo_load_queue_entry_f(fp, qp))
+            {
+                goto fail;
+            }
+        }
+        return qp;
+    }
+
+    fail:
+    {
+        if(qp)
+        {
+            omo_destroy_queue(qp);
+        }
+        if(fp)
+        {
+            al_fclose(fp);
+        }
+    }
+    return NULL;
 }
 
 void omo_destroy_queue(OMO_QUEUE * qp)
@@ -95,7 +354,7 @@ bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn, 
             {
                 strcpy(qp->entry[qp->entry_count]->file, fn);
                 qp->entry[qp->entry_count]->sub_file = NULL;
-                if(subfn)
+                if(subfn && strlen(subfn) > 0)
                 {
                     qp->entry[qp->entry_count]->sub_file = malloc(strlen(subfn) + 1);
                     if(qp->entry[qp->entry_count]->sub_file)
@@ -104,7 +363,7 @@ bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn, 
                     }
                 }
                 qp->entry[qp->entry_count]->track = NULL;
-                if(track)
+                if(track && strlen(track) > 0)
                 {
                     qp->entry[qp->entry_count]->track = malloc(strlen(track) + 1);
                     if(qp->entry[qp->entry_count]->track)
