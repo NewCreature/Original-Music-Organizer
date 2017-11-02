@@ -946,21 +946,30 @@ void t3f_set_event_handler(void (*proc)(ALLEGRO_EVENT * event, void * data))
 	t3f_event_handler_proc = proc;
 }
 
-void t3f_exit(void)
+bool t3f_save_config(void)
 {
 	const ALLEGRO_FILE_INTERFACE * old_interface;
-	char buf[256];
-	int x, y;
+	bool ret;
 
 	old_interface = al_get_new_file_interface();
 	al_set_standard_file_interface();
+	ret = al_save_config_file(t3f_config_filename, t3f_config);
+	al_set_new_file_interface(old_interface);
+
+	return ret;
+}
+
+void t3f_exit(void)
+{
+	char buf[256];
+	int x, y;
+
 	al_get_window_position(t3f_display, &x, &y);
 	sprintf(buf, "%d", x);
 	al_set_config_value(t3f_config, "T3F", "window_pos_x", buf);
 	sprintf(buf, "%d", y);
 	al_set_config_value(t3f_config, "T3F", "window_pos_y", buf);
-	al_save_config_file(t3f_config_filename, t3f_config);
-	al_set_new_file_interface(old_interface);
+	t3f_save_config();
 	t3f_quit = true;
 }
 

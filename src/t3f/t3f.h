@@ -129,6 +129,7 @@ int t3f_set_gfx_mode(int w, int h, int flags);
 void t3f_set_clipping_rectangle(int x, int y, int w, int h);
 void t3f_set_event_handler(void (*proc)(ALLEGRO_EVENT * event, void * data));
 void t3f_exit(void);
+bool t3f_save_config(void);
 void t3f_event_handler(ALLEGRO_EVENT * event);
 void t3f_process_events(void);
 void t3f_render(bool flip);
