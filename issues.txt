@@ -26,6 +26,9 @@ v0.3
 
 [X]Factor out queue helper routines.
 
+[X]Save queue data on exit and reload on open so users can continue where they
+   left off.
+
 [ ]Fix mixed tabs/spaces.
 
 [ ]Implement track split dialog and tag system. We need a way to store track
@@ -42,9 +45,6 @@ v0.3
    font size to override a theme's font size. This override should cause the
    theme system to load the font in the correct size so we get a properly sized
    font throughout the GUI system.
-
-[ ]Save queue data on exit and reload on open so users can continue where they
-   left off.
 
 [ ]Split off library list generation from library loading. We should be able to
    use library features that aren't tied to the artist, album, and song lists
