@@ -1,4 +1,5 @@
 #include "../instance.h"
+#include "../queue_helpers.h"
 #include "dialog_proc.h"
 #include "menu_proc.h"
 
