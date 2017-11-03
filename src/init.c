@@ -326,6 +326,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 					app->ui->ui_queue_list_element->d1 = app->player->queue_pos;
 					app->ui->ui_queue_list_element->d2 = app->ui->ui_queue_list_element->d1;
 				}
+				omo_get_queue_tags(app->player->queue, app->library, app);
 			}
 		}
 	}
