@@ -188,6 +188,7 @@ static bool omo_load_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE * qp)
     }
     if(c)
     {
+        qp->entry[qp->entry_count - 1]->tags_retrieved = true;
         tag = omo_load_string_f(fp);
         if(!tag)
         {
