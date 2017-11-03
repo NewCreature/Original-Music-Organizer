@@ -4,9 +4,10 @@
 #include "queue.h"
 #include "codec_handlers/codec_handler.h"
 
-#define OMO_PLAYER_STATE_STOPPED 0
-#define OMO_PLAYER_STATE_PLAYING 1
-#define OMO_PLAYER_STATE_PAUSED  2
+#define OMO_PLAYER_STATE_STOPPED  0
+#define OMO_PLAYER_STATE_PLAYING  1
+#define OMO_PLAYER_STATE_FINISHED 2
+#define OMO_PLAYER_STATE_PAUSED   3
 
 typedef struct
 {

@@ -66,6 +66,7 @@ void omo_queue_list_logic(void * data)
         }
         case 2:
         {
+            app->ui->ui_queue_list_element->d1 = app->player->queue_pos;
             omo_stop_player(app->player);
             break;
         }

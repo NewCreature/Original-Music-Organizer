@@ -315,7 +315,6 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		omo_setup_library(app, file_database_fn, entry_database_fn, NULL);
 		if(!app->player->queue)
 		{
-			printf("load saved queue\n");
 			app->player->queue = omo_load_queue(t3f_get_filename(t3f_data_path, "omo.queue"));
 			al_remove_filename(t3f_get_filename(t3f_data_path, "omo.queue"));
 			if(app->player->queue)
@@ -324,6 +323,8 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 				if(val)
 				{
 					app->player->queue_pos = atoi(val);
+					app->ui->ui_queue_list_element->d1 = app->player->queue_pos;
+					app->ui->ui_queue_list_element->d2 = app->ui->ui_queue_list_element->d1;
 				}
 			}
 		}

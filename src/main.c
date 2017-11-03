@@ -85,14 +85,7 @@ void omo_logic(void * data)
 				omo_tags_dialog_logic(data);
 			}
 			omo_player_logic(app->player, app->archive_handler_registry, app->codec_handler_registry, app->player_temp_path);
-			if(app->player->state == OMO_PLAYER_STATE_PLAYING || app->player->state == OMO_PLAYER_STATE_PAUSED)
-			{
-				app->ui->ui_queue_list_element->id2 = app->player->queue_pos;
-			}
-			else
-			{
-				app->ui->ui_queue_list_element->id2 = -1;
-			}
+			app->ui->ui_queue_list_element->id2 = app->player->queue_pos;
 
 		    /* see if we should scroll the queue list */
 		    if(app->player->queue && app->player->queue_pos != old_queue_list_pos)
@@ -112,11 +105,11 @@ void omo_logic(void * data)
 		                app->ui->ui_queue_list_element->d2 += visible + 1;
 		            }
 		        }
-		        if(app->ui->ui_queue_list_element->d2 + visible > app->player->queue->entry_count)
-		        {
-		            app->ui->ui_queue_list_element->d2 = app->player->queue->entry_count - visible - 1;
-		        }
 		    }
+            if(app->ui->ui_queue_list_element->d2 + visible > app->player->queue->entry_count)
+            {
+                app->ui->ui_queue_list_element->d2 = app->player->queue->entry_count - visible - 1;
+            }
 		}
 	}
 }
