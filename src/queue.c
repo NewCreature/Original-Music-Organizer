@@ -224,6 +224,7 @@ OMO_QUEUE * omo_load_queue(const char * fn)
                 goto fail;
             }
         }
+        al_fclose(fp);
         return qp;
     }
 
