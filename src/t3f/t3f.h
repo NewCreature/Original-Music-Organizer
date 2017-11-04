@@ -154,8 +154,6 @@ bool t3f_push_state(int flags);
 bool t3f_pop_state(void);
 
 int t3f_get_joystick_number(ALLEGRO_JOYSTICK * jp);
-float t3f_fread_float(ALLEGRO_FILE * fp);
-int t3f_fwrite_float(ALLEGRO_FILE * fp, float f);
 
 ALLEGRO_FILE * t3f_open_file(ALLEGRO_PATH * pp, const char * fn, const char * m);
 unsigned long t3f_checksum_file(const char * fn);

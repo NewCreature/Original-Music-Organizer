@@ -1,4 +1,5 @@
 #include "t3f/t3f.h"
+#include "t3f/file.h"
 #include "instance.h"
 #include "queue.h"
 
@@ -27,42 +28,18 @@ OMO_QUEUE * omo_create_queue(int files)
     return qp;
 }
 
-static bool omo_save_string_f(ALLEGRO_FILE * fp, const char * sp)
-{
-    short l;
-
-    if(!sp)
-    {
-        if(al_fwrite16le(fp, 0) < 2)
-        {
-            return false;
-        }
-        return true;
-    }
-    l = strlen(sp);
-    if(al_fwrite16le(fp, l) < 2)
-    {
-        return false;
-    }
-    if(al_fwrite(fp, sp, l) != l)
-    {
-        return false;
-    }
-    return true;
-}
-
 static bool omo_save_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE_ENTRY * ep)
 {
     int c = ep->tags_retrieved ? 1 : 0;
-    if(!omo_save_string_f(fp, ep->file))
+    if(!t3f_save_string_f(fp, ep->file))
     {
         return false;
     }
-    if(!omo_save_string_f(fp, ep->sub_file))
+    if(!t3f_save_string_f(fp, ep->sub_file))
     {
         return false;
     }
-    if(!omo_save_string_f(fp, ep->track))
+    if(!t3f_save_string_f(fp, ep->track))
     {
         return false;
     }
@@ -72,19 +49,19 @@ static bool omo_save_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE_ENTRY * ep)
     }
     if(c)
     {
-        if(!omo_save_string_f(fp, ep->tags.artist))
+        if(!t3f_save_string_f(fp, ep->tags.artist))
         {
             return false;
         }
-        if(!omo_save_string_f(fp, ep->tags.album))
+        if(!t3f_save_string_f(fp, ep->tags.album))
         {
             return false;
         }
-        if(!omo_save_string_f(fp, ep->tags.title))
+        if(!t3f_save_string_f(fp, ep->tags.title))
         {
             return false;
         }
-        if(!omo_save_string_f(fp, ep->tags.track))
+        if(!t3f_save_string_f(fp, ep->tags.track))
         {
             return false;
         }
@@ -130,27 +107,6 @@ bool omo_save_queue(OMO_QUEUE * qp, const char * fn)
     return false;
 }
 
-static char * omo_load_string_f(ALLEGRO_FILE * fp)
-{
-    char * sp;
-    short l;
-
-    l = al_fread16le(fp);
-    if(al_feof(fp))
-    {
-        return NULL;
-    }
-    sp = malloc(l + 1);
-    if(!sp)
-    {
-        return NULL;
-    }
-    al_fread(fp, sp, l);
-    sp[l] = '\0';
-
-    return sp;
-}
-
 static bool omo_load_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE * qp)
 {
     char * file = NULL;
@@ -159,17 +115,17 @@ static bool omo_load_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE * qp)
     char * tag = NULL;
     int c;
 
-    file = omo_load_string_f(fp);
+    file = t3f_load_string_f(fp);
     if(!file)
     {
         goto fail;
     }
-    sub_file = omo_load_string_f(fp);
+    sub_file = t3f_load_string_f(fp);
     if(!sub_file)
     {
         goto fail;
     }
-    track = omo_load_string_f(fp);
+    track = t3f_load_string_f(fp);
     if(!track)
     {
         goto fail;
@@ -189,25 +145,25 @@ static bool omo_load_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE * qp)
     if(c)
     {
         qp->entry[qp->entry_count - 1]->tags_retrieved = true;
-        tag = omo_load_string_f(fp);
+        tag = t3f_load_string_f(fp);
         if(!tag)
         {
             goto fail;
         }
         strcpy(qp->entry[qp->entry_count - 1]->tags.artist, tag);
-        tag = omo_load_string_f(fp);
+        tag = t3f_load_string_f(fp);
         if(!tag)
         {
             goto fail;
         }
         strcpy(qp->entry[qp->entry_count - 1]->tags.album, tag);
-        tag = omo_load_string_f(fp);
+        tag = t3f_load_string_f(fp);
         if(!tag)
         {
             goto fail;
         }
         strcpy(qp->entry[qp->entry_count - 1]->tags.title, tag);
-        tag = omo_load_string_f(fp);
+        tag = t3f_load_string_f(fp);
         if(!tag)
         {
             goto fail;

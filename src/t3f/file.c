@@ -1,0 +1,71 @@
+#include "t3f.h"
+
+float t3f_fread_float(ALLEGRO_FILE * fp)
+{
+	char buffer[256] = {0};
+	int l;
+
+	l = al_fgetc(fp);
+	al_fread(fp, buffer, l);
+	buffer[l] = '\0';
+
+	return atof(buffer);
+}
+
+bool t3f_fwrite_float(ALLEGRO_FILE * fp, float f)
+{
+	char buffer[256] = {0};
+	int l;
+
+	sprintf(buffer, "%f", f);
+	l = strlen(buffer);
+	al_fputc(fp, l);
+	al_fwrite(fp, buffer, l);
+
+	return true;
+}
+
+char * t3f_load_string_f(ALLEGRO_FILE * fp)
+{
+    char * sp;
+    short l;
+
+    l = al_fread16le(fp);
+    if(al_feof(fp))
+    {
+        return NULL;
+    }
+    sp = malloc(l + 1);
+    if(!sp)
+    {
+        return NULL;
+    }
+    al_fread(fp, sp, l);
+    sp[l] = '\0';
+
+    return sp;
+}
+
+bool t3f_save_string_f(ALLEGRO_FILE * fp, const char * sp)
+{
+    short l;
+
+    if(!sp)
+    {
+        if(al_fwrite16le(fp, 0) < 2)
+        {
+            return false;
+        }
+        return true;
+    }
+    l = strlen(sp);
+    if(al_fwrite16le(fp, l) < 2)
+    {
+        return false;
+    }
+    if(al_fwrite(fp, sp, l) != l)
+    {
+        return false;
+    }
+    return true;
+}

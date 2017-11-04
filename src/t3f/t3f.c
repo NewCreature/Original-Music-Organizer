@@ -1097,33 +1097,6 @@ int t3f_get_joystick_number(ALLEGRO_JOYSTICK * jp)
 	return -1;
 }
 
-float t3f_fread_float(ALLEGRO_FILE * fp)
-{
-	char buffer[256] = {0};
-	int l;
-
-	l = al_fgetc(fp);
-	al_fread(fp, buffer, l);
-	buffer[l] = '\0';
-	return atof(buffer);
-//	float f;
-//	al_fread(fp, &f, sizeof(float));
-//	return f;
-}
-
-int t3f_fwrite_float(ALLEGRO_FILE * fp, float f)
-{
-	char buffer[256] = {0};
-	int l;
-
-	sprintf(buffer, "%f", f);
-	l = strlen(buffer);
-	al_fputc(fp, l);
-	al_fwrite(fp, buffer, l);
-//	al_fwrite(fp, &f, sizeof(float));
-	return 1;
-}
-
 ALLEGRO_FILE * t3f_open_file(ALLEGRO_PATH * pp, const char * fn, const char * m)
 {
 	ALLEGRO_PATH * tpath = al_clone_path(pp);
