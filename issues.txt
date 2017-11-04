@@ -29,6 +29,15 @@ v0.3
 [X]Save queue data on exit and reload on open so users can continue where they
    left off.
 
+[ ]Implement library caching system.
+
+   [ ]Save a cache file for each library folder instead of one big cache file.
+      We need a way to match up the library path to the cached data path so we
+      can only reload cached data for current library folders. This will enable
+      us to use the same cache files across multiple profiles.
+
+   [ ]Cache the artist, album, and song lists.
+
 [ ]Fix mixed tabs/spaces.
 
 [ ]Implement track split dialog and tag system. We need a way to store track
@@ -63,10 +72,6 @@ v0.3
 [ ]Add song info to the player module. The plan is to have 2 lines for this,
    one line for the artist, title, etc. of the currently playing song and
    another for track-specific info from the codec handler.
-
-[ ]Check modification date of library folders to determine if we need to rescan
-   them. Save a binary cache of the library files, artist, album, and song
-   lists and reload that cache if the library folders haven't changed.
 
 [ ]Stop timer when performing actions that can take a long time.
 
