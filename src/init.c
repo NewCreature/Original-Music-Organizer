@@ -8,6 +8,7 @@
 #include "test.h"
 #include "library_helpers.h"
 #include "queue_helpers.h"
+#include "library_cache.h"
 
 #include "archive_handlers/libarchive/libarchive.h"
 #include "archive_handlers/unrar/unrar.h"
@@ -344,6 +345,10 @@ void omo_exit(APP_INSTANCE * app)
 			sprintf(buf, "%d", app->player->queue_pos);
 			al_set_config_value(t3f_config, "Player", "Queue Position", buf);
 		}
+	}
+	if(app->library)
+	{
+		omo_save_library_cache(app->library, t3f_get_filename(t3f_data_path, "omo.library"));
 	}
 	t3f_save_config();
 	omo_destroy_player(app->player);

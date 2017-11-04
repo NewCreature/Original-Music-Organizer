@@ -1,6 +1,7 @@
 #include "t3f/t3f.h"
 #include "t3f/file_utils.h"
 #include "instance.h"
+#include "library_cache.h"
 
 static int sort_names(const void *e1, const void *e2)
 {
@@ -39,33 +40,37 @@ static bool omo_setup_library_helper(APP_INSTANCE * app)
 		return false;
 	}
 	c = atoi(val);
-	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->loading_library, app->player->queue, app->library_temp_path, app->library_loading_message);
-	for(j = 0; j < c; j++)
+	sprintf(app->library_loading_message, "Attempting to load cached library data...");
+	if(!omo_load_library_cache(app->loading_library, t3f_get_filename(t3f_data_path, "omo.library")))
 	{
-		sprintf(app->library_loading_message, "Scanning folder %d of %d...", j + 1, c);
-		sprintf(buffer, "library_folder_%d", j);
-		val = al_get_config_value(app->library_config, "Settings", buffer);
-		if(val)
+		omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->loading_library, app->player->queue, app->library_temp_path, app->library_loading_message);
+		for(j = 0; j < c; j++)
 		{
-			t3f_scan_files(val, omo_count_file, false, NULL, &app->loading_library_file_helper_data);
-			sprintf(app->library_loading_message, "Saving progress...");
+			sprintf(app->library_loading_message, "Scanning folder %d of %d...", j + 1, c);
+			sprintf(buffer, "library_folder_%d", j);
+			val = al_get_config_value(app->library_config, "Settings", buffer);
+			if(val)
+			{
+				t3f_scan_files(val, omo_count_file, false, NULL, &app->loading_library_file_helper_data);
+				sprintf(app->library_loading_message, "Saving progress...");
+				omo_save_library(app->loading_library);
+			}
+		}
+		omo_allocate_library(app->loading_library, app->loading_library_file_helper_data.file_count);
+		for(j = 0; j < c; j++)
+		{
+			sprintf(buffer, "library_folder_%d", j);
+			val = al_get_config_value(app->library_config, "Settings", buffer);
+			if(app->loading_library_file_helper_data.cancel_scan)
+			{
+				app->loading_library_file_helper_data.scan_done = true;
+				return false;
+			}
+			sprintf(app->library_loading_message, "Scanning folder %d of %d...", j + 1, c);
+			t3f_scan_files(val, omo_add_file, false, NULL, &app->loading_library_file_helper_data);
 			omo_save_library(app->loading_library);
+			sprintf(app->library_loading_message, "Saving progress...");
 		}
-	}
-	omo_allocate_library(app->loading_library, app->loading_library_file_helper_data.file_count);
-	for(j = 0; j < c; j++)
-	{
-		sprintf(buffer, "library_folder_%d", j);
-		val = al_get_config_value(app->library_config, "Settings", buffer);
-		if(app->loading_library_file_helper_data.cancel_scan)
-		{
-			app->loading_library_file_helper_data.scan_done = true;
-			return false;
-		}
-		sprintf(app->library_loading_message, "Scanning folder %d of %d...", j + 1, c);
-		t3f_scan_files(val, omo_add_file, false, NULL, &app->loading_library_file_helper_data);
-		omo_save_library(app->loading_library);
-		sprintf(app->library_loading_message, "Saving progress...");
 	}
 
 	/* tally up artists */
