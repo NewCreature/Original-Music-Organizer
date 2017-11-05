@@ -39,6 +39,11 @@ v0.3
 
 [X]Fix mixed tabs/spaces.
 
+[X]Implement font size override. The user should be able to specify a preferred
+   font size to override a theme's font size. This override should cause the
+   theme system to load the font in the correct size so we get a properly sized
+   font throughout the GUI system.
+
 [ ]Implement track split dialog and tag system. We need a way to store track
    split data in the base file's metedata so we can keep it in the online
    database instead of requiring each user to split tracks on their own.
@@ -51,11 +56,6 @@ v0.3
 
    [ ]Add loop handling to MP3A5. So we can implement track looping in the
       MP3A5 codec handler.
-
-[ ]Implement font size override. The user should be able to specify a preferred
-   font size to override a theme's font size. This override should cause the
-   theme system to load the font in the correct size so we get a properly sized
-   font throughout the GUI system.
 
 [ ]Add status bar to library view. We should show library-related messages in
    this status bar instead of using the list box.
