@@ -29,11 +29,11 @@ v0.3
 [X]Save queue data on exit and reload on open so users can continue where they
    left off.
 
-[ ]Implement library caching system.
+[X]Implement library caching system.
 
    [X]Cache the artist, album, and song lists.
 
-   [ ]Force rescan if we modify the library folder settings.
+   [X]Force rescan if we modify the library folder settings.
 
 [ ]Fix mixed tabs/spaces.
 
