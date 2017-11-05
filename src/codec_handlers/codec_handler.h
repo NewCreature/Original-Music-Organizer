@@ -23,6 +23,8 @@ typedef struct
 	const char * (*get_tag)(void * data, const char * name);
 
 	/* playback functions */
+	bool (*set_loop)(void * data, double loop_start, double loop_end, double fade_time, int loop_count);
+	bool (*set_volume)(void * data, float volume);
 	bool (*play)(void * data);
 	bool (*pause)(void * data);
 	bool (*resume)(void * data);

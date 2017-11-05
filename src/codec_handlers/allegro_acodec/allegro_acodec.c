@@ -13,6 +13,13 @@ typedef struct
 	char codec_file_extension[16];
 	char codec_tag_buffer[1024];
 	char tag_name[32];
+	bool loop;         // let us know we are looping this song
+	double fade_time;  // how long to fade out
+	int loop_count;    // how many times we want to loop
+	int current_loop;  // how many times have we looped
+	double last_pos;   // compare last_pos to current stream pos to detect loop
+	bool fade_out;     // let us know we are fading out
+	double fade_start; // time the fade began
 
 } CODEC_DATA;
 
@@ -140,6 +147,24 @@ static int codec_get_track_count(void * data, const char * fn)
 	return 1;
 }
 
+static bool codec_set_loop(void * data, double loop_start, double loop_end, double fade_time, int loop_count)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	if(al_set_audio_stream_loop_secs(codec_data->player_stream, loop_start, loop_end))
+	{
+		if(al_set_audio_stream_playmode(codec_data->player_stream, ALLEGRO_PLAYMODE_LOOP))
+		{
+			codec_data->loop = true;
+			codec_data->fade_time = fade_time;
+			codec_data->loop_count = loop_count;
+			return true;
+		}
+	}
+
+	return false;
+}
+
 static bool codec_play(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
@@ -190,9 +215,27 @@ static double codec_get_position(void * data)
 static bool codec_done_playing(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	float volume;
 
 	if(codec_data->player_stream)
 	{
+		if(codec_data->loop)
+		{
+			if(codec_data->current_loop >= codec_data->loop_count)
+			{
+				codec_data->fade_start = al_get_time();
+				codec_data->fade_out = true;
+			}
+			if(codec_data->fade_out)
+			{
+				volume = 1.0 - (al_get_time() - codec_data->fade_start) / codec_data->fade_time;
+				al_set_audio_stream_gain(codec_data->player_stream, volume);
+				if(al_get_time() - codec_data->fade_start >= codec_data->fade_time)
+				{
+					return true;
+				}
+			}
+		}
 		return !al_get_audio_stream_playing(codec_data->player_stream);
 	}
 	return false;
@@ -208,6 +251,7 @@ OMO_CODEC_HANDLER * omo_codec_allegro_acodec_get_codec_handler(void)
 	codec_handler.unload_file = codec_unload_file;
 	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;
+	codec_handler.set_loop = codec_set_loop;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;
 	codec_handler.resume = codec_resume;
