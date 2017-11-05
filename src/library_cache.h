@@ -6,5 +6,11 @@
 
 bool omo_load_library_cache(OMO_LIBRARY * lp, const char * fn);
 bool omo_save_library_cache(OMO_LIBRARY * lp, const char * fn);
+bool omo_load_library_artists_cache(OMO_LIBRARY * lp, const char * fn);
+bool omo_save_library_artists_cache(OMO_LIBRARY * lp, const char * fn);
+bool omo_load_library_albums_cache(OMO_LIBRARY * lp, const char * fn);
+bool omo_save_library_albums_cache(OMO_LIBRARY * lp, const char * fn);
+bool omo_load_library_songs_cache(OMO_LIBRARY * lp, const char * fn);
+bool omo_save_library_songs_cache(OMO_LIBRARY * lp, const char * fn);
 
 #endif

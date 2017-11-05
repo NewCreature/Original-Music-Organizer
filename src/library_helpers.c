@@ -74,59 +74,52 @@ static bool omo_setup_library_helper(APP_INSTANCE * app)
 	}
 
 	/* tally up artists */
-	if(app->loading_library_file_helper_data.cancel_scan)
+	if(!omo_load_library_artists_cache(app->loading_library, t3f_get_filename(t3f_data_path, "omo.artists")))
 	{
-		app->loading_library_file_helper_data.scan_done = true;
-		return false;
-	}
-	sprintf(app->library_loading_message, "Creating artist list...");
-	omo_add_artist_to_library(app->loading_library, "All Artists");
-	omo_add_artist_to_library(app->loading_library, "Unknown Artist");
-	for(i = 0; i < app->loading_library->entry_count; i++)
-	{
-		val = al_get_config_value(app->loading_library->entry_database, app->loading_library->entry[i]->id, "Artist");
-		if(val)
+		if(app->loading_library_file_helper_data.cancel_scan)
 		{
-			omo_add_artist_to_library(app->loading_library, val);
+			app->loading_library_file_helper_data.scan_done = true;
+			return false;
 		}
-	}
-	if(app->loading_library_file_helper_data.cancel_scan)
-	{
-		app->loading_library_file_helper_data.scan_done = true;
-		return false;
-	}
-	sprintf(app->library_loading_message, "Sorting artist list...");
-	if(app->loading_library->artist_entry_count > 2)
-	{
-		qsort(&app->loading_library->artist_entry[2], app->loading_library->artist_entry_count - 2, sizeof(char *), sort_names);
+		sprintf(app->library_loading_message, "Creating artist list...");
+		omo_add_artist_to_library(app->loading_library, "All Artists");
+		omo_add_artist_to_library(app->loading_library, "Unknown Artist");
+		for(i = 0; i < app->loading_library->entry_count; i++)
+		{
+			val = al_get_config_value(app->loading_library->entry_database, app->loading_library->entry[i]->id, "Artist");
+			if(val)
+			{
+				omo_add_artist_to_library(app->loading_library, val);
+			}
+		}
+		if(app->loading_library_file_helper_data.cancel_scan)
+		{
+			app->loading_library_file_helper_data.scan_done = true;
+			return false;
+		}
+		sprintf(app->library_loading_message, "Sorting artist list...");
+		if(app->loading_library->artist_entry_count > 2)
+		{
+			qsort(&app->loading_library->artist_entry[2], app->loading_library->artist_entry_count - 2, sizeof(char *), sort_names);
+		}
+		omo_save_library_artists_cache(app->loading_library, t3f_get_filename(t3f_data_path, "omo.artists"));
 	}
 
 	/* tally up albums */
-	if(app->loading_library_file_helper_data.cancel_scan)
+	if(!omo_load_library_albums_cache(app->loading_library, t3f_get_filename(t3f_data_path, "omo.albums")))
 	{
-		app->loading_library_file_helper_data.scan_done = true;
-		return false;
-	}
-	sprintf(app->library_loading_message, "Creating album list...");
-	omo_add_album_to_library(app->loading_library, "All Albums");
-	omo_add_album_to_library(app->loading_library, "Unknown Album");
-	for(i = 0; i < app->loading_library->entry_count; i++)
-	{
-		val = al_get_config_value(app->loading_library->entry_database, app->loading_library->entry[i]->id, "Album");
-		if(val)
+		if(app->loading_library_file_helper_data.cancel_scan)
 		{
-			omo_add_album_to_library(app->loading_library, val);
+			app->loading_library_file_helper_data.scan_done = true;
+			return false;
 		}
-	}
-	if(app->loading_library_file_helper_data.cancel_scan)
-	{
-		app->loading_library_file_helper_data.scan_done = true;
-		return false;
-	}
-	if(app->loading_library->album_entry_count > 2)
-	{
-		sprintf(app->library_loading_message, "Sorting album list...");
-		qsort(&app->loading_library->album_entry[2], app->loading_library->album_entry_count - 2, sizeof(char *), sort_names);
+		sprintf(app->library_loading_message, "Creating album list...");
+		omo_get_library_album_list(app->loading_library, "All Artists");
+		if(app->loading_library_file_helper_data.cancel_scan)
+		{
+			app->loading_library_file_helper_data.scan_done = true;
+			return false;
+		}
 	}
 
 	/* make song list */

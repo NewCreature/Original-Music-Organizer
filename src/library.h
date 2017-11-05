@@ -50,6 +50,7 @@ bool omo_save_library(OMO_LIBRARY * lp);
 int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subfn, const char * track, OMO_ARCHIVE_HANDLER_REGISTRY * rp, OMO_CODEC_HANDLER_REGISTRY * crp, ALLEGRO_PATH * temp_path);
 bool omo_add_artist_to_library(OMO_LIBRARY * lp, const char * name);
 bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name);
+bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist);
 bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char * album);
 
 #endif
