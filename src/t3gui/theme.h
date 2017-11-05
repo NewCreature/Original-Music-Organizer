@@ -33,7 +33,7 @@ typedef struct
 } T3GUI_THEME;
 
 T3GUI_THEME * t3gui_get_default_theme(void);
-T3GUI_THEME * t3gui_load_theme(const char * fn);
+T3GUI_THEME * t3gui_load_theme(const char * fn, int font_size);
 void t3gui_destroy_theme(T3GUI_THEME * tp);
 
 #endif

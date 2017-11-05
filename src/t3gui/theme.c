@@ -146,7 +146,11 @@ static void t3gui_get_theme_state(ALLEGRO_CONFIG * cp, const char * section, T3G
     val = al_get_config_value(cp, section, "font");
     if(val)
     {
-        val2 = al_get_config_value(cp, section, "font size");
+        val2 = al_get_config_value(cp, NULL, "font size override");
+        if(!val2)
+        {
+            val2 = al_get_config_value(cp, section, "font size");
+        }
         if(val2)
         {
             al_set_path_filename(theme_path, val);
@@ -155,7 +159,7 @@ static void t3gui_get_theme_state(ALLEGRO_CONFIG * cp, const char * section, T3G
     }
 }
 
-T3GUI_THEME * t3gui_load_theme(const char * fn)
+T3GUI_THEME * t3gui_load_theme(const char * fn, int font_size)
 {
     ALLEGRO_CONFIG * cp;
     int i;
@@ -166,6 +170,11 @@ T3GUI_THEME * t3gui_load_theme(const char * fn)
     cp = al_load_config_file(fn);
     if(cp)
     {
+        if(font_size)
+        {
+            sprintf(section_buf, "%d", font_size);
+            al_set_config_value(cp, NULL, "font size override", section_buf);
+        }
         tp = t3gui_create_theme();
         if(tp)
         {

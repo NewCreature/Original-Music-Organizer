@@ -73,7 +73,15 @@ static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
 
 static bool load_ui_data(OMO_UI * uip)
 {
-	uip->main_theme = omo_load_theme("data/themes/basic/omo_theme.ini", 0);
+	const char * val;
+	int font_size = 0;
+
+	val = al_get_config_value(t3f_config, "Settings", "font_size_override");
+	if(val)
+	{
+		font_size = atoi(val);
+	}
+	uip->main_theme = omo_load_theme("data/themes/basic/omo_theme.ini", 0, font_size);
 	if(!uip->main_theme)
 	{
 		return false;
@@ -174,6 +182,14 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
 	int column = 0;
 	int i;
 	int edit_flags = D_SETFOCUS;
+	const char * val;
+	int font_size = 0;
+
+	val = al_get_config_value(t3f_config, "Settings", "font_size_override");
+	if(val)
+	{
+		font_size = atoi(val);
+	}
 
 	al_set_new_display_flags(ALLEGRO_WINDOWED);
 	for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
@@ -196,7 +212,7 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
 	{
 		al_register_event_source(t3f_queue, al_get_display_event_source(uip->tags_display));
 		al_set_target_bitmap(al_get_backbuffer(uip->tags_display));
-		uip->popup_theme = omo_load_theme("data/themes/basic/omo_theme.ini", 1);
+		uip->popup_theme = omo_load_theme("data/themes/basic/omo_theme.ini", 1, font_size);
 		if(!uip->popup_theme)
 		{
 			goto fail;

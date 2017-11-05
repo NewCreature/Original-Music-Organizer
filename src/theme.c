@@ -2,7 +2,7 @@
 #include "t3gui/theme.h"
 #include "theme.h"
 
-OMO_THEME * omo_load_theme(const char * fn, int mode)
+OMO_THEME * omo_load_theme(const char * fn, int mode, int font_size)
 {
 	OMO_THEME * tp;
 	const char * val;
@@ -40,7 +40,7 @@ OMO_THEME * omo_load_theme(const char * fn, int mode)
 					if(val)
 					{
 						al_set_path_filename(path, val);
-						tp->gui_theme[i] = t3gui_load_theme(al_path_cstr(path, '/'));
+						tp->gui_theme[i] = t3gui_load_theme(al_path_cstr(path, '/'), font_size);
 					}
 				}
 				for(i = 0; i < OMO_THEME_MAX_TEXTS; i++)

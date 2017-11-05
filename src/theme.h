@@ -31,7 +31,7 @@ typedef struct
 
 } OMO_THEME;
 
-OMO_THEME * omo_load_theme(const char * fn, int mode);
+OMO_THEME * omo_load_theme(const char * fn, int mode, int font_size);
 void omo_destroy_theme(OMO_THEME * tp);
 
 #endif
