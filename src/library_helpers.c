@@ -81,7 +81,6 @@ static bool omo_setup_library_helper(APP_INSTANCE * app)
 	}
 	if(app->loading_library->modified_time > get_path_mtime(t3f_get_filename(t3f_data_path, "omo.library")))
 	{
-		printf("rescan required\n");
 		app->loading_library->modified = true;
 	}
 	sprintf(app->library_loading_message, "Attempting to load cached library data...");

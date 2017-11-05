@@ -24,10 +24,20 @@ static bool omo_load_library_entry_f(ALLEGRO_FILE * fp, OMO_LIBRARY * lp)
     {
         return false;
     }
+    if(strlen(lp->entry[lp->entry_count]->sub_filename) < 1)
+    {
+        free(lp->entry[lp->entry_count]->sub_filename);
+        lp->entry[lp->entry_count]->sub_filename = NULL;
+    }
     lp->entry[lp->entry_count]->track = t3f_load_string_f(fp);
     if(!lp->entry[lp->entry_count]->track)
     {
         return false;
+    }
+    if(strlen(lp->entry[lp->entry_count]->track) < 1)
+    {
+        free(lp->entry[lp->entry_count]->track);
+        lp->entry[lp->entry_count]->track = NULL;
     }
     lp->entry[lp->entry_count]->id = t3f_load_string_f(fp);
     if(!lp->entry[lp->entry_count]->id)
