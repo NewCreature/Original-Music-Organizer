@@ -215,3 +215,21 @@ void omo_setup_library(APP_INSTANCE * app, const char * file_database_fn, const 
 		al_start_thread(app->library_thread);
 	}
 }
+
+const char * omo_get_library_file_id(OMO_LIBRARY * lp, const char * fn, const char * subfn, const char * track)
+{
+	char full_path[1024];
+
+	strcpy(full_path, fn);
+	if(subfn)
+	{
+		strcat(full_path, "/");
+		strcat(full_path, subfn);
+	}
+	if(track)
+	{
+		strcat(full_path, ":");
+		strcat(full_path, track);
+	}
+	return al_get_config_value(lp->file_database, full_path, "id");
+}
