@@ -41,6 +41,12 @@ typedef struct
     int song_entry_size;
     int song_entry_count;
 
+    /* store the newest modified time from library folders */
+    time_t modified_time;
+
+    /* flag to tell library to ignore caches (set when we change library folder settings) */
+    bool modified;
+
 } OMO_LIBRARY;
 
 OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_fn);
