@@ -52,12 +52,6 @@ v0.3
    theme system to load the font in the correct size so we get a properly sized
    font throughout the GUI system.
 
-[ ]Split off library list generation from library loading. We should be able to
-   use library features that aren't tied to the artist, album, and song lists
-   without waiting for those to generate. We should, of course, perform this
-   function in a separate thread so we can continue to use the program while
-   the lists generate.
-
 [ ]Add status bar to library view. We should show library-related messages in
    this status bar instead of using the list box.
 
