@@ -27,4 +27,6 @@ bool omo_add_file(const char * fn, void * data);
 
 bool omo_queue_file(const char * fn, void * data);
 
+void omo_clear_library_cache(void);
+
 #endif

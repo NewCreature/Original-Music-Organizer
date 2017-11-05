@@ -443,3 +443,11 @@ bool omo_queue_file(const char * fn, void * data)
 
     return false;
 }
+
+void omo_clear_library_cache(void)
+{
+	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.library"));
+	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.artists"));
+	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.albums"));
+	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.songs"));
+}
