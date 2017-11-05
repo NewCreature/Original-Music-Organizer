@@ -31,12 +31,9 @@ v0.3
 
 [ ]Implement library caching system.
 
-   [ ]Save a cache file for each library folder instead of one big cache file.
-      We need a way to match up the library path to the cached data path so we
-      can only reload cached data for current library folders. This will enable
-      us to use the same cache files across multiple profiles.
+   [X]Cache the artist, album, and song lists.
 
-   [ ]Cache the artist, album, and song lists.
+   [ ]Force rescan if we modify the library folder settings.
 
 [ ]Fix mixed tabs/spaces.
 
