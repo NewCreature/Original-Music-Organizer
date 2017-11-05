@@ -121,10 +121,12 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
         {
             if(pp->codec_handler->done_playing(pp->codec_data))
             {
+                al_stop_timer(t3f_timer);
                 omo_stop_player_playback(pp);
                 pp->state = OMO_PLAYER_STATE_FINISHED;
                 pp->queue_pos++;
                 next_file = true;
+                al_start_timer(t3f_timer);
             }
         }
         else
@@ -141,7 +143,9 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
                 archive_handler = omo_get_archive_handler(archive_handler_registry, pp->queue->entry[pp->queue_pos]->file);
                 if(archive_handler)
                 {
+                    al_stop_timer(t3f_timer);
                     archive_handler_data = archive_handler->open_archive(pp->queue->entry[pp->queue_pos]->file, temp_path);
+                    al_start_timer(t3f_timer);
                     if(archive_handler_data)
                     {
                         strcpy(pp->extracted_filename, "");
@@ -150,22 +154,29 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
                             pp->codec_handler = omo_get_codec_handler(codec_handler_registry, archive_handler->get_file(archive_handler_data, atoi(pp->queue->entry[pp->queue_pos]->sub_file), fn_buffer));
                             if(pp->codec_handler)
                             {
+                                al_stop_timer(t3f_timer);
                                 subfile = archive_handler->extract_file(archive_handler_data, atoi(pp->queue->entry[pp->queue_pos]->sub_file), fn_buffer);
+                                al_start_timer(t3f_timer);
                                 if(strlen(subfile) > 0)
                                 {
                                     strcpy(pp->extracted_filename, subfile);
+                                    al_stop_timer(t3f_timer);
                                     pp->codec_data = pp->codec_handler->load_file(pp->extracted_filename, pp->queue->entry[pp->queue_pos]->track);
+                                    al_start_timer(t3f_timer);
                                     if(pp->codec_data)
                                     {
+                                        al_stop_timer(t3f_timer);
                                         if(pp->codec_handler->play(pp->codec_data))
                                         {
                                             pp->state = OMO_PLAYER_STATE_PLAYING;
+                                            al_start_timer(t3f_timer);
                                             break;
                                         }
                                         else
                                         {
                                             pp->codec_handler->unload_file(pp->codec_data);
                                             pp->codec_handler = NULL;
+                                            al_start_timer(t3f_timer);
                                         }
                                     }
                                     else
@@ -183,18 +194,23 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
                     pp->codec_handler = omo_get_codec_handler(codec_handler_registry, pp->queue->entry[pp->queue_pos]->file);
                     if(pp->codec_handler)
                     {
+                        al_stop_timer(t3f_timer);
                         pp->codec_data = pp->codec_handler->load_file(pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->track);
+                        al_start_timer(t3f_timer);
                         if(pp->codec_data)
                         {
+                            al_stop_timer(t3f_timer);
                             if(pp->codec_handler->play(pp->codec_data))
                             {
                                 pp->state = OMO_PLAYER_STATE_PLAYING;
+                                al_start_timer(t3f_timer);
                                 break;
                             }
                             else
                             {
                                 pp->codec_handler->unload_file(pp->codec_data);
                                 pp->codec_handler = NULL;
+                                al_start_timer(t3f_timer);
                             }
                         }
                         else

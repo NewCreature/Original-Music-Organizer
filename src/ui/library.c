@@ -86,6 +86,7 @@ static void queue_song_list(void * data, OMO_LIBRARY * lp)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	int i;
 
+    al_stop_timer(t3f_timer);
 	maybe_stop_player(app);
 	if(prepare_queue(app, lp->song_entry_count))
 	{
@@ -96,6 +97,7 @@ static void queue_song_list(void * data, OMO_LIBRARY * lp)
 		maybe_start_player(app);
 		omo_get_queue_tags(app->player->queue, lp, app);
 	}
+    al_start_timer(t3f_timer);
 }
 
 void omo_library_logic(void * data)
@@ -113,7 +115,9 @@ void omo_library_logic(void * data)
         app->ui->ui_song_list_element->d1 = 0;
 		app->ui->ui_song_list_element->d2 = 0;
         val2 = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, app);
+        al_stop_timer(t3f_timer);
         omo_get_library_song_list(app->library, val2, "All Albums");
+        al_start_timer(t3f_timer);
     }
     else if(app->ui->ui_album_list_element->d1 != old_album_d1)
     {
@@ -121,7 +125,9 @@ void omo_library_logic(void * data)
 		app->ui->ui_song_list_element->d2 = 0;
         val = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, app);
         val2 = ui_album_list_proc(app->ui->ui_album_list_element->d1, NULL, app);
+        al_stop_timer(t3f_timer);
         omo_get_library_song_list(app->library, val, val2);
+        al_start_timer(t3f_timer);
     }
     if(app->ui->ui_artist_list_element->id1 >= 0)
     {
@@ -135,6 +141,7 @@ void omo_library_logic(void * data)
     }
     else if(app->ui->ui_song_list_element->id1 >= 0)
     {
+        al_stop_timer(t3f_timer);
 		maybe_stop_player(app);
 		if(prepare_queue(app, app->ui->selected_song < 0 ? app->library->song_entry_count : 1))
 		{
@@ -154,5 +161,6 @@ void omo_library_logic(void * data)
 			maybe_start_player(app);
 		}
         app->ui->ui_song_list_element->id1 = -1;
+        al_start_timer(t3f_timer);
     }
 }

@@ -45,7 +45,9 @@ bool omo_start_file_chooser(void * data, const char * title, const char * types,
     }
     if(!threaded)
     {
-      file_chooser_thread_helper(data);
+        al_stop_timer(t3f_timer);
+        file_chooser_thread_helper(data);
+        al_start_timer(t3f_timer);
     }
     else
     {
@@ -112,6 +114,7 @@ void omo_file_chooser_logic(void * data)
 			{
 				case 0:
 				{
+                    al_stop_timer(t3f_timer);
 					omo_stop_player(app->player);
 				    if(app->player->queue)
 				    {
@@ -127,10 +130,12 @@ void omo_file_chooser_logic(void * data)
 				        app->player->queue_pos = 0;
 				        app->player->state = OMO_PLAYER_STATE_PLAYING;
 				    }
+                    al_start_timer(t3f_timer);
 					break;
 				}
 				case 1:
 				{
+                    al_stop_timer(t3f_timer);
                     total_files = omo_get_total_files(app->file_chooser, data);
                     if(app->player->queue)
                     {
@@ -147,10 +152,12 @@ void omo_file_chooser_logic(void * data)
                         omo_sort_queue(app->player->queue, app->library, 0, old_queue_size, app->player->queue->entry_count - old_queue_size);
                         omo_get_queue_tags(app->player->queue, app->library, app);
                     }
+                    al_start_timer(t3f_timer);
 					break;
 				}
 				case 2:
 				{
+                    al_stop_timer(t3f_timer);
                     omo_stop_player(app->player);
                     if(app->player->queue)
                     {
@@ -176,10 +183,12 @@ void omo_file_chooser_logic(void * data)
                             }
                         }
                     }
+                    al_start_timer(t3f_timer);
 					break;
 				}
 				case 3:
 				{
+                    al_stop_timer(t3f_timer);
                     omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
                     if(t3f_scan_files(al_get_native_file_dialog_path(app->file_chooser, 0), omo_count_file, false, NULL, &file_helper_data))
                     {
@@ -202,10 +211,12 @@ void omo_file_chooser_logic(void * data)
                             }
                         }
                     }
+                    al_start_timer(t3f_timer);
 					break;
 				}
                 case 4:
                 {
+                    al_stop_timer(t3f_timer);
                     al_set_config_value(t3f_config, "Settings", "last_music_folder", al_get_native_file_dialog_path(app->file_chooser, 0));
                     val = al_get_config_value(t3f_config, "Settings", "library_folders");
                     if(val)
@@ -240,6 +251,7 @@ void omo_file_chooser_logic(void * data)
                         omo_clear_library_cache();
                         omo_setup_library(app, app->file_database_fn, app->entry_database_fn, NULL);
                     }
+                    al_start_timer(t3f_timer);
                     break;
                 }
 			}
