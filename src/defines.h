@@ -9,9 +9,9 @@
 #define OMO_MENU_VIEW     4
 
 #ifdef ALLEGRO_MACOSX
-    #define OMO_KEY_CTRL (t3f_key[ALLEGRO_KEY_COMMAND])
+	#define OMO_KEY_CTRL (t3f_key[ALLEGRO_KEY_COMMAND])
 #else
-    #define OMO_KEY_CTRL (t3f_key[ALLEGRO_KEY_LCTRL] || t3f_key[ALLEGRO_KEY_RCTRL])
+	#define OMO_KEY_CTRL (t3f_key[ALLEGRO_KEY_LCTRL] || t3f_key[ALLEGRO_KEY_RCTRL])
 #endif
 
 #define OMO_MAX_TAG_TYPES 16

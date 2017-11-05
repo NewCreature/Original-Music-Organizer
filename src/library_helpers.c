@@ -7,7 +7,7 @@ static int sort_names(const void *e1, const void *e2)
 {
 	char ** s1 = (char **)e1;
 	char ** s2 = (char **)e2;
-    return strcasecmp(*s1, *s2);
+	return strcasecmp(*s1, *s2);
 }
 
 static const char * get_library_folder(ALLEGRO_CONFIG * cp, int folder)

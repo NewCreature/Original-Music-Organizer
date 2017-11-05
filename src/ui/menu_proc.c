@@ -15,339 +15,339 @@ static char type_buf[1024] = {0};
 
 static const char * omo_get_type_string(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
-    int i, j;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	int i, j;
 
-    strcpy(type_buf, "");
-    for(i = 0; i < app->codec_handler_registry->codec_handlers; i++)
-    {
-        for(j = 0; j < app->codec_handler_registry->codec_handler[i].types; j++)
-        {
-            strcat(type_buf, "*");
-            strcat(type_buf, app->codec_handler_registry->codec_handler[i].type[j]);
-            strcat(type_buf, ";");
-        }
-    }
-    for(i = 0; i < app->archive_handler_registry->archive_handlers; i++)
-    {
-        for(j = 0; j < app->archive_handler_registry->archive_handler[i].types; j++)
-        {
-            strcat(type_buf, "*");
-            strcat(type_buf, app->archive_handler_registry->archive_handler[i].type[j]);
-            strcat(type_buf, ";");
-        }
-    }
-    type_buf[strlen(type_buf) - 1] = '\0';
-    return type_buf;
+	strcpy(type_buf, "");
+	for(i = 0; i < app->codec_handler_registry->codec_handlers; i++)
+	{
+		for(j = 0; j < app->codec_handler_registry->codec_handler[i].types; j++)
+		{
+			strcat(type_buf, "*");
+			strcat(type_buf, app->codec_handler_registry->codec_handler[i].type[j]);
+			strcat(type_buf, ";");
+		}
+	}
+	for(i = 0; i < app->archive_handler_registry->archive_handlers; i++)
+	{
+		for(j = 0; j < app->archive_handler_registry->archive_handler[i].types; j++)
+		{
+			strcat(type_buf, "*");
+			strcat(type_buf, app->archive_handler_registry->archive_handler[i].type[j]);
+			strcat(type_buf, ";");
+		}
+	}
+	type_buf[strlen(type_buf) - 1] = '\0';
+	return type_buf;
 }
 
 static void open_tags_dialog(void * data, const char * fullfn)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
-    const char * val2;
-    int i;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	const char * val2;
+	int i;
 
-    app->ui->tags_entry = al_get_config_value(app->library->file_database, fullfn, "id");
-    if(app->ui->tags_entry)
-    {
-        for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
-        {
-            strcpy(app->ui->tags_text[i], "");
-            if(omo_tag_type[i])
-            {
-                val2 = al_get_config_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i]);
-                if(val2)
-                {
-                    strcpy(app->ui->tags_text[i], val2);
-                }
-            }
-        }
-        omo_open_tags_dialog(app->ui, app);
-    }
+	app->ui->tags_entry = al_get_config_value(app->library->file_database, fullfn, "id");
+	if(app->ui->tags_entry)
+	{
+		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+		{
+			strcpy(app->ui->tags_text[i], "");
+			if(omo_tag_type[i])
+			{
+				val2 = al_get_config_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i]);
+				if(val2)
+				{
+					strcpy(app->ui->tags_text[i], val2);
+				}
+			}
+		}
+		omo_open_tags_dialog(app->ui, app);
+	}
 }
 
 int omo_menu_file_play_files(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    app->file_chooser_mode = 0;
-    app->file_chooser_done = false;
-    omo_start_file_chooser(data, "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE, true);
-    return 1;
+	app->file_chooser_mode = 0;
+	app->file_chooser_done = false;
+	omo_start_file_chooser(data, "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE, true);
+	return 1;
 }
 
 int omo_menu_file_queue_files(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    app->file_chooser_mode = 1;
-    app->file_chooser_done = false;
-    omo_start_file_chooser(data, "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE, true);
-    return 1;
+	app->file_chooser_mode = 1;
+	app->file_chooser_done = false;
+	omo_start_file_chooser(data, "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE, true);
+	return 1;
 }
 
 int omo_menu_file_play_folder(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    app->file_chooser_mode = 2;
-    app->file_chooser_done = false;
-    omo_start_file_chooser(data, "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER, true);
-    return 1;
+	app->file_chooser_mode = 2;
+	app->file_chooser_done = false;
+	omo_start_file_chooser(data, "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER, true);
+	return 1;
 }
 
 int omo_menu_file_queue_folder(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    app->file_chooser_mode = 3;
-    app->file_chooser_done = false;
-    omo_start_file_chooser(data, "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER, true);
-    return 1;
+	app->file_chooser_mode = 3;
+	app->file_chooser_done = false;
+	omo_start_file_chooser(data, "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER, true);
+	return 1;
 }
 
 int omo_menu_file_exit(void * data)
 {
-    t3f_exit();
-    return 1;
+	t3f_exit();
+	return 1;
 }
 
 int omo_menu_playback_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    if(app->player->queue)
-    {
-        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
-    }
-    else
-    {
-        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
-    }
-    return 1;
+	if(app->player->queue)
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
+	}
+	else
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
+	}
+	return 1;
 }
 
 int omo_menu_playback_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    if(app->library && app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
-    {
-        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
-    }
-    else
-    {
-        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
-    }
-    return 1;
+	if(app->library && app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
+	}
+	else
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
+	}
+	return 1;
 }
 
 int omo_menu_playback_previous_track(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    omo_play_previous_song(app->player);
-    return 1;
+	omo_play_previous_song(app->player);
+	return 1;
 }
 
 int omo_menu_playback_play(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    omo_resume_player(app->player);
-    return 1;
+	omo_resume_player(app->player);
+	return 1;
 }
 
 int omo_menu_playback_pause(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    omo_pause_player(app->player);
-    return 1;
+	omo_pause_player(app->player);
+	return 1;
 }
 
 int omo_menu_playback_stop(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    omo_stop_player(app->player);
-    return 1;
+	omo_stop_player(app->player);
+	return 1;
 }
 
 int omo_menu_playback_next_track(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    omo_play_next_song(app->player);
-    return 1;
+	omo_play_next_song(app->player);
+	return 1;
 }
 
 int omo_menu_playback_shuffle(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
-    OMO_QUEUE * new_queue;
-    int i, r;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_QUEUE * new_queue;
+	int i, r;
 
-    if(app->player->queue)
-    {
-        /* stop currently playing song */
-        omo_stop_player(app->player);
+	if(app->player->queue)
+	{
+		/* stop currently playing song */
+		omo_stop_player(app->player);
 
-        /* create new queue */
-        new_queue = omo_create_queue(app->player->queue->entry_count);
-        if(new_queue)
-        {
-            al_destroy_thread(app->player->queue->thread);
-            app->player->queue->thread = NULL;
-            for(i = 0; i < new_queue->entry_size; i++)
-            {
-                r = t3f_rand(&app->rng_state) % app->player->queue->entry_count;
-                omo_add_file_to_queue(new_queue, app->player->queue->entry[r]->file, app->player->queue->entry[r]->sub_file, app->player->queue->entry[r]->track);
-                omo_delete_queue_item(app->player->queue, r);
-            }
-            omo_destroy_queue(app->player->queue);
-            app->player->queue = new_queue;
-            app->player->queue_pos = 0;
-            omo_get_queue_tags(app->player->queue, app->library, app);
-        }
-    }
-    return 1;
+		/* create new queue */
+		new_queue = omo_create_queue(app->player->queue->entry_count);
+		if(new_queue)
+		{
+			al_destroy_thread(app->player->queue->thread);
+			app->player->queue->thread = NULL;
+			for(i = 0; i < new_queue->entry_size; i++)
+			{
+				r = t3f_rand(&app->rng_state) % app->player->queue->entry_count;
+				omo_add_file_to_queue(new_queue, app->player->queue->entry[r]->file, app->player->queue->entry[r]->sub_file, app->player->queue->entry[r]->track);
+				omo_delete_queue_item(app->player->queue, r);
+			}
+			omo_destroy_queue(app->player->queue);
+			app->player->queue = new_queue;
+			app->player->queue_pos = 0;
+			omo_get_queue_tags(app->player->queue, app->library, app);
+		}
+	}
+	return 1;
 }
 
 int omo_menu_playback_edit_tags(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
-    char fullfn[1024];
-    int j;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	char fullfn[1024];
+	int j;
 
-    app->ui->tags_queue_entry = -1;
-    if(app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
-    {
-        j = app->ui->ui_queue_list_element->d1;
-        strcpy(fullfn, app->player->queue->entry[j]->file);
-        if(app->player->queue->entry[j]->sub_file)
-        {
-            strcat(fullfn, "/");
-            strcat(fullfn, app->player->queue->entry[j]->sub_file);
-        }
-        if(app->player->queue->entry[j]->track)
-        {
-            strcat(fullfn, ":");
-            strcat(fullfn, app->player->queue->entry[j]->track);
-        }
-        app->ui->tags_queue_entry = app->ui->ui_queue_list_element->d1;
-        open_tags_dialog(app, fullfn);
-    }
-    return 1;
+	app->ui->tags_queue_entry = -1;
+	if(app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
+	{
+		j = app->ui->ui_queue_list_element->d1;
+		strcpy(fullfn, app->player->queue->entry[j]->file);
+		if(app->player->queue->entry[j]->sub_file)
+		{
+			strcat(fullfn, "/");
+			strcat(fullfn, app->player->queue->entry[j]->sub_file);
+		}
+		if(app->player->queue->entry[j]->track)
+		{
+			strcat(fullfn, ":");
+			strcat(fullfn, app->player->queue->entry[j]->track);
+		}
+		app->ui->tags_queue_entry = app->ui->ui_queue_list_element->d1;
+		open_tags_dialog(app, fullfn);
+	}
+	return 1;
 }
 
 int omo_menu_library_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    if(app->library && app->ui->ui_song_list_element->flags & D_GOTFOCUS)
-    {
-        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
-    }
-    else
-    {
-        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
-    }
-    return 1;
+	if(app->library && app->ui->ui_song_list_element->flags & D_GOTFOCUS)
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
+	}
+	else
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
+	}
+	return 1;
 }
 
 int omo_menu_library_add_folder(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    app->file_chooser_mode = 4;
-    app->file_chooser_done = false;
-    omo_start_file_chooser(data, "Select library folder.", al_get_config_value(t3f_config, "Settings", "last_music_folder"), ALLEGRO_FILECHOOSER_FOLDER, true);
-    return 1;
+	app->file_chooser_mode = 4;
+	app->file_chooser_done = false;
+	omo_start_file_chooser(data, "Select library folder.", al_get_config_value(t3f_config, "Settings", "last_music_folder"), ALLEGRO_FILECHOOSER_FOLDER, true);
+	return 1;
 }
 
 int omo_menu_library_clear_folders(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
-    char buf[4];
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	char buf[4];
 
-    sprintf(buf, "%d", 0);
-    al_set_config_value(t3f_config, "Settings", "library_folders", buf);
-    omo_cancel_library_setup(app);
-    if(app->library)
-    {
-        omo_destroy_library(app->library);
-        app->library = NULL;
-    }
-    omo_clear_library_cache();
-    sprintf(app->library_loading_message, "No Library Folders");
-    return 1;
+	sprintf(buf, "%d", 0);
+	al_set_config_value(t3f_config, "Settings", "library_folders", buf);
+	omo_cancel_library_setup(app);
+	if(app->library)
+	{
+		omo_destroy_library(app->library);
+		app->library = NULL;
+	}
+	omo_clear_library_cache();
+	sprintf(app->library_loading_message, "No Library Folders");
+	return 1;
 }
 
 int omo_menu_library_edit_tags(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
-    char fullfn[1024];
-    int j;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	char fullfn[1024];
+	int j;
 
-    if(app->library)
-    {
-        if(app->ui->ui_song_list_element->flags & D_GOTFOCUS)
-        {
-            j = app->ui->ui_song_list_element->d1 - 1;
+	if(app->library)
+	{
+		if(app->ui->ui_song_list_element->flags & D_GOTFOCUS)
+		{
+			j = app->ui->ui_song_list_element->d1 - 1;
 			if(j >= 0)
 			{
-	            strcpy(fullfn, app->library->entry[app->library->song_entry[j]]->filename);
-	            if(app->library->entry[app->library->song_entry[j]]->sub_filename)
-	            {
-	                strcat(fullfn, "/");
-	                strcat(fullfn, app->library->entry[app->library->song_entry[j]]->sub_filename);
-	            }
-	            if(app->library->entry[app->library->song_entry[j]]->track)
-	            {
-	                strcat(fullfn, ":");
-	                strcat(fullfn, app->library->entry[app->library->song_entry[j]]->track);
-	            }
+				strcpy(fullfn, app->library->entry[app->library->song_entry[j]]->filename);
+				if(app->library->entry[app->library->song_entry[j]]->sub_filename)
+				{
+					strcat(fullfn, "/");
+					strcat(fullfn, app->library->entry[app->library->song_entry[j]]->sub_filename);
+				}
+				if(app->library->entry[app->library->song_entry[j]]->track)
+				{
+					strcat(fullfn, ":");
+					strcat(fullfn, app->library->entry[app->library->song_entry[j]]->track);
+				}
 			}
-            open_tags_dialog(app, fullfn);
-        }
-    }
-    return 1;
+			open_tags_dialog(app, fullfn);
+		}
+	}
+	return 1;
 }
 
 int omo_menu_view_basic_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    if(app->library_view)
-    {
-        t3f_set_menu_item_flags(mp, item, 0);
-    }
-    else
-    {
-        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_CHECKED);
-    }
-    return 1;
+	if(app->library_view)
+	{
+		t3f_set_menu_item_flags(mp, item, 0);
+	}
+	else
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_CHECKED);
+	}
+	return 1;
 }
 
 int omo_menu_view_library_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    if(app->library_view)
-    {
-        t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_CHECKED);
-    }
-    else
-    {
-        t3f_set_menu_item_flags(mp, item, 0);
-    }
-    return 1;
+	if(app->library_view)
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_CHECKED);
+	}
+	else
+	{
+		t3f_set_menu_item_flags(mp, item, 0);
+	}
+	return 1;
 }
 
 int omo_menu_view_basic(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	const char * v_x;
 	const char * v_y;
 	const char * v_width;
@@ -356,15 +356,15 @@ int omo_menu_view_basic(void * data)
 	char buf[32] = {0};
 	ALLEGRO_MONITOR_INFO monitor_info;
 
-    if(app->library_view)
-    {
-        t3gui_close_dialog(app->ui->ui_dialog);
+	if(app->library_view)
+	{
+		t3gui_close_dialog(app->ui->ui_dialog);
 
-    	al_get_window_position(t3f_display, &c_x, &c_y);
-    	c_width = al_get_display_width(t3f_display);
-    	c_height = al_get_display_height(t3f_display);
+		al_get_window_position(t3f_display, &c_x, &c_y);
+		c_width = al_get_display_width(t3f_display);
+		c_height = al_get_display_height(t3f_display);
 
-        v_x = al_get_config_value(t3f_config, "Settings", "basic_view_x");
+		v_x = al_get_config_value(t3f_config, "Settings", "basic_view_x");
 		v_y = al_get_config_value(t3f_config, "Settings", "basic_view_y");
 		v_width = al_get_config_value(t3f_config, "Settings", "basic_view_width");
 		v_height = al_get_config_value(t3f_config, "Settings", "basic_view_height");
@@ -378,36 +378,36 @@ int omo_menu_view_basic(void * data)
 		al_set_config_value(t3f_config, "Settings", "library_view_height", buf);
 		al_set_config_value(t3f_config, "Settings", "last_view", "basic");
 
-        if(!t3f_key[ALLEGRO_KEY_LCTRL] && !t3f_key[ALLEGRO_KEY_RCTRL] && !t3f_key[ALLEGRO_KEY_COMMAND] && v_x && v_y && v_width && v_height)
-    	{
-    		c_x = atoi(v_x);
-    		c_y = atoi(v_y);
-    		c_width = atoi(v_width);
-    		c_height = atoi(v_height);
-    	}
-    	else
-    	{
-            c_old_width = c_width;
+		if(!t3f_key[ALLEGRO_KEY_LCTRL] && !t3f_key[ALLEGRO_KEY_RCTRL] && !t3f_key[ALLEGRO_KEY_COMMAND] && v_x && v_y && v_width && v_height)
+		{
+			c_x = atoi(v_x);
+			c_y = atoi(v_y);
+			c_width = atoi(v_width);
+			c_height = atoi(v_height);
+		}
+		else
+		{
+			c_old_width = c_width;
 			c_width /= 4;
 			c_x += c_old_width - c_width;
 			if(c_x + c_width > monitor_info.x2 - monitor_info.x1)
 			{
 				c_x = monitor_info.x2 - c_width;
 			}
-        }
-        app->library_view = false;
-        al_resize_display(t3f_display, c_width, c_height);
-    	al_set_window_position(t3f_display, c_x, c_y);
-    	omo_create_main_dialog(app->ui, 0, c_width, c_height, app);
-    	omo_set_window_constraints(app);
-    	t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
-    }
-    return 1;
+		}
+		app->library_view = false;
+		al_resize_display(t3f_display, c_width, c_height);
+		al_set_window_position(t3f_display, c_x, c_y);
+		omo_create_main_dialog(app->ui, 0, c_width, c_height, app);
+		omo_set_window_constraints(app);
+		t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
+	}
+	return 1;
 }
 
 int omo_menu_view_library(void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	const char * v_x;
 	const char * v_y;
 	const char * v_width;
@@ -416,39 +416,39 @@ int omo_menu_view_library(void * data)
 	char buf[32] = {0};
 	ALLEGRO_MONITOR_INFO monitor_info;
 
-    if(!app->library_view)
-    {
-        t3gui_close_dialog(app->ui->ui_dialog);
+	if(!app->library_view)
+	{
+		t3gui_close_dialog(app->ui->ui_dialog);
 
-    	al_get_window_position(t3f_display, &c_x, &c_y);
-    	c_width = al_get_display_width(t3f_display);
-    	c_height = al_get_display_height(t3f_display);
+		al_get_window_position(t3f_display, &c_x, &c_y);
+		c_width = al_get_display_width(t3f_display);
+		c_height = al_get_display_height(t3f_display);
 
-        v_x = al_get_config_value(t3f_config, "Settings", "library_view_x");
-        v_y = al_get_config_value(t3f_config, "Settings", "library_view_y");
-        v_width = al_get_config_value(t3f_config, "Settings", "library_view_width");
-        v_height = al_get_config_value(t3f_config, "Settings", "library_view_height");
-        sprintf(buf, "%d", c_x);
-        al_set_config_value(t3f_config, "Settings", "basic_view_x", buf);
-        sprintf(buf, "%d", c_y);
-        al_set_config_value(t3f_config, "Settings", "basic_view_y", buf);
-        sprintf(buf, "%d", c_width);
-        al_set_config_value(t3f_config, "Settings", "basic_view_width", buf);
-        sprintf(buf, "%d", c_height);
-        al_set_config_value(t3f_config, "Settings", "basic_view_height", buf);
-        al_set_config_value(t3f_config, "Settings", "last_view", "library");
+		v_x = al_get_config_value(t3f_config, "Settings", "library_view_x");
+		v_y = al_get_config_value(t3f_config, "Settings", "library_view_y");
+		v_width = al_get_config_value(t3f_config, "Settings", "library_view_width");
+		v_height = al_get_config_value(t3f_config, "Settings", "library_view_height");
+		sprintf(buf, "%d", c_x);
+		al_set_config_value(t3f_config, "Settings", "basic_view_x", buf);
+		sprintf(buf, "%d", c_y);
+		al_set_config_value(t3f_config, "Settings", "basic_view_y", buf);
+		sprintf(buf, "%d", c_width);
+		al_set_config_value(t3f_config, "Settings", "basic_view_width", buf);
+		sprintf(buf, "%d", c_height);
+		al_set_config_value(t3f_config, "Settings", "basic_view_height", buf);
+		al_set_config_value(t3f_config, "Settings", "last_view", "library");
 
-        if(!t3f_key[ALLEGRO_KEY_LCTRL] && !t3f_key[ALLEGRO_KEY_RCTRL] && !t3f_key[ALLEGRO_KEY_COMMAND] && v_x && v_y && v_width && v_height)
-    	{
-    		c_x = atoi(v_x);
-    		c_y = atoi(v_y);
-    		c_width = atoi(v_width);
-    		c_height = atoi(v_height);
-    	}
-    	else
-    	{
-            al_get_monitor_info(0, &monitor_info);
-            c_old_width = c_width;
+		if(!t3f_key[ALLEGRO_KEY_LCTRL] && !t3f_key[ALLEGRO_KEY_RCTRL] && !t3f_key[ALLEGRO_KEY_COMMAND] && v_x && v_y && v_width && v_height)
+		{
+			c_x = atoi(v_x);
+			c_y = atoi(v_y);
+			c_width = atoi(v_width);
+			c_height = atoi(v_height);
+		}
+		else
+		{
+			al_get_monitor_info(0, &monitor_info);
+			c_old_width = c_width;
 			c_width *= 4;
 			if(c_width > monitor_info.x2 - monitor_info.x1)
 			{
@@ -459,14 +459,14 @@ int omo_menu_view_library(void * data)
 			{
 				c_x = 0;
 			}
-        }
-        app->library_view = true;
-        al_resize_display(t3f_display, c_width, c_height);
-    	al_set_window_position(t3f_display, c_x, c_y);
-    	omo_create_main_dialog(app->ui, 1, c_width, c_height, app);
-    	omo_set_window_constraints(app);
-    	t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
-    }
+		}
+		app->library_view = true;
+		al_resize_display(t3f_display, c_width, c_height);
+		al_set_window_position(t3f_display, c_x, c_y);
+		omo_create_main_dialog(app->ui, 1, c_width, c_height, app);
+		omo_set_window_constraints(app);
+		t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
+	}
 
-    return 1;
+	return 1;
 }

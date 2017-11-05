@@ -296,65 +296,65 @@ void MD5_Final(unsigned char *result, MD5_CTX *ctx)
 static char md5_hash_string[33];
 
 char *str2md5(const char *str, int length) {
-    int n;
-    MD5_CTX c;
-    unsigned char digest[16];
-    char *out = md5_hash_string;
+	int n;
+	MD5_CTX c;
+	unsigned char digest[16];
+	char *out = md5_hash_string;
 
-    MD5_Init(&c);
+	MD5_Init(&c);
 
-    while (length > 0) {
-        if (length > 512) {
-            MD5_Update(&c, str, 512);
-        } else {
-            MD5_Update(&c, str, length);
-        }
-        length -= 512;
-        str += 512;
-    }
+	while (length > 0) {
+		if (length > 512) {
+			MD5_Update(&c, str, 512);
+		} else {
+			MD5_Update(&c, str, length);
+		}
+		length -= 512;
+		str += 512;
+	}
 
-    MD5_Final(digest, &c);
+	MD5_Final(digest, &c);
 
-    for (n = 0; n < 16; ++n) {
-        snprintf(&(out[n*2]), 16*2, "%02x", (unsigned int)digest[n]);
-    }
+	for (n = 0; n < 16; ++n) {
+		snprintf(&(out[n*2]), 16*2, "%02x", (unsigned int)digest[n]);
+	}
 
-    return out;
+	return out;
 }
 
 const char * md5_file(const char * fn)
 {
-    FILE * fp;
-    unsigned long file_size;
-    char * buffer;
-    char * output;
-    int hashed = 0;
-    int i;
+	FILE * fp;
+	unsigned long file_size;
+	char * buffer;
+	char * output;
+	int hashed = 0;
+	int i;
 
-    strcpy(md5_hash_string, "");
-    fp = fopen(fn, "rb");
-    if(fp)
-    {
-        fseek(fp, 0, SEEK_END);
-        file_size = ftell(fp);
-        fseek(fp, 0, SEEK_SET);
-        buffer = malloc(file_size);
-        if(buffer)
-        {
-            for(i = 0; i < file_size; i++)
-            {
-                buffer[i] = fgetc(fp);
-            }
-            output = str2md5(buffer, file_size);
-            strcpy(md5_hash_string, output);
-            free(buffer);
-            hashed = 1;
-        }
-        fclose(fp);
-    }
-    if(hashed)
-    {
-        return md5_hash_string;
-    }
-    return NULL;
+	strcpy(md5_hash_string, "");
+	fp = fopen(fn, "rb");
+	if(fp)
+	{
+		fseek(fp, 0, SEEK_END);
+		file_size = ftell(fp);
+		fseek(fp, 0, SEEK_SET);
+		buffer = malloc(file_size);
+		if(buffer)
+		{
+			for(i = 0; i < file_size; i++)
+			{
+				buffer[i] = fgetc(fp);
+			}
+			output = str2md5(buffer, file_size);
+			strcpy(md5_hash_string, output);
+			free(buffer);
+			hashed = 1;
+		}
+		fclose(fp);
+	}
+	if(hashed)
+	{
+		return md5_hash_string;
+	}
+	return NULL;
 }

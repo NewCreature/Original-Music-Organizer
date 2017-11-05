@@ -218,7 +218,7 @@ bool omo_count_file(const char * fn, void * data)
 		}
 	}
 
-    return false;
+	return false;
 }
 
 bool omo_add_file(const char * fn, void * data)
@@ -323,7 +323,7 @@ bool omo_add_file(const char * fn, void * data)
 
 	if(ret == 2)
 	{
-    	return false;
+		return false;
 	}
 	return true;
 }
@@ -402,7 +402,7 @@ bool omo_queue_file(const char * fn, void * data)
 						if(extracted_fn)
 						{
 							c2 = codec_handler->get_track_count(NULL, extracted_fn);
-				            al_remove_filename(extracted_fn);
+							al_remove_filename(extracted_fn);
 						}
 					}
 					for(j = 0; j < c2; j++)
@@ -441,7 +441,7 @@ bool omo_queue_file(const char * fn, void * data)
 		}
 	}
 
-    return false;
+	return false;
 }
 
 void omo_clear_library_cache(void)

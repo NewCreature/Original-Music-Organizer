@@ -8,8 +8,8 @@
 typedef struct
 {
 
-    OMO_CODEC_HANDLER codec_handler[OMO_MAX_REGISTERED_CODEC_HANDLERS];
-    int codec_handlers;
+	OMO_CODEC_HANDLER codec_handler[OMO_MAX_REGISTERED_CODEC_HANDLERS];
+	int codec_handlers;
 
 } OMO_CODEC_HANDLER_REGISTRY;
 

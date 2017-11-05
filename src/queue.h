@@ -7,34 +7,34 @@
 typedef struct
 {
 
-    char artist[256];
-    char album[256];
-    char title[256];
-    char track[8];
+	char artist[256];
+	char album[256];
+	char title[256];
+	char track[8];
 
 } OMO_QUEUE_TAGS;
 
 typedef struct
 {
 
-    char * file;
-    char * sub_file;
-    char * track;
+	char * file;
+	char * sub_file;
+	char * track;
 
-    OMO_QUEUE_TAGS tags;
-    bool tags_retrieved;
+	OMO_QUEUE_TAGS tags;
+	bool tags_retrieved;
 
 } OMO_QUEUE_ENTRY;
 
 typedef struct
 {
 
-    OMO_QUEUE_ENTRY ** entry;
-    int entry_size;
-    int entry_count;
+	OMO_QUEUE_ENTRY ** entry;
+	int entry_size;
+	int entry_count;
 
-    ALLEGRO_THREAD * thread; // tags scanner thread
-    bool thread_done;
+	ALLEGRO_THREAD * thread; // tags scanner thread
+	bool thread_done;
 
 } OMO_QUEUE;
 

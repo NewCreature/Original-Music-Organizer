@@ -9,31 +9,31 @@
 typedef struct
 {
 
-    char type[OMO_CODEC_HANDLER_MAX_TYPES][OMO_CODEC_HANDLER_MAX_TYPE_SIZE];
-    int types;
+	char type[OMO_CODEC_HANDLER_MAX_TYPES][OMO_CODEC_HANDLER_MAX_TYPE_SIZE];
+	int types;
 
-    /* init/exit routines */
-    bool (*initialize)(void);
-    void (*exit)(void);
+	/* init/exit routines */
+	bool (*initialize)(void);
+	void (*exit)(void);
 
-    /* file operations */
-    void * (*load_file)(const char * fn, const char * subfn);
-    void (*unload_file)(void * data);
-    int (*get_track_count)(void * data, const char * fn);
-    const char * (*get_tag)(void * data, const char * name);
+	/* file operations */
+	void * (*load_file)(const char * fn, const char * subfn);
+	void (*unload_file)(void * data);
+	int (*get_track_count)(void * data, const char * fn);
+	const char * (*get_tag)(void * data, const char * name);
 
-    /* playback functions */
-    bool (*play)(void * data);
-    bool (*pause)(void * data);
-    bool (*resume)(void * data);
-    void (*stop)(void * data);
-    bool (*seek)(void * data, double pos);
-    double (*get_position)(void * data);
-    double (*get_length)(void * data);
-    bool (*done_playing)(void * data);
+	/* playback functions */
+	bool (*play)(void * data);
+	bool (*pause)(void * data);
+	bool (*resume)(void * data);
+	void (*stop)(void * data);
+	bool (*seek)(void * data, double pos);
+	double (*get_position)(void * data);
+	double (*get_length)(void * data);
+	bool (*done_playing)(void * data);
 
-    /* instance data */
-    void * data;
+	/* instance data */
+	void * data;
 
 } OMO_CODEC_HANDLER;
 

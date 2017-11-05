@@ -22,7 +22,7 @@
 
 static int queue_list_visible_elements(T3GUI_ELEMENT * element)
 {
-    return element->h / al_get_font_line_height(element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font) - 1;
+	return element->h / al_get_font_line_height(element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font) - 1;
 }
 
 /* main logic routine */
@@ -32,36 +32,36 @@ void omo_logic(void * data)
 	int old_queue_list_pos = -1;
 	int visible = 0;
 
-    t3f_refresh_menus();
-    if(app->test_mode)
-    {
-        if(!omo_test_logic(app))
-        {
-            printf("Testing ended prematurely!\n");
-            t3f_exit();
-        }
-    }
+	t3f_refresh_menus();
+	if(app->test_mode)
+	{
+		if(!omo_test_logic(app))
+		{
+			printf("Testing ended prematurely!\n");
+			t3f_exit();
+		}
+	}
 	switch(app->state)
 	{
 		default:
 		{
 			if(app->player->queue)
-		    {
-		        old_queue_list_pos = app->player->queue_pos;
+			{
+				old_queue_list_pos = app->player->queue_pos;
 				visible = queue_list_visible_elements(app->ui->ui_queue_list_element);
-                if(visible > app->player->queue->entry_count)
-                {
-                    visible = app->player->queue->entry_count;
-                }
-		    }
+				if(visible > app->player->queue->entry_count)
+				{
+					visible = app->player->queue->entry_count;
+				}
+			}
 			if(app->library_thread && app->loading_library_file_helper_data.scan_done)
 			{
 				al_destroy_thread(app->library_thread);
 				app->library_thread = NULL;
-                if(app->library && app->player->queue)
-                {
-                    omo_get_queue_tags(app->player->queue, app->library, app);
-                }
+				if(app->library && app->player->queue)
+				{
+					omo_get_queue_tags(app->player->queue, app->library, app);
+				}
 			}
 			omo_file_chooser_logic(data);
 			omo_library_pre_gui_logic(data);
@@ -87,32 +87,32 @@ void omo_logic(void * data)
 			omo_player_logic(app->player, app->archive_handler_registry, app->codec_handler_registry, app->player_temp_path);
 			app->ui->ui_queue_list_element->id2 = app->player->queue_pos;
 
-		    /* see if we should scroll the queue list */
-		    if(app->player->queue && app->player->queue_pos != old_queue_list_pos)
-		    {
-		        if(old_queue_list_pos >= app->ui->ui_queue_list_element->d2 && old_queue_list_pos < app->ui->ui_queue_list_element->d2 + visible + 1)
-		        {
-		            if(app->player->queue_pos < app->ui->ui_queue_list_element->d2)
-		            {
-		                app->ui->ui_queue_list_element->d2 -= visible + 1;
-		                if(app->ui->ui_queue_list_element->d2 < 0)
-		                {
-		                    app->ui->ui_queue_list_element->d2 = 0;
-		                }
-		            }
-		            else if(app->player->queue_pos > app->ui->ui_queue_list_element->d2 + visible)
-		            {
-		                app->ui->ui_queue_list_element->d2 += visible + 1;
-		            }
-		        }
-		    }
-            if(app->player->queue)
-            {
-                if(app->ui->ui_queue_list_element->d2 + visible > app->player->queue->entry_count)
-                {
-                    app->ui->ui_queue_list_element->d2 = app->player->queue->entry_count - visible - 1;
-                }
-            }
+			/* see if we should scroll the queue list */
+			if(app->player->queue && app->player->queue_pos != old_queue_list_pos)
+			{
+				if(old_queue_list_pos >= app->ui->ui_queue_list_element->d2 && old_queue_list_pos < app->ui->ui_queue_list_element->d2 + visible + 1)
+				{
+					if(app->player->queue_pos < app->ui->ui_queue_list_element->d2)
+					{
+						app->ui->ui_queue_list_element->d2 -= visible + 1;
+						if(app->ui->ui_queue_list_element->d2 < 0)
+						{
+							app->ui->ui_queue_list_element->d2 = 0;
+						}
+					}
+					else if(app->player->queue_pos > app->ui->ui_queue_list_element->d2 + visible)
+					{
+						app->ui->ui_queue_list_element->d2 += visible + 1;
+					}
+				}
+			}
+			if(app->player->queue)
+			{
+				if(app->ui->ui_queue_list_element->d2 + visible > app->player->queue->entry_count)
+				{
+					app->ui->ui_queue_list_element->d2 = app->player->queue->entry_count - visible - 1;
+				}
+			}
 		}
 	}
 }

@@ -9,19 +9,19 @@
 typedef struct
 {
 
-    char type[OMO_ARCHIVE_HANDLER_MAX_TYPES][OMO_ARCHIVE_HANDLER_MAX_TYPE_SIZE];
-    int types;
+	char type[OMO_ARCHIVE_HANDLER_MAX_TYPES][OMO_ARCHIVE_HANDLER_MAX_TYPE_SIZE];
+	int types;
 
-    /* archive handling functions */
-    void * (*open_archive)(const char * fn, ALLEGRO_PATH * temp_path);
-    void (*close_archive)(void * data);
-    int (*count_files)(void * data);
-    const char * (*get_file)(void * data, int index, char * buffer);
-    const char * (*extract_file)(void * data, int index, char * buffer);
-//    const char * (*get_temp_file)(const char * fn, )
+	/* archive handling functions */
+	void * (*open_archive)(const char * fn, ALLEGRO_PATH * temp_path);
+	void (*close_archive)(void * data);
+	int (*count_files)(void * data);
+	const char * (*get_file)(void * data, int index, char * buffer);
+	const char * (*extract_file)(void * data, int index, char * buffer);
+//	const char * (*get_temp_file)(const char * fn, )
 
-    /* instance data */
-    void * data;
+	/* instance data */
+	void * data;
 
 } OMO_ARCHIVE_HANDLER;
 

@@ -7,45 +7,45 @@
 typedef struct
 {
 
-    char * filename;
-    char * sub_filename;
-    char * track;
-    const char * id;
+	char * filename;
+	char * sub_filename;
+	char * track;
+	const char * id;
 
 } OMO_LIBRARY_ENTRY;
 
 typedef struct
 {
 
-    /* two databases, one for storing file paths and one for storing song
-       information that the file database references by id */
-    char * file_database_fn;
-    ALLEGRO_CONFIG * file_database;
-    char * entry_database_fn;
-    ALLEGRO_CONFIG * entry_database;
+	/* two databases, one for storing file paths and one for storing song
+	   information that the file database references by id */
+	char * file_database_fn;
+	ALLEGRO_CONFIG * file_database;
+	char * entry_database_fn;
+	ALLEGRO_CONFIG * entry_database;
 
-    OMO_LIBRARY_ENTRY ** entry;
-    unsigned long entry_size;
-    unsigned long entry_count;
+	OMO_LIBRARY_ENTRY ** entry;
+	unsigned long entry_size;
+	unsigned long entry_count;
 
-    char ** artist_entry;
-    int artist_entry_size;
-    int artist_entry_count;
+	char ** artist_entry;
+	int artist_entry_size;
+	int artist_entry_count;
 
-    char ** album_entry;
-    int album_entry_size;
-    int album_entry_count;
+	char ** album_entry;
+	int album_entry_size;
+	int album_entry_count;
 
-    /* current list of songs for song list pane */
-    unsigned long * song_entry;
-    int song_entry_size;
-    int song_entry_count;
+	/* current list of songs for song list pane */
+	unsigned long * song_entry;
+	int song_entry_size;
+	int song_entry_count;
 
-    /* store the newest modified time from library folders */
-    time_t modified_time;
+	/* store the newest modified time from library folders */
+	time_t modified_time;
 
-    /* flag to tell library to ignore caches (set when we change library folder settings) */
-    bool modified;
+	/* flag to tell library to ignore caches (set when we change library folder settings) */
+	bool modified;
 
 } OMO_LIBRARY;
 

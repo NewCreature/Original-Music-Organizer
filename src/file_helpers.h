@@ -9,15 +9,15 @@
 typedef struct
 {
 
-    OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;
-    OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry;
-    OMO_LIBRARY * library;
-    OMO_QUEUE * queue;
-    unsigned long file_count;
-    bool cancel_scan;
-    bool scan_done;
-    ALLEGRO_PATH * temp_path;
-    void * user_data;
+	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;
+	OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry;
+	OMO_LIBRARY * library;
+	OMO_QUEUE * queue;
+	unsigned long file_count;
+	bool cancel_scan;
+	bool scan_done;
+	ALLEGRO_PATH * temp_path;
+	void * user_data;
 
 } OMO_FILE_HELPER_DATA;
 

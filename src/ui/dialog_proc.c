@@ -35,20 +35,20 @@ static void get_path_filename(const char * fn, char * outfn)
 
 char * ui_queue_list_proc(int index, int *list_size, void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
-    char display_fn[256] = {0};
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	char display_fn[256] = {0};
 	char prefix[16] = {0};
 
-    if(index < 0)
-    {
-        if(list_size && app->player)
-        {
-            *list_size = app->player->queue ? app->player->queue->entry_count : 0;
-        }
-        return NULL;
-    }
-    if(app->player && app->player->queue && index < app->player->queue->entry_count)
-    {
+	if(index < 0)
+	{
+		if(list_size && app->player)
+		{
+			*list_size = app->player->queue ? app->player->queue->entry_count : 0;
+		}
+		return NULL;
+	}
+	if(app->player && app->player->queue && index < app->player->queue->entry_count)
+	{
 		sprintf(prefix, "%s", index == app->player->queue_pos ? "" : "");
 		if(strlen(app->player->queue->entry[index]->tags.track))
 		{
@@ -78,10 +78,10 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
 		{
 			sprintf(ui_queue_text, "%s%s", prefix, app->player->queue->entry[index]->tags.title);
 		}
-        else
-        {
-            get_path_filename(app->player->queue->entry[index]->file, display_fn);
-            sprintf(ui_queue_text, "%s%s", prefix, display_fn);
+		else
+		{
+			get_path_filename(app->player->queue->entry[index]->file, display_fn);
+			sprintf(ui_queue_text, "%s%s", prefix, display_fn);
 			if(app->player->queue->entry[index]->sub_file)
 			{
 				strcat(ui_queue_text, "/");
@@ -92,7 +92,7 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
 				strcat(ui_queue_text, ":");
 				strcat(ui_queue_text, app->player->queue->entry[index]->track);
 			}
-        }
+		}
 		return ui_queue_text;
    }
    return NULL;
@@ -100,22 +100,22 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
 
 char * ui_artist_list_proc(int index, int *list_size, void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    if(index < 0)
-    {
-        if(list_size && app->library && app->library->artist_entry)
-        {
-            *list_size = app->library->artist_entry_count;
-        }
+	if(index < 0)
+	{
+		if(list_size && app->library && app->library->artist_entry)
+		{
+			*list_size = app->library->artist_entry_count;
+		}
 		else
 		{
 			*list_size = 1;
 		}
-        return NULL;
-    }
-    if(app->library && app->library->artist_entry)
-    {
+		return NULL;
+	}
+	if(app->library && app->library->artist_entry)
+	{
 		sprintf(ui_artist_text, "%s", app->library->artist_entry[index]);
 		return ui_artist_text;
 	}
@@ -125,21 +125,21 @@ char * ui_artist_list_proc(int index, int *list_size, void * data)
 
 char * ui_song_list_proc(int index, int *list_size, void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	const char * title;
 	const char * album;
 	const char * track;
 
-    if(index < 0)
-    {
-        if(list_size && app->library && app->library->song_entry)
-        {
-            *list_size = app->library->song_entry_count + 1;
-        }
-        return NULL;
-    }
-    if(app->library && app->library->song_entry)
-    {
+	if(index < 0)
+	{
+		if(list_size && app->library && app->library->song_entry)
+		{
+			*list_size = app->library->song_entry_count + 1;
+		}
+		return NULL;
+	}
+	if(app->library && app->library->song_entry)
+	{
 		if(index == 0)
 		{
 			strcpy(ui_song_text, "Shuffle All");
@@ -170,18 +170,18 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
 
 char * ui_album_list_proc(int index, int *list_size, void * data)
 {
-    APP_INSTANCE * app = (APP_INSTANCE *)data;
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-    if(index < 0)
-    {
-        if(list_size && app->library && app->library->album_entry)
-        {
-            *list_size = app->library->album_entry_count;
-        }
-        return NULL;
-    }
-    if(app->library && app->library->album_entry)
-    {
+	if(index < 0)
+	{
+		if(list_size && app->library && app->library->album_entry)
+		{
+			*list_size = app->library->album_entry_count;
+		}
+		return NULL;
+	}
+	if(app->library && app->library->album_entry)
+	{
 		sprintf(ui_album_text, "%s", app->library->album_entry[index]);
 		return ui_album_text;
    }

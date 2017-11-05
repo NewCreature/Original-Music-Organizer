@@ -8,8 +8,8 @@
 typedef struct
 {
 
-    OMO_ARCHIVE_HANDLER archive_handler[OMO_MAX_REGISTERED_ARCHIVE_HANDLERS];
-    int archive_handlers;
+	OMO_ARCHIVE_HANDLER archive_handler[OMO_MAX_REGISTERED_ARCHIVE_HANDLERS];
+	int archive_handlers;
 
 } OMO_ARCHIVE_HANDLER_REGISTRY;
 

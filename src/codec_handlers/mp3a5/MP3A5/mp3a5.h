@@ -12,29 +12,29 @@ extern "C" {
 typedef struct
 {
 
-    char * artist;
-    char * album;
-    char * disc;
-    char * track;
-    char * title;
-    char * genre;
-    char * year;
-    char * copyright;
-    char * comment;
+	char * artist;
+	char * album;
+	char * disc;
+	char * track;
+	char * title;
+	char * genre;
+	char * year;
+	char * copyright;
+	char * comment;
 
 } MP3A5_MP3_TAGS;
 
 typedef struct
 {
 
-    ALLEGRO_AUDIO_STREAM * audio_stream;
-    mpg123_handle * mp3;
-    MP3A5_MP3_TAGS * tags;
-    ALLEGRO_THREAD * thread;
-    double length;
-    int buffer_size;
-    bool paused;
-    bool done;
+	ALLEGRO_AUDIO_STREAM * audio_stream;
+	mpg123_handle * mp3;
+	MP3A5_MP3_TAGS * tags;
+	ALLEGRO_THREAD * thread;
+	double length;
+	int buffer_size;
+	bool paused;
+	bool done;
 
 } MP3A5_MP3;
 
