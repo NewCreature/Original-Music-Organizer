@@ -35,6 +35,8 @@ v0.3
 
    [X]Force rescan if we modify the library folder settings.
 
+[X]Stop timer when performing actions that can take a long time.
+
 [ ]Fix mixed tabs/spaces.
 
 [ ]Implement track split dialog and tag system. We need a way to store track
@@ -46,6 +48,9 @@ v0.3
    [ ]Add codec handler function for setting up the loop for a loaded track.
       The codec handler will be responsible for keeping track of this data and
       ensuring playback respects the passed loop settings.
+
+   [ ]Add loop handling to MP3A5. So we can implement track looping in the
+      MP3A5 codec handler.
 
 [ ]Implement font size override. The user should be able to specify a preferred
    font size to override a theme's font size. This override should cause the
@@ -63,8 +68,6 @@ v0.3
 [ ]Add song info to the player module. The plan is to have 2 lines for this,
    one line for the artist, title, etc. of the currently playing song and
    another for track-specific info from the codec handler.
-
-[ ]Stop timer when performing actions that can take a long time.
 
 v0.2
 ----
