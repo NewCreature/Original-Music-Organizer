@@ -107,6 +107,34 @@ bool omo_play_next_song(OMO_PLAYER * pp)
 	return true;
 }
 
+static bool omo_player_play_file(OMO_PLAYER * pp, const char * fn, const char * track)
+{
+	al_stop_timer(t3f_timer);
+	pp->codec_data = pp->codec_handler->load_file(fn, track);
+	al_start_timer(t3f_timer);
+	if(pp->codec_data)
+	{
+		al_stop_timer(t3f_timer);
+		if(pp->codec_handler->play(pp->codec_data))
+		{
+			pp->state = OMO_PLAYER_STATE_PLAYING;
+			al_start_timer(t3f_timer);
+			return true;
+		}
+		else
+		{
+			pp->codec_handler->unload_file(pp->codec_data);
+			pp->codec_handler = NULL;
+			al_start_timer(t3f_timer);
+		}
+	}
+	else
+	{
+		pp->codec_handler = NULL;
+	}
+	return false;
+}
+
 void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, ALLEGRO_PATH * temp_path)
 {
 	OMO_ARCHIVE_HANDLER * archive_handler;
@@ -160,28 +188,9 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
 								if(strlen(subfile) > 0)
 								{
 									strcpy(pp->extracted_filename, subfile);
-									al_stop_timer(t3f_timer);
-									pp->codec_data = pp->codec_handler->load_file(pp->extracted_filename, pp->queue->entry[pp->queue_pos]->track);
-									al_start_timer(t3f_timer);
-									if(pp->codec_data)
+									if(omo_player_play_file(pp, subfile, pp->queue->entry[pp->queue_pos]->track))
 									{
-										al_stop_timer(t3f_timer);
-										if(pp->codec_handler->play(pp->codec_data))
-										{
-											pp->state = OMO_PLAYER_STATE_PLAYING;
-											al_start_timer(t3f_timer);
-											break;
-										}
-										else
-										{
-											pp->codec_handler->unload_file(pp->codec_data);
-											pp->codec_handler = NULL;
-											al_start_timer(t3f_timer);
-										}
-									}
-									else
-									{
-										pp->codec_handler = NULL;
+										break;
 									}
 								}
 							}
@@ -194,28 +203,9 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
 					pp->codec_handler = omo_get_codec_handler(codec_handler_registry, pp->queue->entry[pp->queue_pos]->file);
 					if(pp->codec_handler)
 					{
-						al_stop_timer(t3f_timer);
-						pp->codec_data = pp->codec_handler->load_file(pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->track);
-						al_start_timer(t3f_timer);
-						if(pp->codec_data)
+						if(omo_player_play_file(pp, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->track))
 						{
-							al_stop_timer(t3f_timer);
-							if(pp->codec_handler->play(pp->codec_data))
-							{
-								pp->state = OMO_PLAYER_STATE_PLAYING;
-								al_start_timer(t3f_timer);
-								break;
-							}
-							else
-							{
-								pp->codec_handler->unload_file(pp->codec_data);
-								pp->codec_handler = NULL;
-								al_start_timer(t3f_timer);
-							}
-						}
-						else
-						{
-							pp->codec_handler = NULL;
+							break;
 						}
 					}
 				}
