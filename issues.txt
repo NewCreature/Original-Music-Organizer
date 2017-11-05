@@ -37,7 +37,7 @@ v0.3
 
 [X]Stop timer when performing actions that can take a long time.
 
-[ ]Fix mixed tabs/spaces.
+[X]Fix mixed tabs/spaces.
 
 [ ]Implement track split dialog and tag system. We need a way to store track
    split data in the base file's metedata so we can keep it in the online
