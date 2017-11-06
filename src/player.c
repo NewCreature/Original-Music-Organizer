@@ -107,41 +107,84 @@ bool omo_play_next_song(OMO_PLAYER * pp)
 	return true;
 }
 
-static bool omo_player_play_file(OMO_PLAYER * pp, const char * fn, const char * track)
+static void * omo_player_load_file(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, const char * fn, const char * subfn, const char * track, ALLEGRO_PATH * temp_path)
 {
-	al_stop_timer(t3f_timer);
-	pp->codec_data = pp->codec_handler->load_file(fn, track);
-	al_start_timer(t3f_timer);
-	if(pp->codec_data)
+	OMO_ARCHIVE_HANDLER * archive_handler;
+	void * archive_handler_data;
+	const char * subfile;
+	char fn_buffer[1024] = {0};
+	void * codec_data = NULL;
+
+	archive_handler = omo_get_archive_handler(archive_handler_registry, fn);
+	if(archive_handler)
 	{
 		al_stop_timer(t3f_timer);
-		if(pp->codec_handler->play(pp->codec_data))
+		archive_handler_data = archive_handler->open_archive(fn, temp_path);
+		al_start_timer(t3f_timer);
+		if(archive_handler_data)
 		{
-			pp->state = OMO_PLAYER_STATE_PLAYING;
-			al_start_timer(t3f_timer);
-			return true;
-		}
-		else
-		{
-			pp->codec_handler->unload_file(pp->codec_data);
-			pp->codec_handler = NULL;
-			al_start_timer(t3f_timer);
+			strcpy(pp->extracted_filename, "");
+			if(subfn)
+			{
+				pp->codec_handler = omo_get_codec_handler(codec_handler_registry, archive_handler->get_file(archive_handler_data, atoi(subfn), fn_buffer));
+				if(pp->codec_handler)
+				{
+					al_stop_timer(t3f_timer);
+					subfile = archive_handler->extract_file(archive_handler_data, atoi(subfn), fn_buffer);
+					al_start_timer(t3f_timer);
+					if(strlen(subfile) > 0)
+					{
+						strcpy(pp->extracted_filename, subfile);
+						al_stop_timer(t3f_timer);
+						codec_data = pp->codec_handler->load_file(pp->extracted_filename, track);
+						al_start_timer(t3f_timer);
+					}
+				}
+			}
+			archive_handler->close_archive(archive_handler_data);
 		}
 	}
 	else
 	{
+		pp->codec_handler = omo_get_codec_handler(codec_handler_registry, fn);
+		if(pp->codec_handler)
+		{
+			al_stop_timer(t3f_timer);
+			codec_data = pp->codec_handler->load_file(fn, track);
+			al_start_timer(t3f_timer);
+		}
+	}
+	return codec_data;
+}
+
+static bool omo_player_play_file(OMO_PLAYER * pp, double loop_start, double loop_end, double fade_time, int loop_count)
+{
+	if(pp->codec_handler->set_loop)
+	{
+		if(loop_end > loop_start)
+		{
+			pp->codec_handler->set_loop(pp->codec_data, loop_start, loop_end, fade_time, loop_count);
+		}
+	}
+	al_stop_timer(t3f_timer);
+	if(pp->codec_handler->play(pp->codec_data))
+	{
+		pp->state = OMO_PLAYER_STATE_PLAYING;
+		al_start_timer(t3f_timer);
+		return true;
+	}
+	else
+	{
+		pp->codec_handler->unload_file(pp->codec_data);
 		pp->codec_handler = NULL;
+		al_start_timer(t3f_timer);
 	}
 	return false;
 }
 
 void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, ALLEGRO_PATH * temp_path)
 {
-	OMO_ARCHIVE_HANDLER * archive_handler;
-	void * archive_handler_data;
-	const char * subfile;
 	bool next_file = false;
-	char fn_buffer[1024] = {0};
 
 	if(pp->queue && pp->state == OMO_PLAYER_STATE_PLAYING)
 	{
@@ -168,45 +211,12 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
 		{
 			if(pp->queue_pos < pp->queue->entry_count)
 			{
-				archive_handler = omo_get_archive_handler(archive_handler_registry, pp->queue->entry[pp->queue_pos]->file);
-				if(archive_handler)
+				pp->codec_data = omo_player_load_file(pp, archive_handler_registry, codec_handler_registry, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track, temp_path);
+				if(pp->codec_data)
 				{
-					al_stop_timer(t3f_timer);
-					archive_handler_data = archive_handler->open_archive(pp->queue->entry[pp->queue_pos]->file, temp_path);
-					al_start_timer(t3f_timer);
-					if(archive_handler_data)
+					if(omo_player_play_file(pp, 0.0, 0.0, 0.0, 0))
 					{
-						strcpy(pp->extracted_filename, "");
-						if(pp->queue->entry[pp->queue_pos]->sub_file)
-						{
-							pp->codec_handler = omo_get_codec_handler(codec_handler_registry, archive_handler->get_file(archive_handler_data, atoi(pp->queue->entry[pp->queue_pos]->sub_file), fn_buffer));
-							if(pp->codec_handler)
-							{
-								al_stop_timer(t3f_timer);
-								subfile = archive_handler->extract_file(archive_handler_data, atoi(pp->queue->entry[pp->queue_pos]->sub_file), fn_buffer);
-								al_start_timer(t3f_timer);
-								if(strlen(subfile) > 0)
-								{
-									strcpy(pp->extracted_filename, subfile);
-									if(omo_player_play_file(pp, subfile, pp->queue->entry[pp->queue_pos]->track))
-									{
-										break;
-									}
-								}
-							}
-						}
-						archive_handler->close_archive(archive_handler_data);
-					}
-				}
-				else
-				{
-					pp->codec_handler = omo_get_codec_handler(codec_handler_registry, pp->queue->entry[pp->queue_pos]->file);
-					if(pp->codec_handler)
-					{
-						if(omo_player_play_file(pp, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->track))
-						{
-							break;
-						}
+						break;
 					}
 				}
 			}
