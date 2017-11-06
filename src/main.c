@@ -84,7 +84,7 @@ void omo_logic(void * data)
 			{
 				omo_tags_dialog_logic(data);
 			}
-			omo_player_logic(app->player, app->archive_handler_registry, app->codec_handler_registry, app->player_temp_path);
+			omo_player_logic(app->player, app->library, app->archive_handler_registry, app->codec_handler_registry, app->player_temp_path);
 			app->ui->ui_queue_list_element->id2 = app->player->queue_pos;
 
 			/* see if we should scroll the queue list */

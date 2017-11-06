@@ -2,6 +2,7 @@
 #include "codec_handlers/registry.h"
 #include "player.h"
 #include "queue.h"
+#include "library_helpers.h"
 
 OMO_PLAYER * omo_create_player(void)
 {
@@ -182,9 +183,14 @@ static bool omo_player_play_file(OMO_PLAYER * pp, double loop_start, double loop
 	return false;
 }
 
-void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, ALLEGRO_PATH * temp_path)
+void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, ALLEGRO_PATH * temp_path)
 {
 	bool next_file = false;
+	const char * val;
+	const char * id;
+	double loop_start = 0.0;
+	double loop_end = 0.0;
+	double fade_time = 0.0;
 
 	if(pp->queue && pp->state == OMO_PLAYER_STATE_PLAYING)
 	{
@@ -214,7 +220,29 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_ha
 				pp->codec_data = omo_player_load_file(pp, archive_handler_registry, codec_handler_registry, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track, temp_path);
 				if(pp->codec_data)
 				{
-					if(omo_player_play_file(pp, 0.0, 0.0, 0.0, 0))
+					if(lp)
+					{
+						id = omo_get_library_file_id(lp, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track);
+						if(id)
+						{
+							val = al_get_config_value(lp->entry_database, id, "Loop Start");
+							if(val)
+							{
+								loop_start = atof(val);
+							}
+							val = al_get_config_value(lp->entry_database, id, "Loop End");
+							if(val)
+							{
+								loop_end = atof(val);
+							}
+							val = al_get_config_value(lp->entry_database, id, "Fade Time");
+							if(val)
+							{
+								fade_time = atof(val);
+							}
+						}
+					}
+					if(omo_player_play_file(pp, loop_start, loop_end, fade_time, 1))
 					{
 						break;
 					}
