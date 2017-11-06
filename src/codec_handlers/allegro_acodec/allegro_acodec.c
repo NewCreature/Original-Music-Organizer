@@ -221,7 +221,12 @@ static bool codec_done_playing(void * data)
 	{
 		if(codec_data->loop)
 		{
-			if(codec_data->current_loop >= codec_data->loop_count)
+			if(al_get_audio_stream_position_secs(codec_data->player_stream) < codec_data->last_pos)
+			{
+				codec_data->current_loop++;
+			}
+			codec_data->last_pos = al_get_audio_stream_position_secs(codec_data->player_stream);
+			if(codec_data->current_loop >= codec_data->loop_count && !codec_data->fade_out)
 			{
 				codec_data->fade_start = al_get_time();
 				codec_data->fade_out = true;
