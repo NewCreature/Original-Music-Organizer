@@ -50,12 +50,14 @@ v0.3
 
 [ ]Implement track looping.
 
-   [ ]Add codec handler function for setting up the loop for a loaded track.
+   [X]Add codec handler function for setting up the loop for a loaded track.
       The codec handler will be responsible for keeping track of this data and
       ensuring playback respects the passed loop settings.
 
    [ ]Add loop handling to MP3A5. So we can implement track looping in the
       MP3A5 codec handler.
+
+   [ ]Add loop handling to all codec handlers that can support it.
 
 [ ]Add status bar to library view. We should show library-related messages in
    this status bar instead of using the list box.
