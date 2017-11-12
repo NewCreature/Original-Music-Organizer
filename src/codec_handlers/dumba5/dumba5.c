@@ -11,6 +11,13 @@ typedef struct
 	double codec_length;
 	char player_sub_filename[1024];
 	char tag_buffer[1024];
+	bool loop;         // let us know we are looping this song
+	double loop_start;
+	double loop_end;
+	double playback_total;
+	double fade_time;  // how long to fade out
+	bool fade_out;     // let us know we are fading out
+	double fade_start; // time the fade began
 
 } CODEC_DATA;
 
@@ -70,6 +77,19 @@ static void codec_unload_file(void * data)
 	unload_duh(codec_data->codec_module);
 	codec_data->codec_module = NULL;
 	free(data);
+}
+
+static bool codec_set_loop(void * data, double loop_start, double loop_end, double fade_time, int loop_count)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->loop_start = loop_start;
+	codec_data->loop_end = loop_end;
+	codec_data->playback_total = loop_start + (loop_end - loop_start) * (double)loop_count;
+	codec_data->loop = true;
+	codec_data->fade_time = fade_time;
+
+	return true;
 }
 
 static const char * codec_get_tag(void * data, const char * name)
@@ -133,7 +153,7 @@ static bool codec_play(void * data)
 	{
 		start = atoi(codec_data->player_sub_filename);
 	}
-	codec_data->codec_player = dumba5_create_player(codec_data->codec_module, start, false, 4096, 44100, true);
+	codec_data->codec_player = dumba5_create_player(codec_data->codec_module, start, codec_data->loop, 1024, 44100, true);
 	if(codec_data->codec_player)
 	{
 		dumba5_start_player(codec_data->codec_player);
@@ -182,7 +202,29 @@ static double codec_get_position(void * data)
 static bool codec_done_playing(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	double volume = 1.0;
 
+	if(codec_data->codec_player)
+	{
+		if(codec_data->loop)
+		{
+			if(dumba5_get_player_time(codec_data->codec_player) > codec_data->playback_total && !codec_data->fade_out)
+			{
+				codec_data->fade_start = al_get_time();
+				codec_data->fade_out = true;
+			}
+			if(codec_data->fade_out)
+			{
+				volume = 1.0 - (al_get_time() - codec_data->fade_start) / codec_data->fade_time;
+				dumba5_set_player_volume(codec_data->codec_player, volume);
+				if(al_get_time() - codec_data->fade_start >= codec_data->fade_time)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+	}
 	return dumba5_player_playback_finished(codec_data->codec_player);
 }
 
@@ -196,6 +238,7 @@ OMO_CODEC_HANDLER * omo_codec_dumba5_get_codec_handler(void)
 	codec_handler.unload_file = codec_unload_file;
 	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;
+	codec_handler.set_loop = codec_set_loop;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;
 	codec_handler.resume = codec_resume;
