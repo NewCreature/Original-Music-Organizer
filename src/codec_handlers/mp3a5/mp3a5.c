@@ -7,6 +7,13 @@ typedef struct
 {
 	MP3A5_MP3 * codec_mp3;
 	char tag_buffer[1024];
+	bool loop;         // let us know we are looping this song
+	double fade_time;  // how long to fade out
+	int loop_count;    // how many times we want to loop
+	int current_loop;  // how many times have we looped
+	double last_pos;   // compare last_pos to current stream pos to detect loop
+	bool fade_out;     // let us know we are fading out
+	double fade_start; // time the fade began
 } CODEC_DATA;
 
 static bool codec_initialize(void)
@@ -50,6 +57,18 @@ static void codec_unload_file(void * data)
 static int codec_get_track_count(void * data, const char * fn)
 {
 	return 1;
+}
+
+static bool codec_set_loop(void * data, double loop_start, double loop_end, double fade_time, int loop_count)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	mp3a5_set_mp3_loop(codec_data->codec_mp3, loop_start, loop_end);
+	codec_data->loop = true;
+	codec_data->fade_time = fade_time;
+	codec_data->loop_count = loop_count;
+
+	return true;
 }
 
 static const char * codec_get_tag(void * data, const char * name)
@@ -140,12 +159,39 @@ static void codec_stop(void * data)
 static bool codec_done_playing(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	double volume = 1.0;
 
-	if(!codec_data->codec_mp3 || codec_data->codec_mp3->done)
+	if(codec_data->codec_mp3 && codec_data->codec_mp3->audio_stream)
 	{
-		return true;
+		if(codec_data->loop)
+		{
+			if(mp3a5_get_position(codec_data->codec_mp3) < codec_data->last_pos)
+			{
+				codec_data->current_loop++;
+			}
+			codec_data->last_pos = mp3a5_get_position(codec_data->codec_mp3);
+			if(codec_data->current_loop >= codec_data->loop_count && !codec_data->fade_out)
+			{
+				codec_data->fade_start = al_get_time();
+				codec_data->fade_out = true;
+			}
+			if(codec_data->fade_out)
+			{
+				volume = 1.0 - (al_get_time() - codec_data->fade_start) / codec_data->fade_time;
+				al_set_audio_stream_gain(codec_data->codec_mp3->audio_stream, volume);
+				if(al_get_time() - codec_data->fade_start >= codec_data->fade_time)
+				{
+					return true;
+				}
+			}
+		}
+		if(codec_data->codec_mp3->done)
+		{
+			return true;
+		}
+		return false;
 	}
-	return false;
+	return true;
 }
 
 static OMO_CODEC_HANDLER codec_handler;
@@ -158,6 +204,7 @@ OMO_CODEC_HANDLER * omo_codec_mp3a5_get_codec_handler(void)
 	codec_handler.load_file = codec_load_file;
 	codec_handler.unload_file = codec_unload_file;
 	codec_handler.get_track_count = codec_get_track_count;
+	codec_handler.set_loop = codec_set_loop;
 	codec_handler.get_tag = codec_get_tag;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;
