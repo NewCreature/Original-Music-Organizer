@@ -72,6 +72,9 @@ float dumba5_get_module_volume(void);
 /* Get the position of the module. */
 long dumba5_get_module_position(void);
 
+/* Get the total play time of the player. */
+double dumba5_get_module_time(void);
+
 /* Determine if the module has finished playing. */
 bool dumba5_module_playback_finished(void);
 
@@ -109,6 +112,9 @@ float dumba5_get_player_volume(DUMBA5_PLAYER * pp);
 
 /* Get the position of the player. */
 long dumba5_get_player_position(DUMBA5_PLAYER * pp);
+
+/* Get the total play time of the player. */
+double dumba5_get_player_time(DUMBA5_PLAYER * pp);
 
 /* Determine if music playback is finished. */
 bool dumba5_player_playback_finished(DUMBA5_PLAYER * pp);

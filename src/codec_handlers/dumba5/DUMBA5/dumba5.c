@@ -40,6 +40,7 @@ struct DUMBA5_PLAYER
 	float volume;
 	int silentcount;
 	bool done_playing;
+	double played_time;
 
 	ALLEGRO_THREAD * thread;
 	ALLEGRO_MUTEX * mutex;
@@ -83,6 +84,8 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 			if(fragment)
 			{
 				n = duh_render(dp->sigrenderer, 16, 0, dp->volume, 65536.0 / dp->freq, dp->bufsize, fragment);
+
+				dp->played_time += (double)n / (double)dp->freq;
 
 				if (n == 0)
 				{
@@ -140,6 +143,7 @@ DUMBA5_PLAYER * dumba5_start_duh_x(DUH *duh, int n_channels, long pos, float vol
 	{
 		return NULL;
 	}
+	memset(dp, 0, sizeof(DUMBA5_PLAYER));
 
 	dp->flags = ADP_PLAYING;
 	dp->bufsize = bufsize;
@@ -250,6 +254,11 @@ long dumba5_get_player_position(DUMBA5_PLAYER * pp)
 	return pp ? duh_sigrenderer_get_position(pp->sigrenderer) : -1;
 }
 
+double dumba5_get_player_time(DUMBA5_PLAYER * pp)
+{
+	return pp->played_time;
+}
+
 bool dumba5_player_playback_finished(DUMBA5_PLAYER * pp)
 {
 	if(pp)
@@ -346,6 +355,7 @@ DUMBA5_PLAYER * dumba5_create_player(DUH * dp, int pattern, bool loop, int bufsi
 	{
 		return NULL;
 	}
+	memset(player, 0, sizeof(DUMBA5_PLAYER));
 
 	player->flags = 0;
 	player->bufsize = bufsize;
@@ -551,6 +561,11 @@ float dumba5_get_module_volume(void)
 long dumba5_get_module_position(void)
 {
 	return dumba5_get_player_position(dumba5_player);
+}
+
+double dumba5_get_module_time(void)
+{
+	return dumba5_get_player_time(dumba5_player);
 }
 
 bool dumba5_module_playback_finished(void)
