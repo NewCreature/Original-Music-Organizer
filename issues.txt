@@ -44,20 +44,21 @@ v0.3
    theme system to load the font in the correct size so we get a properly sized
    font throughout the GUI system.
 
-[ ]Implement track split dialog and tag system. We need a way to store track
-   split data in the base file's metedata so we can keep it in the online
-   database instead of requiring each user to split tracks on their own.
-
-[ ]Implement track looping.
+[X]Implement track looping.
 
    [X]Add codec handler function for setting up the loop for a loaded track.
       The codec handler will be responsible for keeping track of this data and
       ensuring playback respects the passed loop settings.
 
-   [ ]Add loop handling to MP3A5. So we can implement track looping in the
+   [X]Add loop handling to MP3A5. So we can implement track looping in the
       MP3A5 codec handler.
 
-   [ ]Add loop handling to all codec handlers that can support it.
+   [X]Add loop handling to all codec handlers that can support it.
+
+
+[ ]Implement track split dialog and tag system. We need a way to store track
+   split data in the base file's metedata so we can keep it in the online
+   database instead of requiring each user to split tracks on their own.
 
 [ ]Add status bar to library view. We should show library-related messages in
    this status bar instead of using the list box.
