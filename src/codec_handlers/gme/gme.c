@@ -108,6 +108,15 @@ static void codec_unload_file(void * data)
 	free(data);
 }
 
+static bool codec_set_loop(void * data, double loop_start, double loop_end, double fade_time, int loop_count)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->info->length = ((loop_start + loop_end) * 1000.0) * loop_count;
+
+	return true;
+}
+
 static const char * codec_get_tag(void * data, const char * name)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
@@ -271,6 +280,7 @@ OMO_CODEC_HANDLER * omo_codec_gme_get_codec_handler(void)
 	codec_handler.initialize = NULL;
 	codec_handler.load_file = codec_load_file;
 	codec_handler.unload_file = codec_unload_file;
+	codec_handler.set_loop = codec_set_loop;
 	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;
 	codec_handler.play = codec_play;
