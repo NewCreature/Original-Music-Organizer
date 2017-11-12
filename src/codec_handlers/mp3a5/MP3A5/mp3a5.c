@@ -103,7 +103,6 @@ static MP3A5_MP3_TAGS * mp3a5_get_tags(const char * filename, MP3A5_MP3 * mp3)
 	{
 		mpg123_scan(mp3->mp3);
 		mpg123_seek(mp3->mp3, 0, SEEK_SET);
-		mp3a5_get_length(mp3);
 		mpg123_seek(mp3->mp3, 0, SEEK_SET);
 		meta = mpg123_meta_check(mp3->mp3);
 		if(meta & MPG123_ID3)
@@ -231,6 +230,9 @@ MP3A5_MP3 * mp3a5_load_mp3(const char *filename)
 			/* open file in preparation for streaming */
 			if(mpg123_open(mp3->mp3, filename) == MPG123_OK)
 			{
+				mp3a5_get_length(mp3);
+				mp3->loop_start = 0.0;
+				mp3->loop_end = mp3->length;
 				return mp3;
 			}
 			else
@@ -294,14 +296,77 @@ void mp3a5_destroy_mp3(MP3A5_MP3 * mp)
 	free(mp);
 }
 
+bool mp3a5_set_mp3_loop(MP3A5_MP3 * mp, double start, double end)
+{
+	mp->loop_start = start;
+	mp->loop_end = end;
+	mp->loop = true;
+
+	return true;
+}
+
+static off_t seconds_to_sample(MP3A5_MP3 * mp, double seconds)
+{
+	return (seconds * 44100.0);
+}
+
+static double sample_to_seconds(MP3A5_MP3 * mp, off_t sample)
+{
+	return sample / (44100.0);
+}
+
+static bool mp3_rewind(MP3A5_MP3 * mp)
+{
+	return mpg123_seek(mp->mp3, seconds_to_sample(mp, mp->loop_start), SEEK_SET) >= 0 ? true : false;
+}
+
+static size_t feed_stream(MP3A5_MP3 * mp, void * buffer)
+{
+	int word_size = 2;
+	double current_time = sample_to_seconds(mp, mpg123_tell(mp->mp3));
+	double buffer_time = ((double)mp->buffer_size / (double)word_size * 2.0) / 44100.0;
+	int read_length = sizeof(unsigned short) * mp->buffer_size * 2;
+	volatile unsigned long pos = 0;
+	size_t read;
+	int r;
+
+	if(mp->loop)
+	{
+		if(current_time + buffer_time > mp->loop_end)
+		{
+			read_length = (mp->loop_end - current_time) * 44100.0 * (double)word_size * 2.0;
+			if(read_length < 0)
+			{
+				return 0;
+			}
+			read_length += read_length % word_size;
+		}
+	}
+	while(pos < (unsigned long)read_length)
+	{
+		r = mpg123_read(mp->mp3, (unsigned char *)buffer + pos, read_length, &read);
+		if(r != MPG123_OK && r != MPG123_NEW_FORMAT)
+		{
+			return pos;
+		}
+		pos += read;
+
+		if(read == 0)
+		{
+			/* Return the number of useful bytes written. */
+			return pos;
+		}
+	}
+	return pos;
+}
+
 static void * mp3a5_thread_proc(ALLEGRO_THREAD * tp, void * data)
 {
 	MP3A5_MP3 * mp3 = (MP3A5_MP3 *)data;
 	ALLEGRO_EVENT_QUEUE * queue;
 	unsigned char *fragment;
-	size_t done;
-	int bytes_left;
-	int i, r;
+	int i;
+	volatile unsigned long pos = 0;
 
 	queue = al_create_event_queue();
 	al_register_event_source(queue, al_get_audio_stream_event_source(mp3->audio_stream));
@@ -320,29 +385,39 @@ static void * mp3a5_thread_proc(ALLEGRO_THREAD * tp, void * data)
 			fragment = (unsigned char *)al_get_audio_stream_fragment(mp3->audio_stream);
 			if(fragment)
 			{
+				pos = 0;
 				if(mp3->paused)
 				{
 					memset(fragment, 0, sizeof(unsigned short) * mp3->buffer_size * 2);
 				}
 				else
 				{
-					bytes_left = sizeof(unsigned short) * mp3->buffer_size * 2;
-					while(bytes_left > 0)
+					while(pos < sizeof(unsigned short) * mp3->buffer_size * 2)
 					{
-						r = mpg123_read(mp3->mp3, fragment, sizeof(unsigned short) * mp3->buffer_size * 2, &done);
-						if(r != MPG123_OK && r != MPG123_NEW_FORMAT)
+						pos += feed_stream(mp3, fragment + pos);
+
+						if(pos < sizeof(unsigned short) * mp3->buffer_size * 2)
 						{
-							bytes_left -= done;
-							for(i = sizeof(unsigned short) * mp3->buffer_size * 2 - bytes_left; i < sizeof(unsigned short) * mp3->buffer_size * 2; i++)
+							/* didn't fill buffer all the way so check for loop */
+							if(mp3->loop)
 							{
-								fragment[i] = 0;
+								/* Keep rewinding until the fragment is filled. */
+								while(pos < sizeof(unsigned short) * mp3->buffer_size * 2)
+								{
+									mp3_rewind(mp3);
+									pos += feed_stream(mp3, fragment + pos);
+								}
 							}
-							end_of_mp3 = true;
-							break;
-						}
-						else
-						{
-							bytes_left -= done;
+							/* if no loop, then we reached the end of the audio */
+							else
+							{
+								for(i = pos; i < sizeof(unsigned short) * mp3->buffer_size * 2; i++)
+								{
+									((unsigned short *)fragment)[i] = 0;
+								}
+								end_of_mp3 = true;
+								break;
+							}
 						}
 					}
 				}
@@ -364,8 +439,12 @@ static void * mp3a5_thread_proc(ALLEGRO_THREAD * tp, void * data)
 bool mp3a5_play_mp3(MP3A5_MP3 * mp, size_t buffer_count, unsigned int samples)
 {
 	mp->audio_stream = al_create_audio_stream(buffer_count, samples, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
+
 	if(mp->audio_stream)
 	{
+		if(mp->loop)
+		{
+		}
 		mp->buffer_size = samples;
 		mp->thread = al_create_thread(mp3a5_thread_proc, mp);
 		if(mp->thread)
@@ -407,4 +486,9 @@ void mp3a5_pause_mp3(MP3A5_MP3 * mp)
 void mp3a5_resume_mp3(MP3A5_MP3 * mp)
 {
 	mp->paused = false;
+}
+
+double mp3a5_get_position(MP3A5_MP3 * mp)
+{
+	return sample_to_seconds(mp, mpg123_tell(mp->mp3));
 }

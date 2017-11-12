@@ -35,6 +35,9 @@ typedef struct
 	int buffer_size;
 	bool paused;
 	bool done;
+	double loop_start;
+	double loop_end;
+	bool loop;
 
 } MP3A5_MP3;
 
@@ -43,10 +46,12 @@ void mp3a5_exit(void);
 
 MP3A5_MP3 * mp3a5_load_mp3(const char *filename);
 void mp3a5_destroy_mp3(MP3A5_MP3 * mp);
+bool mp3a5_set_mp3_loop(MP3A5_MP3 * mp, double start, double end);
 bool mp3a5_play_mp3(MP3A5_MP3 * mp, size_t buffer_count, unsigned int samples);
 void mp3a5_stop_mp3(MP3A5_MP3 * mp);
 void mp3a5_pause_mp3(MP3A5_MP3 * mp);
 void mp3a5_resume_mp3(MP3A5_MP3 * mp);
+double mp3a5_get_position(MP3A5_MP3 * mp);
 
 #ifdef __cplusplus
 }
