@@ -14,6 +14,8 @@ typedef struct
 	char codec_tag_buffer[1024];
 	char tag_name[32];
 	bool loop;         // let us know we are looping this song
+	double loop_start;
+	double loop_end;
 	double fade_time;  // how long to fade out
 	int loop_count;    // how many times we want to loop
 	int current_loop;  // how many times have we looped
@@ -156,6 +158,8 @@ static bool codec_set_loop(void * data, double loop_start, double loop_end, doub
 		if(al_set_audio_stream_playmode(codec_data->player_stream, ALLEGRO_PLAYMODE_LOOP))
 		{
 			codec_data->loop = true;
+			codec_data->loop_start = loop_start;
+			codec_data->loop_end = loop_end;
 			codec_data->fade_time = fade_time;
 			codec_data->loop_count = loop_count;
 			return true;
@@ -205,11 +209,40 @@ static void codec_stop(void * data)
 	al_drain_audio_stream(codec_data->player_stream);
 }
 
+static bool codec_seek(void * data, double pos)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	int loop_count = 0;
+
+	if(codec_data->loop)
+	{
+		while(pos > al_get_audio_stream_length_secs(codec_data->player_stream))
+		{
+			pos -= codec_data->loop_end - codec_data->loop_start;
+			loop_count++;
+		}
+		codec_data->loop_count = loop_count;
+	}
+
+	return al_seek_audio_stream_secs(codec_data->player_stream, pos);
+}
+
 static double codec_get_position(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
 	return al_get_audio_stream_position_secs(codec_data->player_stream);
+}
+
+static double codec_get_length(void * data)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	if(codec_data->loop)
+	{
+		return codec_data->loop_start + (codec_data->loop_end - codec_data->loop_start) * (double)codec_data->loop_count + codec_data->fade_time;
+	}
+	return al_get_audio_stream_length_secs(codec_data->player_stream);
 }
 
 static bool codec_done_playing(void * data)
@@ -261,9 +294,9 @@ OMO_CODEC_HANDLER * omo_codec_allegro_acodec_get_codec_handler(void)
 	codec_handler.pause = codec_pause;
 	codec_handler.resume = codec_resume;
 	codec_handler.stop = codec_stop;
-	codec_handler.seek = NULL;
+	codec_handler.seek = codec_seek;
 	codec_handler.get_position = codec_get_position;
-	codec_handler.get_length = NULL;
+	codec_handler.get_length = codec_get_length;
 	codec_handler.done_playing = codec_done_playing;
 	codec_handler.types = 0;
 	omo_codec_handler_add_type(&codec_handler, ".ogg");
