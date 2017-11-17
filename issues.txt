@@ -55,7 +55,6 @@ v0.3
 
    [X]Add loop handling to all codec handlers that can support it.
 
-
 [ ]Implement track split dialog and tag system. We need a way to store track
    split data in the base file's metedata so we can keep it in the online
    database instead of requiring each user to split tracks on their own.
@@ -63,14 +62,30 @@ v0.3
 [ ]Add status bar to library view. We should show library-related messages in
    this status bar instead of using the list box.
 
-[ ]Split queue list and player controls into separate modules so we can make a
-   compact view.
+[ ]Finish main UI.
 
-[ ]Add volume and seek controls to the player module.
+   [ ]Modularize UI setup.
 
-[ ]Add song info to the player module. The plan is to have 2 lines for this,
-   one line for the artist, title, etc. of the currently playing song and
-   another for track-specific info from the codec handler.
+      [ ]Use separate function for adding each module to the total UI. Each
+         section of the UI should be a separate module. The player module will
+         consist of the player controls, the seek control, the volume control,
+         and the two info lines. The library artist, album, and song lists
+         should each be their own modules as well as the status bar.
+
+         We need to do this to make the UI setup code simpler and easier to
+         maintain. With each module being created individually, we can
+         calculate a total UI space for the user's device and add the modules
+         that the user wants or the ones that will fit on the screen.
+
+         Each function should be given a space to occupy on the total UI and
+         the setup code for that module will smartly fill the available space
+         with the required UI elements.
+
+   [ ]Add volume and seek controls to the player module.
+
+   [ ]Add song info to the player module. The plan is to have 2 lines for this,
+      one line for the artist, title, etc. of the currently playing song and
+      another for track-specific info from the codec handler.
 
 v0.2
 ----
