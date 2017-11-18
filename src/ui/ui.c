@@ -6,68 +6,166 @@
 #include "dialog_proc.h"
 #include "../constants.h"
 
+#define OMO_BEZEL_TOP    1
+#define OMO_BEZEL_BOTTOM 2
+#define OMO_BEZEL_LEFT   4
+#define OMO_BEZEL_RIGHT  8
+
+static const int bezel = 8;
+
+/* adjust the passed rectangle for flags */
+static void setup_module_box(int * x, int * y, int * w, int * h, int flags)
+{
+	*x += bezel;
+	*y += bezel;
+	*w -= bezel * 2;
+	*h -= bezel * 2;
+
+	if(flags & OMO_BEZEL_LEFT)
+	{
+		*w += bezel / 2;
+		*x -= bezel / 2;
+	}
+	if(flags & OMO_BEZEL_RIGHT)
+	{
+		*w += bezel / 2;
+	}
+	if(flags & OMO_BEZEL_TOP)
+	{
+		*h += bezel / 2;
+		*y -= bezel / 2;
+	}
+	if(flags & OMO_BEZEL_BOTTOM)
+	{
+		*h += bezel / 2;
+	}
+}
+
+/* place player module elements inside rectangle defined by parameters */
+static void setup_player_module(OMO_UI * uip, int x, int y, int w, int h, int flags)
+{
+	int button_y, button_width, button_height;
+	int i;
+
+	/* adjust bezels so adjacent items are only 'bezel' pixels away */
+	setup_module_box(&x, &y, &w, &h, flags);
+
+	button_height = h;
+	button_y = y;
+
+	button_width = w / 6;
+	for(i = 0; i < 6; i++)
+	{
+		uip->ui_button_element[i]->x = x + button_width * i;
+		uip->ui_button_element[i]->y = button_y;
+		uip->ui_button_element[i]->w = button_width;
+		uip->ui_button_element[i]->h = button_height;
+	}
+}
+
+static void setup_queue_list_module(OMO_UI * uip, int x, int y, int w, int h, int flags)
+{
+	setup_module_box(&x, &y, &w, &h, flags);
+	uip->ui_queue_list_element->x = x;
+	uip->ui_queue_list_element->y = y;
+	uip->ui_queue_list_element->w = w;
+	uip->ui_queue_list_element->h = h;
+}
+
+static void setup_library_artist_list_module(OMO_UI * uip, int x, int y, int w, int h, int flags)
+{
+	setup_module_box(&x, &y, &w, &h, flags);
+	uip->ui_artist_list_element->x = x;
+	uip->ui_artist_list_element->y = y;
+	uip->ui_artist_list_element->w = w;
+	uip->ui_artist_list_element->h = h;
+}
+
+static void setup_library_album_list_module(OMO_UI * uip, int x, int y, int w, int h, int flags)
+{
+	setup_module_box(&x, &y, &w, &h, flags);
+	uip->ui_album_list_element->x = x;
+	uip->ui_album_list_element->y = y;
+	uip->ui_album_list_element->w = w;
+	uip->ui_album_list_element->h = h;
+}
+
+static void setup_library_song_list_module(OMO_UI * uip, int x, int y, int w, int h, int flags)
+{
+	setup_module_box(&x, &y, &w, &h, flags);
+	uip->ui_song_list_element->x = x;
+	uip->ui_song_list_element->y = y;
+	uip->ui_song_list_element->w = w;
+	uip->ui_song_list_element->h = h;
+}
+
+static void setup_library_status_module(OMO_UI * uip, int x, int y, int w, int h, int flags)
+{
+}
+
 static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
 {
-	int queue_width, queue_height;
+	int player_x, player_y, player_width, player_height;
+	int queue_list_x, queue_list_y, queue_list_width, queue_list_height;
+	int artist_list_x, artist_list_y, artist_list_width, artist_list_height;
+	int album_list_x, album_list_y, album_list_width, album_list_height;
+	int song_list_x, song_list_y, song_list_width, song_list_height;
+	int pane_width;
+/*	int queue_width, queue_height;
 	int pane_width;
 	int button_y, button_width, button_height;
 	int bezel;
-	int i;
-
-	bezel = 8;
-	button_height = 32;
-	button_y = height - button_height - 8;
+	int i; */
 
 	uip->ui_queue_list_box_element->w = width;
 	uip->ui_queue_list_box_element->h = height;
 	if(mode == 0)
 	{
-		queue_width = width - 16;
-		queue_height = height - button_height - 16 - 8;
-		button_width = queue_width / 6;
+		player_width = width;
+		player_height = bezel + 32 + bezel / 2;
+		player_x = 0;
+		player_y = height - player_height;
+		queue_list_x = 0;
+		queue_list_y = 0;
+		queue_list_width = width;
+		queue_list_height = height - player_height;
 
-		uip->ui_queue_list_element->w = queue_width;
-		uip->ui_queue_list_element->h = queue_height;
-		for(i = 0; i < 6; i++)
-		{
-			uip->ui_button_element[i]->x = 8 + button_width * i;
-			uip->ui_button_element[i]->y = button_y;
-			uip->ui_button_element[i]->w = button_width;
-			uip->ui_button_element[i]->h = button_height;
-		}
+		setup_player_module(uip, player_x, player_y, player_width, player_height, OMO_BEZEL_TOP);
+		setup_queue_list_module(uip, queue_list_x, queue_list_y, queue_list_width, queue_list_height, OMO_BEZEL_BOTTOM);
 	}
 	else
 	{
 		pane_width = width / 4;
-		uip->ui_artist_list_element->x = pane_width * 0 + bezel;
-		uip->ui_artist_list_element->y = 0 + bezel;
-		uip->ui_artist_list_element->w = pane_width - bezel * 2 + bezel / 2;
-		uip->ui_artist_list_element->h = height - bezel * 2;
 
-		uip->ui_album_list_element->x = pane_width * 1 + bezel - bezel / 2;
-		uip->ui_album_list_element->y = 0 + bezel;
-		uip->ui_album_list_element->w = pane_width - bezel * 2 + bezel;
-		uip->ui_album_list_element->h = height - bezel * 2;
+		player_width = pane_width;
+		player_height = bezel + 32 + bezel / 2;
+		player_x = pane_width * 3;
+		player_y = height - player_height;
 
-		uip->ui_song_list_element->x = pane_width * 2 + bezel - bezel / 2;
-		uip->ui_song_list_element->y = 0 + bezel;
-		uip->ui_song_list_element->w = pane_width - bezel * 2 + bezel;
-		uip->ui_song_list_element->h = height - bezel * 2;
+		artist_list_x = pane_width * 0;
+		artist_list_y = 0;
+		artist_list_width = pane_width;
+		artist_list_height = height;
 
-		uip->ui_queue_list_element->x = pane_width * 3 + bezel - bezel / 2;
-		queue_width = width - uip->ui_queue_list_element->x - bezel;
-		queue_height = height - button_height - 16 - 8;
-		uip->ui_queue_list_element->y = 0 + bezel;
-		uip->ui_queue_list_element->w = queue_width;
-		uip->ui_queue_list_element->h = height - bezel * 2 - button_height - bezel;
-		button_width = queue_width / 6;
-		for(i = 0; i < 6; i++)
-		{
-			uip->ui_button_element[i]->x = uip->ui_queue_list_element->x + button_width * i;
-			uip->ui_button_element[i]->y = button_y;
-			uip->ui_button_element[i]->w = button_width;
-			uip->ui_button_element[i]->h = button_height;
-		}
+		album_list_x = pane_width * 1;
+		album_list_y = 0;
+		album_list_width = pane_width;
+		album_list_height = height;
+
+		song_list_x = pane_width * 2;
+		song_list_y = 0;
+		song_list_width = pane_width;
+		song_list_height = height;
+
+		queue_list_x = pane_width * 3;
+		queue_list_y = 0;
+		queue_list_width = pane_width;
+		queue_list_height = height - player_height;
+		setup_library_artist_list_module(uip, artist_list_x, artist_list_y, artist_list_width, artist_list_height, OMO_BEZEL_RIGHT);
+		setup_library_album_list_module(uip, album_list_x, album_list_y, album_list_width, album_list_height, OMO_BEZEL_LEFT | OMO_BEZEL_RIGHT);
+		setup_library_song_list_module(uip, song_list_x, song_list_y, song_list_width, song_list_height, OMO_BEZEL_LEFT | OMO_BEZEL_RIGHT);
+		setup_queue_list_module(uip, queue_list_x, queue_list_y, queue_list_width, queue_list_height, OMO_BEZEL_LEFT | OMO_BEZEL_BOTTOM);
+		setup_player_module(uip, player_x, player_y, player_width, player_height, OMO_BEZEL_LEFT | OMO_BEZEL_TOP);
 	}
 }
 
