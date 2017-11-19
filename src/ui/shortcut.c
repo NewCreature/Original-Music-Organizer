@@ -77,28 +77,6 @@ void omo_shortcut_logic(void * data)
 		app->button_pressed = 3;
 		t3f_key[ALLEGRO_KEY_B] = 0;
 	}
-	if(t3f_key[ALLEGRO_KEY_RIGHT])
-	{
-		if(app->player->codec_handler)
-		{
-			if(app->player->codec_handler->get_position && app->player->codec_handler->seek)
-			{
-				app->player->codec_handler->seek(app->player->codec_data, app->player->codec_handler->get_position(app->player->codec_data) + 5.0);
-			}
-		}
-		t3f_key[ALLEGRO_KEY_RIGHT] = 0;
-	}
-	if(t3f_key[ALLEGRO_KEY_LEFT])
-	{
-		if(app->player->codec_handler)
-		{
-			if(app->player->codec_handler->get_position && app->player->codec_handler->seek)
-			{
-				app->player->codec_handler->seek(app->player->codec_data, app->player->codec_handler->get_position(app->player->codec_data) - 5.0);
-			}
-		}
-		t3f_key[ALLEGRO_KEY_LEFT] = 0;
-	}
 	if(t3f_key[ALLEGRO_KEY_DELETE])
 	{
 		if(app->player->queue && app->ui->ui_queue_list_element->d1 < app->player->queue->entry_count)
