@@ -12,6 +12,7 @@ typedef struct
 	bool paused;
 	ALLEGRO_THREAD * codec_thread;
 	ALLEGRO_AUDIO_STREAM * codec_stream;
+	ALLEGRO_MUTEX * codec_mutex;
 	int start_track;
 	char track_buffer[16];
 	char tag_buffer[1024];
@@ -44,7 +45,9 @@ static void * gme_update_thread(ALLEGRO_THREAD * thread, void * arg)
 				}
 				else
 				{
+					al_lock_mutex(codec_data->codec_mutex);
 					gme_play(codec_data->emu, buf_size * 2, fragment);
+					al_unlock_mutex(codec_data->codec_mutex);
 				}
 				if(!al_set_audio_stream_fragment(codec_data->codec_stream, fragment))
 				{
@@ -79,16 +82,11 @@ static void * codec_load_file(const char * fn, const char * subfn)
 		if(!gme_open_file(fn, &(data->emu), 44100))
 		{
 			gme_track_info(data->emu, &(data->info), data->start_track);
-			if(data->info)
+			if(!data->info)
 			{
-				if(data->info->length <= 0)
-				{
-					data->info->length = data->info->intro_length + data->info->loop_length * 2;
-				}
-				if(data->info->length <= 0)
-				{
-					data->info->length = (long) (2.5 * 60 * 1000);
-				}
+				gme_delete(data->emu);
+				free(data);
+				return NULL;
 			}
 		}
 	}
@@ -175,16 +173,28 @@ static const char * codec_get_tag(void * data, const char * name)
 		}
 		else if(!strcmp(name, "Loop Start"))
 		{
+			if(codec_data->info->intro_length <= 0)
+			{
+				return NULL;
+			}
 			sprintf(codec_data->tag_buffer, "%f", (double)codec_data->info->intro_length / 1000.0);
 			return codec_data->tag_buffer;
 		}
 		else if(!strcmp(name, "Loop End"))
 		{
+			if(codec_data->info->loop_length <= 0)
+			{
+				return NULL;
+			}
 			sprintf(codec_data->tag_buffer, "%f", (double)codec_data->info->length / 1000.0);
 			return codec_data->tag_buffer;
 		}
 		else if(!strcmp(name, "Fade Time"))
 		{
+			if(codec_data->info->loop_length <= 0)
+			{
+				return NULL;
+			}
 			sprintf(codec_data->tag_buffer, "0.0");
 			return codec_data->tag_buffer;
 		}
@@ -213,6 +223,14 @@ static bool codec_play(void * data)
 	gme_start_track(codec_data->emu, codec_data->start_track);
 
 	/* calculate track length */
+	if(codec_data->info->length <= 0)
+	{
+		codec_data->info->length = codec_data->info->intro_length + codec_data->info->loop_length * 2;
+	}
+	if(codec_data->info->length <= 0)
+	{
+		codec_data->info->length = (long) (2.5 * 60 * 1000);
+	}
 	gme_set_fade(codec_data->emu, codec_data->info->length);
 	codec_data->paused = false;
 
@@ -223,8 +241,12 @@ static bool codec_play(void * data)
 		codec_data->codec_thread = al_create_thread(gme_update_thread, codec_data);
 		if(codec_data->codec_thread)
 		{
-			al_start_thread(codec_data->codec_thread);
-			return true;
+			codec_data->codec_mutex = al_create_mutex();
+			if(codec_data->codec_mutex)
+			{
+				al_start_thread(codec_data->codec_thread);
+				return true;
+			}
 		}
 	}
 	return false;
@@ -250,10 +272,38 @@ static void codec_stop(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	al_join_thread(codec_data->codec_thread, NULL);
+	al_destroy_thread(codec_data->codec_thread);
 	codec_data->codec_thread = NULL;
+	al_destroy_mutex(codec_data->codec_mutex);
+	codec_data->codec_mutex = NULL;
 	al_destroy_audio_stream(codec_data->codec_stream);
 	codec_data->codec_stream = NULL;
+}
+
+static bool codec_seek(void * data, double pos)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	gme_err_t ret;
+
+	al_lock_mutex(codec_data->codec_mutex);
+	ret = gme_seek(codec_data->emu, pos * 1000.0);
+	al_unlock_mutex(codec_data->codec_mutex);
+
+	return !ret;
+}
+
+static double codec_get_position(void * data)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return (double)gme_tell(codec_data->emu) / 1000.0;
+}
+
+static double codec_get_length(void * data)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return (double)codec_data->info->length / 1000.0 + 8.0;
 }
 
 /*static float codec_get_position(void)
@@ -287,9 +337,9 @@ OMO_CODEC_HANDLER * omo_codec_gme_get_codec_handler(void)
 	codec_handler.pause = codec_pause;
 	codec_handler.resume = codec_resume;
 	codec_handler.stop = codec_stop;
-	codec_handler.seek = NULL;
-	codec_handler.get_position = NULL;
-	codec_handler.get_length = NULL;
+	codec_handler.seek = codec_seek;
+	codec_handler.get_position = codec_get_position;
+	codec_handler.get_length = codec_get_length;
 	codec_handler.done_playing = codec_done_playing;
 	codec_handler.types = 0;
 	omo_codec_handler_add_type(&codec_handler, ".ay");
