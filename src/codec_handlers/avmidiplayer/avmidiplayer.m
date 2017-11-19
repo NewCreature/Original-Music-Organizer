@@ -13,9 +13,6 @@ typedef struct
 
 	RTK_MIDI * midi;
 	AVMIDIPlayer * player;
-	double start_time;
-	double pause_start;
-	double pause_total;
 	char tag_buffer[1024];
 
 } CODEC_DATA;
@@ -108,8 +105,6 @@ static bool codec_play(void * data)
 
 	[codec_data->player prepareToPlay];
 	[codec_data->player play:nil];
-	codec_data->start_time = al_get_time();
-	codec_data->pause_total = 0.0;
 	return true;
 }
 
@@ -118,7 +113,6 @@ static bool codec_pause(void * data)
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
 	[codec_data->player stop];
-	codec_data->pause_start = al_get_time();
 	return true;
 }
 
@@ -126,7 +120,6 @@ static bool codec_resume(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	codec_data->pause_total += al_get_time() - codec_data->pause_start;
 	[codec_data->player play:nil];
 	return true;
 }
@@ -167,7 +160,7 @@ static bool codec_done_playing(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	return al_get_time() - (codec_data->start_time + codec_data->pause_total) >= codec_data->player.duration;
+	return codec_data->player.currentPosition >= codec_data->player.duration;
 }
 
 static OMO_CODEC_HANDLER codec_handler;
