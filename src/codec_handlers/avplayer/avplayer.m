@@ -16,6 +16,7 @@ typedef struct
 	double start_time;
 	double pause_start;
 	double pause_total;
+	double start_pos;
 	char tag_buffer[1024];
 
 } CODEC_DATA;
@@ -123,6 +124,7 @@ static bool codec_play(void * data)
 	[codec_data->player prepareToPlay];
 	[codec_data->player play];
 	codec_data->start_time = al_get_time();
+	codec_data->start_pos = 0.0;
 	codec_data->pause_total = 0.0;
 	return true;
 }
@@ -160,6 +162,10 @@ static bool codec_seek(void * data, double pos)
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
 	codec_data->player.currentTime = pos;
+	codec_data->start_pos = pos;
+	codec_data->start_time = al_get_time();
+	codec_data->pause_start = codec_data->start_time;
+	codec_data->pause_total = 0.0;
 	return true;
 //	[player currentPosition] = pos;
 }
@@ -182,7 +188,7 @@ static bool codec_done_playing(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	return al_get_time() - (codec_data->start_time + codec_data->pause_total) >= codec_data->player.duration;
+	return al_get_time() - (codec_data->start_time + codec_data->pause_total) >= codec_data->player.duration - codec_data->start_pos;
 }
 
 static OMO_CODEC_HANDLER codec_handler;
