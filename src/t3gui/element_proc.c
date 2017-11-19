@@ -815,6 +815,9 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
    float slratio, slmax, slpos;
    int (*proc)(void *cbpointer, int d2value);
    int oldval;
+   int range = d->d1;
+   int value = d->d2;
+   int offset = 0;
    assert(d);
 
    /* check for slider direction */
@@ -846,67 +849,50 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
    switch (msg) {
 
       case MSG_DRAW:
-         if (vert) {
-            al_draw_filled_rectangle(d->x+0.5, d->y+0.5, d->x+d->w/2-2.5, d->y+d->h-1.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG]);
-            al_draw_filled_rectangle(d->x+0.5+d->w/2-1, d->y+0.5, d->x+d->w/2+0.5, d->y+d->h-1.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG]);
-            al_draw_filled_rectangle(d->x+0.5+d->w/2+2, d->y+0.5, d->x+d->w-1.5, d->y+d->h-1.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG]);
-         }
-         else {
-            al_draw_filled_rectangle(d->x+0.5, d->y+0.5, d->x+d->w-1.5, d->y+d->h/2-2.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG]);
-            al_draw_filled_rectangle(d->x+0.5, d->y+0.5+d->h/2-1, d->x+d->w-1.5, d->y+d->h/2+0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG]);
-            al_draw_filled_rectangle(d->x+0.5, d->y+0.5+d->h/2+2, d->x+d->w-1.5, d->y+d->h-1.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG]);
-         }
+      /* check for slider direction */
+      if (d->h < d->w)
+         vert = false;
 
-         /* okay, background and slot are drawn, now draw the handle */
-         if (slhan) {
-            if (vert) {
-               slx = d->x+(d->w/2)-(al_get_bitmap_width(slhan)/2);
-               sly = d->y+(d->h-1)-(hh+slp);
-            }
-            else {
-               slx = d->x+slp;
-               sly = d->y+(d->h/2)-(al_get_bitmap_height(slhan)/2);
-            }
-            al_draw_bitmap(slhan, slx, sly, 0);
-         }
-         else {
-            /* draw default handle */
-            if (vert) {
-               slx = d->x;
-               sly = d->y+(d->h)-(hh+slp);
-               sly = d->y+slp;
-               slw = d->w-1;
-               slh = hh-1;
-            }
-            else {
-               slx = d->x+slp;
-               sly = d->y;
-               slw = hh-1;
-               slh = d->h-1;
-            }
+      if (vert) {
+         hh = d->h * d->h / (range + d->h);
 
-            /* draw body */
-            float rx = 6;
-            float ry = 6;
-            int m = (slw < slh)?slw:slh;
-            if (rx > m/2) rx = m/2;
-            if (ry > m/2) ry = m/2;
+         if (hh > d->h) hh = d->h;
 
-            al_draw_filled_rounded_rectangle(slx+2, sly, slx+(slw-2), sly+slh, rx, ry, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG]);
-#if 0
-            rectfill(gui_bmp, slx+2, sly, slx+(slw-2), sly+slh, sfg);
-            vline(gui_bmp, slx+1, sly+1, sly+slh-1, sfg);
-            vline(gui_bmp, slx+slw-1, sly+1, sly+slh-1, sfg);
-            vline(gui_bmp, slx, sly+2, sly+slh-2, sfg);
-            vline(gui_bmp, slx+slw, sly+2, sly+slh-2, sfg);
-            vline(gui_bmp, slx+1, sly+2, sly+slh-2, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG]);
-            hline(gui_bmp, slx+2, sly+1, slx+slw-2, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG]);
-            putpixel(gui_bmp, slx+2, sly+2, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG]);
-#endif
-         }
+         offset = (d->h - hh) * value / range;
+      } else {
+         hh = d->w * d->w / (range + d->h);
 
-         if (d->flags & (D_GOTFOCUS | D_TRACKMOUSE))
-            al_draw_rectangle(d->x, d->y, d->x+d->w-1, d->y+d->h-1, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG], 4.0);
+         if (hh > d->w) hh = d->w;
+
+         offset = (d->w - hh) * value / range;
+      }
+
+      if (vert) {
+         slx = d->x+2;
+         sly = d->y+2 + offset;
+         slw = d->w-4;
+         slh = hh-4;
+      } else {
+         slx = d->x+2 + offset;
+         sly = d->y+2;
+         slw = hh-4;
+         slh = d->h-4;
+      }
+
+      NINE_PATCH_BITMAP *p9;
+
+      /* draw body */
+      if (d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[2])
+      {
+          p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[2];
+          draw_nine_patch_bitmap(p9, d->theme->state[T3GUI_ELEMENT_STATE_EXTRA].color[T3GUI_THEME_COLOR_BG], d->x, d->y, d->w, d->h);
+      }
+      if (d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[3]) {
+         p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[3];
+         int w = max(slw, get_nine_patch_bitmap_min_width(p9));
+         int h = max(slh, get_nine_patch_bitmap_min_height(p9));
+         draw_nine_patch_bitmap(p9, d->theme->state[T3GUI_ELEMENT_STATE_EXTRA].color[T3GUI_THEME_COLOR_FG], slx, sly, w, h);
+      }
          break;
 
       case MSG_WANTFOCUS:
