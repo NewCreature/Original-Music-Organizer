@@ -25,28 +25,44 @@ static int queue_list_visible_elements(T3GUI_ELEMENT * element)
 	return element->h / al_get_font_line_height(element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font) - 1;
 }
 
-static void update_scroll_pos(void * data)
+static void update_seek_pos(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	double pos, length;
 
-	if(app->player->codec_handler)
+	if(app->ui->ui_seeked)
 	{
-		if(app->player->codec_handler->get_length && app->player->codec_handler->get_position)
+		if(app->player->codec_handler->seek)
 		{
-			app->ui->ui_seek_control_element->flags &= ~D_DISABLED;
 			length = app->player->codec_handler->get_length(app->player->codec_data);
-			pos = app->player->codec_handler->get_position(app->player->codec_data);
-			app->ui->ui_seek_control_element->d2 = (pos / length) * 1000.0;
+			pos = ((double)app->ui->ui_seek_control_element->d2 / (double)OMO_UI_SEEK_RESOLUTION) * length;
+			app->player->codec_handler->seek(app->player->codec_data, pos);
+		}
+		app->ui->ui_seeked = false;
+	}
+	else
+	{
+		if(app->player->codec_handler)
+		{
+			if(app->player->codec_handler->get_length && app->player->codec_handler->get_position)
+			{
+				app->ui->ui_seek_control_element->flags &= ~D_DISABLED;
+				if(!(app->ui->ui_seek_control_element->flags & D_TRACKMOUSE))
+				{
+					length = app->player->codec_handler->get_length(app->player->codec_data);
+					pos = app->player->codec_handler->get_position(app->player->codec_data);
+					app->ui->ui_seek_control_element->d2 = (pos / length) * (double)OMO_UI_SEEK_RESOLUTION;
+				}
+			}
+			else
+			{
+				app->ui->ui_seek_control_element->flags |= D_DISABLED;
+			}
 		}
 		else
 		{
 			app->ui->ui_seek_control_element->flags |= D_DISABLED;
 		}
-	}
-	else
-	{
-		app->ui->ui_seek_control_element->flags |= D_DISABLED;
 	}
 }
 
@@ -56,6 +72,7 @@ void omo_logic(void * data)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	int old_queue_list_pos = -1;
 	int visible = 0;
+	int seek_flags;
 
 	t3f_refresh_menus();
 	if(app->test_mode)
@@ -90,7 +107,12 @@ void omo_logic(void * data)
 			}
 			omo_file_chooser_logic(data);
 			omo_library_pre_gui_logic(data);
+			seek_flags = app->ui->ui_seek_control_element->flags;
 			t3gui_logic();
+			if(seek_flags & D_TRACKMOUSE && !(app->ui->ui_seek_control_element->flags & D_TRACKMOUSE))
+			{
+				app->ui->ui_seeked = true;
+			}
 			if(!app->ui->tags_display)
 			{
 				if(app->library_view)
@@ -110,7 +132,7 @@ void omo_logic(void * data)
 				omo_tags_dialog_logic(data);
 			}
 			omo_player_logic(app->player, app->library, app->archive_handler_registry, app->codec_handler_registry, app->player_temp_path);
-			update_scroll_pos(app);
+			update_seek_pos(app);
 			app->ui->ui_queue_list_element->id2 = app->player->queue_pos;
 
 			/* see if we should scroll the queue list */

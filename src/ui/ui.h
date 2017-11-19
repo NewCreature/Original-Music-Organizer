@@ -3,8 +3,9 @@
 
 #include "theme.h"
 
-#define OMO_UI_MAX_TAGS         16
-#define OMO_UI_MAX_TAG_LENGTH 1024
+#define OMO_UI_MAX_TAGS           16
+#define OMO_UI_MAX_TAG_LENGTH   1024
+#define OMO_UI_SEEK_RESOLUTION  2000
 
 typedef struct
 {
@@ -17,6 +18,7 @@ typedef struct
 	T3GUI_ELEMENT * ui_album_list_element;
 	T3GUI_ELEMENT * ui_song_list_element;
 	T3GUI_ELEMENT * ui_seek_control_element;
+	bool ui_seeked;
 	int selected_song;
 	int mode;
 
