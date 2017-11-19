@@ -12,6 +12,8 @@
 #define OMO_BEZEL_RIGHT  8
 
 static const int bezel = 8;
+static const int slider_size = 16;
+static const int button_size = 32;
 
 /* adjust the passed rectangle for flags */
 static void setup_module_box(int * x, int * y, int * w, int * h, int flags)
@@ -50,8 +52,13 @@ static void setup_player_module(OMO_UI * uip, int x, int y, int w, int h, int fl
 	/* adjust bezels so adjacent items are only 'bezel' pixels away */
 	setup_module_box(&x, &y, &w, &h, flags);
 
-	button_height = h;
-	button_y = y;
+	uip->ui_seek_control_element->x = x;
+	uip->ui_seek_control_element->y = y;
+	uip->ui_seek_control_element->w = w;
+	uip->ui_seek_control_element->h = slider_size;
+
+	button_height = button_size;
+	button_y = y + slider_size + bezel;
 
 	button_width = w / 6;
 	for(i = 0; i < 6; i++)
@@ -122,7 +129,7 @@ static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
 	if(mode == 0)
 	{
 		player_width = width;
-		player_height = bezel + 32 + bezel / 2;
+		player_height = bezel + button_size + bezel / 2 + slider_size + bezel;
 		player_x = 0;
 		player_y = height - player_height;
 		queue_list_x = 0;
@@ -138,7 +145,7 @@ static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
 		pane_width = width / 4;
 
 		player_width = pane_width;
-		player_height = bezel + 32 + bezel / 2;
+		player_height = bezel + button_size + bezel / 2 + slider_size + bezel;
 		player_x = pane_width * 3;
 		player_y = height - player_height;
 
@@ -161,6 +168,7 @@ static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
 		queue_list_y = 0;
 		queue_list_width = pane_width;
 		queue_list_height = height - player_height;
+
 		setup_library_artist_list_module(uip, artist_list_x, artist_list_y, artist_list_width, artist_list_height, OMO_BEZEL_RIGHT);
 		setup_library_album_list_module(uip, album_list_x, album_list_y, album_list_width, album_list_height, OMO_BEZEL_LEFT | OMO_BEZEL_RIGHT);
 		setup_library_song_list_module(uip, song_list_x, song_list_y, song_list_width, song_list_height, OMO_BEZEL_LEFT | OMO_BEZEL_RIGHT);
@@ -211,6 +219,7 @@ bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void 
 		}
 		uip->ui_queue_list_box_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, width, height, 0, 0, 0, 0, NULL, NULL, NULL);
 		uip->ui_queue_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, D_SETFOCUS, 0, 0, ui_queue_list_proc, NULL, data);
+		uip->ui_seek_control_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_slider_proc, 0, 0, width, height, 0, 0, 1000, 0, NULL, NULL, NULL);
 		for(i = 0; i < 6; i++)
 		{
 			uip->ui_button_element[i] = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8, 8, 16, 16, 0, 0, 0, i, uip->ui_button_text[i], ui_player_button_proc, uip->main_theme->bitmap[buttons[i]]);
@@ -236,6 +245,7 @@ bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void 
 
 		/* create queue list and controls */
 		uip->ui_queue_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, 0, 0, 0, ui_queue_list_proc, NULL, data);
+		uip->ui_seek_control_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_slider_proc, 0, 0, width, height, 0, 0, 1000, 0, NULL, NULL, NULL);
 		for(i = 0; i < 6; i++)
 		{
 			uip->ui_button_element[i] = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8, 8, 16, 16, 0, 0, 0, i, uip->ui_button_text[i], ui_player_button_proc, uip->main_theme->bitmap[buttons[i]]);

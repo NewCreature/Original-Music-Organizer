@@ -25,6 +25,31 @@ static int queue_list_visible_elements(T3GUI_ELEMENT * element)
 	return element->h / al_get_font_line_height(element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font) - 1;
 }
 
+static void update_scroll_pos(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	double pos, length;
+
+	if(app->player->codec_handler)
+	{
+		if(app->player->codec_handler->get_length && app->player->codec_handler->get_position)
+		{
+			app->ui->ui_seek_control_element->flags &= ~D_DISABLED;
+			length = app->player->codec_handler->get_length(app->player->codec_data);
+			pos = app->player->codec_handler->get_position(app->player->codec_data);
+			app->ui->ui_seek_control_element->d2 = (pos / length) * 1000.0;
+		}
+		else
+		{
+			app->ui->ui_seek_control_element->flags |= D_DISABLED;
+		}
+	}
+	else
+	{
+		app->ui->ui_seek_control_element->flags |= D_DISABLED;
+	}
+}
+
 /* main logic routine */
 void omo_logic(void * data)
 {
@@ -85,6 +110,7 @@ void omo_logic(void * data)
 				omo_tags_dialog_logic(data);
 			}
 			omo_player_logic(app->player, app->library, app->archive_handler_registry, app->codec_handler_registry, app->player_temp_path);
+			update_scroll_pos(app);
 			app->ui->ui_queue_list_element->id2 = app->player->queue_pos;
 
 			/* see if we should scroll the queue list */
