@@ -876,7 +876,7 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
          slx = d->x+2 + offset;
          sly = d->y+2;
          slw = hh-4;
-         slh = d->h-4;
+         slh = d->h-3;
       }
 
       NINE_PATCH_BITMAP *p9;
@@ -887,7 +887,7 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
           p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[2];
           draw_nine_patch_bitmap(p9, d->theme->state[T3GUI_ELEMENT_STATE_EXTRA].color[T3GUI_THEME_COLOR_BG], d->x, d->y, d->w, d->h);
       }
-      if (d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[3]) {
+      if (!(d->flags & D_DISABLED) && d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[3]) {
          p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[3];
          int w = max(slw, get_nine_patch_bitmap_min_width(p9));
          int h = max(slh, get_nine_patch_bitmap_min_height(p9));
