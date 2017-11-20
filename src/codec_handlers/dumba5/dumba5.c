@@ -12,12 +12,12 @@ typedef struct
 	char player_sub_filename[1024];
 	char tag_buffer[1024];
 	bool loop;         // let us know we are looping this song
+	int loop_count;
 	double loop_start;
 	double loop_end;
 	double playback_total;
 	double fade_time;  // how long to fade out
 	bool fade_out;     // let us know we are fading out
-	double fade_start; // time the fade began
 
 } CODEC_DATA;
 
@@ -87,6 +87,7 @@ static bool codec_set_loop(void * data, double loop_start, double loop_end, doub
 	codec_data->loop_end = loop_end;
 	codec_data->playback_total = loop_start + (loop_end - loop_start) * (double)loop_count;
 	codec_data->loop = true;
+	codec_data->loop_count = loop_count;
 	codec_data->fade_time = fade_time;
 
 	return true;
@@ -185,10 +186,21 @@ static void codec_stop(void * data)
 	dumba5_stop_player(codec_data->codec_player);
 }
 
+static bool codec_seek(void * data, double pos)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return dumba5_set_player_position(codec_data->codec_player, pos);
+}
+
 static double codec_get_length(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
+	if(codec_data->loop)
+	{
+		return codec_data->loop_start + (codec_data->loop_end - codec_data->loop_start) * codec_data->loop_count + codec_data->fade_time;
+	}
 	return codec_data->codec_length;
 }
 
@@ -196,7 +208,7 @@ static double codec_get_position(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	return (double)dumba5_get_player_position(codec_data->codec_player) / 65536.0;
+	return dumba5_get_player_time(codec_data->codec_player);
 }
 
 static bool codec_done_playing(void * data)
@@ -208,16 +220,23 @@ static bool codec_done_playing(void * data)
 	{
 		if(codec_data->loop)
 		{
-			if(dumba5_get_player_time(codec_data->codec_player) > codec_data->playback_total && !codec_data->fade_out)
+			if(dumba5_get_player_time(codec_data->codec_player) > codec_data->playback_total)
 			{
-				codec_data->fade_start = al_get_time();
 				codec_data->fade_out = true;
+			}
+			else
+			{
+				if(codec_data->fade_out)
+				{
+					dumba5_set_player_volume(codec_data->codec_player, 1.0);
+				}
+				codec_data->fade_out = false;
 			}
 			if(codec_data->fade_out)
 			{
-				volume = 1.0 - (al_get_time() - codec_data->fade_start) / codec_data->fade_time;
+				volume = 1.0 - (dumba5_get_player_time(codec_data->codec_player) - codec_data->playback_total) / codec_data->fade_time;
 				dumba5_set_player_volume(codec_data->codec_player, volume);
-				if(al_get_time() - codec_data->fade_start >= codec_data->fade_time)
+				if(dumba5_get_player_time(codec_data->codec_player) >= codec_data->playback_total + codec_data->fade_time)
 				{
 					return true;
 				}
@@ -243,10 +262,9 @@ OMO_CODEC_HANDLER * omo_codec_dumba5_get_codec_handler(void)
 	codec_handler.pause = codec_pause;
 	codec_handler.resume = codec_resume;
 	codec_handler.stop = codec_stop;
-	codec_handler.seek = NULL;
+	codec_handler.seek = codec_seek;
 	codec_handler.get_length = codec_get_length;
 	codec_handler.get_position = codec_get_position;
-	codec_handler.get_length = NULL;
 	codec_handler.done_playing = codec_done_playing;
 	codec_handler.types = 0;
 	omo_codec_handler_add_type(&codec_handler, ".mod");
