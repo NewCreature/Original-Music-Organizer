@@ -55,12 +55,7 @@ v0.3
 
    [X]Add loop handling to all codec handlers that can support it.
 
-[ ]Implement get_length() and get_position() for all codec handlers that can
-   support it. These functions should take looping into account. If the
-   playback is looped, we should count the total playback length. This includes
-   the total time of the looped audio and the specified fade time.
-
-[ ]Implement seek() for DUMBA5 codec handler.
+[X]Implement seek() for DUMBA5 codec handler.
 
    I think we can get this working by calling duh_end_sigrenderer() and
    generate a new sigrenderer for the player with duh_start_sigrenderer(),
@@ -72,6 +67,11 @@ v0.3
    is using pointers incorrectly. Since this and the new
    dumba5_set_player_position() are functionally similar, we can probably use
    most of the same code for both functions.
+
+[ ]Implement get_length() and get_position() for all codec handlers that can
+   support it. These functions should take looping into account. If the
+   playback is looped, we should count the total playback length. This includes
+   the total time of the looped audio and the specified fade time.
 
 [ ]Implement track split dialog and tag system. We need a way to store track
    split data in the base file's metedata so we can keep it in the online
