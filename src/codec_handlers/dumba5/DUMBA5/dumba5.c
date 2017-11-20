@@ -124,72 +124,6 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 	return NULL;
 }
 
-DUMBA5_PLAYER * dumba5_start_duh_x(DUH *duh, int n_channels, long pos, float volume, long bufsize, int freq)
-{
-	DUMBA5_PLAYER * dp;
-	ALLEGRO_CHANNEL_CONF c_conf;
-
-	/* This restriction is imposed by Allegro. */
-	ASSERT(n_channels > 0);
-	ASSERT(n_channels <= 2);
-
-	if(!duh)
-	{
-		return NULL;
-	}
-
-	dp = (DUMBA5_PLAYER *) malloc(sizeof(DUMBA5_PLAYER));
-	if(!dp)
-	{
-		return NULL;
-	}
-	memset(dp, 0, sizeof(DUMBA5_PLAYER));
-
-	dp->flags = ADP_PLAYING;
-	dp->bufsize = bufsize;
-	dp->freq = freq;
-	dp->channels = n_channels;
-	if(n_channels == 1)
-	{
-		c_conf = ALLEGRO_CHANNEL_CONF_1;
-	}
-	else
-	{
-		c_conf = ALLEGRO_CHANNEL_CONF_2;
-	}
-
-	dp->stream = al_create_audio_stream(4, bufsize, freq, ALLEGRO_AUDIO_DEPTH_INT16, c_conf);
-
-	if (!dp->stream) {
-		free(dp);
-		return NULL;
-	}
-	al_attach_audio_stream_to_mixer(dp->stream, al_get_default_mixer());
-
-	dp->sigrenderer = dumb_it_start_at_order(duh, n_channels, pos);
-
-	if (!dp->sigrenderer) {
-		al_destroy_audio_stream(dp->stream);
-		free(dp);
-		return NULL;
-	}
-	dp->thread = al_create_thread(dumba5_update_thread, dp);
-	if(!dp->thread)
-	{
-		return NULL;
-	}
-
-	dp->volume = volume;
-	dp->silentcount = 0;
-	dp->done_playing = false;
-	dp->duh = duh;
-	al_start_thread(dp->thread);
-
-	return dp;
-}
-
-
-
 void dumba5_stop_duh(DUMBA5_PLAYER * dp)
 {
 	if(dp)
@@ -213,8 +147,6 @@ void dumba5_stop_duh(DUMBA5_PLAYER * dp)
 	}
 }
 
-
-
 void dumba5_pause_duh(DUMBA5_PLAYER * dp)
 {
 	if (dp && dp->sigrenderer && (dp->flags & ADP_PLAYING))
@@ -223,8 +155,6 @@ void dumba5_pause_duh(DUMBA5_PLAYER * dp)
 		dp->flags &= ~ADP_PLAYING;
 	}
 }
-
-
 
 void dumba5_resume_duh(DUMBA5_PLAYER * dp)
 {
