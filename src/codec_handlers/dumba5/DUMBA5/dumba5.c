@@ -83,6 +83,7 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 			fragment = (unsigned short *)al_get_audio_stream_fragment(dp->stream);
 			if(fragment)
 			{
+				al_lock_mutex(dp->mutex);
 				n = duh_render(dp->sigrenderer, 16, 0, dp->volume, 65536.0 / dp->freq, dp->bufsize, fragment);
 
 				dp->played_time += (double)n / (double)dp->freq;
@@ -97,6 +98,7 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 						}
 						al_destroy_audio_stream(dp->stream);
 						dp->sigrenderer = NULL;
+						al_unlock_mutex(dp->mutex);
 						return NULL;
 					}
 				}
@@ -111,6 +113,7 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 				if(!al_set_audio_stream_fragment(dp->stream, fragment))
 				{
 				}
+				al_unlock_mutex(dp->mutex);
 			}
 		}
 		if(al_get_thread_should_stop(thread))
@@ -377,32 +380,11 @@ void dumba5_start_player(DUMBA5_PLAYER * pp)
 /* advanced functions */
 bool dumba5_set_player_pattern(DUMBA5_PLAYER * pp, int pattern)
 {
-	bool paused;
-	DUH * duh;
-	int chan, freq;
-	float vol;
-
-	paused = !(pp->flags & ADP_PLAYING);
-	chan = pp->channels;
-	freq = pp->freq;
-	vol = pp->volume;
-	if(paused)
-	{
-		dumba5_resume_player(pp);
-	}
-	duh = pp->duh;
-	dumba5_stop_duh(pp);
-	pp = dumba5_create_player(duh, chan, pattern, true, 4096, freq);
-	if(pp)
-	{
-		if(!paused)
-		{
-			dumba5_start_player(pp);
-		}
-		return true;
-	}
-	printf("failed to set pattern!\n");
-	return false;
+	al_lock_mutex(pp->mutex);
+	duh_end_sigrenderer(pp->sigrenderer);
+	pp->sigrenderer = dumb_it_start_at_order(pp->duh, pp->channels, pattern);
+	al_unlock_mutex(pp->mutex);
+	return pp->sigrenderer;
 }
 
 void dumba5_stop_player(DUMBA5_PLAYER * pp)
