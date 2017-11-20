@@ -182,9 +182,9 @@ float dumba5_get_player_volume(DUMBA5_PLAYER * pp)
 	return pp ? pp->volume : 0;
 }
 
-long dumba5_get_player_position(DUMBA5_PLAYER * pp)
+double dumba5_get_player_position(DUMBA5_PLAYER * pp)
 {
-	return pp ? duh_sigrenderer_get_position(pp->sigrenderer) : -1;
+	return pp ? duh_sigrenderer_get_position(pp->sigrenderer) / 65535.0 : -1;
 }
 
 double dumba5_get_player_time(DUMBA5_PLAYER * pp)

@@ -111,7 +111,7 @@ void dumba5_set_player_volume(DUMBA5_PLAYER * pp, float volume);
 float dumba5_get_player_volume(DUMBA5_PLAYER * pp);
 
 /* Get the position of the player. */
-long dumba5_get_player_position(DUMBA5_PLAYER * pp);
+double dumba5_get_player_position(DUMBA5_PLAYER * pp);
 
 /* Get the total play time of the player. */
 double dumba5_get_player_time(DUMBA5_PLAYER * pp);
