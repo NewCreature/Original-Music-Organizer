@@ -65,9 +65,10 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 	DUMBA5_PLAYER * dp = (DUMBA5_PLAYER *)arg;
 	ALLEGRO_EVENT_QUEUE * queue;
 	unsigned short *fragment;
+	int i;
 	long n;
-	long size;
-	int n_channels;
+	int total_samples;
+	int samples_left;
 
 	queue = al_create_event_queue();
 	al_register_event_source(queue, al_get_audio_stream_event_source(dp->stream));
@@ -83,32 +84,34 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 			fragment = (unsigned short *)al_get_audio_stream_fragment(dp->stream);
 			if(fragment)
 			{
+				total_samples = dp->bufsize * dp->channels;
+				samples_left = total_samples;
 				al_lock_mutex(dp->mutex);
-				n = duh_render(dp->sigrenderer, 16, 0, dp->volume, 65536.0 / dp->freq, dp->bufsize, fragment);
-
-				dp->played_time += (double)n / (double)dp->freq;
-
-				if (n == 0)
+				while(samples_left > 0)
 				{
-					if (++dp->silentcount >= 2)
+					n = duh_render(dp->sigrenderer, 16, 0, dp->volume, 65536.0 / dp->freq, samples_left / dp->channels, &fragment[total_samples - samples_left]);
+
+					dp->played_time += (double)n / (double)dp->freq;
+
+					if (n == 0)
 					{
-						duh_end_sigrenderer(dp->sigrenderer);
-						if(!al_set_audio_stream_fragment(dp->stream, fragment))
+						if (++dp->silentcount >= 2)
 						{
+							for(i = 0; i < samples_left; i++)
+							{
+								fragment[total_samples - samples_left + i] = 0;
+							}
+							if(!al_set_audio_stream_fragment(dp->stream, fragment))
+							{
+							}
+							duh_end_sigrenderer(dp->sigrenderer);
+							al_destroy_audio_stream(dp->stream);
+							dp->sigrenderer = NULL;
+							al_unlock_mutex(dp->mutex);
+							return NULL;
 						}
-						al_destroy_audio_stream(dp->stream);
-						dp->sigrenderer = NULL;
-						al_unlock_mutex(dp->mutex);
-						return NULL;
 					}
-				}
-
-				n_channels = duh_sigrenderer_get_n_channels(dp->sigrenderer);
-				n *= n_channels;
-				size = dp->bufsize * n_channels;
-				for (; n < size; n++)
-				{
-					fragment[n] = 0x8000;
+					samples_left -= n * dp->channels;
 				}
 				if(!al_set_audio_stream_fragment(dp->stream, fragment))
 				{
