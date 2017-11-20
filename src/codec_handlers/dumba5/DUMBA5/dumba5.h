@@ -98,6 +98,9 @@ void dumba5_stop_player(DUMBA5_PLAYER * pp);
 /* Set the player pattern. */
 bool dumba5_set_player_pattern(DUMBA5_PLAYER * pp, int pattern);
 
+/* Set the player position. */
+bool dumba5_set_player_position(DUMBA5_PLAYER * pp, double pos);
+
 /* Pause the player. */
 void dumba5_pause_player(DUMBA5_PLAYER * pp);
 
