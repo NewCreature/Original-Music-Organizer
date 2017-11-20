@@ -34,6 +34,7 @@ struct DUMBA5_PLAYER
 	long bufsize;
 	int freq;
 	int channels;
+	bool loop;
 	ALLEGRO_AUDIO_STREAM *stream;
 	DUH * duh;
 	DUH_SIGRENDERER *sigrenderer; /* If this is NULL, stream is invalid. */
@@ -297,6 +298,7 @@ DUMBA5_PLAYER * dumba5_create_player(DUH * dp, int pattern, bool loop, int bufsi
 	player->bufsize = bufsize;
 	player->freq = frequency;
 	player->channels = n_channels;
+	player->loop = loop;
 	if(n_channels == 1)
 	{
 		c_conf = ALLEGRO_CHANNEL_CONF_1;
@@ -386,6 +388,11 @@ bool dumba5_set_player_pattern(DUMBA5_PLAYER * pp, int pattern)
 	al_lock_mutex(pp->mutex);
 	duh_end_sigrenderer(pp->sigrenderer);
 	pp->sigrenderer = dumb_it_start_at_order(pp->duh, pp->channels, pattern);
+	if(!pp->loop)
+	{
+		dumb_it_set_loop_callback(duh_get_it_sigrenderer(pp->sigrenderer), it_loop_callback, pp);
+		dumb_it_set_xm_speed_zero_callback(duh_get_it_sigrenderer(pp->sigrenderer), it_loop_callback, pp);
+	}
 	al_unlock_mutex(pp->mutex);
 	return pp->sigrenderer;
 }
@@ -395,6 +402,11 @@ bool dumba5_set_player_position(DUMBA5_PLAYER * pp, double pos)
 	al_lock_mutex(pp->mutex);
 	duh_end_sigrenderer(pp->sigrenderer);
 	pp->sigrenderer = duh_start_sigrenderer(pp->duh, 0, pp->channels, pos * 65536.0);
+	if(!pp->loop)
+	{
+		dumb_it_set_loop_callback(duh_get_it_sigrenderer(pp->sigrenderer), it_loop_callback, pp);
+		dumb_it_set_xm_speed_zero_callback(duh_get_it_sigrenderer(pp->sigrenderer), it_loop_callback, pp);
+	}
 	pp->played_time = pos;
 	al_unlock_mutex(pp->mutex);
 	return pp->sigrenderer;
