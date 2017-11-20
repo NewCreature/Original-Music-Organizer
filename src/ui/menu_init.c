@@ -33,6 +33,8 @@ bool omo_setup_menus(void * data)
 	t3f_add_menu_item(app->menu[OMO_MENU_PLAYER], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_PLAYER], "Shuffle", 0, NULL, omo_menu_playback_shuffle, omo_menu_playback_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_PLAYER], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_PLAYER], "Split Song", 0, NULL, omo_menu_playback_split_track, omo_menu_playback_edit_tags_update_proc);
+	t3f_add_menu_item(app->menu[OMO_MENU_PLAYER], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_PLAYER], "Edit Song Tags", 0, NULL, omo_menu_playback_edit_tags, omo_menu_playback_edit_tags_update_proc);
 
 	app->menu[OMO_MENU_LIBRARY] = al_create_menu();
@@ -42,6 +44,8 @@ bool omo_setup_menus(void * data)
 	}
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Add Library Folder", 0, NULL, omo_menu_library_add_folder, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Clear Library Folders", 0, NULL, omo_menu_library_clear_folders, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Split Song", 0, NULL, omo_menu_library_split_track, omo_menu_library_edit_tags_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Edit Song Tags", 0, NULL, omo_menu_library_edit_tags, omo_menu_library_edit_tags_update_proc);
 

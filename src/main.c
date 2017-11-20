@@ -113,7 +113,15 @@ void omo_logic(void * data)
 			{
 				app->ui->ui_seeked = true;
 			}
-			if(!app->ui->tags_popup_dialog)
+			if(app->ui->tags_popup_dialog)
+			{
+				omo_tags_dialog_logic(data);
+			}
+			else if(app->ui->split_track_popup_dialog)
+			{
+				omo_split_track_dialog_logic(data);
+			}
+			else
 			{
 				if(app->library_view)
 				{
@@ -126,10 +134,6 @@ void omo_logic(void * data)
 					app->ui->ui_artist_list_element->id2 = app->ui->ui_artist_list_element->d1;
 					app->ui->ui_album_list_element->id2 = app->ui->ui_album_list_element->d1;
 				}
-			}
-			else
-			{
-				omo_tags_dialog_logic(data);
 			}
 			omo_player_logic(app->player, app->library, app->archive_handler_registry, app->codec_handler_registry, app->player_temp_path);
 			update_seek_pos(app);
@@ -178,6 +182,12 @@ void omo_render(void * data)
 			if(app->ui->tags_popup_dialog)
 			{
 				al_set_target_bitmap(al_get_backbuffer(app->ui->tags_popup_dialog->display));
+				al_flip_display();
+				al_set_target_bitmap(al_get_backbuffer(t3f_display));
+			}
+			if(app->ui->split_track_popup_dialog)
+			{
+				al_set_target_bitmap(al_get_backbuffer(app->ui->split_track_popup_dialog->display));
 				al_flip_display();
 				al_set_target_bitmap(al_get_backbuffer(t3f_display));
 			}

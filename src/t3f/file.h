@@ -3,6 +3,8 @@
 
 #include "t3f.h"
 
+size_t t3f_file_size(const char * fn);
+
 float t3f_fread_float(ALLEGRO_FILE * fp);
 bool t3f_fwrite_float(ALLEGRO_FILE * fp, float f);
 char * t3f_load_string_f(ALLEGRO_FILE * fp);

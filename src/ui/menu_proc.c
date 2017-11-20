@@ -1,4 +1,5 @@
 #include "../t3f/t3f.h"
+#include "../t3f/file.h"
 #include "../t3f/file_utils.h"
 
 #include "../instance.h"
@@ -63,6 +64,36 @@ static void open_tags_dialog(void * data, const char * fullfn)
 			}
 		}
 		omo_open_tags_dialog(app->ui, app);
+	}
+}
+
+static void open_split_track_dialog(void * data, const char * basefn, const char * fullfn)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	char base_id[1024];
+	char base_size[256];
+	const char * val2;
+
+	app->ui->split_track_entry = al_get_config_value(app->library->file_database, basefn, "id");
+	if(app->ui->split_track_entry)
+	{
+		/* get the file ID of the base file */
+		strcpy(base_id, app->ui->split_track_entry);
+		base_id[32] = 0;
+		sprintf(base_size, "%lu", t3f_file_size(basefn));
+		strcat(base_id, base_size);
+
+		app->ui->split_track_fn = basefn;
+		val2 = al_get_config_value(app->library->entry_database, base_id, "Split Track Info");
+		if(val2)
+		{
+			strcpy(app->ui->split_track_text, val2);
+		}
+		else
+		{
+			strcpy(app->ui->split_track_text, "");
+		}
+		omo_open_split_track_dialog(app->ui, app);
 	}
 }
 
@@ -241,6 +272,33 @@ int omo_menu_playback_edit_tags(void * data)
 	return 1;
 }
 
+int omo_menu_playback_split_track(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	char fullfn[1024];
+	int j;
+
+	app->ui->split_track_queue_entry = -1;
+	if(app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
+	{
+		j = app->ui->ui_queue_list_element->d1;
+		strcpy(fullfn, app->player->queue->entry[j]->file);
+		if(app->player->queue->entry[j]->sub_file)
+		{
+			strcat(fullfn, "/");
+			strcat(fullfn, app->player->queue->entry[j]->sub_file);
+		}
+		if(app->player->queue->entry[j]->track)
+		{
+			strcat(fullfn, ":");
+			strcat(fullfn, app->player->queue->entry[j]->track);
+		}
+		app->ui->split_track_queue_entry = app->ui->ui_queue_list_element->d1;
+		open_split_track_dialog(app, app->player->queue->entry[j]->file, fullfn);
+	}
+	return 1;
+}
+
 int omo_menu_library_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
@@ -310,6 +368,37 @@ int omo_menu_library_edit_tags(void * data)
 				}
 			}
 			open_tags_dialog(app, fullfn);
+		}
+	}
+	return 1;
+}
+
+int omo_menu_library_split_track(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	char fullfn[1024];
+	int j;
+
+	if(app->library)
+	{
+		if(app->ui->ui_song_list_element->flags & D_GOTFOCUS)
+		{
+			j = app->ui->ui_song_list_element->d1 - 1;
+			if(j >= 0)
+			{
+				strcpy(fullfn, app->library->entry[app->library->song_entry[j]]->filename);
+				if(app->library->entry[app->library->song_entry[j]]->sub_filename)
+				{
+					strcat(fullfn, "/");
+					strcat(fullfn, app->library->entry[app->library->song_entry[j]]->sub_filename);
+				}
+				if(app->library->entry[app->library->song_entry[j]]->track)
+				{
+					strcat(fullfn, ":");
+					strcat(fullfn, app->library->entry[app->library->song_entry[j]]->track);
+				}
+			}
+			open_split_track_dialog(app, app->library->entry[app->library->song_entry[j]]->filename, fullfn);
 		}
 	}
 	return 1;

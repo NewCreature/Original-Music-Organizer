@@ -18,11 +18,13 @@ int omo_menu_playback_stop(void * data);
 int omo_menu_playback_next_track(void * data);
 int omo_menu_playback_shuffle(void * data);
 int omo_menu_playback_edit_tags(void * data);
+int omo_menu_playback_split_track(void * data);
 
 int omo_menu_library_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * data);
 int omo_menu_library_add_folder(void * data);
 int omo_menu_library_clear_folders(void * data);
 int omo_menu_library_edit_tags(void * data);
+int omo_menu_library_split_track(void * data);
 
 int omo_menu_view_basic_update_proc(ALLEGRO_MENU * mp, int item, void * data);
 int omo_menu_view_library_update_proc(ALLEGRO_MENU * mp, int item, void * data);

@@ -1,5 +1,19 @@
 #include "t3f.h"
 
+size_t t3f_file_size(const char * fn)
+{
+	ALLEGRO_FS_ENTRY * fp;
+	size_t size = 0;
+
+	fp = al_create_fs_entry(fn);
+	if(fp)
+	{
+		size = al_get_fs_entry_size(fp);
+		al_destroy_fs_entry(fp);
+	}
+	return size;
+}
+
 float t3f_fread_float(ALLEGRO_FILE * fp)
 {
 	char buffer[256] = {0};
