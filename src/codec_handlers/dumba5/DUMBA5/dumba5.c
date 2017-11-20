@@ -387,6 +387,16 @@ bool dumba5_set_player_pattern(DUMBA5_PLAYER * pp, int pattern)
 	return pp->sigrenderer;
 }
 
+bool dumba5_set_player_position(DUMBA5_PLAYER * pp, double pos)
+{
+	al_lock_mutex(pp->mutex);
+	duh_end_sigrenderer(pp->sigrenderer);
+	pp->sigrenderer = duh_start_sigrenderer(pp->duh, 0, pp->channels, pos * 65536.0);
+	pp->played_time = pos;
+	al_unlock_mutex(pp->mutex);
+	return pp->sigrenderer;
+}
+
 void dumba5_stop_player(DUMBA5_PLAYER * pp)
 {
 	dumba5_stop_duh(pp);
