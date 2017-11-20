@@ -60,6 +60,19 @@ v0.3
    playback is looped, we should count the total playback length. This includes
    the total time of the looped audio and the specified fade time.
 
+[ ]Implement seek() for DUMBA5 codec handler.
+
+   I think we can get this working by calling duh_end_sigrenderer() and
+   generate a new sigrenderer for the player with duh_start_sigrenderer(),
+   passing in the desired seek time. We should add the requisite functionality
+   to DUMBA5. This will require utilizing mutex locking to prevent accessing
+   the sigrenderer while it is in the process of being swapped out.
+
+   We should fix dumba5_set_player_pattern(), too. It looks like the function
+   is using pointers incorrectly. Since this and the new
+   dumba5_set_player_position() are functionally similar, we can probably use
+   most of the same code for both functions.
+
 [ ]Implement track split dialog and tag system. We need a way to store track
    split data in the base file's metedata so we can keep it in the online
    database instead of requiring each user to split tracks on their own.
