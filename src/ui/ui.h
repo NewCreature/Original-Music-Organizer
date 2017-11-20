@@ -9,6 +9,15 @@
 
 typedef struct
 {
+
+	ALLEGRO_DISPLAY * display;
+	OMO_THEME * theme;
+	T3GUI_DIALOG * dialog;
+
+} OMO_UI_POPUP_DIALOG;
+
+typedef struct
+{
 	/* main dialog */
 	T3GUI_DIALOG * ui_dialog;
 	T3GUI_ELEMENT * ui_queue_list_box_element;
@@ -23,8 +32,7 @@ typedef struct
 	int mode;
 
 	/* tags dialog */
-	ALLEGRO_DISPLAY * tags_display;
-	T3GUI_DIALOG * tags_dialog;
+	OMO_UI_POPUP_DIALOG * tags_popup_dialog;
 	char original_tags_text[OMO_UI_MAX_TAGS][OMO_UI_MAX_TAG_LENGTH];
 	char tags_text[OMO_UI_MAX_TAGS][OMO_UI_MAX_TAG_LENGTH];
 	const char * tags_entry;
@@ -33,7 +41,6 @@ typedef struct
 
 	/* theme data */
 	OMO_THEME * main_theme;
-	OMO_THEME * popup_theme;
 	char ui_button_text[6][8];
 
 } OMO_UI;
@@ -42,6 +49,9 @@ OMO_UI * omo_create_ui(void);
 void omo_destroy_ui(OMO_UI * uip);
 void omo_resize_ui(OMO_UI * uip, int mode, int width, int height);
 bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void * data);
+
+OMO_UI_POPUP_DIALOG * omo_create_popup_dialog(const char * theme_file, int w, int h, void * data);
+void omo_close_popup_dialog(OMO_UI_POPUP_DIALOG * dp);
 
 bool omo_open_tags_dialog(OMO_UI * uip, void * data);
 void omo_close_tags_dialog(OMO_UI * uip, void * data);

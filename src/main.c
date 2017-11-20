@@ -113,7 +113,7 @@ void omo_logic(void * data)
 			{
 				app->ui->ui_seeked = true;
 			}
-			if(!app->ui->tags_display)
+			if(!app->ui->tags_popup_dialog)
 			{
 				if(app->library_view)
 				{
@@ -175,9 +175,9 @@ void omo_render(void * data)
 		default:
 		{
 			t3gui_render();
-			if(app->ui->tags_display)
+			if(app->ui->tags_popup_dialog)
 			{
-				al_set_target_bitmap(al_get_backbuffer(app->ui->tags_display));
+				al_set_target_bitmap(al_get_backbuffer(app->ui->tags_popup_dialog->display));
 				al_flip_display();
 				al_set_target_bitmap(al_get_backbuffer(t3f_display));
 			}

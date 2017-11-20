@@ -12,7 +12,7 @@ void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 	{
 		case ALLEGRO_EVENT_DISPLAY_CLOSE:
 		{
-			if(event->display.source == app->ui->tags_display)
+			if(app->ui->tags_popup_dialog && event->display.source == app->ui->tags_popup_dialog->display)
 			{
 				omo_close_tags_dialog(app->ui, data);
 			}
