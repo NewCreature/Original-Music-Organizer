@@ -22,6 +22,8 @@ typedef struct
 	double last_pos;   // compare last_pos to current stream pos to detect loop
 	bool fade_out;     // let us know we are fading out
 	double fade_start; // time the fade began
+	float volume;
+	char info[256];
 
 } CODEC_DATA;
 
@@ -169,6 +171,18 @@ static bool codec_set_loop(void * data, double loop_start, double loop_end, doub
 	return false;
 }
 
+static bool codec_set_volume(void * data, float volume)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->volume = volume;
+	if(codec_data->player_stream)
+	{
+		al_set_audio_stream_gain(codec_data->player_stream, codec_data->volume);
+	}
+	return true;
+}
+
 static bool codec_play(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
@@ -279,6 +293,56 @@ static bool codec_done_playing(void * data)
 	return false;
 }
 
+static const char * codec_get_info(void * data)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	ALLEGRO_AUDIO_DEPTH depth;
+	ALLEGRO_CHANNEL_CONF channel_conf;
+	int freq;
+	int bits;
+	int channels;
+
+	freq = al_get_audio_stream_frequency(codec_data->player_stream);
+	depth = al_get_audio_stream_depth(codec_data->player_stream);
+	if(depth & ALLEGRO_AUDIO_DEPTH_INT8)
+	{
+		bits = 8;
+	}
+	else if(depth & ALLEGRO_AUDIO_DEPTH_INT16)
+	{
+		bits = 16;
+	}
+	else if(depth & ALLEGRO_AUDIO_DEPTH_INT24)
+	{
+		bits = 24;
+	}
+	else
+	{
+		bits = 32;
+	}
+	channel_conf = al_get_audio_stream_channels(codec_data->player_stream);
+	switch(channel_conf)
+	{
+		case ALLEGRO_CHANNEL_CONF_1:
+		{
+			channels = 1;
+			break;
+		}
+		case ALLEGRO_CHANNEL_CONF_2:
+		{
+			channels = 2;
+			break;
+		}
+		default:
+		{
+			channels = 3;
+			break;
+		}
+	}
+	sprintf(codec_data->info, "%dhz %d-Bit %s (Allegro acodec)", freq, bits, channels == 1 ? "Mono" : (channels == 2 ? "Stereo" : "Surround"));
+	return codec_data->info;
+}
+
 static OMO_CODEC_HANDLER codec_handler;
 
 OMO_CODEC_HANDLER * omo_codec_allegro_acodec_get_codec_handler(void)
@@ -290,6 +354,7 @@ OMO_CODEC_HANDLER * omo_codec_allegro_acodec_get_codec_handler(void)
 	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;
 	codec_handler.set_loop = codec_set_loop;
+	codec_handler.set_volume = codec_set_volume;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;
 	codec_handler.resume = codec_resume;
@@ -298,6 +363,7 @@ OMO_CODEC_HANDLER * omo_codec_allegro_acodec_get_codec_handler(void)
 	codec_handler.get_position = codec_get_position;
 	codec_handler.get_length = codec_get_length;
 	codec_handler.done_playing = codec_done_playing;
+	codec_handler.get_info = codec_get_info;
 	codec_handler.types = 0;
 	omo_codec_handler_add_type(&codec_handler, ".ogg");
 	omo_codec_handler_add_type(&codec_handler, ".flac");
