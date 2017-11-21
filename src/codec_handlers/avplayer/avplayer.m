@@ -117,6 +117,14 @@ static int codec_get_track_count(void * data, const char * fn)
 	return 1;
 }
 
+static bool codec_set_volume(void * data, float volume)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->player.volume = volume;
+	return true;
+}
+
 static bool codec_play(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
@@ -191,6 +199,11 @@ static bool codec_done_playing(void * data)
 	return al_get_time() - (codec_data->start_time + codec_data->pause_total) >= codec_data->player.duration - codec_data->start_pos;
 }
 
+static const char * codec_get_info(void * data)
+{
+	return "Apple AVPlayer";
+}
+
 static OMO_CODEC_HANDLER codec_handler;
 
 OMO_CODEC_HANDLER * omo_codec_avplayer_get_codec_handler(void)
@@ -201,6 +214,7 @@ OMO_CODEC_HANDLER * omo_codec_avplayer_get_codec_handler(void)
 	codec_handler.unload_file = codec_unload_file;
 	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;
+	codec_handler.set_volume = codec_set_volume;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;
 	codec_handler.resume = codec_resume;
@@ -209,6 +223,7 @@ OMO_CODEC_HANDLER * omo_codec_avplayer_get_codec_handler(void)
 	codec_handler.get_position = codec_get_position;
 	codec_handler.get_length = codec_get_length;
 	codec_handler.done_playing = codec_done_playing;
+	codec_handler.get_info = codec_get_info;
 	codec_handler.types = 0;
 	omo_codec_handler_add_type(&codec_handler, ".mp2");
 	omo_codec_handler_add_type(&codec_handler, ".mp3");
