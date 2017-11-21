@@ -163,6 +163,11 @@ static bool codec_done_playing(void * data)
 	return codec_data->player.currentPosition >= codec_data->player.duration;
 }
 
+static const char * codec_get_info(void * data)
+{
+	return "Apple AVMIDIPlayer";
+}
+
 static OMO_CODEC_HANDLER codec_handler;
 
 OMO_CODEC_HANDLER * omo_codec_avmidiplayer_get_codec_handler(void)
@@ -181,6 +186,7 @@ OMO_CODEC_HANDLER * omo_codec_avmidiplayer_get_codec_handler(void)
 	codec_handler.get_position = codec_get_position;
 	codec_handler.get_length = codec_get_length;
 	codec_handler.done_playing = codec_done_playing;
+	codec_handler.get_info = codec_get_info;
 	codec_handler.types = 0;
 	omo_codec_handler_add_type(&codec_handler, ".mid");
 
