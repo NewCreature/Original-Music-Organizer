@@ -16,6 +16,7 @@ typedef struct
 	int start_track;
 	char track_buffer[16];
 	char tag_buffer[1024];
+	float volume;
 
 } CODEC_DATA;
 
@@ -112,6 +113,18 @@ static bool codec_set_loop(void * data, double loop_start, double loop_end, doub
 
 	codec_data->info->length = ((loop_start + loop_end) * 1000.0) * loop_count;
 
+	return true;
+}
+
+static bool codec_set_volume(void * data, float volume)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->volume = volume;
+	if(codec_data->codec_stream)
+	{
+		al_set_audio_stream_gain(codec_data->codec_stream, codec_data->volume);
+	}
 	return true;
 }
 
@@ -237,6 +250,7 @@ static bool codec_play(void * data)
 	codec_data->codec_stream = al_create_audio_stream(4, buf_size, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
 	if(codec_data->codec_stream)
 	{
+		al_set_audio_stream_gain(codec_data->codec_stream, codec_data->volume);
 		al_attach_audio_stream_to_mixer(codec_data->codec_stream, al_get_default_mixer());
 		codec_data->codec_thread = al_create_thread(gme_update_thread, codec_data);
 		if(codec_data->codec_thread)
@@ -322,6 +336,11 @@ static bool codec_done_playing(void * data)
 	return false;
 }
 
+static const char * codec_get_info(void * data)
+{
+	return "Game Music Emu";
+}
+
 static OMO_CODEC_HANDLER codec_handler;
 
 OMO_CODEC_HANDLER * omo_codec_gme_get_codec_handler(void)
@@ -331,6 +350,7 @@ OMO_CODEC_HANDLER * omo_codec_gme_get_codec_handler(void)
 	codec_handler.load_file = codec_load_file;
 	codec_handler.unload_file = codec_unload_file;
 	codec_handler.set_loop = codec_set_loop;
+	codec_handler.set_volume = codec_set_volume;
 	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;
 	codec_handler.play = codec_play;
@@ -341,6 +361,7 @@ OMO_CODEC_HANDLER * omo_codec_gme_get_codec_handler(void)
 	codec_handler.get_position = codec_get_position;
 	codec_handler.get_length = codec_get_length;
 	codec_handler.done_playing = codec_done_playing;
+	codec_handler.get_info = codec_get_info;
 	codec_handler.types = 0;
 	omo_codec_handler_add_type(&codec_handler, ".ay");
 	omo_codec_handler_add_type(&codec_handler, ".gbs");
