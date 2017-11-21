@@ -79,16 +79,16 @@ v0.3
 [X]Add status bar to library view. We should show library-related messages in
    this status bar instead of using the list box.
 
-[ ]Implement get_length() and get_position() for all codec handlers that can
+[X]Implement get_length() and get_position() for all codec handlers that can
    support it. These functions should take looping into account. If the
    playback is looped, we should count the total playback length. This includes
    the total time of the looped audio and the specified fade time.
 
-[ ]Finish main UI.
+[X]Finish main UI.
 
-   [ ]Modularize UI setup.
+   [X]Modularize UI setup.
 
-      [ ]Use separate function for adding each module to the total UI. Each
+      [X]Use separate function for adding each module to the total UI. Each
          section of the UI should be a separate module. The player module will
          consist of the player controls, the seek control, the volume control,
          and the two info lines. The library artist, album, and song lists
@@ -103,11 +103,25 @@ v0.3
          the setup code for that module will smartly fill the available space
          with the required UI elements.
 
-   [ ]Add volume and seek controls to the player module.
+   [X]Add volume and seek controls to the player module.
 
-   [ ]Add song info to the player module. The plan is to have 2 lines for this,
+   [X]Add song info to the player module. The plan is to have 2 lines for this,
       one line for the artist, title, etc. of the currently playing song and
       another for track-specific info from the codec handler.
+
+[ ]Finish implementing midiOut.
+
+   [ ]Add get_length();
+
+   [ ]Add get_position();
+
+   [ ]Add seek();
+
+   [ ]Add set_volume();
+
+   [ ]Add get_info();
+
+[ ]Add volume icon to UI next to volume slider.
 
 v0.2
 ----
