@@ -9,9 +9,6 @@
 #include "queue_helpers.h"
 #include "library_cache.h"
 
-static char last_artist_name[256] = {0};
-static char last_album_name[256] = {0};
-
 OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_fn)
 {
 	OMO_LIBRARY * lp = NULL;
@@ -96,7 +93,7 @@ bool omo_allocate_library(OMO_LIBRARY * lp, int total_files)
 	}
 	lp->artist_entry_size = total_files + 2;
 	lp->artist_entry_count = 0;
-	strcpy(last_artist_name, "");
+	strcpy(lp->last_artist_name, "");
 
 	lp->album_entry = malloc(sizeof(char *) * total_files + 2);
 	if(!lp->album_entry)
@@ -105,7 +102,7 @@ bool omo_allocate_library(OMO_LIBRARY * lp, int total_files)
 	}
 	lp->album_entry_size = total_files + 2;
 	lp->album_entry_count = 0;
-	strcpy(last_album_name, "");
+	strcpy(lp->last_album_name, "");
 
 	lp->song_entry = NULL;
 
@@ -414,7 +411,7 @@ static bool find_artist(OMO_LIBRARY * lp, const char * name)
 	int i;
 
 	/* optimize finding artist if it's the same as the previously added one */
-	if(!strcmp(name, last_artist_name))
+	if(!strcmp(name, lp->last_artist_name))
 	{
 		return true;
 	}
@@ -439,7 +436,7 @@ bool omo_add_artist_to_library(OMO_LIBRARY * lp, const char * name)
 			if(lp->artist_entry[lp->artist_entry_count])
 			{
 				strcpy(lp->artist_entry[lp->artist_entry_count], name);
-				strcpy(last_artist_name, name);
+				strcpy(lp->last_artist_name, name);
 				lp->artist_entry_count++;
 				return true;
 			}
@@ -453,7 +450,7 @@ static bool find_album(OMO_LIBRARY * lp, const char * name)
 	int i;
 
 	/* optimize finding artist if it's the same as the previously added one */
-	if(!strcmp(name, last_album_name))
+	if(!strcmp(name, lp->last_album_name))
 	{
 		return true;
 	}
@@ -478,7 +475,7 @@ bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name)
 			if(lp->album_entry[lp->album_entry_count])
 			{
 				strcpy(lp->album_entry[lp->album_entry_count], name);
-				strcpy(last_album_name, name);
+				strcpy(lp->last_album_name, name);
 				lp->album_entry_count++;
 				return true;
 			}
@@ -760,6 +757,7 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 	lp->album_entry = malloc(sizeof(char *) * lp->entry_count + 2);
 	if(lp->album_entry)
 	{
+		strcpy(lp->last_album_name, "");
 		memset(lp->album_entry, 0, sizeof(char *) * lp->entry_count + 2);
 		if(!strcmp(artist, "All Artists"))
 		{

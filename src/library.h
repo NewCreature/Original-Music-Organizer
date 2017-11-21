@@ -31,10 +31,12 @@ typedef struct
 	char ** artist_entry;
 	int artist_entry_size;
 	int artist_entry_count;
+	char last_artist_name[256];
 
 	char ** album_entry;
 	int album_entry_size;
 	int album_entry_count;
+	char last_album_name[256];
 
 	/* current list of songs for song list pane */
 	unsigned long * song_entry;
