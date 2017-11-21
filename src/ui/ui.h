@@ -3,9 +3,10 @@
 
 #include "theme.h"
 
-#define OMO_UI_MAX_TAGS           16
-#define OMO_UI_MAX_TAG_LENGTH   1024
-#define OMO_UI_SEEK_RESOLUTION  2000
+#define OMO_UI_MAX_TAGS            16
+#define OMO_UI_MAX_TAG_LENGTH    1024
+#define OMO_UI_SEEK_RESOLUTION   2000
+#define OMO_UI_VOLUME_RESOLUTION  300
 
 typedef struct
 {
@@ -26,11 +27,16 @@ typedef struct
 	T3GUI_ELEMENT * ui_artist_list_element;
 	T3GUI_ELEMENT * ui_album_list_element;
 	T3GUI_ELEMENT * ui_song_list_element;
+	T3GUI_ELEMENT * ui_song_info_box_element;
+	T3GUI_ELEMENT * ui_song_info_1_element;
+	T3GUI_ELEMENT * ui_song_info_2_element;
 	T3GUI_ELEMENT * ui_seek_control_element;
+	T3GUI_ELEMENT * ui_volume_control_element;
 	T3GUI_ELEMENT * ui_status_bar_element;
 	bool ui_seeked;
 	int selected_song;
 	int mode;
+	char song_info_text[2][1024];
 
 	/* tags dialog */
 	OMO_UI_POPUP_DIALOG * tags_popup_dialog;

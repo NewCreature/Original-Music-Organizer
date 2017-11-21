@@ -18,6 +18,7 @@
 #include "ui/tags_dialog.h"
 #include "ui/split_track_dialog.h"
 #include "ui/shortcut.h"
+#include "ui/player.h"
 #include "test.h"
 #include "queue_helpers.h"
 
@@ -130,6 +131,7 @@ void omo_logic(void * data)
 				}
 				omo_queue_list_logic(app);
 				omo_shortcut_logic(app);
+				omo_player_ui_logic(app);
 				if(app->library_view)
 				{
 					app->ui->ui_artist_list_element->id2 = app->ui->ui_artist_list_element->d1;

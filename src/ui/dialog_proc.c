@@ -1,43 +1,16 @@
 #include "../t3f/t3f.h"
 
 #include "../instance.h"
+#include "queue_list.h"
 
-static char ui_queue_text[1024] = {0};
+static char buffer[1024] = {0};
 static char ui_artist_text[1024] = {0};
 static char ui_album_text[1024] = {0};
 static char ui_song_text[1024] = {0};
 
-static void get_path_filename(const char * fn, char * outfn)
-{
-	int i, j;
-	int pos = 0;
-	char path_separator;
-
-	#ifdef ALLEGRO_WINDOWS
-		path_separator = '\\';
-	#else
-		path_separator = '/';
-	#endif
-	for(i = strlen(fn) - 1; i >= 0; i--)
-	{
-		if(fn[i] == path_separator)
-		{
-			for(j = i + 1; j < strlen(fn); j++)
-			{
-				outfn[pos] = fn[j];
-				pos++;
-			}
-			outfn[pos] = 0;
-			break;
-		}
-	}
-}
-
 char * ui_queue_list_proc(int index, int *list_size, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	char display_fn[256] = {0};
-	char prefix[16] = {0};
 
 	if(index < 0)
 	{
@@ -49,53 +22,9 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
 	}
 	if(app->player && app->player->queue && index < app->player->queue->entry_count)
 	{
-		sprintf(prefix, "%s", index == app->player->queue_pos ? "" : "");
-		if(strlen(app->player->queue->entry[index]->tags.track))
-		{
-			strcat(prefix, app->player->queue->entry[index]->tags.track);
-			strcat(prefix, ". ");
-		}
-		if(strlen(app->player->queue->entry[index]->tags.artist) && strlen(app->player->queue->entry[index]->tags.album))
-		{
-			if(strlen(app->player->queue->entry[index]->tags.title))
-			{
-				sprintf(ui_queue_text, "%s%s - %s (%s)", prefix, app->player->queue->entry[index]->tags.artist, app->player->queue->entry[index]->tags.title, app->player->queue->entry[index]->tags.album);
-			}
-			else if(strlen(app->player->queue->entry[index]->tags.track))
-			{
-				sprintf(ui_queue_text, "%s%s - %s - Track %s", prefix,app->player->queue->entry[index]->tags.artist, app->player->queue->entry[index]->tags.album, app->player->queue->entry[index]->tags.track);
-			}
-			else
-			{
-				sprintf(ui_queue_text, "%s%s - %s - Unknown", prefix, app->player->queue->entry[index]->tags.artist, app->player->queue->entry[index]->tags.album);
-			}
-		}
-		else if(strlen(app->player->queue->entry[index]->tags.album) && strlen(app->player->queue->entry[index]->tags.track))
-		{
-			sprintf(ui_queue_text, "%s%s - Track %s", prefix, app->player->queue->entry[index]->tags.album, app->player->queue->entry[index]->tags.track);
-		}
-		else if(strlen(app->player->queue->entry[index]->tags.title))
-		{
-			sprintf(ui_queue_text, "%s%s", prefix, app->player->queue->entry[index]->tags.title);
-		}
-		else
-		{
-			get_path_filename(app->player->queue->entry[index]->file, display_fn);
-			sprintf(ui_queue_text, "%s%s", prefix, display_fn);
-			if(app->player->queue->entry[index]->sub_file)
-			{
-				strcat(ui_queue_text, "/");
-				strcat(ui_queue_text, app->player->queue->entry[index]->sub_file);
-			}
-			if(app->player->queue->entry[index]->track)
-			{
-				strcat(ui_queue_text, ":");
-				strcat(ui_queue_text, app->player->queue->entry[index]->track);
-			}
-		}
-		return ui_queue_text;
-   }
-   return NULL;
+		return omo_get_queue_item_text(app->player->queue, index, buffer);
+	}
+	return NULL;
 }
 
 char * ui_artist_list_proc(int index, int *list_size, void * data)

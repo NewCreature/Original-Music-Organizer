@@ -78,17 +78,43 @@ static void setup_player_module(OMO_UI * uip, int x, int y, int w, int h, int fl
 {
 	int button_y, button_width, button_height;
 	int i;
+	int pos_y;
+	int font_height;
+
+	font_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font);
 
 	/* adjust bezels so adjacent items are only 'bezel' pixels away */
 	setup_module_box(&x, &y, &w, &h, flags);
+	pos_y = y;
+
+	uip->ui_song_info_box_element->x = x;
+	uip->ui_song_info_box_element->y = pos_y;
+	uip->ui_song_info_box_element->w = w - slider_size - bezel;
+	uip->ui_song_info_box_element->h = font_height * 2 + 4;
+	uip->ui_volume_control_element->x = x + (w - slider_size);
+	uip->ui_volume_control_element->y = pos_y;
+	uip->ui_volume_control_element->w = slider_size;
+	uip->ui_volume_control_element->h = font_height * 2 + 4;
+	pos_y += 2;
+	uip->ui_song_info_1_element->x = x + 4;
+	uip->ui_song_info_1_element->y = pos_y;
+	uip->ui_song_info_1_element->w = w - slider_size - bezel - 5;
+	uip->ui_song_info_1_element->h = font_height * 2 + 4;
+	pos_y += font_height;
+	uip->ui_song_info_2_element->x = x + 4;
+	uip->ui_song_info_2_element->y = pos_y;
+	uip->ui_song_info_2_element->w = w - slider_size - bezel - 5;
+	uip->ui_song_info_2_element->h = font_height * 2 + 4;
+	pos_y += font_height + 4 + bezel / 2;
 
 	uip->ui_seek_control_element->x = x;
-	uip->ui_seek_control_element->y = y;
+	uip->ui_seek_control_element->y = pos_y;
 	uip->ui_seek_control_element->w = w;
 	uip->ui_seek_control_element->h = slider_size;
+	pos_y += slider_size + bezel;
 
 	button_height = button_size;
-	button_y = y + slider_size + bezel;
+	button_y = pos_y;
 
 	button_width = w / 6;
 	for(i = 0; i < 6; i++)
@@ -161,12 +187,14 @@ static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
 	int bezel;
 	int i; */
 
+	font_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font);
+
 	uip->ui_queue_list_box_element->w = width;
 	uip->ui_queue_list_box_element->h = height;
 	if(mode == 0)
 	{
 		player_width = width;
-		player_height = bezel + button_size + bezel / 2 + slider_size + bezel;
+		player_height = bezel + button_size + bezel / 2 + slider_size + bezel / 2 + font_height * 2 + 4 + bezel / 2 + bezel;
 		player_x = 0;
 		player_y = height - player_height;
 		queue_list_x = 0;
@@ -180,10 +208,9 @@ static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
 	else
 	{
 		pane_width = width / 4;
-		font_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font);
 
 		player_width = pane_width;
-		player_height = bezel + button_size + bezel / 2 + slider_size + bezel;
+		player_height = bezel + button_size + bezel / 2 + slider_size + bezel / 2 + font_height * 2 + 4 + bezel / 2 + bezel;
 		player_x = pane_width * 3;
 		player_y = height - player_height;
 
@@ -245,31 +272,44 @@ static void free_ui_data(OMO_UI * uip)
 	omo_destroy_theme(uip->main_theme);
 }
 
+static bool omo_add_player_elements(OMO_UI * uip, void * data)
+{
+	int buttons[6] = {OMO_THEME_BITMAP_PREVIOUS_TRACK, OMO_THEME_BITMAP_PLAY, OMO_THEME_BITMAP_STOP, OMO_THEME_BITMAP_NEXT_TRACK, OMO_THEME_BITMAP_OPEN, OMO_THEME_BITMAP_ADD};
+	int width = 16;
+	int height = 16;
+	int i;
+
+	uip->ui_queue_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, D_SETFOCUS, 0, 0, ui_queue_list_proc, NULL, data);
+	uip->ui_song_info_box_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_box_proc, 8, 8, width - 16, height - 16, 0, 0, 0, 0, NULL, NULL, data);
+	uip->ui_song_info_1_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, 8, 8, width - 16, height - 16, 0, D_SETFOCUS, 0, 0, uip->song_info_text[0], NULL, data);
+	uip->ui_song_info_2_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, 8, 8, width - 16, height - 16, 0, D_SETFOCUS, 0, 0, uip->song_info_text[1], NULL, data);
+	uip->ui_volume_control_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_slider_proc, 0, 0, width, height, 0, 0, OMO_UI_VOLUME_RESOLUTION, 0, NULL, NULL, NULL);
+	uip->ui_seek_control_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_slider_proc, 0, 0, width, height, 0, 0, OMO_UI_SEEK_RESOLUTION, 0, NULL, NULL, NULL);
+	for(i = 0; i < 6; i++)
+	{
+		uip->ui_button_element[i] = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8, 8, 16, 16, 0, 0, 0, i, uip->ui_button_text[i], ui_player_button_proc, uip->main_theme->bitmap[buttons[i]]);
+	}
+
+	return true;
+}
+
 bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
-
-	int buttons[6] = {OMO_THEME_BITMAP_PREVIOUS_TRACK, OMO_THEME_BITMAP_PLAY, OMO_THEME_BITMAP_STOP, OMO_THEME_BITMAP_NEXT_TRACK, OMO_THEME_BITMAP_OPEN, OMO_THEME_BITMAP_ADD};
-	int i;
 
 	if(uip->ui_dialog)
 	{
 		t3gui_destroy_dialog(uip->ui_dialog);
 	}
+	uip->ui_dialog = t3gui_create_dialog();
+	if(!uip->ui_dialog)
+	{
+		return false;
+	}
+	uip->ui_queue_list_box_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, width, height, 0, 0, 0, 0, NULL, NULL, NULL);
 	if(mode == 0)
 	{
-		uip->ui_dialog = t3gui_create_dialog();
-		if(!uip->ui_dialog)
-		{
-			return false;
-		}
-		uip->ui_queue_list_box_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, width, height, 0, 0, 0, 0, NULL, NULL, NULL);
-		uip->ui_queue_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, D_SETFOCUS, 0, 0, ui_queue_list_proc, NULL, data);
-		uip->ui_seek_control_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_slider_proc, 0, 0, width, height, 0, 0, OMO_UI_SEEK_RESOLUTION, 0, NULL, NULL, NULL);
-		for(i = 0; i < 6; i++)
-		{
-			uip->ui_button_element[i] = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8, 8, 16, 16, 0, 0, 0, i, uip->ui_button_text[i], ui_player_button_proc, uip->main_theme->bitmap[buttons[i]]);
-		}
+		omo_add_player_elements(uip, data);
 		resize_dialogs(uip, mode, width, height);
 		return true;
 	}
@@ -292,12 +332,7 @@ bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void 
 		uip->ui_status_bar_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, 8, 8, 32, al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font), 0, 0, 0, 0, (void *)app->status_bar_text, NULL, NULL);
 
 		/* create queue list and controls */
-		uip->ui_queue_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, 0, 0, 0, ui_queue_list_proc, NULL, data);
-		uip->ui_seek_control_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_slider_proc, 0, 0, width, height, 0, 0, OMO_UI_SEEK_RESOLUTION, 0, NULL, NULL, NULL);
-		for(i = 0; i < 6; i++)
-		{
-			uip->ui_button_element[i] = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8, 8, 16, 16, 0, 0, 0, i, uip->ui_button_text[i], ui_player_button_proc, uip->main_theme->bitmap[buttons[i]]);
-		}
+		omo_add_player_elements(uip, data);
 		resize_dialogs(uip, mode, width, height);
 		return true;
 	}

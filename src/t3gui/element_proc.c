@@ -1443,7 +1443,7 @@ int t3gui_textbox_proc(int msg, T3GUI_ELEMENT *d, int c)
         {
             /* Query size of required text box (id1) and size of scroll bar (d3) */
             d->d3 = 0;
-            d->id1 = draw_textbox(d, false, &d->d3);
+//            d->id1 = draw_textbox(d, false, &d->d3);
             //printf("%d\n", d->d1);
             if (external_scroll)
             {

@@ -1,6 +1,84 @@
 #include "../instance.h"
 #include "menu_proc.h"
 
+static void get_path_filename(const char * fn, char * outfn)
+{
+	int i, j;
+	int pos = 0;
+	char path_separator;
+
+	#ifdef ALLEGRO_WINDOWS
+		path_separator = '\\';
+	#else
+		path_separator = '/';
+	#endif
+	for(i = strlen(fn) - 1; i >= 0; i--)
+	{
+		if(fn[i] == path_separator)
+		{
+			for(j = i + 1; j < strlen(fn); j++)
+			{
+				outfn[pos] = fn[j];
+				pos++;
+			}
+			outfn[pos] = 0;
+			break;
+		}
+	}
+}
+
+char * omo_get_queue_item_text(OMO_QUEUE * qp, int index, char * buffer)
+{
+	char display_fn[256] = {0};
+	char prefix[16] = {0};
+
+	sprintf(prefix, "%s", "");
+	if(strlen(qp->entry[index]->tags.track))
+	{
+		strcat(prefix, qp->entry[index]->tags.track);
+		strcat(prefix, ". ");
+	}
+	if(strlen(qp->entry[index]->tags.artist) && strlen(qp->entry[index]->tags.album))
+	{
+		if(strlen(qp->entry[index]->tags.title))
+		{
+			sprintf(buffer, "%s%s - %s (%s)", prefix, qp->entry[index]->tags.artist, qp->entry[index]->tags.title, qp->entry[index]->tags.album);
+		}
+		else if(strlen(qp->entry[index]->tags.track))
+		{
+			sprintf(buffer, "%s%s - %s - Track %s", prefix,qp->entry[index]->tags.artist, qp->entry[index]->tags.album, qp->entry[index]->tags.track);
+		}
+		else
+		{
+			sprintf(buffer, "%s%s - %s - Unknown", prefix, qp->entry[index]->tags.artist, qp->entry[index]->tags.album);
+		}
+	}
+	else if(strlen(qp->entry[index]->tags.album) && strlen(qp->entry[index]->tags.track))
+	{
+		sprintf(buffer, "%s%s - Track %s", prefix, qp->entry[index]->tags.album, qp->entry[index]->tags.track);
+	}
+	else if(strlen(qp->entry[index]->tags.title))
+	{
+		sprintf(buffer, "%s%s", prefix, qp->entry[index]->tags.title);
+	}
+	else
+	{
+		get_path_filename(qp->entry[index]->file, display_fn);
+		sprintf(buffer, "%s%s", prefix, display_fn);
+		if(qp->entry[index]->sub_file)
+		{
+			strcat(buffer, "/");
+			strcat(buffer, qp->entry[index]->sub_file);
+		}
+		if(qp->entry[index]->track)
+		{
+			strcat(buffer, ":");
+			strcat(buffer, qp->entry[index]->track);
+		}
+	}
+	return buffer;
+}
+
 void omo_queue_list_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
