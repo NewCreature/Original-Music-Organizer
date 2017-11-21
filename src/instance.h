@@ -38,7 +38,7 @@ typedef struct
 	OMO_LIBRARY * loading_library;
 	OMO_FILE_HELPER_DATA loading_library_file_helper_data;
 	ALLEGRO_THREAD * library_thread;
-	char library_loading_message[1024];
+	char status_bar_text[1024];
 	OMO_PLAYER * player;
 	T3F_RNG_STATE rng_state;
 

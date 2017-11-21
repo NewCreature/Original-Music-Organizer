@@ -18,28 +18,58 @@ static const int button_size = 32;
 /* adjust the passed rectangle for flags */
 static void setup_module_box(int * x, int * y, int * w, int * h, int flags)
 {
-	*x += bezel;
-	*y += bezel;
-	*w -= bezel * 2;
-	*h -= bezel * 2;
+	if(x)
+	{
+		*x += bezel;
+	}
+	if(y)
+	{
+		*y += bezel;
+	}
+	if(w)
+	{
+		*w -= bezel * 2;
+	}
+	if(h)
+	{
+		*h -= bezel * 2;
+	}
 
 	if(flags & OMO_BEZEL_LEFT)
 	{
-		*w += bezel / 2;
-		*x -= bezel / 2;
+		if(w)
+		{
+			*w += bezel / 2;
+		}
+		if(x)
+		{
+			*x -= bezel / 2;
+		}
 	}
 	if(flags & OMO_BEZEL_RIGHT)
 	{
-		*w += bezel / 2;
+		if(w)
+		{
+			*w += bezel / 2;
+		}
 	}
 	if(flags & OMO_BEZEL_TOP)
 	{
-		*h += bezel / 2;
-		*y -= bezel / 2;
+		if(h)
+		{
+			*h += bezel / 2;
+		}
+		if(y)
+		{
+			*y -= bezel / 2;
+		}
 	}
 	if(flags & OMO_BEZEL_BOTTOM)
 	{
-		*h += bezel / 2;
+		if(h)
+		{
+			*h += bezel / 2;
+		}
 	}
 }
 
@@ -108,6 +138,11 @@ static void setup_library_song_list_module(OMO_UI * uip, int x, int y, int w, in
 
 static void setup_library_status_module(OMO_UI * uip, int x, int y, int w, int h, int flags)
 {
+	setup_module_box(&x, &y, &w, NULL, flags);
+	uip->ui_status_bar_element->x = x;
+	uip->ui_status_bar_element->y = y;
+	uip->ui_status_bar_element->w = w;
+	uip->ui_status_bar_element->h = h;
 }
 
 static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
@@ -117,7 +152,9 @@ static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
 	int artist_list_x, artist_list_y, artist_list_width, artist_list_height;
 	int album_list_x, album_list_y, album_list_width, album_list_height;
 	int song_list_x, song_list_y, song_list_width, song_list_height;
+	int status_bar_x, status_bar_y, status_bar_width, status_bar_height;
 	int pane_width;
+	int font_height;
 /*	int queue_width, queue_height;
 	int pane_width;
 	int button_y, button_width, button_height;
@@ -143,6 +180,7 @@ static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
 	else
 	{
 		pane_width = width / 4;
+		font_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font);
 
 		player_width = pane_width;
 		player_height = bezel + button_size + bezel / 2 + slider_size + bezel;
@@ -152,28 +190,34 @@ static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
 		artist_list_x = pane_width * 0;
 		artist_list_y = 0;
 		artist_list_width = pane_width;
-		artist_list_height = height;
+		artist_list_height = height - font_height - 4;
 
 		album_list_x = pane_width * 1;
 		album_list_y = 0;
 		album_list_width = pane_width;
-		album_list_height = height;
+		album_list_height = height - font_height - 4;
 
 		song_list_x = pane_width * 2;
 		song_list_y = 0;
 		song_list_width = pane_width;
-		song_list_height = height;
+		song_list_height = height - font_height - 4;
 
 		queue_list_x = pane_width * 3;
 		queue_list_y = 0;
 		queue_list_width = pane_width;
 		queue_list_height = height - player_height;
 
+		status_bar_x = 0;
+		status_bar_y = artist_list_y + artist_list_height - 8;
+		status_bar_width = pane_width * 3;
+		status_bar_height = font_height + 4;
+
 		setup_library_artist_list_module(uip, artist_list_x, artist_list_y, artist_list_width, artist_list_height, OMO_BEZEL_RIGHT);
 		setup_library_album_list_module(uip, album_list_x, album_list_y, album_list_width, album_list_height, OMO_BEZEL_LEFT | OMO_BEZEL_RIGHT);
 		setup_library_song_list_module(uip, song_list_x, song_list_y, song_list_width, song_list_height, OMO_BEZEL_LEFT | OMO_BEZEL_RIGHT);
 		setup_queue_list_module(uip, queue_list_x, queue_list_y, queue_list_width, queue_list_height, OMO_BEZEL_LEFT | OMO_BEZEL_BOTTOM);
 		setup_player_module(uip, player_x, player_y, player_width, player_height, OMO_BEZEL_LEFT | OMO_BEZEL_TOP);
+		setup_library_status_module(uip, status_bar_x, status_bar_y, status_bar_width, status_bar_height, OMO_BEZEL_TOP);
 	}
 }
 
@@ -203,6 +247,8 @@ static void free_ui_data(OMO_UI * uip)
 
 bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void * data)
 {
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
 	int buttons[6] = {OMO_THEME_BITMAP_PREVIOUS_TRACK, OMO_THEME_BITMAP_PLAY, OMO_THEME_BITMAP_STOP, OMO_THEME_BITMAP_NEXT_TRACK, OMO_THEME_BITMAP_OPEN, OMO_THEME_BITMAP_ADD};
 	int i;
 
@@ -242,6 +288,8 @@ bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void 
 		uip->ui_album_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, 0, 0, 0, ui_album_list_proc, NULL, data);
 
 		uip->ui_song_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, 0, 0, 0, ui_song_list_proc, NULL, data);
+
+		uip->ui_status_bar_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, 8, 8, 32, al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font), 0, 0, 0, 0, (void *)app->status_bar_text, NULL, NULL);
 
 		/* create queue list and controls */
 		uip->ui_queue_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, 0, 0, 0, ui_queue_list_proc, NULL, data);

@@ -110,7 +110,7 @@ char * ui_artist_list_proc(int index, int *list_size, void * data)
 		}
 		else
 		{
-			*list_size = 1;
+			*list_size = 0;
 		}
 		return NULL;
 	}
@@ -119,7 +119,6 @@ char * ui_artist_list_proc(int index, int *list_size, void * data)
 		sprintf(ui_artist_text, "%s", app->library->artist_entry[index]);
 		return ui_artist_text;
 	}
-	strcpy(ui_artist_text, app->library_loading_message);
 	return ui_artist_text;
 }
 

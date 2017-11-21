@@ -45,7 +45,7 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 	val = al_get_config_value(app->library_config, "Settings", "library_folders");
 	if(!val || atoi(val) < 1)
 	{
-		sprintf(app->library_loading_message, "No Library Folders");
+		sprintf(app->status_bar_text, "No Library Folders");
 		app->loading_library_file_helper_data.scan_done = true;
 		return false;
 	}
@@ -67,18 +67,18 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 	{
 		app->loading_library->modified = true;
 	}
-	sprintf(app->library_loading_message, "Attempting to load cached library data...");
+	sprintf(app->status_bar_text, "Attempting to load cached library data...");
 	if(app->loading_library->modified || !omo_load_library_cache(app->loading_library, t3f_get_filename(t3f_data_path, "omo.library")))
 	{
-		omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->loading_library, app->player->queue, app->library_temp_path, app->library_loading_message);
+		omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->loading_library, app->player->queue, app->library_temp_path, app->status_bar_text);
 		for(j = 0; j < c; j++)
 		{
-			sprintf(app->library_loading_message, "Scanning folder %d of %d...", j + 1, c);
+			sprintf(app->status_bar_text, "Scanning folder %d of %d...", j + 1, c);
 			val = get_library_folder(app->library_config, j);
 			if(val)
 			{
 				t3f_scan_files(val, omo_count_file, false, NULL, &app->loading_library_file_helper_data);
-				sprintf(app->library_loading_message, "Saving progress...");
+				sprintf(app->status_bar_text, "Saving progress...");
 				omo_save_library(app->loading_library);
 			}
 		}
@@ -91,10 +91,10 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 				return false;
 			}
 			val = get_library_folder(app->library_config, j);
-			sprintf(app->library_loading_message, "Scanning folder %d of %d...", j + 1, c);
+			sprintf(app->status_bar_text, "Scanning folder %d of %d...", j + 1, c);
 			t3f_scan_files(val, omo_add_file, false, NULL, &app->loading_library_file_helper_data);
 			omo_save_library(app->loading_library);
-			sprintf(app->library_loading_message, "Saving progress...");
+			sprintf(app->status_bar_text, "Saving progress...");
 		}
 	}
 	return true;
@@ -112,7 +112,7 @@ bool omo_build_library_artists_list(APP_INSTANCE * app, OMO_LIBRARY * lp)
 	}
 	strcpy(lp->last_artist_name, "");
 	lp->artist_entry_count = 0;
-	sprintf(app->library_loading_message, "Creating artist list...");
+	sprintf(app->status_bar_text, "Creating artist list...");
 	omo_add_artist_to_library(lp, "All Artists");
 	omo_add_artist_to_library(lp, "Unknown Artist");
 	for(i = 0; i < lp->entry_count; i++)
@@ -128,7 +128,7 @@ bool omo_build_library_artists_list(APP_INSTANCE * app, OMO_LIBRARY * lp)
 		app->loading_library_file_helper_data.scan_done = true;
 		return false;
 	}
-	sprintf(app->library_loading_message, "Sorting artist list...");
+	sprintf(app->status_bar_text, "Sorting artist list...");
 	if(lp->artist_entry_count > 2)
 	{
 		qsort(&lp->artist_entry[2], lp->artist_entry_count - 2, sizeof(char *), sort_names);
@@ -142,8 +142,8 @@ static bool omo_setup_library_helper(APP_INSTANCE * app)
 {
 
 	/* load the library databases */
-	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->player->queue, NULL, app->library_loading_message);
-	sprintf(app->library_loading_message, "Loading library databases...");
+	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->player->queue, NULL, app->status_bar_text);
+	sprintf(app->status_bar_text, "Loading library databases...");
 	app->loading_library = omo_create_library(app->file_database_fn, app->entry_database_fn);
 	if(!app->loading_library)
 	{
@@ -176,7 +176,7 @@ static bool omo_setup_library_helper(APP_INSTANCE * app)
 		app->loading_library_file_helper_data.scan_done = true;
 		return false;
 	}
-	sprintf(app->library_loading_message, "Creating album list...");
+	sprintf(app->status_bar_text, "Creating album list...");
 	omo_get_library_album_list(app->loading_library, "All Artists");
 	if(app->loading_library_file_helper_data.cancel_scan)
 	{
@@ -190,7 +190,7 @@ static bool omo_setup_library_helper(APP_INSTANCE * app)
 		app->loading_library_file_helper_data.scan_done = true;
 		return false;
 	}
-	sprintf(app->library_loading_message, "Creating song list...");
+	sprintf(app->status_bar_text, "Creating song list...");
 	omo_get_library_song_list(app->loading_library, "All Artists", "All Albums");
 
 	app->loading_library_file_helper_data.scan_done = true;
@@ -198,6 +198,7 @@ static bool omo_setup_library_helper(APP_INSTANCE * app)
 	{
 		return false;
 	}
+	sprintf(app->status_bar_text, "Library ready.");
 	return true;
 }
 
@@ -232,7 +233,7 @@ void omo_setup_library(APP_INSTANCE * app, const char * file_database_fn, const 
 	{
 		app->library_config = config;
 	}
-	strcpy(app->library_loading_message, "");
+	strcpy(app->status_bar_text, "");
 	app->library_thread = al_create_thread(library_setup_thread_proc, app);
 	if(app->library_thread)
 	{

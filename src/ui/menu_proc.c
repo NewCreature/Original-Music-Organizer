@@ -338,7 +338,7 @@ int omo_menu_library_clear_folders(void * data)
 		app->library = NULL;
 	}
 	omo_clear_library_cache();
-	sprintf(app->library_loading_message, "No Library Folders");
+	sprintf(app->status_bar_text, "No Library Folders");
 	return 1;
 }
 

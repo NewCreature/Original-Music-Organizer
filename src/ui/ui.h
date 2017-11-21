@@ -27,6 +27,7 @@ typedef struct
 	T3GUI_ELEMENT * ui_album_list_element;
 	T3GUI_ELEMENT * ui_song_list_element;
 	T3GUI_ELEMENT * ui_seek_control_element;
+	T3GUI_ELEMENT * ui_status_bar_element;
 	bool ui_seeked;
 	int selected_song;
 	int mode;
