@@ -76,13 +76,13 @@ v0.3
 
    [X]Delete our library caches, since they are no longer valid.
 
+[X]Add status bar to library view. We should show library-related messages in
+   this status bar instead of using the list box.
+
 [ ]Implement get_length() and get_position() for all codec handlers that can
    support it. These functions should take looping into account. If the
    playback is looped, we should count the total playback length. This includes
    the total time of the looped audio and the specified fade time.
-
-[ ]Add status bar to library view. We should show library-related messages in
-   this status bar instead of using the list box.
 
 [ ]Finish main UI.
 
