@@ -14,6 +14,7 @@ typedef struct
 	double last_pos;   // compare last_pos to current stream pos to detect loop
 	bool fade_out;     // let us know we are fading out
 	double fade_start; // time the fade began
+	float volume;
 } CODEC_DATA;
 
 static bool codec_initialize(void)
@@ -71,6 +72,18 @@ static bool codec_set_loop(void * data, double loop_start, double loop_end, doub
 	return true;
 }
 
+static bool codec_set_volume(void * data, float volume)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	codec_data->volume = volume;
+	if(codec_data->codec_mp3->audio_stream)
+	{
+		al_set_audio_stream_gain(codec_data->codec_mp3->audio_stream, codec_data->volume);
+	}
+
+	return true;
+}
+
 static const char * codec_get_tag(void * data, const char * name)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
@@ -123,6 +136,7 @@ static bool codec_play(void * data)
 
 	if(mp3a5_play_mp3(codec_data->codec_mp3, 4, 1024))
 	{
+		al_set_audio_stream_gain(codec_data->codec_mp3->audio_stream, codec_data->volume);
 		return true;
 	}
 	return false;
@@ -194,6 +208,11 @@ static bool codec_done_playing(void * data)
 	return true;
 }
 
+static const char * codec_get_info(void * data)
+{
+	return "MPG123";
+}
+
 static OMO_CODEC_HANDLER codec_handler;
 
 OMO_CODEC_HANDLER * omo_codec_mp3a5_get_codec_handler(void)
@@ -205,6 +224,7 @@ OMO_CODEC_HANDLER * omo_codec_mp3a5_get_codec_handler(void)
 	codec_handler.unload_file = codec_unload_file;
 	codec_handler.get_track_count = codec_get_track_count;
 	codec_handler.set_loop = codec_set_loop;
+	codec_handler.set_volume = codec_set_volume;
 	codec_handler.get_tag = codec_get_tag;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;
@@ -214,6 +234,7 @@ OMO_CODEC_HANDLER * omo_codec_mp3a5_get_codec_handler(void)
 	codec_handler.get_position = NULL;
 	codec_handler.get_length = NULL;
 	codec_handler.done_playing = codec_done_playing;
+	codec_handler.get_info = codec_get_info;
 	codec_handler.types = 0;
 	omo_codec_handler_add_type(&codec_handler, ".mpg");
 	omo_codec_handler_add_type(&codec_handler, ".mp2");
