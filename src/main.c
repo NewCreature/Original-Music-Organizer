@@ -72,15 +72,35 @@ static void update_volume_pos(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	double volume;
+	char buf[128];
+	const char * val;
 
 	if(app->ui->ui_volume_changed)
 	{
-		if(app->player->codec_handler->set_volume)
+		volume = 1.0 - ((double)app->ui->ui_volume_control_element->d2 / (double)OMO_UI_VOLUME_RESOLUTION);
+		if(app->player->codec_handler && app->player->codec_handler->set_volume)
 		{
-			volume = 1.0 - ((double)app->ui->ui_volume_control_element->d2 / (double)OMO_UI_VOLUME_RESOLUTION);
 			app->player->codec_handler->set_volume(app->player->codec_data, volume);
 		}
+		sprintf(buf, "%f", volume);
+		al_set_config_value(t3f_config, "Settings", "volume", buf);
 		app->ui->ui_volume_changed = false;
+	}
+	else
+	{
+		val = al_get_config_value(t3f_config, "Settings", "volume");
+		if(val)
+		{
+			app->ui->ui_volume_control_element->d2 = (1.0 - atof(val)) * OMO_UI_VOLUME_RESOLUTION;
+		}
+	}
+	if(app->player->codec_handler && !app->player->codec_handler->set_volume)
+	{
+		app->ui->ui_volume_control_element->flags |= D_DISABLED;
+	}
+	else
+	{
+		app->ui->ui_volume_control_element->flags &= ~D_DISABLED;
 	}
 }
 
@@ -91,7 +111,7 @@ void omo_logic(void * data)
 	int old_queue_list_pos = -1;
 	int visible = 0;
 	int seek_flags;
-	int volume_flags;
+	int volume_pos;
 
 	t3f_refresh_menus();
 	if(app->test_mode)
@@ -127,13 +147,13 @@ void omo_logic(void * data)
 			omo_file_chooser_logic(data);
 			omo_library_pre_gui_logic(data);
 			seek_flags = app->ui->ui_seek_control_element->flags;
-			volume_flags = app->ui->ui_volume_control_element->flags;
+			volume_pos = app->ui->ui_volume_control_element->d2;
 			t3gui_logic();
 			if(seek_flags & D_TRACKMOUSE && !(app->ui->ui_seek_control_element->flags & D_TRACKMOUSE))
 			{
 				app->ui->ui_seeked = true;
 			}
-			if(volume_flags & D_TRACKMOUSE && !(app->ui->ui_volume_control_element->flags & D_TRACKMOUSE))
+			if(volume_pos != app->ui->ui_volume_control_element->d2)
 			{
 				app->ui->ui_volume_changed = true;
 			}
