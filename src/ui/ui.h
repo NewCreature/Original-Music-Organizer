@@ -34,6 +34,7 @@ typedef struct
 	T3GUI_ELEMENT * ui_volume_control_element;
 	T3GUI_ELEMENT * ui_status_bar_element;
 	bool ui_seeked;
+	bool ui_volume_changed;
 	int selected_song;
 	int mode;
 	char song_info_text[2][1024];

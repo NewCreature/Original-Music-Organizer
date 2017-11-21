@@ -68,6 +68,22 @@ static void update_seek_pos(void * data)
 	}
 }
 
+static void update_volume_pos(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	double volume;
+
+	if(app->ui->ui_volume_changed)
+	{
+		if(app->player->codec_handler->set_volume)
+		{
+			volume = 1.0 - ((double)app->ui->ui_volume_control_element->d2 / (double)OMO_UI_VOLUME_RESOLUTION);
+			app->player->codec_handler->set_volume(app->player->codec_data, volume);
+		}
+		app->ui->ui_volume_changed = false;
+	}
+}
+
 /* main logic routine */
 void omo_logic(void * data)
 {
@@ -75,6 +91,7 @@ void omo_logic(void * data)
 	int old_queue_list_pos = -1;
 	int visible = 0;
 	int seek_flags;
+	int volume_flags;
 
 	t3f_refresh_menus();
 	if(app->test_mode)
@@ -110,10 +127,15 @@ void omo_logic(void * data)
 			omo_file_chooser_logic(data);
 			omo_library_pre_gui_logic(data);
 			seek_flags = app->ui->ui_seek_control_element->flags;
+			volume_flags = app->ui->ui_volume_control_element->flags;
 			t3gui_logic();
 			if(seek_flags & D_TRACKMOUSE && !(app->ui->ui_seek_control_element->flags & D_TRACKMOUSE))
 			{
 				app->ui->ui_seeked = true;
+			}
+			if(volume_flags & D_TRACKMOUSE && !(app->ui->ui_volume_control_element->flags & D_TRACKMOUSE))
+			{
+				app->ui->ui_volume_changed = true;
 			}
 			if(app->ui->tags_popup_dialog)
 			{
@@ -140,6 +162,7 @@ void omo_logic(void * data)
 			}
 			omo_player_logic(app->player, app->library, app->archive_handler_registry, app->codec_handler_registry, app->player_temp_path);
 			update_seek_pos(app);
+			update_volume_pos(app);
 			app->ui->ui_queue_list_element->id2 = app->player->queue_pos;
 
 			/* see if we should scroll the queue list */

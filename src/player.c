@@ -160,11 +160,21 @@ static void * omo_player_load_file(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY
 
 static bool omo_player_play_file(OMO_PLAYER * pp, double loop_start, double loop_end, double fade_time, int loop_count)
 {
+	const char * val;
+
 	if(pp->codec_handler->set_loop)
 	{
 		if(loop_end > loop_start)
 		{
 			pp->codec_handler->set_loop(pp->codec_data, loop_start, loop_end, fade_time, loop_count);
+		}
+	}
+	if(pp->codec_handler->set_volume)
+	{
+		val = al_get_config_value(t3f_config, "Settings", "volume");
+		if(val)
+		{
+			pp->codec_handler->set_volume(pp->codec_data, atof(val));
 		}
 	}
 	al_stop_timer(t3f_timer);
