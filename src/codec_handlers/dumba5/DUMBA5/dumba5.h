@@ -122,6 +122,8 @@ double dumba5_get_player_time(DUMBA5_PLAYER * pp);
 /* Determine if music playback is finished. */
 bool dumba5_player_playback_finished(DUMBA5_PLAYER * pp);
 
+DUH_SIGRENDERER * dumba5_get_player_sigrenderer(DUMBA5_PLAYER * pp);
+
 #ifdef __cplusplus
 	}
 #endif

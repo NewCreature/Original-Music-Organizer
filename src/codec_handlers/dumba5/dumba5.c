@@ -18,6 +18,7 @@ typedef struct
 	double playback_total;
 	double fade_time;  // how long to fade out
 	bool fade_out;     // let us know we are fading out
+	char info[256];
 
 } CODEC_DATA;
 
@@ -247,6 +248,45 @@ static bool codec_done_playing(void * data)
 	return dumba5_player_playback_finished(codec_data->codec_player);
 }
 
+static const char * codec_get_info(void * data)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	DUMB_IT_SIGRENDERER * sr;
+	DUMB_IT_CHANNEL_STATE channel_state;
+	int i;
+
+	sr = duh_get_it_sigrenderer(dumba5_get_player_sigrenderer(codec_data->codec_player));
+	if(sr)
+	{
+		sprintf(codec_data->info, "%d: %d", dumb_it_sr_get_current_order(sr) + 1, dumb_it_sr_get_current_row(sr) + 1);
+/*		sprintf(codec_data->info, "%d: %d - ", dumb_it_sr_get_current_order(sr) + 1, dumb_it_sr_get_current_row(sr) + 1);
+		for(i = 0; i < 64; i++)
+		{
+			dumb_it_sr_get_channel_state(sr, i, &channel_state);
+			if(channel_state.sample > 0)
+			{
+				if(channel_state.volume > 0.25)
+				{
+					strcat(codec_data->info, "O");
+				}
+				else
+				{
+					strcat(codec_data->info, "o");
+				}
+			}
+			else
+			{
+				strcat(codec_data->info, "_");
+			}
+		} */
+	}
+	else
+	{
+		sprintf(codec_data->info, "DUMBA5\n");
+	}
+	return codec_data->info;
+}
+
 static OMO_CODEC_HANDLER codec_handler;
 
 OMO_CODEC_HANDLER * omo_codec_dumba5_get_codec_handler(void)
@@ -266,6 +306,7 @@ OMO_CODEC_HANDLER * omo_codec_dumba5_get_codec_handler(void)
 	codec_handler.get_length = codec_get_length;
 	codec_handler.get_position = codec_get_position;
 	codec_handler.done_playing = codec_done_playing;
+	codec_handler.get_info = codec_get_info;
 	codec_handler.types = 0;
 	omo_codec_handler_add_type(&codec_handler, ".mod");
 	omo_codec_handler_add_type(&codec_handler, ".s3m");

@@ -427,6 +427,11 @@ void dumba5_resume_player(DUMBA5_PLAYER * pp)
 	dumba5_resume_duh(pp);
 }
 
+DUH_SIGRENDERER * dumba5_get_player_sigrenderer(DUMBA5_PLAYER * pp)
+{
+	return pp->sigrenderer;
+}
+
 
 /* easy access functions */
 
