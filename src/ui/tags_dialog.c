@@ -115,6 +115,10 @@ void omo_tags_dialog_logic(void * data)
 				omo_get_library_song_list(app->library, artist, album);
 			}
 		}
+		if(update_artists || update_albums || update_songs)
+		{
+			omo_clear_library_cache();
+		}
 		app->button_pressed = -1;
 		t3f_key[ALLEGRO_KEY_ENTER] = 0;
 	}
