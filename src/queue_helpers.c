@@ -228,6 +228,10 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 			}
 		}
 	}
+	if(qp->entry[i]->skip_scan)
+	{
+		ret = true;
+	}
 	if(ret)
 	{
 		qp->entry[i]->tags_retrieved = true;
@@ -322,17 +326,14 @@ void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp, void * data)
 			al_destroy_thread(qp->thread);
 			qp->thread = NULL;
 		}
-		if(lp)
+		for(i = 0; i < qp->entry_count; i++)
 		{
-			for(i = 0; i < qp->entry_count; i++)
+			if(!omo_get_queue_entry_tags(qp, i, lp))
 			{
-				if(!omo_get_queue_entry_tags(qp, i, lp))
-				{
-					rescan = true;
-				}
+				rescan = true;
 			}
 		}
-		if(!lp || rescan)
+		if(rescan)
 		{
 			qp->thread = al_create_thread(get_queue_tags_thread_proc, data);
 			if(qp->thread)

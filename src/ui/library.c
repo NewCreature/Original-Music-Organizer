@@ -92,7 +92,7 @@ static void queue_song_list(void * data, OMO_LIBRARY * lp)
 	{
 		for(i = 0; i < lp->song_entry_count; i++)
 		{
-			omo_add_file_to_queue(app->player->queue, lp->entry[lp->song_entry[i]]->filename, lp->entry[lp->song_entry[i]]->sub_filename, lp->entry[lp->song_entry[i]]->track);
+			omo_add_file_to_queue(app->player->queue, lp->entry[lp->song_entry[i]]->filename, lp->entry[lp->song_entry[i]]->sub_filename, lp->entry[lp->song_entry[i]]->track, true);
 		}
 		maybe_start_player(app);
 		omo_get_queue_tags(app->player->queue, lp, app);
@@ -149,13 +149,13 @@ void omo_library_logic(void * data)
 			{
 				for(i = 0; i < app->library->song_entry_count; i++)
 				{
-					omo_add_file_to_queue(app->player->queue, app->library->entry[app->library->song_entry[i]]->filename, app->library->entry[app->library->song_entry[i]]->sub_filename, app->library->entry[app->library->song_entry[i]]->track);
+					omo_add_file_to_queue(app->player->queue, app->library->entry[app->library->song_entry[i]]->filename, app->library->entry[app->library->song_entry[i]]->sub_filename, app->library->entry[app->library->song_entry[i]]->track, true);
 				}
 				omo_menu_playback_shuffle(app);
 			}
 			else
 			{
-				omo_add_file_to_queue(app->player->queue, app->library->entry[app->library->song_entry[app->ui->selected_song]]->filename, app->library->entry[app->library->song_entry[app->ui->selected_song]]->sub_filename, app->library->entry[app->library->song_entry[app->ui->selected_song]]->track);
+				omo_add_file_to_queue(app->player->queue, app->library->entry[app->library->song_entry[app->ui->selected_song]]->filename, app->library->entry[app->library->song_entry[app->ui->selected_song]]->sub_filename, app->library->entry[app->library->song_entry[app->ui->selected_song]]->track, true);
 			}
 			omo_get_queue_tags(app->player->queue, app->library, app);
 			maybe_start_player(app);

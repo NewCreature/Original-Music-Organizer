@@ -47,6 +47,10 @@ static bool omo_save_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE_ENTRY * ep)
 	{
 		return false;
 	}
+	if(al_fputc(fp, ep->skip_scan ? 1 : 0) == EOF)
+	{
+		return false;
+	}
 	if(c)
 	{
 		if(!t3f_save_string_f(fp, ep->tags.artist))
@@ -130,13 +134,19 @@ static bool omo_load_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE * qp)
 	{
 		goto fail;
 	}
-	if(!omo_add_file_to_queue(qp, file, sub_file, track))
+	if(!omo_add_file_to_queue(qp, file, sub_file, track, false))
 	{
 		goto fail;
 	}
 	free(track);
 	free(sub_file);
 	free(file);
+	c = al_fgetc(fp);
+	if(c == EOF)
+	{
+		goto fail;
+	}
+	qp->entry[qp->entry_count - 1]->skip_scan = c;
 	c = al_fgetc(fp);
 	if(c == EOF)
 	{
@@ -299,7 +309,7 @@ bool omo_resize_queue(OMO_QUEUE ** qp, int files)
 	return ret;
 }
 
-bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn, const char * track)
+bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn, const char * track, bool skip_scan)
 {
 	if(qp->entry_count < qp->entry_size)
 	{
@@ -329,6 +339,7 @@ bool omo_add_file_to_queue(OMO_QUEUE * qp, const char * fn, const char * subfn, 
 						strcpy(qp->entry[qp->entry_count]->track, track);
 					}
 				}
+				qp->entry[qp->entry_count]->skip_scan = skip_scan;
 				qp->entry_count++;
 				return true;
 			}

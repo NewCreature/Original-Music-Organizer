@@ -16,6 +16,7 @@
 #include "ui/queue_list.h"
 #include "ui/library.h"
 #include "ui/tags_dialog.h"
+#include "ui/split_track_dialog.h"
 #include "ui/shortcut.h"
 #include "test.h"
 #include "queue_helpers.h"
