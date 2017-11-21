@@ -11,7 +11,14 @@ void omo_player_ui_logic(void * data)
 	{
 		omo_get_queue_item_text(app->player->queue, app->player->queue_pos, text);
 		strcpy(app->ui->song_info_text[0], text);
-		strcpy(app->ui->song_info_text[1], "");
+		if(app->player->codec_handler->get_info)
+		{
+			strcpy(app->ui->song_info_text[1], app->player->codec_handler->get_info(app->player->codec_data));
+		}
+		else
+		{
+			strcpy(app->ui->song_info_text[1], "N/A");
+		}
 	}
 	else
 	{
