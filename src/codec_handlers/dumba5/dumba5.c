@@ -19,6 +19,7 @@ typedef struct
 	double fade_time;  // how long to fade out
 	bool fade_out;     // let us know we are fading out
 	char info[256];
+	float volume;
 
 } CODEC_DATA;
 
@@ -67,6 +68,7 @@ static void * codec_load_file(const char * fn, const char * subfn)
 				data->codec_length = (double)length / 65536.0;
 			}
 		}
+		data->volume = 1.0;
 	}
 	return data;
 }
@@ -91,6 +93,18 @@ static bool codec_set_loop(void * data, double loop_start, double loop_end, doub
 	codec_data->loop_count = loop_count;
 	codec_data->fade_time = fade_time;
 
+	return true;
+}
+
+static bool codec_set_volume(void * data, float volume)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->volume = volume;
+	if(codec_data->codec_player)
+	{
+		dumba5_set_player_volume(codec_data->codec_player, codec_data->volume);
+	}
 	return true;
 }
 
@@ -156,6 +170,7 @@ static bool codec_play(void * data)
 		start = atoi(codec_data->player_sub_filename);
 	}
 	codec_data->codec_player = dumba5_create_player(codec_data->codec_module, start, codec_data->loop, 1024, 44100, true);
+	dumba5_set_player_volume(codec_data->codec_player, codec_data->volume);
 	if(codec_data->codec_player)
 	{
 		dumba5_start_player(codec_data->codec_player);
@@ -236,7 +251,7 @@ static bool codec_done_playing(void * data)
 			if(codec_data->fade_out)
 			{
 				volume = 1.0 - (dumba5_get_player_time(codec_data->codec_player) - codec_data->playback_total) / codec_data->fade_time;
-				dumba5_set_player_volume(codec_data->codec_player, volume);
+				dumba5_set_player_volume(codec_data->codec_player, volume * codec_data->volume);
 				if(dumba5_get_player_time(codec_data->codec_player) >= codec_data->playback_total + codec_data->fade_time)
 				{
 					return true;
@@ -298,6 +313,7 @@ OMO_CODEC_HANDLER * omo_codec_dumba5_get_codec_handler(void)
 	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;
 	codec_handler.set_loop = codec_set_loop;
+	codec_handler.set_volume = codec_set_volume;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;
 	codec_handler.resume = codec_resume;
