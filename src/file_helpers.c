@@ -409,7 +409,15 @@ bool omo_queue_file(const char * fn, void * data)
 					{
 						sprintf(buf2, "track_%d", i);
 						val2 = al_get_config_value(file_helper_data->library->file_database, fn, buf2);
-						omo_add_file_to_queue(file_helper_data->queue, fn, NULL, val2);
+						if(val2)
+						{
+							strcpy(buf2, val2);
+						}
+						else
+						{
+							sprintf(buf2, "%d", i);
+						}
+						omo_add_file_to_queue(file_helper_data->queue, fn, NULL, buf2);
 					}
 				}
 			}
@@ -438,7 +446,15 @@ bool omo_queue_file(const char * fn, void * data)
 			{
 				sprintf(buf, "track_%d", i);
 				val = al_get_config_value(file_helper_data->library->file_database, fn, buf);
-				omo_add_file_to_queue(file_helper_data->queue, fn, NULL, val);
+				if(val)
+				{
+					strcpy(buf, val);
+				}
+				else
+				{
+					sprintf(buf, "%d", i);
+				}
+				omo_add_file_to_queue(file_helper_data->queue, fn, NULL, buf);
 			}
 		}
 	}
