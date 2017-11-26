@@ -62,6 +62,7 @@ static void * codec_load_file(const char * fn, const char * subfn)
 				data->end_time = data->midi->track[i]->event[data->midi->track[i]->events - 1]->pos_sec;
 			}
 		}
+		data->volume = 1.0;
 	}
 	return data;
 }
@@ -110,6 +111,16 @@ static const char * codec_get_tag(void * data, const char * name)
 static int codec_get_track_count(void * data, const char * fn)
 {
 	return 1;
+}
+
+static bool codec_set_volume(void * data, float volume)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	al_lock_mutex(codec_data->mutex);
+	codec_data->volume = volume;
+	al_unlock_mutex(codec_data->mutex);
+	return true;
 }
 
 static void send_data(HMIDIOUT midi_out, int midi_data)
@@ -174,7 +185,7 @@ static unsigned long get_next_event_tick(RTK_MIDI * mp, unsigned long current_ti
 	return shortest_tick;
 }
 
-static void send_midi_event_data(HMIDIOUT midi_out, RTK_MIDI * mp, unsigned long tick, int * track_event)
+static void send_midi_event_data(HMIDIOUT midi_out, RTK_MIDI * mp, unsigned long tick, int * track_event, float volume)
 {
 	int i;
 
@@ -192,7 +203,7 @@ static void send_midi_event_data(HMIDIOUT midi_out, RTK_MIDI * mp, unsigned long
 				{
 					send_data(midi_out, mp->track[i]->event[track_event[i]]->type + mp->track[i]->event[track_event[i]]->channel);
 					send_data(midi_out, mp->track[i]->event[track_event[i]]->data_i[0]);
-					send_data(midi_out, mp->track[i]->event[track_event[i]]->data_i[1]);
+					send_data(midi_out, (float)mp->track[i]->event[track_event[i]]->data_i[1] * volume);
 					break;
 				}
 				case RTK_MIDI_EVENT_TYPE_PROGRAM_CHANGE:
@@ -229,7 +240,7 @@ static void * codec_thread_proc(ALLEGRO_THREAD * thread, void * arg)
 	}
 	al_register_event_source(queue, al_get_timer_event_source(timer));
 	al_start_timer(timer);
-	send_midi_event_data(codec_data->output_device, codec_data->midi, codec_data->current_tick, codec_data->midi_event);
+	send_midi_event_data(codec_data->output_device, codec_data->midi, codec_data->current_tick, codec_data->midi_event, codec_data->volume);
 	codec_data->current_tick = get_next_event_tick(codec_data->midi, codec_data->current_tick, codec_data->midi_event, &codec_data->event_time);
 	while(!al_get_thread_should_stop(thread) && codec_data->elapsed_time < codec_data->end_time)
 	{
@@ -240,7 +251,7 @@ static void * codec_thread_proc(ALLEGRO_THREAD * thread, void * arg)
 			codec_data->elapsed_time += tick_time;
 			if(codec_data->elapsed_time >= codec_data->event_time)
 			{
-				send_midi_event_data(codec_data->output_device, codec_data->midi, codec_data->current_tick, codec_data->midi_event);
+				send_midi_event_data(codec_data->output_device, codec_data->midi, codec_data->current_tick, codec_data->midi_event, codec_data->volume);
 				codec_data->current_tick = get_next_event_tick(codec_data->midi, codec_data->current_tick, codec_data->midi_event, &codec_data->event_time);
 			}
 			al_unlock_mutex(codec_data->mutex);
@@ -379,6 +390,7 @@ OMO_CODEC_HANDLER * omo_codec_midiout_get_codec_handler(void)
 	codec_handler.unload_file = codec_unload_file;
 	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;
+	codec_handler.set_volume = codec_set_volume;
 	codec_handler.play = codec_play;
 	codec_handler.pause = codec_pause;
 	codec_handler.resume = codec_resume;
