@@ -31,6 +31,7 @@ OMO_QUEUE * omo_create_queue(int files)
 static bool omo_save_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE_ENTRY * ep)
 {
 	int c = ep->tags_retrieved ? 1 : 0;
+
 	if(!t3f_save_string_f(fp, ep->file))
 	{
 		return false;
@@ -43,11 +44,11 @@ static bool omo_save_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE_ENTRY * ep)
 	{
 		return false;
 	}
-	if(al_fputc(fp, c) == EOF)
+	if(al_fputc(fp, ep->skip_scan ? 1 : 0) == EOF)
 	{
 		return false;
 	}
-	if(al_fputc(fp, ep->skip_scan ? 1 : 0) == EOF)
+	if(al_fputc(fp, c) == EOF)
 	{
 		return false;
 	}
