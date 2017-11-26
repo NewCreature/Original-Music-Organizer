@@ -22,6 +22,7 @@ typedef struct
 	unsigned long current_tick;
 	double event_time;
 	int midi_event[32];
+	float volume;
 
 } CODEC_DATA;
 
@@ -363,6 +364,11 @@ static bool codec_done_playing(void * data)
 	return false;
 }
 
+static const char * codec_get_info(void * data)
+{
+	return "Windows midiOut";
+}
+
 static OMO_CODEC_HANDLER codec_handler;
 
 OMO_CODEC_HANDLER * omo_codec_midiout_get_codec_handler(void)
@@ -381,6 +387,7 @@ OMO_CODEC_HANDLER * omo_codec_midiout_get_codec_handler(void)
 	codec_handler.get_position = codec_get_position;
 	codec_handler.get_length = codec_get_length;
 	codec_handler.done_playing = codec_done_playing;
+	codec_handler.get_info = codec_get_info;
 	codec_handler.types = 0;
 	omo_codec_handler_add_type(&codec_handler, ".mid");
 	if(codec_handler.initialize())
