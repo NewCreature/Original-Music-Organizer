@@ -109,6 +109,18 @@ v0.3
       one line for the artist, title, etc. of the currently playing song and
       another for track-specific info from the codec handler.
 
+[X]Finish implementing midiOut.
+
+   [X]Add get_length();
+
+   [X]Add get_position();
+
+   [X]Add seek();
+
+   [X]Add set_volume();
+
+   [X]Add get_info();
+
 [ ]Fix slider GUI element.
 
    [ ]Vertical slider renders incorrectly.
@@ -117,19 +129,19 @@ v0.3
       works as expected. Currently, the slider slides slightly faster than the
       mouse moves.
 
-[ ]Finish implementing midiOut.
-
-   [ ]Add get_length();
-
-   [ ]Add get_position();
-
-   [ ]Add seek();
-
-   [ ]Add set_volume();
-
-   [ ]Add get_info();
-
 [ ]Add volume icon to UI next to volume slider.
+
+[ ]Look into Japanese text support.
+
+   [ ]See if we can implement font substitution into T3GUI. Themes should be
+      able to supply a CJK (Chinese, Japanese, Korean) font to use when a bit
+      of text is in one of those languages. The GUI elements should check for
+      this CJK font in the element's theme.
+
+[ ]Look into using a monospace font for the song info display. Some of the
+   codec handlers have potential to do neat animations based on playback info
+   if we can gaurantee the font spacing.
+
 
 v0.2
 ----
