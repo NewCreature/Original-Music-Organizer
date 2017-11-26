@@ -16,8 +16,12 @@ typedef struct
 	bool paused;
 	double elapsed_time;
 	double end_time;
-	ALLEGRO_THREAD * thread;
 	char tag_buffer[1024];
+	ALLEGRO_MUTEX * mutex;
+	ALLEGRO_THREAD * thread;
+	unsigned long current_tick;
+	double event_time;
+	int midi_event[32];
 
 } CODEC_DATA;
 
@@ -42,6 +46,13 @@ static void * codec_load_file(const char * fn, const char * subfn)
 			free(data);
 			return NULL;
 		}
+		data->mutex = al_create_mutex();
+		if(!data->mutex)
+		{
+			rtk_destroy_midi(data->midi);
+			free(data);
+			return NULL;
+		}
 		data->end_time = 0.0;
 		for(i = 0; i < data->midi->tracks; i++)
 		{
@@ -58,6 +69,7 @@ static void codec_unload_file(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
+	al_destroy_mutex(codec_data->mutex);
 	rtk_destroy_midi(codec_data->midi);
 	free(data);
 }
@@ -201,10 +213,7 @@ static void * codec_thread_proc(ALLEGRO_THREAD * thread, void * arg)
 	ALLEGRO_EVENT_QUEUE * queue;
 	ALLEGRO_TIMER * timer;
 	ALLEGRO_EVENT event;
-	unsigned long current_tick = 0;
 	double tick_time = 1.0 / 1000.0;
-	double event_time = 0;
-	int midi_event[32] = {0};
 
 	queue = al_create_event_queue();
 	if(!queue)
@@ -219,19 +228,21 @@ static void * codec_thread_proc(ALLEGRO_THREAD * thread, void * arg)
 	}
 	al_register_event_source(queue, al_get_timer_event_source(timer));
 	al_start_timer(timer);
-	send_midi_event_data(codec_data->output_device, codec_data->midi, current_tick, midi_event);
-	current_tick = get_next_event_tick(codec_data->midi, current_tick, midi_event, &event_time);
+	send_midi_event_data(codec_data->output_device, codec_data->midi, codec_data->current_tick, codec_data->midi_event);
+	codec_data->current_tick = get_next_event_tick(codec_data->midi, codec_data->current_tick, codec_data->midi_event, &codec_data->event_time);
 	while(!al_get_thread_should_stop(thread) && codec_data->elapsed_time < codec_data->end_time)
 	{
 		al_wait_for_event(queue, &event);
 		if(!codec_data->paused)
 		{
+			al_lock_mutex(codec_data->mutex);
 			codec_data->elapsed_time += tick_time;
-			if(codec_data->elapsed_time >= event_time)
+			if(codec_data->elapsed_time >= codec_data->event_time)
 			{
-				send_midi_event_data(codec_data->output_device, codec_data->midi, current_tick, midi_event);
-				current_tick = get_next_event_tick(codec_data->midi, current_tick, midi_event, &event_time);
+				send_midi_event_data(codec_data->output_device, codec_data->midi, codec_data->current_tick, codec_data->midi_event);
+				codec_data->current_tick = get_next_event_tick(codec_data->midi, codec_data->current_tick, codec_data->midi_event, &codec_data->event_time);
 			}
+			al_unlock_mutex(codec_data->mutex);
 		}
 	}
 	al_unregister_event_source(queue, al_get_timer_event_source(timer));
@@ -282,11 +293,63 @@ static void codec_stop(void * data)
 	midiOutClose(codec_data->output_device);
 }
 
+static bool codec_seek(void * data, double pos)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	unsigned long current_tick;
+	unsigned long current_event;
+	double current_time;
+	unsigned long target_tick = ~0;
+	double target_time = 100000.0;
+	int i, j;
+
+	al_lock_mutex(codec_data->mutex);
+	midiOutReset(codec_data->output_device);
+	for(i = 0; i < codec_data->midi->tracks; i++)
+	{
+		current_tick = 0;
+		current_event = 0;
+		current_time = 0;
+		for(j = 0; j < codec_data->midi->track[i]->events; j++)
+		{
+			if(codec_data->midi->track[i]->event[j]->pos_sec >= pos)
+			{
+				codec_data->midi_event[i] = current_event;
+				if(current_tick < target_tick)
+				{
+					target_tick = current_tick;
+					target_time = current_time;
+				}
+				break;
+			}
+			if(codec_data->midi->track[i]->event[j]->tick > current_tick)
+			{
+				current_tick = codec_data->midi->track[i]->event[j]->tick;
+				current_event = j;
+				current_time = codec_data->midi->track[i]->event[j]->pos_sec;
+			}
+		}
+	}
+	codec_data->current_tick = target_tick;
+	codec_data->event_time = target_time;
+	codec_data->elapsed_time = pos;
+	al_unlock_mutex(codec_data->mutex);
+
+	return true;
+}
+
 static double codec_get_position(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
 	return codec_data->elapsed_time;
+}
+
+static double codec_get_length(void * data)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return codec_data->end_time;
 }
 
 static bool codec_done_playing(void * data)
@@ -314,9 +377,9 @@ OMO_CODEC_HANDLER * omo_codec_midiout_get_codec_handler(void)
 	codec_handler.pause = codec_pause;
 	codec_handler.resume = codec_resume;
 	codec_handler.stop = codec_stop;
-	codec_handler.seek = NULL;
+	codec_handler.seek = codec_seek;
 	codec_handler.get_position = codec_get_position;
-	codec_handler.get_length = NULL;
+	codec_handler.get_length = codec_get_length;
 	codec_handler.done_playing = codec_done_playing;
 	codec_handler.types = 0;
 	omo_codec_handler_add_type(&codec_handler, ".mid");
