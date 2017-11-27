@@ -123,7 +123,7 @@ v0.3
 
 [ ]Fix slider GUI element.
 
-   [ ]Vertical slider renders incorrectly.
+   [X]Vertical slider renders incorrectly.
 
    [ ]Sliders should peg where the mouse initially clicked them so dragging
       works as expected. Currently, the slider slides slightly faster than the
