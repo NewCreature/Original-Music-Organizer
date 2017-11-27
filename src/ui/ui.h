@@ -6,7 +6,7 @@
 #define OMO_UI_MAX_TAGS            16
 #define OMO_UI_MAX_TAG_LENGTH    1024
 #define OMO_UI_SEEK_RESOLUTION   2000
-#define OMO_UI_VOLUME_RESOLUTION  300
+#define OMO_UI_VOLUME_RESOLUTION  100
 
 typedef struct
 {

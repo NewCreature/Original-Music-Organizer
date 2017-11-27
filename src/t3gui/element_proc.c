@@ -200,7 +200,7 @@ int t3gui_box_proc(int msg, T3GUI_ELEMENT *d, int c)
     //printf("t3gui_box received message 0x%04x\n", msg);
     if (msg==MSG_DRAW)
     {
-        for(i = 0; i < T3GUI_THEME_MAX_BITMAPS; i++)
+        for(i = 0; i < 2; i++)
         {
             NINE_PATCH_BITMAP *p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[i];
             if(p9)
@@ -798,6 +798,7 @@ int t3gui_radio_proc(int msg, T3GUI_ELEMENT *d, int c)
 int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
 {
    ALLEGRO_BITMAP *slhan = NULL;
+   NINE_PATCH_BITMAP *p9;
    int oldpos, newpos;
    int vert = true;        /* flag: is slider vertical? */
    int hh = 7;             /* handle height (width for horizontal sliders) */
@@ -858,9 +859,14 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
 
          if (hh > d->h) hh = d->h;
 
+         p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[3];
+         if(hh < get_nine_patch_bitmap_min_height(p9))
+         {
+             hh = get_nine_patch_bitmap_min_height(p9);
+         }
          offset = (d->h - hh) * value / range;
       } else {
-         hh = d->w * d->w / (range + d->h);
+         hh = d->w * d->w / (range + d->w);
 
          if (hh > d->w) hh = d->w;
 
@@ -868,18 +874,16 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
       }
 
       if (vert) {
-         slx = d->x+2;
-         sly = d->y+2 + offset;
-         slw = d->w-4;
-         slh = hh-4;
+         slx = d->x;
+         sly = d->y + offset;
+         slw = d->w;
+         slh = hh;
       } else {
-         slx = d->x+2 + offset;
-         sly = d->y+2;
-         slw = hh-4;
-         slh = d->h-3;
+         slx = d->x + offset;
+         sly = d->y;
+         slw = hh;
+         slh = d->h;
       }
-
-      NINE_PATCH_BITMAP *p9;
 
       /* draw body */
       if (d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[2])
@@ -1059,7 +1063,7 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
 
 int t3gui_scroll_proc(int msg, T3GUI_ELEMENT *d, int c)
 {
-   assert(d);
+/*   assert(d);
    int vert = true;
    int hh = 0;
    int slx, sly, slh, slw;
@@ -1069,7 +1073,6 @@ int t3gui_scroll_proc(int msg, T3GUI_ELEMENT *d, int c)
    int offset = 0;
 
    if (msg == MSG_DRAW) {
-      /* check for slider direction */
       if (d->h < d->w)
          vert = false;
 
@@ -1090,7 +1093,7 @@ int t3gui_scroll_proc(int msg, T3GUI_ELEMENT *d, int c)
       if (vert) {
          slx = d->x+2;
          sly = d->y+2 + offset;
-         slw = d->w-4;
+         slw = d->w-3;
          slh = hh-4;
       } else {
          slx = d->x+2 + offset;
@@ -1099,12 +1102,8 @@ int t3gui_scroll_proc(int msg, T3GUI_ELEMENT *d, int c)
          slh = d->h-4;
       }
 
-/*      al_draw_filled_rectangle(d->x+0.5, d->y+0.5, d->x+d->w-0.5, d->y+d->h-0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG]);
-      al_draw_rectangle(d->x+0.5, d->y+0.5, d->x+d->w-0.5, d->y+d->h-0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG], 1.0); */
-
       NINE_PATCH_BITMAP *p9;
 
-      /* draw body */
       if (d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[2])
       {
           p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[2];
@@ -1117,11 +1116,11 @@ int t3gui_scroll_proc(int msg, T3GUI_ELEMENT *d, int c)
          draw_nine_patch_bitmap(p9, d->theme->state[T3GUI_ELEMENT_STATE_EXTRA].color[T3GUI_THEME_COLOR_FG], slx, sly, w, h);
       }
 
-/*      if (d->flags & D_GOTFOCUS)
-         al_draw_rectangle(d->x+0.5, d->y+0.5, d->x+d->w-0.5, d->y+d->h-0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG], 4.0); */
+      if (d->flags & D_GOTFOCUS)
+         al_draw_rectangle(d->x+0.5, d->y+0.5, d->x+d->w-0.5, d->y+d->h-0.5, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG], 4.0);
 
       return retval;
-   }
+  } */
 
    return t3gui_slider_proc(msg, d, c);
 }

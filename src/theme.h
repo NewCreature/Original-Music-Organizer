@@ -20,6 +20,7 @@
 #define OMO_THEME_GUI_THEME_BOX         0
 #define OMO_THEME_GUI_THEME_LIST_BOX    1
 #define OMO_THEME_GUI_THEME_BUTTON      2
+#define OMO_THEME_GUI_THEME_SLIDER      3
 
 typedef struct
 {
