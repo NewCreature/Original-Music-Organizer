@@ -142,6 +142,7 @@ v0.3
    codec handlers have potential to do neat animations based on playback info
    if we can gaurantee the font spacing.
 
+[ ]Fix shuffle not starting playback.
 
 v0.2
 ----
