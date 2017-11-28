@@ -218,10 +218,12 @@ int omo_menu_playback_shuffle(void * data)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	OMO_QUEUE * new_queue;
 	int i, r;
+	int old_state;
 
 	if(app->player->queue)
 	{
 		/* stop currently playing song */
+		old_state = app->player->state;
 		omo_stop_player(app->player);
 
 		/* create new queue */
@@ -239,6 +241,10 @@ int omo_menu_playback_shuffle(void * data)
 			omo_destroy_queue(app->player->queue);
 			app->player->queue = new_queue;
 			app->player->queue_pos = 0;
+			if(old_state == OMO_PLAYER_STATE_PLAYING)
+			{
+				omo_start_player(app->player);
+			}
 			omo_get_queue_tags(app->player->queue, app->library, app);
 		}
 	}
