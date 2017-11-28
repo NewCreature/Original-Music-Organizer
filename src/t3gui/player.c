@@ -368,6 +368,8 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
 {
     ALLEGRO_EVENT my_event;
     my_event.user.data4 = (intptr_t)player;
+    int old_mouse_x = -1;
+    int old_mouse_y = -1;
     switch (event->type)
     {
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
@@ -723,7 +725,7 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
             }
 
             /* Are objects tracking the mouse? */
-            if (event->mouse.dx || event->mouse.dy)
+            if(event->mouse.x != old_mouse_x || event->mouse.y != old_mouse_y)
             {
                 for (n=0; player->dialog[n].proc; n++)
                 {
@@ -735,6 +737,8 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
                     }
                 }
             }
+            old_mouse_x = event->mouse.x;
+            old_mouse_y = event->mouse.y;
             if (event->mouse.dz)
             {
                 MESSAGE(player, player->mouse_obj, MSG_WHEEL, event->mouse.dz);
