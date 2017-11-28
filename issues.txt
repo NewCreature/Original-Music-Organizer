@@ -121,13 +121,9 @@ v0.3
 
    [X]Add get_info();
 
-[ ]Fix slider GUI element.
+[X]Fix slider GUI element.
 
    [X]Vertical slider renders incorrectly.
-
-   [ ]Sliders should peg where the mouse initially clicked them so dragging
-      works as expected. Currently, the slider slides slightly faster than the
-      mouse moves.
 
 [ ]Add volume icon to UI next to volume slider.
 
