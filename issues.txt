@@ -125,6 +125,8 @@ v0.3
 
    [X]Vertical slider renders incorrectly.
 
+[X]Fix shuffle not starting playback.
+
 [ ]Add volume icon to UI next to volume slider.
 
 [ ]Look into Japanese text support.
@@ -137,8 +139,6 @@ v0.3
 [ ]Look into using a monospace font for the song info display. Some of the
    codec handlers have potential to do neat animations based on playback info
    if we can gaurantee the font spacing.
-
-[ ]Fix shuffle not starting playback.
 
 v0.2
 ----
