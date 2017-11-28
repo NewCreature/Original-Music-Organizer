@@ -826,18 +826,26 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
       vert = false;
 
    /* set up the metrics for the control */
-   if (d->dp != NULL) {
-      slhan = (ALLEGRO_BITMAP *)d->dp;
-      if (vert)
-         hh = al_get_bitmap_height(slhan);
-      else
-         hh = al_get_bitmap_width(slhan);
-   }
-
    if (vert) {
-      if (d->w/4 > hh) hh = d->w/4;
+      hh = d->h * d->h / (range + d->h);
+
+      if (hh > d->h) hh = d->h;
+
+      p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[3];
+      if(hh < get_nine_patch_bitmap_min_height(p9))
+      {
+          hh = get_nine_patch_bitmap_min_height(p9);
+      }
    } else {
-      if (d->h/4 > hh) hh = d->h/4;
+      hh = d->w * d->w / (range + d->w);
+
+      if (hh > d->w) hh = d->w;
+
+      p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[3];
+      if(hh < get_nine_patch_bitmap_min_width(p9))
+      {
+          hh = get_nine_patch_bitmap_min_width(p9);
+      }
    }
 
    hmar = hh/2;
@@ -1035,9 +1043,9 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
          oldval = d->d2;
          if (vert)
             //mp = (d->y+d->h-hmar)-msy;
-            mp = msy-(d->y-hmar);
+            mp = msy - d->y - hmar;
          else
-            mp = msx-(d->x+hmar);
+            mp = msx - d->x - hmar;
          if (mp < 0)
             mp = 0;
          if (mp > irange-hh)
