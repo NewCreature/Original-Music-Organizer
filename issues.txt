@@ -129,16 +129,17 @@ v0.3
 
 [ ]Add volume icon to UI next to volume slider.
 
-[ ]Look into Japanese text support.
+[ ]Add CJK font support to T3GUI.
 
-   [ ]See if we can implement font substitution into T3GUI. Themes should be
-      able to supply a CJK (Chinese, Japanese, Korean) font to use when a bit
-      of text is in one of those languages. The GUI elements should check for
-      this CJK font in the element's theme.
+   [ ]Add cjk_font theme state parameter. If a CJK font is specified, use
+      al_set_fallback_font() to map this font as the fallback font.
+
+[ ]Add a CJK font to the basic theme.
 
 [ ]Look into using a monospace font for the song info display. Some of the
    codec handlers have potential to do neat animations based on playback info
-   if we can gaurantee the font spacing.
+   if we can gaurantee the font spacing. We need to supply a CJK monospace font
+   as well if we implement this.
 
 v0.2
 ----
