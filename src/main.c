@@ -24,7 +24,7 @@
 
 static int queue_list_visible_elements(T3GUI_ELEMENT * element)
 {
-	return element->h / al_get_font_line_height(element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font) - 1;
+	return element->h / al_get_font_line_height(element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0]) - 1;
 }
 
 static void update_seek_pos(void * data)

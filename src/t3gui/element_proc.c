@@ -53,7 +53,7 @@ int t3gui_window_frame_proc(int msg, T3GUI_ELEMENT *d, int c)
 {
    assert(d);
    int ret = D_O_K;
-   const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font;
+   const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
    const char *text = d->dp;
    int title_height = 0;
    if (text == NULL) text = "";
@@ -229,7 +229,7 @@ int t3gui_button_proc(int msg, T3GUI_ELEMENT *d, int c)
     assert(d);
 
     const char *text = d->dp;
-    const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font;
+    const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
     if (text == NULL) text = "";
 
     int select = D_INTERACT;
@@ -379,7 +379,7 @@ int t3gui_rounded_button_proc(int msg, T3GUI_ELEMENT *d, int c)
    assert(d);
 
    const char *text = d->dp;
-   const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font;
+   const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
    if (text == NULL) text = "";
 
    int select = D_SELECTED | D_TRACKMOUSE;
@@ -433,7 +433,7 @@ int t3gui_push_button_proc(int msg, T3GUI_ELEMENT *d, int c)
     assert(d);
 
     const char *text = d->dp;
-    const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font;
+    const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
     if (text == NULL)
     {
         text = "";
@@ -553,7 +553,7 @@ int t3gui_text_proc(int msg, T3GUI_ELEMENT *d, int c)
         int flags = d->d1;
         int x = d->x;
         ALLEGRO_COLOR fg = (d->flags & D_DISABLED) ? d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_MG] : d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG];
-        const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font;
+        const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
         assert(font);
 
         if(!text)
@@ -587,7 +587,7 @@ int t3gui_check_proc(int msg, T3GUI_ELEMENT *d, int c)
 
    if (msg==MSG_DRAW) {
       const char *text = d->dp;
-      const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font;
+      const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
       ALLEGRO_COLOR fg = (d->flags & D_DISABLED) ? d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_MG] : d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG];
       ALLEGRO_COLOR bg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG];
       int h = d->h;
@@ -677,7 +677,7 @@ int t3gui_text_button_proc(int msg, T3GUI_ELEMENT *d, int c)
       ALLEGRO_COLOR colour, fg, bg;
       const char *text = d->dp;
 
-      const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font;
+      const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
 
       fg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG];
       bg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG];
@@ -722,7 +722,7 @@ int t3gui_radio_proc(int msg, T3GUI_ELEMENT *d, int c)
    assert(d);
 
    const char *text = d->dp;
-   const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font;
+   const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
 
    ret = D_O_K;
 
@@ -1136,7 +1136,7 @@ int t3gui_scroll_proc(int msg, T3GUI_ELEMENT *d, int c)
 static int draw_textcursor(T3GUI_ELEMENT *d, bool draw, int *margin, int cursor_pos)
 {
     assert(d);
-    const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font;
+    const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
     const char *text = d->dp;
 
     int r_margin = 0;
@@ -1303,7 +1303,7 @@ draw:
 static int draw_textbox(T3GUI_ELEMENT *d, bool draw, int *margin)
 {
     assert(d);
-    const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font;
+    const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
     const char *text = d->dp;
 
     int r_margin = 0;
@@ -1761,7 +1761,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
     assert(d);
 
     getfuncptr *func = d->dp;
-    const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font;
+    const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
     int nelem = 0;
     int visible_elements;
     int y = d->y;
@@ -1770,7 +1770,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
 
     func(-1, &nelem, d->dp3);
 
-    visible_elements = d->h / al_get_font_line_height(d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font);
+    visible_elements = d->h / al_get_font_line_height(d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0]);
 
     T3GUI_ELEMENT dd =
     {
@@ -1994,7 +1994,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
  */
 int t3gui_edit_proc(int msg, T3GUI_ELEMENT *d, int c)
 {
-   const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font;
+   const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
    ALLEGRO_COLOR fg, tc;
    int last_was_space, new_pos, i, k;
    int f, l, p, w, x, b, scroll, h;

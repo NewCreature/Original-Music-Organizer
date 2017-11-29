@@ -82,9 +82,9 @@ void omo_set_window_constraints(APP_INSTANCE * app)
 		}
 		else
 		{
-			if(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font)
+			if(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0])
 			{
-				min_width += al_get_text_width(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font, app->ui->main_theme->text[bitmap_index[i]]) + 4;
+				min_width += al_get_text_width(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0], app->ui->main_theme->text[bitmap_index[i]]) + 4;
 			}
 		}
 	}
@@ -105,14 +105,14 @@ void omo_set_window_constraints(APP_INSTANCE * app)
 	}
 	else
 	{
-		if(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font)
+		if(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0])
 		{
-			min_height += al_get_font_line_height(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font) + 4;
+			min_height += al_get_font_line_height(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0]) + 4;
 		}
 	}
-	if(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font)
+	if(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0])
 	{
-		min_height += al_get_font_line_height(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font) * 8;
+		min_height += al_get_font_line_height(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0]) * 8;
 	}
 	min_height += 24; // borders
 

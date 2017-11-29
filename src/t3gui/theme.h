@@ -6,6 +6,7 @@
 
 #define T3GUI_THEME_MAX_COLORS          4
 #define T3GUI_THEME_MAX_BITMAPS         4
+#define T3GUI_THEME_MAX_FONTS           4
 #define T3GUI_THEME_MAX_SOURCE_BITMAPS 32
 
 #define T3GUI_THEME_COLOR_FG    0
@@ -18,7 +19,7 @@ typedef struct
 
     NINE_PATCH_BITMAP * bitmap[T3GUI_THEME_MAX_BITMAPS];
     ALLEGRO_COLOR color[T3GUI_THEME_MAX_BITMAPS];
-    ALLEGRO_FONT * font;
+    ALLEGRO_FONT * font[T3GUI_THEME_MAX_FONTS];
     void * aux_font; // alternate font system
 
 } T3GUI_THEME_STATE;

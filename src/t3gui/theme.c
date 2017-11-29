@@ -62,7 +62,7 @@ static bool create_default_theme(T3GUI_THEME * theme)
         theme->state[i].color[T3GUI_THEME_COLOR_MG] = t3gui_silver;
         theme->state[i].color[T3GUI_THEME_COLOR_FG] = t3gui_black;
         theme->state[i].color[T3GUI_THEME_COLOR_EG] = t3gui_red;
-        t3gui_load_font(&theme->state[i].font, NULL, 0);
+        t3gui_load_font(&theme->state[i].font[0], NULL, 0);
         theme->state[i].aux_font = NULL;
     }
     return true;
@@ -143,18 +143,30 @@ static void t3gui_get_theme_state(ALLEGRO_CONFIG * cp, const char * section, T3G
             sp->color[j] = get_color(val);
         }
     }
-    val = al_get_config_value(cp, section, "font");
-    if(val)
+    for(j = 0; j < T3GUI_THEME_MAX_FONTS; j++)
     {
-        val2 = al_get_config_value(cp, NULL, "font size override");
-        if(!val2)
-        {
-            val2 = al_get_config_value(cp, section, "font size");
-        }
-        if(val2)
+        sprintf(key_buf, "font %d", j);
+        val = al_get_config_value(cp, section, key_buf);
+        if(val)
         {
             al_set_path_filename(theme_path, val);
-            t3gui_load_font(&sp->font, strlen(val) > 0 ? al_path_cstr(theme_path, '/') : NULL, atoi(val2));
+            val2 = al_get_config_value(cp, NULL, "font size override");
+            if(!val2)
+            {
+                val2 = al_get_config_value(cp, section, "font size");
+            }
+            if(val2)
+            {
+                al_set_path_filename(theme_path, val);
+                t3gui_load_font(&sp->font[j], strlen(val) > 0 ? al_path_cstr(theme_path, '/') : NULL, atoi(val2));
+                if(j > 0)
+                {
+                    if(sp->font[j - 1] && sp->font[j])
+                    {
+                        al_set_fallback_font(sp->font[j - 1], sp->font[j]);
+                    }
+                }
+            }
         }
     }
 }
@@ -214,7 +226,13 @@ void t3gui_destroy_theme(T3GUI_THEME * tp)
                 t3gui_remove_bitmap_reference(&tp->state[i].bitmap[j]);
             }
         }
-        t3gui_remove_font_reference(&tp->state[i].font);
+        for(j = 0; j < T3GUI_THEME_MAX_FONTS; j++)
+        {
+            if(tp->state[i].font[j])
+            {
+                t3gui_remove_font_reference(&tp->state[i].font[j]);
+            }
+        }
     }
     if(tp != &t3gui_default_theme)
     {
