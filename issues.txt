@@ -127,14 +127,14 @@ v0.3
 
 [X]Fix shuffle not starting playback.
 
-[ ]Add volume icon to UI next to volume slider.
+[X]Add CJK font support to T3GUI.
 
-[ ]Add CJK font support to T3GUI.
-
-   [ ]Add cjk_font theme state parameter. If a CJK font is specified, use
+   [X]Add cjk_font theme state parameter. If a CJK font is specified, use
       al_set_fallback_font() to map this font as the fallback font.
 
-[ ]Add a CJK font to the basic theme.
+[X]Add a CJK font to the basic theme.
+
+[ ]Add volume icon to UI next to volume slider.
 
 [ ]Look into using a monospace font for the song info display. Some of the
    codec handlers have potential to do neat animations based on playback info
