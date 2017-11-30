@@ -134,12 +134,11 @@ v0.3
 
 [X]Add a CJK font to the basic theme.
 
-[ ]Add volume icon to UI next to volume slider.
-
-[ ]Look into using a monospace font for the song info display. Some of the
+[X]Look into using a monospace font for the song info display. Some of the
    codec handlers have potential to do neat animations based on playback info
    if we can gaurantee the font spacing. We need to supply a CJK monospace font
    as well if we implement this.
+
 
 v0.2
 ----
