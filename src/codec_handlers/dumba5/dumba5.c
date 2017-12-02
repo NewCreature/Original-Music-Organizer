@@ -273,27 +273,20 @@ static const char * codec_get_info(void * data)
 	sr = duh_get_it_sigrenderer(dumba5_get_player_sigrenderer(codec_data->codec_player));
 	if(sr)
 	{
-		sprintf(codec_data->info, "%d: %d", dumb_it_sr_get_current_order(sr) + 1, dumb_it_sr_get_current_row(sr) + 1);
-/*		sprintf(codec_data->info, "%d: %d - ", dumb_it_sr_get_current_order(sr) + 1, dumb_it_sr_get_current_row(sr) + 1);
+//		sprintf(codec_data->info, "%d: %d", dumb_it_sr_get_current_order(sr) + 1, dumb_it_sr_get_current_row(sr) + 1);
+		sprintf(codec_data->info, "%02X/%02X: ", dumb_it_sr_get_current_order(sr) + 1, dumb_it_sr_get_current_row(sr) + 1);
 		for(i = 0; i < 64; i++)
 		{
 			dumb_it_sr_get_channel_state(sr, i, &channel_state);
 			if(channel_state.sample > 0)
 			{
-				if(channel_state.volume > 0.25)
-				{
-					strcat(codec_data->info, "O");
-				}
-				else
-				{
-					strcat(codec_data->info, "o");
-				}
+				strcat(codec_data->info, "O");
 			}
 			else
 			{
-				strcat(codec_data->info, "_");
+				strcat(codec_data->info, "-");
 			}
-		} */
+		}
 	}
 	else
 	{
