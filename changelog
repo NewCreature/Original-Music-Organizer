@@ -1,5 +1,22 @@
 omo (BUILD_VERSION) maverick; urgency=low
 
+  * Remember queue from previous session.
+  * Cache library data to speed up library loading.
+  * Add configuration option to override the font size.
+  * Implement track looping for codec handlers that can support it.
+  * Implement seeking for codec handlers that can support it.
+  * Add 'Split Song' dialog for splitting up song files that contain multiple
+    songs.
+  * Add status bar to library view.
+  * Add volume and seek controls to the player UI.
+  * Add song info display to the player UI.
+  * Add support for Chinese, Japanese, and Korean languages.
+  * Other bug fixes and improvements.
+
+-- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
+
+omo (0.2) maverick; urgency=low
+
   * Fix opening tags dialog for songs that are part of multi-track files.
   * Fix opening files through the command line.
   * Allow queueing up folders from the command line.
@@ -32,7 +49,7 @@ omo (BUILD_VERSION) maverick; urgency=low
   * Speed up AVPlayer tag retrieval.
   * Other bug fixes and improvements.
 
- -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
+ -- Todd Cope <todd@t3-i.com>  Wed, 18 Oct 2017 22:45:17 +0000
 
 omo (0.1) maverick; urgency=low
 
