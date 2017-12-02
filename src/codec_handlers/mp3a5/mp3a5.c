@@ -42,6 +42,7 @@ static void * codec_load_file(const char * fn, const char * subfn)
 			free(data);
 			return NULL;
 		}
+		data->volume = 1.0;
 	}
 	return data;
 }

@@ -90,6 +90,7 @@ static void * codec_load_file(const char * fn, const char * subfn)
 				return NULL;
 			}
 		}
+		data->volume = 1.0;
 	}
 	return data;
 }

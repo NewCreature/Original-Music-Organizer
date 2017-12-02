@@ -47,6 +47,7 @@ static void * codec_load_file(const char * fn, const char * subfn)
 				al_destroy_path(path);
 			}
 			strcpy(data->player_filename, fn);
+			data->volume = 1.0;
 		}
 	}
 	return data;
