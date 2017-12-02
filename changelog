@@ -13,7 +13,7 @@ omo (BUILD_VERSION) maverick; urgency=low
   * Add support for Chinese, Japanese, and Korean languages.
   * Other bug fixes and improvements.
 
--- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
+ -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
 
 omo (0.2) maverick; urgency=low
 
