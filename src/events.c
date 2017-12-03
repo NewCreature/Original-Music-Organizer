@@ -16,7 +16,7 @@ void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 			{
 				omo_close_tags_dialog(app->ui, data);
 			}
-			if(app->ui->split_track_popup_dialog && event->display.source == app->ui->split_track_popup_dialog->display)
+			else if(app->ui->split_track_popup_dialog && event->display.source == app->ui->split_track_popup_dialog->display)
 			{
 				omo_close_split_track_dialog(app->ui, data);
 			}
