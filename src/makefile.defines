@@ -20,7 +20,7 @@ APP_PUBLISHER = T\^3\ Software
 APP_COPYRIGHT = Copyright\ (C)\ 2017\ T\^3\ Software
 APP_ANDROID_PACKAGE = com.t3i.omo
 APP_URL = http://www.t3-i.com
-APP_OBJECTS = $(T3GUI_OBJECTS) $(CODEC_OBJECTS) $(ARCHIVE_HANDLER_OBJECTS) queue.o library.o md5.o ui/menu_init.o ui/menu_proc.o ui/ui.o ui/dialog_proc.o player.o main.o file_chooser.o constants.o init.o events.o file_helpers.o theme.o ui/shortcut.o ui/queue_list.o ui/library.o ui/tags_dialog.o rtk/io.o rtk/io_allegro.o rtk/midi.o test.o library_helpers.o queue_helpers.o library_cache.o ui/split_track_dialog.o ui/player.o
+APP_OBJECTS = $(T3GUI_OBJECTS) $(CODEC_OBJECTS) $(ARCHIVE_HANDLER_OBJECTS) queue.o library.o md5.o ui/menu_init.o ui/menu_proc.o ui/ui.o ui/dialog_proc.o player.o main.o file_chooser.o constants.o init.o events.o file_helpers.o theme.o ui/shortcut.o ui/queue_list.o ui/library.o ui/tags_dialog.o rtk/io.o rtk/io_allegro.o rtk/midi.o test.o library_helpers.o queue_helpers.o library_cache.o ui/split_track_dialog.o ui/player.o t3net/t3net.o
 APP_LIBS = -ldumb -lgme -lstdc++ -logg -lvorbis -lvorbisfile -lFLAC -lmpg123
 #APP_CFLAGS =
 APP_PACKAGE_DIR = ../packages
@@ -39,7 +39,7 @@ GLOBAL_CFLAGS = -O2 -fomit-frame-pointer -funroll-loops -Wall -I. -DT3F_DEVELOPE
 #MACOSX_CFLAGS =
 MACOSX_PLATFORM_OBJECTS = codec_handlers/avmidiplayer/avmidiplayer.o codec_handlers/avplayer/avplayer.o
 MACOSX_PLATFORM_LIBS = -framework AVFoundation
-MACOSX_DEPEND_LIBS = -lbz2 -liconv -lxml2 -larchive
+MACOSX_DEPEND_LIBS = -lbz2 -liconv -lxml2 -larchive -lcurl-static
 #MACOSX_PLATFORM_TARGET =
 
 ###############
@@ -48,7 +48,7 @@ MACOSX_DEPEND_LIBS = -lbz2 -liconv -lxml2 -larchive
 #LINUX_CFLAGS =
 LINUX_PLATFORM_OBJECTS =
 #LINUX_PLATFORM_LIBS =
-LINUX_DEPEND_LIBS = -larchive
+LINUX_DEPEND_LIBS = -larchive -lcurl
 #LINUX_PLATFORM_TARGET =
 
 ################################################
@@ -57,7 +57,7 @@ LINUX_DEPEND_LIBS = -larchive
 #LINUX_STATIC_CFLAGS =
 LINUX_STATIC_PLATFORM_OBJECTS =
 #LINUX_STATIC_PLATFORM_LIBS =
-LINUX_STATIC_DEPEND_LIBS = -larchive
+LINUX_STATIC_DEPEND_LIBS = -larchive -lcurl
 #LINUX_STATIC_PLATFORM_TARGET =
 
 ##############################
@@ -66,7 +66,7 @@ LINUX_STATIC_DEPEND_LIBS = -larchive
 #MINGW_CROSS_CFLAGS =
 MINGW_CROSS_PLATFORM_OBJECTS = codec_handlers/midiout/midiout.o
 #MINGW_CROSS_PLATFORM_LIBS =
-MINGW_CROSS_DEPEND_LIBS = -larchive_static
+MINGW_CROSS_DEPEND_LIBS = -larchive_static -lcurl
 #MINGW_CROSS_PLATFORM_TARGET =
 
 ###############
@@ -75,7 +75,7 @@ MINGW_CROSS_DEPEND_LIBS = -larchive_static
 #MINGW_CFLAGS =
 MINGW_PLATFORM_OBJECTS = codec_handlers/midiout/midiout.o
 #MINGW_PLATFORM_LIBS =
-MINGW_DEPEND_LIBS = -larchive_static
+MINGW_DEPEND_LIBS = -larchive_static -lcurl
 #MINGW_PLATFORM_TARGET =
 
 #################
