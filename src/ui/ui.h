@@ -56,6 +56,12 @@ typedef struct
 	T3GUI_ELEMENT * split_track_ok_button_element;
 	int split_track_queue_entry;
 
+	/* tagger key dialog */
+	OMO_UI_POPUP_DIALOG * tagger_key_popup_dialog;
+	char original_tagger_key_text[OMO_UI_MAX_TAG_LENGTH];
+	char tagger_key_text[OMO_UI_MAX_TAG_LENGTH];
+	T3GUI_ELEMENT * tagger_key_ok_button_element;
+
 	/* theme data */
 	OMO_THEME * main_theme;
 	char ui_button_text[6][8];
@@ -75,5 +81,8 @@ void omo_close_tags_dialog(OMO_UI * uip, void * data);
 
 bool omo_open_split_track_dialog(OMO_UI * uip, void * data);
 void omo_close_split_track_dialog(OMO_UI * uip, void * data);
+
+bool omo_open_tagger_key_dialog(OMO_UI * uip, void * data);
+void omo_close_tagger_key_dialog(OMO_UI * uip, void * data);
 
 #endif

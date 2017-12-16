@@ -17,6 +17,7 @@
 #include "ui/library.h"
 #include "ui/tags_dialog.h"
 #include "ui/split_track_dialog.h"
+#include "ui/tagger_key_dialog.h"
 #include "ui/shortcut.h"
 #include "ui/player.h"
 #include "test.h"
@@ -164,6 +165,10 @@ void omo_logic(void * data)
 			else if(app->ui->split_track_popup_dialog)
 			{
 				omo_split_track_dialog_logic(data);
+			}
+			else if(app->ui->tagger_key_popup_dialog)
+			{
+				omo_tagger_key_dialog_logic(data);
 			}
 			else
 			{

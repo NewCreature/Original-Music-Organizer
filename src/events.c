@@ -20,6 +20,10 @@ void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 			{
 				omo_close_split_track_dialog(app->ui, data);
 			}
+			else if(app->ui->tagger_key_popup_dialog && event->display.source == app->ui->tagger_key_popup_dialog->display)
+			{
+				omo_close_tagger_key_dialog(app->ui, data);
+			}
 			else
 			{
 				omo_cancel_library_setup(app);

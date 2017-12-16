@@ -137,6 +137,14 @@ int omo_menu_file_queue_folder(void * data)
 	return 1;
 }
 
+int omo_menu_file_get_tagger_key(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	omo_open_tagger_key_dialog(app->ui, data);
+	return 1;
+}
+
 int omo_menu_file_exit(void * data)
 {
 	t3f_exit();
