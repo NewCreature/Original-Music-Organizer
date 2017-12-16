@@ -6,6 +6,29 @@ v0.4
 
 [ ]Implement tags submission and retrieval.
 
+   [ ]Add script to generate tagger key.
+
+   [ ]Add dialog for creating a tagger key.
+
+      [ ]Dialog will ask for a display name and email address.
+
+   [ ]Require existing key to submit tags.
+
+      [ ]Add a tagger database so we can check for the existence of the tagger
+         before accepting tags.
+
+   [ ]Add functions for submitting and retrieving tags to the UI.
+
+      [ ]Tag submission should be able to automatically run through your entire
+         library and submit only tags that aren't included in a track's
+         metadata. We also need to mark submitted tags so we don't end up
+         constantly resubmitting tags that are already in the database.
+
+      [ ]When retrieving tags, we need a way to prevent overwriting the user's
+         own tags if they differ from the ones being downloaded. We should
+         probably present a dialog which asks if the user wants to accept the
+         tags in this case.
+
 [ ]Add library profiles. A library profile will contain library settings
    specific to that profile. For instance, you can have the default profile
    contain all of your music and have a separate profile for just MODs or
