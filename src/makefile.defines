@@ -90,7 +90,7 @@ ANDROID_PLATFORM_LIBS = -lcurl
 ###################
 # Packaging stuff #
 ###################
-PACKAGE_EXCLUSIONS = settings.php
+PACKAGE_EXCLUSIONS = --exclude-from ../.gitignore
 
 ##########################
 # Debian packaging stuff #
