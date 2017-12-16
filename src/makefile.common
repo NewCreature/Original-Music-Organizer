@@ -5,6 +5,7 @@ SPACE:=$(NOTHING) $(NOTHING)
 T3F_DEPEND_LIBS = -lallegro_image$(LIB_SUFFIX) -lallegro_font$(LIB_SUFFIX) -lallegro_ttf$(LIB_SUFFIX) -lallegro_primitives$(LIB_SUFFIX) -lallegro_audio$(LIB_SUFFIX) -lallegro_acodec$(LIB_SUFFIX) -lallegro_memfile$(LIB_SUFFIX) -lallegro$(LIB_SUFFIX) -lm
 
 include makefile.defines
+include makefile.default_config
 include makefile.config
 
 DEMO_DIR = ../../$(APP_NAME)_demo
