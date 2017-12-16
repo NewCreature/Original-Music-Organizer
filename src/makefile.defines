@@ -87,6 +87,11 @@ ANDROID_PLATFORM_LIBS = -lcurl
 #ANDROID_DEPEND_LIBS =
 #ANDROID_PLATFORM_TARGET =
 
+###################
+# Packaging stuff #
+###################
+PACKAGE_EXCLUSIONS = settings.php
+
 ##########################
 # Debian packaging stuff #
 ##########################

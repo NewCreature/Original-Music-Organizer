@@ -41,3 +41,6 @@ docs/changelog
 src/makefile.config
 bin/omo
 bin/unrar
+
+# other files
+src/php/settings.php
