@@ -12,7 +12,7 @@ require 'settings.php';
 
 /* database info */
 $db_name = "omo_taggers"; // name of our database (database->name->fields)
-$db_fields = array('name', 'email'); // fields we are interested in
+$db_fields = array('name'); // fields we are interested in
 
 /* arguments passed through the URL */
 $arguments = array('limit', 'order_field', 'ascend', 'other');
@@ -27,11 +27,11 @@ $limit = 0;
 $order_field = "tagger";
 
 /* create key from arguments */
-if(strlen($_GET['name']) == 0 || strlen($_GET['email']) == 0)
+if(strlen($_GET['name']) == 0)
 {
 	die("Error: Incorrect syntax.\r\n");
 }
-$tagger_key = md5($_GET['name'] . ':' . $_GET['email']);
+$tagger_key = md5($_GET['name'] . ':' . time());
 
 function xml_escape($str)
 {
