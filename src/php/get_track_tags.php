@@ -98,6 +98,11 @@ if($limit > 0)
 
 $resultID = mysql_query($query, $linkID) or die("Error: Data not found.\r\n");
 
+if(mysql_num_rows($resultID) == 0)
+{
+	die("Error: No track info.\r\n");
+}
+
 $output = $output_header . "\r\n\r\n";
 
 for($x = 0; $x < mysql_num_rows($resultID); $x++)
