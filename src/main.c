@@ -22,6 +22,7 @@
 #include "ui/player.h"
 #include "test.h"
 #include "queue_helpers.h"
+#include "library_helpers.h"
 
 static int queue_list_visible_elements(T3GUI_ELEMENT * element)
 {
@@ -113,6 +114,7 @@ void omo_logic(void * data)
 	int visible = 0;
 	int seek_flags;
 	int volume_pos;
+	int i;
 
 	t3f_refresh_menus();
 	if(app->test_mode)
@@ -143,6 +145,40 @@ void omo_logic(void * data)
 				if(app->library && app->player->queue)
 				{
 					omo_get_queue_tags(app->player->queue, app->library, app);
+				}
+				if(app->library)
+				{
+					if(app->library->loaded)
+					{
+						for(i = 0; i < app->library->artist_entry_count; i++)
+						{
+							if(!strcmp(app->library->artist_entry[i], app->edit_artist))
+							{
+								app->ui->ui_artist_list_element->d1 = i;
+								break;
+							}
+						}
+						for(i = 0; i < app->library->song_entry_count; i++)
+						{
+							if(!strcmp(app->library->entry[app->library->song_entry[i]]->id, app->edit_song_id))
+							{
+								app->ui->ui_song_list_element->d1 = i + 1;
+								break;
+							}
+						}
+						for(i = 0; i < app->library->album_entry_count; i++)
+						{
+							if(!strcmp(app->library->album_entry[i], app->edit_album))
+							{
+								app->ui->ui_album_list_element->d1 = i;
+								break;
+							}
+						}
+					}
+					else
+					{
+						omo_setup_library_lists(app);
+					}
 				}
 			}
 			omo_file_chooser_logic(data);

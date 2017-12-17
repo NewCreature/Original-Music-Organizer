@@ -27,6 +27,9 @@ typedef struct
 	int button_pressed;
 	bool library_view;
 	bool test_mode;
+	char edit_artist[256];
+	char edit_album[256];
+	char edit_song_id[256];
 
 	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;
 	OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry;

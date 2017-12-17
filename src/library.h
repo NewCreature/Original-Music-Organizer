@@ -48,6 +48,7 @@ typedef struct
 
 	/* flag to tell library to ignore caches (set when we change library folder settings) */
 	bool modified;
+	bool loaded;
 
 } OMO_LIBRARY;
 
@@ -60,5 +61,7 @@ bool omo_add_artist_to_library(OMO_LIBRARY * lp, const char * name);
 bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name);
 bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist);
 bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char * album);
+void omo_start_library_sort(void);
+void omo_cancel_library_sort(void);
 
 #endif

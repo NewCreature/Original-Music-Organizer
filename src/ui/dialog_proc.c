@@ -33,7 +33,7 @@ char * ui_artist_list_proc(int index, int *list_size, void * data)
 
 	if(index < 0)
 	{
-		if(list_size && app->library && app->library->artist_entry)
+		if(list_size && app->library && app->library->loaded && app->library->artist_entry)
 		{
 			*list_size = app->library->artist_entry_count;
 		}
@@ -43,7 +43,7 @@ char * ui_artist_list_proc(int index, int *list_size, void * data)
 		}
 		return NULL;
 	}
-	if(app->library && app->library->artist_entry)
+	if(app->library && app->library->loaded && app->library->artist_entry)
 	{
 		sprintf(ui_artist_text, "%s", app->library->artist_entry[index]);
 		return ui_artist_text;
@@ -60,13 +60,13 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
 
 	if(index < 0)
 	{
-		if(list_size && app->library && app->library->song_entry)
+		if(list_size && app->library && app->library->loaded && app->library->song_entry)
 		{
 			*list_size = app->library->song_entry_count + 1;
 		}
 		return NULL;
 	}
-	if(app->library && app->library->song_entry)
+	if(app->library && app->library->loaded && app->library->song_entry)
 	{
 		if(index == 0)
 		{
@@ -102,13 +102,13 @@ char * ui_album_list_proc(int index, int *list_size, void * data)
 
 	if(index < 0)
 	{
-		if(list_size && app->library && app->library->album_entry)
+		if(list_size && app->library && app->library->loaded && app->library->album_entry)
 		{
 			*list_size = app->library->album_entry_count;
 		}
 		return NULL;
 	}
-	if(app->library && app->library->album_entry)
+	if(app->library && app->library->loaded && app->library->album_entry)
 	{
 		sprintf(ui_album_text, "%s", app->library->album_entry[index]);
 		return ui_album_text;

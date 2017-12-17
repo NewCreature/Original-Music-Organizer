@@ -14,10 +14,7 @@ void omo_tags_dialog_logic(void * data)
 	bool update_albums = false;
 	bool update_songs = false;
 	bool update_tags = false;
-	char artist[256] = {0};
-	char album[256] = {0};
 	char title[256] = {0};
-	char id[256] = {0};
 	const char * val;
 	int i;
 
@@ -42,19 +39,19 @@ void omo_tags_dialog_logic(void * data)
 		val = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, app);
 		if(val)
 		{
-			strcpy(artist, val);
+			strcpy(app->edit_artist, val);
 		}
 		val = ui_album_list_proc(app->ui->ui_album_list_element->d1, NULL, app);
 		if(val)
 		{
-			strcpy(album, val);
+			strcpy(app->edit_album, val);
 		}
 		val = ui_song_list_proc(app->ui->ui_song_list_element->d1, NULL, app);
 		if(val)
 		{
 			strcpy(title, val);
 		}
-		strcpy(id, app->library->entry[app->library->song_entry[app->ui->ui_song_list_element->d1 - 1]]->id);
+		strcpy(app->edit_song_id, app->library->entry[app->library->song_entry[app->ui->ui_song_list_element->d1 - 1]]->id);
 		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 		{
 			if(omo_tag_type[i] && strcmp(app->ui->tags_text[i], app->ui->original_tags_text[i]))
@@ -97,65 +94,7 @@ void omo_tags_dialog_logic(void * data)
 		if(update_artists || update_albums || update_songs)
 		{
 			omo_clear_library_cache();
-		}
-		if(update_artists)
-		{
-			sprintf(app->status_bar_text, "Updating artist list...");
-			t3f_render(true);
-			al_stop_timer(t3f_timer);
-			omo_build_library_artists_list(app, app->library);
-			al_start_timer(t3f_timer);
-			sprintf(app->status_bar_text, "Library ready.");
-			for(i = 0; i < app->library->artist_entry_count; i++)
-			{
-				if(!strcmp(app->library->artist_entry[i], artist))
-				{
-					app->ui->ui_artist_list_element->d1 = i;
-					break;
-				}
-			}
-		}
-		if(update_songs)
-		{
-			sprintf(app->status_bar_text, "Updating song list...");
-			t3f_render(true);
-			al_stop_timer(t3f_timer);
-			omo_get_library_song_list(app->library, artist, album);
-			al_start_timer(t3f_timer);
-			sprintf(app->status_bar_text, "Library ready.");
-			for(i = 0; i < app->library->song_entry_count; i++)
-			{
-				if(!strcmp(app->library->entry[app->library->song_entry[i]]->id, id))
-				{
-					app->ui->ui_song_list_element->d1 = i + 1;
-					break;
-				}
-			}
-		}
-		if(update_albums)
-		{
-			for(i = 0; i < app->library->album_entry_count; i++)
-			{
-				if(!strcmp(app->library->album_entry[i], album))
-				{
-					app->ui->ui_album_list_element->d1 = i;
-					break;
-				}
-			}
-			if(i == app->library->album_entry_count)
-			{
-				val = ui_album_list_proc(app->ui->ui_album_list_element->d1, NULL, app);
-				if(val)
-				{
-					strcpy(album, val);
-				}
-				sprintf(app->status_bar_text, "Updating album list...");
-				t3f_render(true);
-				al_stop_timer(t3f_timer);
-				omo_get_library_song_list(app->library, artist, album);
-				al_start_timer(t3f_timer);
-				sprintf(app->status_bar_text, "Library ready.");
-			}
+			omo_setup_library_lists(app);
 		}
 		app->button_pressed = -1;
 		t3f_key[ALLEGRO_KEY_ENTER] = 0;

@@ -9,6 +9,8 @@
 #include "queue_helpers.h"
 #include "library_cache.h"
 
+static bool library_sort_cancelled = false;
+
 OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_fn)
 {
 	OMO_LIBRARY * lp = NULL;
@@ -494,6 +496,11 @@ static int sort_by_path(const void *e1, const void *e2)
 	char section1[1024];
 	char section2[1024];
 
+	if(library_sort_cancelled)
+	{
+		return 0;
+	}
+
 	strcpy(section1, library->entry[entry1]->filename);
 	if(library->entry[entry1]->sub_filename)
 	{
@@ -535,6 +542,11 @@ static int sort_by_artist_album_title(const void *e1, const void *e2)
 	const char * id2;
 	int i1, i2;
 	int i, c;
+
+	if(library_sort_cancelled)
+	{
+		return 0;
+	}
 
 	strcpy(section1, library->entry[entry1]->filename);
 	if(library->entry[entry1]->sub_filename)
@@ -605,6 +617,11 @@ static int sort_by_track(const void *e1, const void *e2)
 	const char * id2;
 	int i1, i2;
 
+	if(library_sort_cancelled)
+	{
+		return 0;
+	}
+
 	strcpy(section1, library->entry[entry1]->filename);
 	if(library->entry[entry1]->sub_filename)
 	{
@@ -671,6 +688,11 @@ static int sort_by_title(const void *e1, const void *e2)
 	const char * id1;
 	const char * id2;
 	int i, c;
+
+	if(library_sort_cancelled)
+	{
+		return 0;
+	}
 
 	id1 = al_get_config_value(library->file_database, library->entry[entry1]->filename, "id");
 	id2 = al_get_config_value(library->file_database, library->entry[entry2]->filename, "id");
@@ -817,13 +839,13 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 				}
 			}
 		}
-	}
-	if(lp->album_entry_count > 2 && !cache_loaded)
-	{
-		qsort(&lp->album_entry[2], lp->album_entry_count - 2, sizeof(char *), sort_names);
-		if(all_artists)
+		if(lp->album_entry_count > 2 && !cache_loaded)
 		{
-			omo_save_library_albums_cache(lp, t3f_get_filename(t3f_data_path, "omo.albums"));
+			qsort(&lp->album_entry[2], lp->album_entry_count - 2, sizeof(char *), sort_names);
+			if(all_artists)
+			{
+				omo_save_library_albums_cache(lp, t3f_get_filename(t3f_data_path, "omo.albums"));
+			}
 		}
 	}
 	return true;
@@ -853,6 +875,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 						lp->song_entry[i] = i;
 					}
 					lp->song_entry_count = lp->entry_count;
+					omo_start_library_sort();
 					library_sort_by_title(lp);
 					omo_save_library_songs_cache(lp, t3f_get_filename(t3f_data_path, "omo.songs"));
 				}
@@ -881,6 +904,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 						lp->song_entry_count++;
 					}
 				}
+				omo_start_library_sort();
 				library_sort_by_title(lp);
 			}
 		}
@@ -902,6 +926,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 						}
 					}
 				}
+				omo_start_library_sort();
 				library_sort_by_track(lp);
 			}
 		}
@@ -932,6 +957,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 						lp->song_entry_count++;
 					}
 				}
+				omo_start_library_sort();
 				library_sort_by_title(lp);
 			}
 		}
@@ -975,6 +1001,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 						}
 					}
 				}
+				omo_start_library_sort();
 				library_sort_by_title(lp);
 			}
 		}
@@ -1003,6 +1030,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 						}
 					}
 				}
+				omo_start_library_sort();
 				library_sort_by_track(lp);
 			}
 		}
@@ -1028,6 +1056,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 						}
 					}
 				}
+				omo_start_library_sort();
 				library_sort_by_title(lp);
 			}
 		}
@@ -1068,6 +1097,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 						}
 					}
 				}
+				omo_start_library_sort();
 				library_sort_by_title(lp);
 			}
 		}
@@ -1096,6 +1126,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 						}
 					}
 				}
+				omo_start_library_sort();
 				library_sort_by_track(lp);
 			}
 		}
@@ -1103,4 +1134,14 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 	}
 
 	return true;
+}
+
+void omo_start_library_sort(void)
+{
+	library_sort_cancelled = false;
+}
+
+void omo_cancel_library_sort(void)
+{
+	library_sort_cancelled = true;
 }
