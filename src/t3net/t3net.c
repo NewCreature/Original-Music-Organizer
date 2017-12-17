@@ -496,6 +496,11 @@ T3NET_DATA * t3net_get_data_from_string(const char * raw_data)
 	{
 		return NULL;
 	}
+	else if(!strncmp(raw_data, "ack", 3))
+	{
+		data = t3net_create_data(0, fields);
+		return data;
+	}
 
 	entries = t3net_count_data_entries_in_string(raw_data, &fields);
 	if(entries < 0)
