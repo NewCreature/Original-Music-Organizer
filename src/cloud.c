@@ -58,7 +58,9 @@ bool omo_submit_tags(OMO_LIBRARY * lp, const char * id, const char * url, OMO_AR
 			entry = omo_get_library_entry(lp, id);
 			if(entry >= 0)
 			{
+				al_stop_timer(t3f_timer);
 				track = omo_load_track(archive_handler_registry, codec_handler_registry, lp->entry[entry]->filename, lp->entry[entry]->sub_filename, lp->entry[entry]->track, temp_path);
+				al_start_timer(t3f_timer);
 
 				t3net_add_argument(arguments, "tagger", tagger_key);
 				t3net_add_argument(arguments, "track_id", id);
