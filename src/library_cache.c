@@ -209,7 +209,8 @@ bool omo_load_library_artists_cache(OMO_LIBRARY * lp, const char * fn)
 		}
 		if(lp->album_entry)
 		{
-			free(lp->song_entry);
+			free(lp->album_entry);
+			lp->album_entry = NULL;
 		}
 		if(fp)
 		{
@@ -312,7 +313,8 @@ bool omo_load_library_albums_cache(OMO_LIBRARY * lp, const char * fn)
 		}
 		if(lp->album_entry)
 		{
-			free(lp->song_entry);
+			free(lp->album_entry);
+			lp->album_entry = NULL;
 		}
 		if(fp)
 		{
@@ -409,6 +411,7 @@ bool omo_load_library_songs_cache(OMO_LIBRARY * lp, const char * fn)
 		if(lp->song_entry)
 		{
 			free(lp->song_entry);
+			lp->song_entry = NULL;
 		}
 		if(fp)
 		{
