@@ -177,6 +177,9 @@ void omo_logic(void * data)
 					}
 					else
 					{
+						strcpy(app->edit_artist, "");
+						strcpy(app->edit_album, "");
+						strcpy(app->edit_song_id, "");
 						omo_setup_library_lists(app);
 					}
 				}
