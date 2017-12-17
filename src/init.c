@@ -62,6 +62,10 @@ static bool setup_temp_folders(APP_INSTANCE * app)
 	{
 		return false;
 	}
+	if(!setup_temp_folder(&app->cloud_temp_path, "cloud_temp"))
+	{
+		return false;
+	}
 	return true;
 }
 

@@ -258,3 +258,17 @@ const char * omo_get_library_file_id(OMO_LIBRARY * lp, const char * fn, const ch
 	}
 	return al_get_config_value(lp->file_database, full_path, "id");
 }
+
+int omo_get_library_entry(OMO_LIBRARY * lp, const char * id)
+{
+	int i;
+
+	for(i = 0; i < lp->entry_count; i++)
+	{
+		if(!strcmp(lp->entry[i]->id, id))
+		{
+			return i;
+		}
+	}
+	return -1;
+}

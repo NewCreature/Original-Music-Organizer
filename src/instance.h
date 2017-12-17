@@ -46,6 +46,7 @@ typedef struct
 	ALLEGRO_PATH * queue_temp_path;
 	ALLEGRO_PATH * queue_tags_temp_path;
 	ALLEGRO_PATH * player_temp_path;
+	ALLEGRO_PATH * cloud_temp_path;
 
 } APP_INSTANCE;
 

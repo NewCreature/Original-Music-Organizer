@@ -3,6 +3,7 @@
 #include "../constants.h"
 #include "../queue_helpers.h"
 #include "../library_helpers.h"
+#include "../cloud.h"
 #include "dialog_proc.h"
 
 void omo_tags_dialog_logic(void * data)
@@ -11,6 +12,7 @@ void omo_tags_dialog_logic(void * data)
 	bool update_artists = false;
 	bool update_albums = false;
 	bool update_songs = false;
+	bool update_tags = false;
 	char artist[256] = {0};
 	char album[256] = {0};
 	char title[256] = {0};
@@ -60,6 +62,15 @@ void omo_tags_dialog_logic(void * data)
 					update_songs = true;
 				}
 				al_set_config_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i], app->ui->tags_text[i]);
+				update_tags = true;
+			}
+		}
+		if(update_tags)
+		{
+			al_remove_config_key(app->library->entry_database, app->ui->tags_entry, "Submitted");
+			if(omo_submit_tags(app->library, app->ui->tags_entry, "http://www.t3-i.com/omo/tag_track.php", app->archive_handler_registry, app->codec_handler_registry, app->cloud_temp_path))
+			{
+				al_set_config_value(app->library->entry_database, app->ui->tags_entry, "Submitted", "true");
 			}
 		}
 		omo_close_tags_dialog(app->ui, app);
