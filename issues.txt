@@ -6,15 +6,15 @@ v0.4
 
 [ ]Implement tags submission and retrieval.
 
-   [ ]Add script to generate tagger key.
+   [X]Add script to generate tagger key.
 
-   [ ]Add dialog for creating a tagger key.
+   [X]Add dialog for creating a tagger key.
 
-      [ ]Dialog will ask for a display name and email address.
+      [X]Dialog will ask for a display name.
 
-   [ ]Require existing key to submit tags.
+   [X]Require existing key to submit tags.
 
-      [ ]Add a tagger database so we can check for the existence of the tagger
+      [X]Add a tagger database so we can check for the existence of the tagger
          before accepting tags.
 
    [ ]Add functions for submitting and retrieving tags to the UI.
@@ -40,6 +40,14 @@ v0.4
    without having to generate library databases for each machine.
 
 [ ]Look into adding a lyrics window.
+
+[ ]Streamline library loading.
+
+   [ ]We should be able to use the database without waiting for lists to
+      generate.
+
+   [ ]List generation should be done in a separate thread so we can still
+      interact with the UI.
 
 
 v0.3
