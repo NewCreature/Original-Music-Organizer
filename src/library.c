@@ -854,8 +854,8 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 					}
 					lp->song_entry_count = lp->entry_count;
 					library_sort_by_title(lp);
+					omo_save_library_songs_cache(lp, t3f_get_filename(t3f_data_path, "omo.songs"));
 				}
-				omo_save_library_songs_cache(lp, t3f_get_filename(t3f_data_path, "omo.songs"));
 			}
 		}
 		else if(!strcmp(album, "Unknown Album"))
