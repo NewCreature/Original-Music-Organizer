@@ -82,9 +82,18 @@ void omo_tags_dialog_logic(void * data)
 		{
 			omo_get_queue_tags(app->player->queue, app->library, data);
 		}
+		if(update_artists || update_albums || update_songs)
+		{
+			omo_clear_library_cache();
+		}
 		if(update_artists)
 		{
+			sprintf(app->status_bar_text, "Updating artist list...");
+			t3f_render(true);
+			al_stop_timer(t3f_timer);
 			omo_build_library_artists_list(app, app->library);
+			al_start_timer(t3f_timer);
+			sprintf(app->status_bar_text, "Library ready.");
 			for(i = 0; i < app->library->artist_entry_count; i++)
 			{
 				if(!strcmp(app->library->artist_entry[i], artist))
@@ -96,7 +105,12 @@ void omo_tags_dialog_logic(void * data)
 		}
 		if(update_songs)
 		{
+			sprintf(app->status_bar_text, "Updating song list...");
+			t3f_render(true);
+			al_stop_timer(t3f_timer);
 			omo_get_library_song_list(app->library, artist, album);
+			al_start_timer(t3f_timer);
+			sprintf(app->status_bar_text, "Library ready.");
 			for(i = 0; i < app->library->song_entry_count; i++)
 			{
 				if(!strcmp(app->library->entry[app->library->song_entry[i]]->id, id))
@@ -123,12 +137,13 @@ void omo_tags_dialog_logic(void * data)
 				{
 					strcpy(album, val);
 				}
+				sprintf(app->status_bar_text, "Updating album list...");
+				t3f_render(true);
+				al_stop_timer(t3f_timer);
 				omo_get_library_song_list(app->library, artist, album);
+				al_start_timer(t3f_timer);
+				sprintf(app->status_bar_text, "Library ready.");
 			}
-		}
-		if(update_artists || update_albums || update_songs)
-		{
-			omo_clear_library_cache();
 		}
 		app->button_pressed = -1;
 		t3f_key[ALLEGRO_KEY_ENTER] = 0;
