@@ -2099,6 +2099,10 @@ int t3gui_edit_proc(int msg, T3GUI_ELEMENT *d, int c)
          return D_WANTKEYBOARD;
 
       case MSG_WANTFOCUS:
+      {
+          d->d2 = l;
+          return D_WANTKEYBOARD;
+      }
       case MSG_LOSTFOCUS:
       case MSG_KEY:
       {
