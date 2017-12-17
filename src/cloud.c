@@ -91,3 +91,36 @@ bool omo_submit_tags(OMO_LIBRARY * lp, const char * id, const char * url, OMO_AR
 
 	return ret;
 }
+
+bool omo_retrieve_tags(OMO_LIBRARY * lp, const char * id, const char * url)
+{
+	T3NET_ARGUMENTS * arguments;
+	T3NET_DATA * track_data;
+	const char * track_val;
+	bool ret = false;
+	int i;
+
+	arguments = t3net_create_arguments();
+	if(arguments)
+	{
+		t3net_add_argument(arguments, "track_id", id);
+		track_data = t3net_get_data(url, arguments);
+		t3net_destroy_arguments(arguments);
+		if(track_data)
+		{
+			for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+			{
+				if(omo_tag_type[i])
+				{
+					track_val = t3net_get_data_entry_field(track_data, 0, convert_tag_name(omo_tag_type[i]));
+					if(track_val)
+					{
+						al_set_config_value(lp->entry_database, id, omo_tag_type[i], track_val);
+					}
+				}
+			}
+			ret = true;
+		}
+	}
+	return ret;
+}
