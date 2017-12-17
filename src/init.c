@@ -356,6 +356,7 @@ void omo_exit(APP_INSTANCE * app)
 	}
 	t3f_save_config();
 	omo_destroy_player(app->player);
+	app->player = NULL;
 	omo_cancel_library_setup(app);
 	if(app->ui->tags_popup_dialog)
 	{
