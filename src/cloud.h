@@ -3,7 +3,7 @@
 
 #include "library.h"
 
-bool omo_submit_tags(OMO_LIBRARY * lp, const char * id, const char * url, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, ALLEGRO_PATH * temp_path);
-bool omo_retrieve_tags(OMO_LIBRARY * lp, const char * id, const char * url);
+bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, ALLEGRO_PATH * temp_path);
+bool omo_retrieve_track_tags(OMO_LIBRARY * lp, const char * id, const char * url);
 
 #endif
