@@ -5,6 +5,7 @@
 #include "../library_helpers.h"
 #include "../cloud.h"
 #include "dialog_proc.h"
+#include "menu_proc.h"
 
 void omo_tags_dialog_logic(void * data)
 {
@@ -25,6 +26,16 @@ void omo_tags_dialog_logic(void * data)
 		omo_close_tags_dialog(app->ui, app);
 		t3f_key[ALLEGRO_KEY_ESCAPE] = 0;
 	}
+	if((t3f_key[ALLEGRO_KEY_LCTRL] || t3f_key[ALLEGRO_KEY_RCTRL] || t3f_key[ALLEGRO_KEY_COMMAND]) && t3f_key[ALLEGRO_KEY_C])
+	{
+		omo_menu_edit_copy_tags(data);
+		t3f_key[ALLEGRO_KEY_C] = 0;
+	}
+	else if((t3f_key[ALLEGRO_KEY_LCTRL] || t3f_key[ALLEGRO_KEY_RCTRL] || t3f_key[ALLEGRO_KEY_COMMAND]) && t3f_key[ALLEGRO_KEY_V])
+	{
+		omo_menu_edit_paste_tags(data);
+	}
+
 	if(app->button_pressed == 0)
 	{
 		val = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, app);

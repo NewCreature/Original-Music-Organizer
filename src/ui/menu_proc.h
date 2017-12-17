@@ -10,6 +10,9 @@ int omo_menu_file_queue_folder(void * data);
 int omo_menu_file_get_tagger_key(void * data);
 int omo_menu_file_exit(void * data);
 
+int omo_menu_edit_copy_tags(void * data);
+int omo_menu_edit_paste_tags(void * data);
+
 int omo_menu_playback_update_proc(ALLEGRO_MENU * mp, int item, void * data);
 int omo_menu_playback_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * data);
 int omo_menu_playback_previous_track(void * data);

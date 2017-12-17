@@ -33,6 +33,7 @@ typedef struct
 	char file_database_fn[1024];
 	char entry_database_fn[1024];
 	char test_path[1024];
+	char tags_clipboard[OMO_MAX_TAG_TYPES][OMO_UI_MAX_TAG_LENGTH];
 	ALLEGRO_CONFIG * library_config;
 	OMO_LIBRARY * library;
 	OMO_LIBRARY * loading_library;

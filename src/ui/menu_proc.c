@@ -151,6 +151,36 @@ int omo_menu_file_exit(void * data)
 	return 1;
 }
 
+int omo_menu_edit_copy_tags(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	int i;
+
+	for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+	{
+		if(omo_tag_type[i])
+		{
+			strcpy(app->tags_clipboard[i], app->ui->tags_text[i]);
+		}
+	}
+	return 1;
+}
+
+int omo_menu_edit_paste_tags(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	int i;
+
+	for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+	{
+		if(omo_tag_type[i])
+		{
+			strcpy(app->ui->tags_text[i], app->tags_clipboard[i]);
+		}
+	}
+	return 1;
+}
+
 int omo_menu_playback_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
