@@ -175,17 +175,12 @@ bool omo_load_library_artists_cache(OMO_LIBRARY * lp, const char * fn)
 				goto fail;
 			}
 		}
-		lp->artist_entry_size = al_fread32le(fp);
+		lp->artist_entry_count = al_fread32le(fp);
 		if(al_feof(fp))
 		{
 			goto fail;
 		}
-		lp->artist_entry = malloc(sizeof(unsigned long) * lp->artist_entry_size);
-		if(!lp->artist_entry)
-		{
-			goto fail;
-		}
-		for(i = 0; i < lp->artist_entry_size; i++)
+		for(i = 0; i < lp->artist_entry_count; i++)
 		{
 			lp->artist_entry[i] = t3f_load_string_f(fp);
 			if(!lp->artist_entry[i])
@@ -193,25 +188,20 @@ bool omo_load_library_artists_cache(OMO_LIBRARY * lp, const char * fn)
 				goto fail;
 			}
 		}
-		lp->artist_entry_count = lp->artist_entry_size;
 		al_fclose(fp);
 		return true;
 	}
 
 	fail:
 	{
-		for(i = 0; i < lp->album_entry_size; i++)
+		for(i = 0; i < lp->artist_entry_count; i++)
 		{
-			if(lp->album_entry[i])
+			if(lp->artist_entry[i])
 			{
-				free(lp->album_entry[i]);
+				free(lp->artist_entry[i]);
 			}
 		}
-		if(lp->album_entry)
-		{
-			free(lp->album_entry);
-			lp->album_entry = NULL;
-		}
+		lp->artist_entry_count = 0;
 		if(fp)
 		{
 			al_fclose(fp);
@@ -279,17 +269,12 @@ bool omo_load_library_albums_cache(OMO_LIBRARY * lp, const char * fn)
 				goto fail;
 			}
 		}
-		lp->album_entry_size = al_fread32le(fp);
+		lp->album_entry_count = al_fread32le(fp);
 		if(al_feof(fp))
 		{
 			goto fail;
 		}
-		lp->album_entry = malloc(sizeof(unsigned long) * lp->album_entry_size);
-		if(!lp->album_entry)
-		{
-			goto fail;
-		}
-		for(i = 0; i < lp->album_entry_size; i++)
+		for(i = 0; i < lp->album_entry_count; i++)
 		{
 			lp->album_entry[i] = t3f_load_string_f(fp);
 			if(!lp->album_entry[i])
@@ -297,7 +282,6 @@ bool omo_load_library_albums_cache(OMO_LIBRARY * lp, const char * fn)
 				goto fail;
 			}
 		}
-		lp->album_entry_count = lp->album_entry_size;
 		al_fclose(fp);
 		return true;
 	}
@@ -311,11 +295,7 @@ bool omo_load_library_albums_cache(OMO_LIBRARY * lp, const char * fn)
 				free(lp->album_entry[i]);
 			}
 		}
-		if(lp->album_entry)
-		{
-			free(lp->album_entry);
-			lp->album_entry = NULL;
-		}
+		lp->album_entry_count = 0;
 		if(fp)
 		{
 			al_fclose(fp);
