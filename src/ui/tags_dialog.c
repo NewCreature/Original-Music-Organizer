@@ -34,6 +34,7 @@ void omo_tags_dialog_logic(void * data)
 	else if((t3f_key[ALLEGRO_KEY_LCTRL] || t3f_key[ALLEGRO_KEY_RCTRL] || t3f_key[ALLEGRO_KEY_COMMAND]) && t3f_key[ALLEGRO_KEY_V])
 	{
 		omo_menu_edit_paste_tags(data);
+		t3f_key[ALLEGRO_KEY_V] = 0;
 	}
 
 	if(app->button_pressed == 0)
