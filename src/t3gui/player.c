@@ -592,59 +592,62 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
 
         case ALLEGRO_EVENT_KEY_CHAR:
         {
-            if(player->keyboard_obj >= 0)
+            if(!(event->keyboard.modifiers & (ALLEGRO_KEYMOD_CTRL | ALLEGRO_KEYMOD_COMMAND)))
             {
-                MESSAGE(player, player->keyboard_obj, MSG_CHAR, event->keyboard.unichar);
-                if(event->keyboard.repeat)
+                if(player->keyboard_obj >= 0)
                 {
-                    MESSAGE(player, player->keyboard_obj, MSG_KEYREPEAT, event->keyboard.keycode);
-                }
-            }
-            if(!(player->res & D_USED_CHAR))
-            {
-                /* Keyboard short-cut? */
-                int keychar = event->keyboard.unichar;
-                int c;
-                if (event->keyboard.keycode == ALLEGRO_KEY_BACKSPACE) keychar = 8;
-                if (event->keyboard.keycode == ALLEGRO_KEY_DELETE) keychar = 127;
-                //printf("%d %d %d %d\n", event.keyboard.unichar, event.keyboard.keycode, ALLEGRO_KEY_DELETE, ALLEGRO_KEY_BACKSPACE);
-                if (keychar)
-                {
-                    for (c=0; player->dialog[c].proc; c++)
+                    MESSAGE(player, player->keyboard_obj, MSG_CHAR, event->keyboard.unichar);
+                    if(event->keyboard.repeat)
                     {
-                        if (utolower(player->dialog[c].key) == utolower(player->dialog[c].key) && player->dialog[c].key == keychar && (!(player->dialog[c].flags & (D_HIDDEN | D_DISABLED))))
+                        MESSAGE(player, player->keyboard_obj, MSG_KEYREPEAT, event->keyboard.keycode);
+                    }
+                }
+                if(!(player->res & D_USED_CHAR))
+                {
+                    /* Keyboard short-cut? */
+                    int keychar = event->keyboard.unichar;
+                    int c;
+                    if (event->keyboard.keycode == ALLEGRO_KEY_BACKSPACE) keychar = 8;
+                    if (event->keyboard.keycode == ALLEGRO_KEY_DELETE) keychar = 127;
+                    //printf("%d %d %d %d\n", event.keyboard.unichar, event.keyboard.keycode, ALLEGRO_KEY_DELETE, ALLEGRO_KEY_BACKSPACE);
+                    if (keychar)
+                    {
+                        for (c=0; player->dialog[c].proc; c++)
                         {
-                            MESSAGE(player, c, MSG_KEY, 0);
-                            break;
+                            if (utolower(player->dialog[c].key) == utolower(player->dialog[c].key) && player->dialog[c].key == keychar && (!(player->dialog[c].flags & (D_HIDDEN | D_DISABLED))))
+                            {
+                                MESSAGE(player, c, MSG_KEY, 0);
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            if(!(player->res & D_USED_CHAR))
-            {
-                /* Pass-through? */
-                switch (event->keyboard.keycode)
+                if(!(player->res & D_USED_CHAR))
                 {
-                    case ALLEGRO_KEY_ESCAPE:   /* Escape closes the dialog */
-                    case ALLEGRO_KEY_ENTER:    /* pass <CR> or <SPACE> to selected object */
-                    case ALLEGRO_KEY_SPACE:
-                    case ALLEGRO_KEY_PAD_ENTER:
-                    case ALLEGRO_KEY_TAB:      /* Move focus */
-                    case ALLEGRO_KEY_RIGHT:
-                    case ALLEGRO_KEY_LEFT:
-                    case ALLEGRO_KEY_DOWN:
-                    case ALLEGRO_KEY_UP:
+                    /* Pass-through? */
+                    switch (event->keyboard.keycode)
                     {
-                        break;
-                    }
+                        case ALLEGRO_KEY_ESCAPE:   /* Escape closes the dialog */
+                        case ALLEGRO_KEY_ENTER:    /* pass <CR> or <SPACE> to selected object */
+                        case ALLEGRO_KEY_SPACE:
+                        case ALLEGRO_KEY_PAD_ENTER:
+                        case ALLEGRO_KEY_TAB:      /* Move focus */
+                        case ALLEGRO_KEY_RIGHT:
+                        case ALLEGRO_KEY_LEFT:
+                        case ALLEGRO_KEY_DOWN:
+                        case ALLEGRO_KEY_UP:
+                        {
+                            break;
+                        }
 
-                    default:
-                    {
-                        pass_through_event(player, event);
+                        default:
+                        {
+                            pass_through_event(player, event);
+                        }
                     }
                 }
+                player->res &= ~D_USED_KEY;
             }
-            player->res &= ~D_USED_KEY;
             break;
         }
 
