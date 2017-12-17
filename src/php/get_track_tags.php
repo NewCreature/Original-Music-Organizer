@@ -18,7 +18,7 @@ $db_fields = array('track_id'); // fields we are interested in
 $arguments = array('limit', 'order_field', 'ascend', 'other');
 
 /* fields we spit out */
-$output_fields = array('track_id', 'tagger', 'album_artist', 'artist', 'album', 'disc', 'track', 'title', 'genre', 'year', 'copyright', 'comment', 'loop_start', 'loop_end', 'fade_time');
+$output_fields = array('tagger', 'album_artist', 'artist', 'album', 'disc', 'track', 'title', 'genre', 'year', 'copyright', 'comment', 'loop_start', 'loop_end', 'fade_time');
 $output_header = "OMO Tags";
 
 /* settings */
