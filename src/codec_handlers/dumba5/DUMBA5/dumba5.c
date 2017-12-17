@@ -77,47 +77,50 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 	while(1)
 	{
 		ALLEGRO_EVENT event;
+		ALLEGRO_TIMEOUT timeout;
 
-		al_wait_for_event(queue, &event);
-
-		if(event.type == ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT)
+		al_init_timeout(&timeout, 1.0);
+		if(al_wait_for_event_until(queue, &event, &timeout))
 		{
-			fragment = (unsigned short *)al_get_audio_stream_fragment(dp->stream);
-			if(fragment)
+			if(event.type == ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT)
 			{
-				total_samples = dp->bufsize * dp->channels;
-				samples_left = total_samples;
-				al_lock_mutex(dp->mutex);
-				while(samples_left > 0)
+				fragment = (unsigned short *)al_get_audio_stream_fragment(dp->stream);
+				if(fragment)
 				{
-					n = duh_render(dp->sigrenderer, 16, 0, dp->volume, 65536.0 / dp->freq, samples_left / dp->channels, &fragment[total_samples - samples_left]);
-
-					dp->played_time += (double)n / (double)dp->freq;
-
-					if (n == 0)
+					total_samples = dp->bufsize * dp->channels;
+					samples_left = total_samples;
+					al_lock_mutex(dp->mutex);
+					while(samples_left > 0)
 					{
-						if (++dp->silentcount >= 2)
+						n = duh_render(dp->sigrenderer, 16, 0, dp->volume, 65536.0 / dp->freq, samples_left / dp->channels, &fragment[total_samples - samples_left]);
+
+						dp->played_time += (double)n / (double)dp->freq;
+
+						if (n == 0)
 						{
-							for(i = 0; i < samples_left; i++)
+							if (++dp->silentcount >= 2)
 							{
-								fragment[total_samples - samples_left + i] = 0;
+								for(i = 0; i < samples_left; i++)
+								{
+									fragment[total_samples - samples_left + i] = 0;
+								}
+								if(!al_set_audio_stream_fragment(dp->stream, fragment))
+								{
+								}
+								duh_end_sigrenderer(dp->sigrenderer);
+								al_destroy_audio_stream(dp->stream);
+								dp->sigrenderer = NULL;
+								al_unlock_mutex(dp->mutex);
+								return NULL;
 							}
-							if(!al_set_audio_stream_fragment(dp->stream, fragment))
-							{
-							}
-							duh_end_sigrenderer(dp->sigrenderer);
-							al_destroy_audio_stream(dp->stream);
-							dp->sigrenderer = NULL;
-							al_unlock_mutex(dp->mutex);
-							return NULL;
 						}
+						samples_left -= n * dp->channels;
 					}
-					samples_left -= n * dp->channels;
+					if(!al_set_audio_stream_fragment(dp->stream, fragment))
+					{
+					}
+					al_unlock_mutex(dp->mutex);
 				}
-				if(!al_set_audio_stream_fragment(dp->stream, fragment))
-				{
-				}
-				al_unlock_mutex(dp->mutex);
 			}
 		}
 		if(al_get_thread_should_stop(thread))
@@ -139,7 +142,6 @@ void dumba5_stop_duh(DUMBA5_PLAYER * dp)
 		if(dp->sigrenderer)
 		{
 			duh_end_sigrenderer(dp->sigrenderer);
-//			al_drain_stream(dp->stream);
 			al_destroy_audio_stream(dp->stream);
 		}
 		free(dp);
