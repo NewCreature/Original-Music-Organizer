@@ -32,21 +32,11 @@ bool omo_start_player(OMO_PLAYER * pp)
 
 static void omo_stop_player_playback(OMO_PLAYER * pp)
 {
-	if(pp->codec_handler)
+	if(pp->track)
 	{
-		pp->codec_handler->stop(pp->codec_data);
-		if(pp->codec_handler->unload_file)
-		{
-			pp->codec_handler->unload_file(pp->codec_data);
-			pp->codec_data = NULL;
-		}
-		pp->codec_handler = NULL;
-
-		/* delete previously extracted file if we played from archive */
-		if(strlen(pp->extracted_filename) > 0)
-		{
-			al_remove_filename(pp->extracted_filename);
-		}
+		pp->track->codec_handler->stop(pp->track->codec_data);
+		omo_unload_track(pp->track);
+		pp->track = NULL;
 	}
 }
 
@@ -61,9 +51,9 @@ void omo_stop_player(OMO_PLAYER * pp)
 
 void omo_pause_player(OMO_PLAYER * pp)
 {
-	if(pp->codec_handler)
+	if(pp->track)
 	{
-		if(pp->codec_handler->pause(pp->codec_data))
+		if(pp->track->codec_handler->pause(pp->track->codec_data))
 		{
 			pp->state = OMO_PLAYER_STATE_PAUSED;
 		}
@@ -72,9 +62,9 @@ void omo_pause_player(OMO_PLAYER * pp)
 
 void omo_resume_player(OMO_PLAYER * pp)
 {
-	if(pp->codec_handler)
+	if(pp->track)
 	{
-		if(pp->codec_handler->resume(pp->codec_data))
+		if(pp->track->codec_handler->resume(pp->track->codec_data))
 		{
 			pp->state = OMO_PLAYER_STATE_PLAYING;
 		}
@@ -85,7 +75,7 @@ bool omo_play_previous_song(OMO_PLAYER * pp)
 {
 	if(pp->queue)
 	{
-		if(pp->codec_handler)
+		if(pp->track)
 		{
 			omo_stop_player_playback(pp);
 		}
@@ -100,7 +90,7 @@ bool omo_play_previous_song(OMO_PLAYER * pp)
 
 bool omo_play_next_song(OMO_PLAYER * pp)
 {
-	if(pp->codec_handler)
+	if(pp->track)
 	{
 		omo_stop_player_playback(pp);
 		pp->queue_pos++;
@@ -108,77 +98,27 @@ bool omo_play_next_song(OMO_PLAYER * pp)
 	return true;
 }
 
-static void * omo_player_load_file(OMO_PLAYER * pp, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, const char * fn, const char * subfn, const char * track, ALLEGRO_PATH * temp_path)
-{
-	OMO_ARCHIVE_HANDLER * archive_handler;
-	void * archive_handler_data;
-	const char * subfile;
-	char fn_buffer[1024] = {0};
-	void * codec_data = NULL;
-
-	archive_handler = omo_get_archive_handler(archive_handler_registry, fn);
-	if(archive_handler)
-	{
-		al_stop_timer(t3f_timer);
-		archive_handler_data = archive_handler->open_archive(fn, temp_path);
-		al_start_timer(t3f_timer);
-		if(archive_handler_data)
-		{
-			strcpy(pp->extracted_filename, "");
-			if(subfn)
-			{
-				pp->codec_handler = omo_get_codec_handler(codec_handler_registry, archive_handler->get_file(archive_handler_data, atoi(subfn), fn_buffer));
-				if(pp->codec_handler)
-				{
-					al_stop_timer(t3f_timer);
-					subfile = archive_handler->extract_file(archive_handler_data, atoi(subfn), fn_buffer);
-					al_start_timer(t3f_timer);
-					if(strlen(subfile) > 0)
-					{
-						strcpy(pp->extracted_filename, subfile);
-						al_stop_timer(t3f_timer);
-						codec_data = pp->codec_handler->load_file(pp->extracted_filename, track);
-						al_start_timer(t3f_timer);
-					}
-				}
-			}
-			archive_handler->close_archive(archive_handler_data);
-		}
-	}
-	else
-	{
-		pp->codec_handler = omo_get_codec_handler(codec_handler_registry, fn);
-		if(pp->codec_handler)
-		{
-			al_stop_timer(t3f_timer);
-			codec_data = pp->codec_handler->load_file(fn, track);
-			al_start_timer(t3f_timer);
-		}
-	}
-	return codec_data;
-}
-
 static bool omo_player_play_file(OMO_PLAYER * pp, double loop_start, double loop_end, double fade_time, int loop_count)
 {
 	const char * val;
 
-	if(pp->codec_handler->set_loop)
+	if(pp->track->codec_handler->set_loop)
 	{
 		if(loop_end > loop_start)
 		{
-			pp->codec_handler->set_loop(pp->codec_data, loop_start, loop_end, fade_time, loop_count);
+			pp->track->codec_handler->set_loop(pp->track->codec_data, loop_start, loop_end, fade_time, loop_count);
 		}
 	}
-	if(pp->codec_handler->set_volume)
+	if(pp->track->codec_handler->set_volume)
 	{
 		val = al_get_config_value(t3f_config, "Settings", "volume");
 		if(val)
 		{
-			pp->codec_handler->set_volume(pp->codec_data, atof(val));
+			pp->track->codec_handler->set_volume(pp->track->codec_data, atof(val));
 		}
 	}
 	al_stop_timer(t3f_timer);
-	if(pp->codec_handler->play(pp->codec_data))
+	if(pp->track->codec_handler->play(pp->track->codec_data))
 	{
 		pp->state = OMO_PLAYER_STATE_PLAYING;
 		al_start_timer(t3f_timer);
@@ -186,8 +126,8 @@ static bool omo_player_play_file(OMO_PLAYER * pp, double loop_start, double loop
 	}
 	else
 	{
-		pp->codec_handler->unload_file(pp->codec_data);
-		pp->codec_handler = NULL;
+		omo_unload_track(pp->track);
+		pp->track = NULL;
 		al_start_timer(t3f_timer);
 	}
 	return false;
@@ -204,9 +144,9 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 
 	if(pp->queue && pp->state == OMO_PLAYER_STATE_PLAYING)
 	{
-		if(pp->codec_handler)
+		if(pp->track)
 		{
-			if(pp->codec_handler->done_playing(pp->codec_data))
+			if(pp->track->codec_handler->done_playing(pp->track->codec_data))
 			{
 				al_stop_timer(t3f_timer);
 				omo_stop_player_playback(pp);
@@ -227,8 +167,8 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 		{
 			if(pp->queue_pos < pp->queue->entry_count)
 			{
-				pp->codec_data = omo_player_load_file(pp, archive_handler_registry, codec_handler_registry, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track, temp_path);
-				if(pp->codec_data)
+				pp->track = omo_load_track(archive_handler_registry, codec_handler_registry, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track, temp_path);
+				if(pp->track)
 				{
 					if(lp)
 					{

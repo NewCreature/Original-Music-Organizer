@@ -3,6 +3,7 @@
 
 #include "queue.h"
 #include "codec_handlers/codec_handler.h"
+#include "track.h"
 
 #define OMO_PLAYER_STATE_STOPPED  0
 #define OMO_PLAYER_STATE_PLAYING  1
@@ -14,9 +15,7 @@ typedef struct
 
 	OMO_QUEUE * queue;
 	int queue_pos;
-	char extracted_filename[1024];
-	OMO_CODEC_HANDLER * codec_handler;
-	void * codec_data;
+	OMO_TRACK * track;
 	int state;
 
 } OMO_PLAYER;

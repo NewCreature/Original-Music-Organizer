@@ -35,25 +35,25 @@ static void update_seek_pos(void * data)
 
 	if(app->ui->ui_seeked)
 	{
-		if(app->player->codec_handler->seek)
+		if(app->player->track->codec_handler->seek)
 		{
-			length = app->player->codec_handler->get_length(app->player->codec_data);
+			length = app->player->track->codec_handler->get_length(app->player->track->codec_data);
 			pos = ((double)app->ui->ui_seek_control_element->d2 / (double)OMO_UI_SEEK_RESOLUTION) * length;
-			app->player->codec_handler->seek(app->player->codec_data, pos);
+			app->player->track->codec_handler->seek(app->player->track->codec_data, pos);
 		}
 		app->ui->ui_seeked = false;
 	}
 	else
 	{
-		if(app->player->codec_handler)
+		if(app->player->track)
 		{
-			if(app->player->codec_handler->get_length && app->player->codec_handler->get_position)
+			if(app->player->track->codec_handler->get_length && app->player->track->codec_handler->get_position)
 			{
 				app->ui->ui_seek_control_element->flags &= ~D_DISABLED;
 				if(!(app->ui->ui_seek_control_element->flags & D_TRACKMOUSE))
 				{
-					length = app->player->codec_handler->get_length(app->player->codec_data);
-					pos = app->player->codec_handler->get_position(app->player->codec_data);
+					length = app->player->track->codec_handler->get_length(app->player->track->codec_data);
+					pos = app->player->track->codec_handler->get_position(app->player->track->codec_data);
 					app->ui->ui_seek_control_element->d2 = (pos / length) * (double)OMO_UI_SEEK_RESOLUTION;
 				}
 			}
@@ -79,9 +79,9 @@ static void update_volume_pos(void * data)
 	if(app->ui->ui_volume_changed)
 	{
 		volume = 1.0 - ((double)app->ui->ui_volume_control_element->d2 / (double)OMO_UI_VOLUME_RESOLUTION);
-		if(app->player->codec_handler && app->player->codec_handler->set_volume)
+		if(app->player->track && app->player->track->codec_handler->set_volume)
 		{
-			app->player->codec_handler->set_volume(app->player->codec_data, volume);
+			app->player->track->codec_handler->set_volume(app->player->track->codec_data, volume);
 		}
 		sprintf(buf, "%f", volume);
 		al_set_config_value(t3f_config, "Settings", "volume", buf);
@@ -95,7 +95,7 @@ static void update_volume_pos(void * data)
 			app->ui->ui_volume_control_element->d2 = (1.0 - atof(val)) * OMO_UI_VOLUME_RESOLUTION;
 		}
 	}
-	if(app->player->codec_handler && !app->player->codec_handler->set_volume)
+	if(app->player->track && !app->player->track->codec_handler->set_volume)
 	{
 		app->ui->ui_volume_control_element->flags |= D_DISABLED;
 	}
