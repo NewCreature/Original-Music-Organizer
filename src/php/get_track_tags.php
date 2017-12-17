@@ -110,12 +110,15 @@ for($x = 0; $x < mysql_num_rows($resultID); $x++)
     $row = mysql_fetch_assoc($resultID);
 	foreach($output_fields as $e)
 	{
-		$output .= "\t" . $e . ": ";
-		if(strlen($row[$e]) > 0)
+		if($row[$e])
 		{
-			$output .= xml_escape($row[$e]);
+			$output .= "\t" . $e . ": ";
+			if(strlen($row[$e]) > 0)
+			{
+				$output .= xml_escape($row[$e]);
+			}
+			$output .= "\r\n";
 		}
-		$output .= "\r\n";
 	}
 	$output .= "\r\n";
 }
