@@ -12,7 +12,10 @@ v0.4
    [X]List generation should be done in a separate thread so we can still
       interact with the UI.
 
-[ ]Implement tags submission and retrieval.
+[X]Need to NULLify tags that are cleared so we don't get blank entries in the
+   library UI.
+
+[X]Implement tags submission and retrieval.
 
    [X]Add script to generate tagger key.
 
@@ -25,7 +28,7 @@ v0.4
       [X]Add a tagger database so we can check for the existence of the tagger
          before accepting tags.
 
-   [ ]Add functions for submitting and retrieving tags to the UI.
+   [X]Add functions for submitting and retrieving tags to the UI.
 
       [X]Tag submission should be able to automatically run through your entire
          library and submit only tags that aren't included in a track's
@@ -37,20 +40,21 @@ v0.4
          probably present a dialog which asks if the user wants to accept the
          tags in this case.
 
-      [ ]When submitting tags, we should check the library database to
+      [X]When submitting tags, we should check the library database to
          determine if a track has any tags set by the user. When editing tags
          with the Edit Tags dialog, we should set a flag in the database to
          mark that the user has input some of their own tags.
 
-         [ ]We might be able to use the Submitted flag for this. Instead of
+         [X]We might be able to use the Submitted flag for this. Instead of
             deleting the Submitted key from the database, we can set it to
             false when the user makes an edit. The cloud code can then check to
             see that the Submitted key exists and that it is set to false
             before actually submitting the tag. If the tag submission succeeds,
             the Submitted key can be set to true.
 
-[ ]Need to NULLify tags that are cleared so we don't get blank entries in the
-   library UI.
+[ ]Need a way to clear tags in the database. A tagger should be able to delete
+   tags they have submitted. Tags that have been cleared should be able to be
+   set to NULL in the database.
 
 [ ]Add library profiles. A library profile will contain library settings
    specific to that profile. For instance, you can have the default profile
