@@ -173,17 +173,26 @@ bool omo_retrieve_track_tags(OMO_LIBRARY * lp, const char * id, const char * url
 static void * cloud_submit_thread_proc(ALLEGRO_THREAD * thread, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	const char * val;
 	int i;
 
 	for(i = 0; i < app->library->entry_count; i++)
 	{
 		sprintf(app->status_bar_text, "Submitting tags: %s", app->library->entry[i]->id);
-		omo_submit_track_tags(app->library, app->library->entry[i]->id, app->cloud_url, app->archive_handler_registry, app->codec_handler_registry, app->cloud_temp_path);
+		val = al_get_config_value(app->library->entry_database, app->library->entry[i]->id, "Submitted");
+		if(val && !strcmp(val, "false"))
+		{
+			if(omo_submit_track_tags(app->library, app->library->entry[i]->id, app->cloud_url, app->archive_handler_registry, app->codec_handler_registry, app->cloud_temp_path))
+			{
+				al_set_config_value(app->library->entry_database, app->ui->tags_entry, "Submitted", "true");
+			}
+		}
 		if(al_get_thread_should_stop(thread))
 		{
 			break;
 		}
 	}
+	sprintf(app->status_bar_text, "Library ready.");
 	return NULL;
 }
 
@@ -218,6 +227,7 @@ static void * cloud_retrieve_thread_proc(ALLEGRO_THREAD * thread, void * data)
 			break;
 		}
 	}
+	sprintf(app->status_bar_text, "Library ready.");
 	return NULL;
 }
 
