@@ -70,7 +70,14 @@ void omo_tags_dialog_logic(void * data)
 				{
 					update_songs = true;
 				}
-				al_set_config_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i], app->ui->tags_text[i]);
+				if(strlen(app->ui->tags_text[i]) == 0)
+				{
+					al_remove_config_key(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i]);
+				}
+				else
+				{
+					al_set_config_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i], app->ui->tags_text[i]);
+				}
 				update_tags = true;
 			}
 		}
