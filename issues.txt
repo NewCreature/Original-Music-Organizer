@@ -4,6 +4,14 @@ OMO Issues
 v0.4
 ----
 
+[X]Streamline library loading.
+
+   [X]We should be able to use the database without waiting for lists to
+      generate.
+
+   [X]List generation should be done in a separate thread so we can still
+      interact with the UI.
+
 [ ]Implement tags submission and retrieval.
 
    [X]Add script to generate tagger key.
@@ -40,14 +48,6 @@ v0.4
    without having to generate library databases for each machine.
 
 [ ]Look into adding a lyrics window.
-
-[ ]Streamline library loading.
-
-   [ ]We should be able to use the database without waiting for lists to
-      generate.
-
-   [ ]List generation should be done in a separate thread so we can still
-      interact with the UI.
 
 
 v0.3
