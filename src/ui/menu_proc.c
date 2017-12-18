@@ -11,6 +11,7 @@
 #include "../file_chooser.h"
 #include "../constants.h"
 #include "../queue_helpers.h"
+#include "../cloud.h"
 
 static char type_buf[1024] = {0};
 
@@ -445,6 +446,41 @@ int omo_menu_library_split_track(void * data)
 			open_split_track_dialog(app, app->library->entry[app->library->song_entry[j]]->filename, fullfn);
 		}
 	}
+	return 1;
+}
+
+int omo_menu_cloud_update_proc(ALLEGRO_MENU * mp, int item, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	const char * val;
+
+	val = al_get_config_value(t3f_config, "Settings", "Tagger ID");
+	if(app->library && val)
+	{
+		t3f_set_menu_item_flags(mp, item, 0);
+	}
+	else
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
+	}
+	return 1;
+}
+
+int omo_menu_library_submit_tags(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	omo_submit_library_tags(app, "http://www.t3-i.com/omo/tag_track.php");
+
+	return 1;
+}
+
+int omo_menu_library_retrieve_tags(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	omo_retrieve_library_tags(app, "http://www.t3-i.com/omo/get_track_tags.php");
+
 	return 1;
 }
 

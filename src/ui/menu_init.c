@@ -47,6 +47,9 @@ bool omo_setup_menus(void * data)
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Add Library Folder", 0, NULL, omo_menu_library_add_folder, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Clear Library Folders", 0, NULL, omo_menu_library_clear_folders, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Submit Library Tags", 0, NULL, omo_menu_library_submit_tags, omo_menu_cloud_update_proc);
+	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Retrieve Library Tags", 0, NULL, omo_menu_library_retrieve_tags, omo_menu_cloud_update_proc);
+	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Split Song", 0, NULL, omo_menu_library_split_track, omo_menu_library_edit_tags_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Edit Song Tags", 0, NULL, omo_menu_library_edit_tags, omo_menu_library_edit_tags_update_proc);

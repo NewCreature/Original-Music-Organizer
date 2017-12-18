@@ -5,6 +5,7 @@
 #include "library.h"
 #include "library_helpers.h"
 #include "track.h"
+#include "instance.h"
 
 static char convert_tag_buffer[256];
 
@@ -37,6 +38,44 @@ static const char * get_track_tag(OMO_TRACK * tp, const char * name)
 	return NULL;
 }
 
+/* compare strings where s2 might have trailing space not in s1 */
+static int cloud_strcmp(const char * s1, const char * s2)
+{
+	int i, j;
+	int offset = 0;
+
+	while(offset < strlen(s2) && s2[offset] == ' ')
+	{
+		offset++;
+	}
+	if(strlen(s1) == 0 && strlen(s2) - offset == 0)
+	{
+		return 0;
+	}
+	if(strlen(s2) - offset < strlen(s1))
+	{
+		return 1;
+	}
+	for(i = 0; i < strlen(s1); i++)
+	{
+		if(s1[i] != s2[i + offset])
+		{
+			return 1;
+		}
+	}
+	if(i == strlen(s1))
+	{
+		for(j = i + 1; j < strlen(s2) - offset; j++)
+		{
+			if(s2[j + offset] != ' ')
+			{
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
 /* submit user-genrated tags, ignore tags that are retrieved from the file */
 bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, ALLEGRO_PATH * temp_path)
 {
@@ -47,6 +86,7 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 	bool ret = false;
 	int entry;
 	OMO_TRACK * track;
+	int tag_count = 0;
 	int i;
 
 	arguments = t3net_create_arguments();
@@ -72,9 +112,11 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 						if(val)
 						{
 							track_val = get_track_tag(track, omo_tag_type[i]);
-							if(!track_val || strcmp(track_val, val))
+							if(!track_val || cloud_strcmp(val, track_val))
 							{
+								printf("%s:  val (%lu): %s track_val (%lu): %s\n", omo_tag_type[i], strlen(val), val, track_val ? strlen(track_val) : -1, track_val ? track_val : "?");
 								t3net_add_argument(arguments, convert_tag_name(omo_tag_type[i]), val);
+								tag_count++;
 							}
 						}
 					}
@@ -83,7 +125,10 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 				{
 					omo_unload_track(track);
 				}
-				ret = t3net_get_data(url, arguments);
+				if(tag_count)
+				{
+					ret = t3net_get_data(url, arguments);
+				}
 			}
 		}
 		t3net_destroy_arguments(arguments);
@@ -123,4 +168,72 @@ bool omo_retrieve_track_tags(OMO_LIBRARY * lp, const char * id, const char * url
 		}
 	}
 	return ret;
+}
+
+static void * cloud_submit_thread_proc(ALLEGRO_THREAD * thread, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	int i;
+
+	for(i = 0; i < app->library->entry_count; i++)
+	{
+		sprintf(app->status_bar_text, "Submitting tags: %s", app->library->entry[i]->id);
+		omo_submit_track_tags(app->library, app->library->entry[i]->id, app->cloud_url, app->archive_handler_registry, app->codec_handler_registry, app->cloud_temp_path);
+		if(al_get_thread_should_stop(thread))
+		{
+			break;
+		}
+	}
+	return NULL;
+}
+
+bool omo_submit_library_tags(APP_INSTANCE * app, const char * url)
+{
+	if(app->cloud_thread)
+	{
+		al_destroy_thread(app->cloud_thread);
+		app->cloud_thread = NULL;
+	}
+	app->cloud_thread = al_create_thread(cloud_submit_thread_proc, app);
+	if(app->cloud_thread)
+	{
+		strcpy(app->cloud_url, url);
+		al_start_thread(app->cloud_thread);
+		return true;
+	}
+	return false;
+}
+
+static void * cloud_retrieve_thread_proc(ALLEGRO_THREAD * thread, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	int i;
+
+	for(i = 0; i < app->library->entry_count; i++)
+	{
+		sprintf(app->status_bar_text, "Retrieving tags: %s", app->library->entry[i]->id);
+		omo_retrieve_track_tags(app->library, app->library->entry[i]->id, app->cloud_url);
+		if(al_get_thread_should_stop(thread))
+		{
+			break;
+		}
+	}
+	return NULL;
+}
+
+bool omo_retrieve_library_tags(APP_INSTANCE * app, const char * url)
+{
+	if(app->cloud_thread)
+	{
+		al_destroy_thread(app->cloud_thread);
+		app->cloud_thread = NULL;
+	}
+	app->cloud_thread = al_create_thread(cloud_retrieve_thread_proc, app);
+	if(app->cloud_thread)
+	{
+		strcpy(app->cloud_url, url);
+		al_start_thread(app->cloud_thread);
+		return true;
+	}
+	return false;
 }

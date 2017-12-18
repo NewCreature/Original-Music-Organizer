@@ -29,6 +29,9 @@ int omo_menu_library_add_folder(void * data);
 int omo_menu_library_clear_folders(void * data);
 int omo_menu_library_edit_tags(void * data);
 int omo_menu_library_split_track(void * data);
+int omo_menu_library_submit_tags(void * data);
+int omo_menu_library_retrieve_tags(void * data);
+int omo_menu_cloud_update_proc(ALLEGRO_MENU * mp, int item, void * data);
 
 int omo_menu_view_basic_update_proc(ALLEGRO_MENU * mp, int item, void * data);
 int omo_menu_view_library_update_proc(ALLEGRO_MENU * mp, int item, void * data);

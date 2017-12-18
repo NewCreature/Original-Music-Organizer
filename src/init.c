@@ -358,6 +358,10 @@ void omo_exit(APP_INSTANCE * app)
 	omo_destroy_player(app->player);
 	app->player = NULL;
 	omo_cancel_library_setup(app);
+	if(app->cloud_thread)
+	{
+		al_destroy_thread(app->cloud_thread);
+	}
 	if(app->ui->tags_popup_dialog)
 	{
 		omo_close_tags_dialog(app->ui, app);

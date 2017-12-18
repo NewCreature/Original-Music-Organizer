@@ -45,6 +45,8 @@ typedef struct
 	char status_bar_text[1024];
 	OMO_PLAYER * player;
 	T3F_RNG_STATE rng_state;
+	ALLEGRO_THREAD * cloud_thread;
+	char cloud_url[256];
 
 	ALLEGRO_PATH * library_temp_path;
 	ALLEGRO_PATH * queue_temp_path;
