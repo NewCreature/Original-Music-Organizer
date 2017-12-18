@@ -49,6 +49,9 @@ v0.4
             before actually submitting the tag. If the tag submission succeeds,
             the Submitted key can be set to true.
 
+[ ]Need to NULLify tags that are cleared so we don't get blank entries in the
+   library UI.
+
 [ ]Add library profiles. A library profile will contain library settings
    specific to that profile. For instance, you can have the default profile
    contain all of your music and have a separate profile for just MODs or
