@@ -12,7 +12,7 @@ require 'settings.php';
 
 /* database info */
 $db_name = "omo"; // name of our database (database->name->fields)
-$db_fields = array('track_id', 'tagger', 'album_artist', 'artist', 'album', 'disc', 'track', 'title', 'genre', 'year', 'copyright', 'comment', 'loop_start', 'loop_end', 'fade_time'); // fields we are interested in
+$db_fields = array('track_id', 'tagger', 'album_artist', 'artist', 'album', 'disc', 'track', 'title', 'genre', 'year', 'copyright', 'comment', 'loop_start', 'loop_end', 'fade_time', 'split_track_info', 'detected_length'); // fields we are interested in
 $tagger_db_name = "omo_taggers";
 
 /* require tagger ID */
