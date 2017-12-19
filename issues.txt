@@ -56,7 +56,13 @@ v0.4
    tags they have submitted. Tags that have been cleared should be able to be
    set to NULL in the database.
 
+   [ ]If all tags are NULL, we should delete the track's database entry.
+
 [ ]Submit split track data if it exists.
+
+   [ ]When submitting tags, we should be able to reference the base file of
+      split tracks and submit tags for the base track. The library won't
+      contain an entry for the base track once it has been split.
 
 [ ]If a song ends before it reaches its reported length, set an internal length
    tag. This length tag should also be submitted.
