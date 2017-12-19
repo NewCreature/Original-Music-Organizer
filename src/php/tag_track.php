@@ -68,6 +68,10 @@ foreach($db_fields as $field)
 	{
 		$query .= ", `" . mysql_real_escape_string($field) . "` = '" . mysql_real_escape_string($_GET[$field]) . "'";
 	}
+	else
+	{
+		$query .= ", `" . mysql_real_escape_string($field) . "` = " . "NULL";
+	}
 }
 
 /* command-specific query options */
