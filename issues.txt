@@ -56,6 +56,11 @@ v0.4
    tags they have submitted. Tags that have been cleared should be able to be
    set to NULL in the database.
 
+[ ]Submit split track data if it exists.
+
+[ ]If a song ends before it reaches its reported length, set an internal length
+   tag. This length tag should also be submitted.
+
 [ ]Add library profiles. A library profile will contain library settings
    specific to that profile. For instance, you can have the default profile
    contain all of your music and have a separate profile for just MODs or
