@@ -58,6 +58,10 @@ v0.4
 
    [ ]If all tags are NULL, we should delete the track's database entry.
 
+      [ ]We can probably just count the fields as we are building the query. If
+         the count is not greater than the number of mandatory fields, we know
+         the entry can be deleted.
+
 [ ]Submit split track data if it exists.
 
    [ ]When submitting tags, we should be able to reference the base file of
