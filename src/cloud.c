@@ -148,6 +148,8 @@ bool omo_retrieve_track_tags(OMO_LIBRARY * lp, const char * id, const char * url
 	T3NET_ARGUMENTS * arguments;
 	T3NET_DATA * track_data;
 	const char * track_val;
+	char buffer[256];
+	int entry;
 	bool ret = false;
 	int i;
 
@@ -168,6 +170,16 @@ bool omo_retrieve_track_tags(OMO_LIBRARY * lp, const char * id, const char * url
 					{
 						al_set_config_value(lp->entry_database, id, omo_tag_type[i], track_val);
 					}
+				}
+			}
+			track_val = t3net_get_data_entry_field(track_data, 0, convert_tag_name("Split Track Info"));
+			if(track_val)
+			{
+				strcpy(buffer, track_val);
+				entry = omo_get_library_entry(lp, id);
+				if(entry >= 0)
+				{
+					omo_split_track(lp, lp->entry[entry]->filename, buffer);
 				}
 			}
 			ret = true;
