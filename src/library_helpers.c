@@ -1,4 +1,5 @@
 #include "t3f/t3f.h"
+#include "t3f/file.h"
 #include "t3f/file_utils.h"
 #include "instance.h"
 #include "library_cache.h"
@@ -294,6 +295,24 @@ const char * omo_get_library_file_id(OMO_LIBRARY * lp, const char * fn, const ch
 		strcat(full_path, track);
 	}
 	return al_get_config_value(lp->file_database, full_path, "id");
+}
+
+const char * omo_get_library_file_base_id(OMO_LIBRARY * lp, const char * fn, char * buffer)
+{
+	const char * val;
+	char base_size[256];
+
+	val = al_get_config_value(lp->file_database, fn, "id");
+	if(val)
+	{
+		/* get the file ID of the base file */
+		strcpy(buffer, val);
+		buffer[32] = 0;
+		sprintf(base_size, "%lu", t3f_file_size(fn));
+		strcat(buffer, base_size);
+		return buffer;
+	}
+	return NULL;
 }
 
 int omo_get_library_entry(OMO_LIBRARY * lp, const char * id)

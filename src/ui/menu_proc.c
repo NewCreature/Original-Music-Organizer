@@ -7,6 +7,7 @@
 #include "../codec_handlers/registry.h"
 #include "../queue.h"
 #include "../library.h"
+#include "../library_helpers.h"
 #include "../init.h"
 #include "../file_chooser.h"
 #include "../constants.h"
@@ -71,30 +72,29 @@ static void open_tags_dialog(void * data, const char * fullfn)
 static void open_split_track_dialog(void * data, const char * basefn, const char * fullfn)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	char base_id[1024];
-	char base_size[256];
+	char buffer[1024];
+	const char * base_id;
 	const char * val2;
 
 	app->ui->split_track_entry = al_get_config_value(app->library->file_database, basefn, "id");
 	if(app->ui->split_track_entry)
 	{
 		/* get the file ID of the base file */
-		strcpy(base_id, app->ui->split_track_entry);
-		base_id[32] = 0;
-		sprintf(base_size, "%lu", t3f_file_size(basefn));
-		strcat(base_id, base_size);
-
-		app->ui->split_track_fn = basefn;
-		val2 = al_get_config_value(app->library->entry_database, base_id, "Split Track Info");
-		if(val2)
+		base_id = omo_get_library_file_base_id(app->library, basefn, buffer);
+		if(base_id)
 		{
-			strcpy(app->ui->split_track_text, val2);
+			app->ui->split_track_fn = basefn;
+			val2 = al_get_config_value(app->library->entry_database, base_id, "Split Track Info");
+			if(val2)
+			{
+				strcpy(app->ui->split_track_text, val2);
+			}
+			else
+			{
+				strcpy(app->ui->split_track_text, "");
+			}
+			omo_open_split_track_dialog(app->ui, app);
 		}
-		else
-		{
-			strcpy(app->ui->split_track_text, "");
-		}
-		omo_open_split_track_dialog(app->ui, app);
 	}
 }
 
