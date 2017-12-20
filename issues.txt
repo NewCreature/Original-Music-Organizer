@@ -52,15 +52,20 @@ v0.4
             before actually submitting the tag. If the tag submission succeeds,
             the Submitted key can be set to true.
 
-[ ]Need a way to clear tags in the database. A tagger should be able to delete
+[X]Need a way to clear tags in the database. A tagger should be able to delete
    tags they have submitted. Tags that have been cleared should be able to be
    set to NULL in the database.
 
-   [ ]If all tags are NULL, we should delete the track's database entry.
+   [X]If all tags are NULL, we should delete the track's database entry.
 
-      [ ]We can probably just count the fields as we are building the query. If
+      [X]We can probably just count the fields as we are building the query. If
          the count is not greater than the number of mandatory fields, we know
          the entry can be deleted.
+
+[ ]Fix split tracks not appearing in library.
+
+[ ]Look into why RSNs are being rescanned during library scan instead of using
+   the data cached in file_database.
 
 [ ]Submit split track data if it exists.
 
