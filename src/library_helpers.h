@@ -10,5 +10,6 @@ void omo_setup_library_lists(APP_INSTANCE * app);
 const char * omo_get_library_file_id(OMO_LIBRARY * lp, const char * fn, const char * subfn, const char * track);
 const char * omo_get_library_file_base_id(OMO_LIBRARY * lp, const char * fn, char * buffer);
 int omo_get_library_entry(OMO_LIBRARY * lp, const char * id);
+bool omo_split_track(OMO_LIBRARY * lp, const char * basefn, char * split_string);
 
 #endif
