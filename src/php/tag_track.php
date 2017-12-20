@@ -62,11 +62,13 @@ else
 }
 
 /* build query from passed fields */
+$tag_count = 0;
 foreach($db_fields as $field)
 {
 	if(strlen($_GET[$field]) > 0)
 	{
 		$query .= ", `" . mysql_real_escape_string($field) . "` = '" . mysql_real_escape_string($_GET[$field]) . "'";
+		$tag_count++;
 	}
 	else
 	{
@@ -75,9 +77,18 @@ foreach($db_fields as $field)
 }
 
 /* command-specific query options */
+if($tag_count <= 2)
+{
+	$query = "DELETE FROM " . $db_name;
+}
 if($update)
 {
 	$query .= " WHERE `track_id` = '" . $_GET['track_id'] . "' AND `tagger` = '" . $_GET['tagger'] . "'";
+}
+if(!$update && $tag_count <= 2)
+{
+	print "Error: Can't delete non-existent entry.\r\n";
+	exit;
 }
 
 /* run the query */
