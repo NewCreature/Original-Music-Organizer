@@ -288,7 +288,7 @@ bool omo_load_library_albums_cache(OMO_LIBRARY * lp, const char * fn)
 
 	fail:
 	{
-		for(i = 0; i < lp->album_entry_size; i++)
+		for(i = 0; i < lp->album_entry_count; i++)
 		{
 			if(lp->album_entry[i])
 			{
