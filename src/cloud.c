@@ -120,6 +120,16 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 						}
 					}
 				}
+				val = al_get_config_value(lp->entry_database, id, "Split Track Info");
+				if(val)
+				{
+					t3net_add_argument(arguments, convert_tag_name("Split Track Info"), val);
+				}
+				val = al_get_config_value(lp->entry_database, id, "Detected Length");
+				if(val)
+				{
+					t3net_add_argument(arguments, convert_tag_name("Detected Length"), val);
+				}
 				if(track)
 				{
 					omo_unload_track(track);
