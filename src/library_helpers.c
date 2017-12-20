@@ -3,6 +3,7 @@
 #include "t3f/file_utils.h"
 #include "instance.h"
 #include "library_cache.h"
+#include "constants.h"
 
 static int sort_names(const void *e1, const void *e2)
 {
@@ -341,6 +342,8 @@ bool omo_split_track(OMO_LIBRARY * lp, const char * basefn, char * split_string)
 	char buf[256];
 	char id[1024];
 	char fn[1024];
+	const char * val;
+	int i;
 
 	/* copy track info string to entry database first, before breaking up the
 	   track list to put into the file database */
@@ -371,11 +374,27 @@ bool omo_split_track(OMO_LIBRARY * lp, const char * basefn, char * split_string)
 		}
 		else
 		{
+			/* create entry in file database */
 			sprintf(fn, "%s:%s", basefn, token);
 			sprintf(id, "%s%s", base_id, token);
 			al_set_config_value(lp->file_database, fn, "id", id);
 			sprintf(buf, "track_%d", current_track);
 			al_set_config_value(lp->file_database, basefn, buf, token);
+
+			/* copy base tags to new track */
+			for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+			{
+				if(omo_tag_type[i])
+				{
+					val = al_get_config_value(lp->entry_database, base_id, omo_tag_type[i]);
+					if(val)
+					{
+						al_set_config_value(lp->entry_database, id, omo_tag_type[i], val);
+					}
+				}
+			}
+
+			/* set appropriate title for new track */
 			if(title_val)
 			{
 				sprintf(title_buf, "%s: Track %d", title_val, current_track + 1);
