@@ -114,7 +114,6 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 							track_val = get_track_tag(track, omo_tag_type[i]);
 							if(!track_val || cloud_strcmp(val, track_val))
 							{
-								printf("%s:  val (%lu): %s track_val (%lu): %s\n", omo_tag_type[i], strlen(val), val, track_val ? strlen(track_val) : -1, track_val ? track_val : "?");
 								t3net_add_argument(arguments, convert_tag_name(omo_tag_type[i]), val);
 								tag_count++;
 							}
@@ -125,10 +124,7 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 				{
 					omo_unload_track(track);
 				}
-				if(tag_count)
-				{
-					ret = t3net_get_data(url, arguments);
-				}
+				ret = t3net_get_data(url, arguments);
 			}
 		}
 		t3net_destroy_arguments(arguments);
