@@ -62,16 +62,22 @@ v0.4
          the count is not greater than the number of mandatory fields, we know
          the entry can be deleted.
 
-[ ]Fix split tracks not appearing in library.
+[X]Fix split tracks not appearing in library.
+
+[X]Submit split track data if it exists.
+
+   [X]When submitting tags, we should be able to reference the base file of
+      split tracks and submit tags for the base track. The library won't
+      contain an entry for the base track once it has been split.
+
+[ ]Add a function to detect a top level folder modified time. This function
+   should scan all subfolders and use the newest time.
+
+[ ]Add a way to mark the library as dirty and reload it when whatever process
+   is operating on it completes.
 
 [ ]Look into why RSNs are being rescanned during library scan instead of using
    the data cached in file_database.
-
-[ ]Submit split track data if it exists.
-
-   [ ]When submitting tags, we should be able to reference the base file of
-      split tracks and submit tags for the base track. The library won't
-      contain an entry for the base track once it has been split.
 
 [ ]If a song ends before it reaches its reported length, set an internal length
    tag. This length tag should also be submitted.
