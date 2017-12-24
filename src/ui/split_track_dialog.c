@@ -22,7 +22,7 @@ void omo_split_track_dialog_logic(void * data)
 		if(strcmp(app->ui->original_split_track_text, app->ui->split_track_text))
 		{
 			omo_split_track(app->library, app->ui->split_track_fn, app->ui->split_track_text);
-			al_set_config_value(app->library->entry_database, app->ui->tags_entry, "Submitted", "false");
+			al_set_config_value(app->library->entry_database, app->ui->split_track_entry, "Submitted", "false");
 			if(omo_submit_track_tags(app->library, app->ui->split_track_entry, "http://www.t3-i.com/omo/tag_track.php", app->archive_handler_registry, app->codec_handler_registry, app->cloud_temp_path))
 			{
 				al_set_config_value(app->library->entry_database, app->ui->split_track_entry, "Submitted", "true");
