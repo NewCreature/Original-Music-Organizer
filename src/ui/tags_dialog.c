@@ -51,7 +51,7 @@ void omo_tags_dialog_logic(void * data)
 		{
 			strcpy(title, val);
 		}
-		strcpy(app->edit_song_id, app->library->entry[app->library->song_entry[app->ui->ui_song_list_element->d1 - 1]]->id);
+		strcpy(app->edit_song_id, app->ui->tags_entry);
 		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 		{
 			if(omo_tag_type[i] && strcmp(app->ui->tags_text[i], app->ui->original_tags_text[i]))
