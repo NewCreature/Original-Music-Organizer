@@ -50,8 +50,9 @@ static bool file_needs_scan(const char * fn, OMO_LIBRARY * lp)
 	return ret;
 }
 
-static bool omo_get_archive_file_count(const char * fn, OMO_FILE_HELPER_DATA * file_helper_data)
+static int omo_get_archive_file_count(const char * fn, OMO_FILE_HELPER_DATA * file_helper_data)
 {
+	OMO_CODEC_HANDLER * codec_handler;
 	char buf[32] = {0};
 	int c = 0;
 	int file_count = 0;
@@ -75,11 +76,19 @@ static bool omo_get_archive_file_count(const char * fn, OMO_FILE_HELPER_DATA * f
 			val = al_get_config_value(file_helper_data->library->file_database, fn, buf);
 			if(val)
 			{
-				sprintf(buf, "entry_%d_tracks", i);
-				val = al_get_config_value(file_helper_data->library->file_database, fn, buf);
-				if(val)
+				codec_handler = omo_get_codec_handler(file_helper_data->codec_handler_registry, val);
+				if(codec_handler)
 				{
-					file_count += atoi(val);
+					sprintf(buf, "entry_%d_tracks", i);
+					val = al_get_config_value(file_helper_data->library->file_database, fn, buf);
+					if(val)
+					{
+						file_count += atoi(val);
+					}
+					else
+					{
+						file_count += 1;
+					}
 				}
 			}
 		}
