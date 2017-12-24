@@ -330,6 +330,20 @@ int omo_get_library_entry(OMO_LIBRARY * lp, const char * id)
 	return -1;
 }
 
+int omo_get_library_base_entry(OMO_LIBRARY * lp, const char * id)
+{
+	int i;
+
+	for(i = 0; i < lp->entry_count; i++)
+	{
+		if(!memcmp(lp->entry[i]->id, id, strlen(id)))
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
 bool omo_split_track(OMO_LIBRARY * lp, const char * basefn, char * split_string)
 {
 	const char * base_id;
@@ -369,6 +383,7 @@ bool omo_split_track(OMO_LIBRARY * lp, const char * basefn, char * split_string)
 			{
 				al_set_config_value(lp->file_database, basefn, "tracks", "1");
 				al_remove_config_key(lp->file_database, basefn, "track_0");
+				al_remove_config_key(lp->entry_database, base_id, "Split Track Info");
 			}
 			break;
 		}
