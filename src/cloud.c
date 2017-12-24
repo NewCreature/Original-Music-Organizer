@@ -96,6 +96,10 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 		if(tagger_key)
 		{
 			entry = omo_get_library_entry(lp, id);
+			if(entry < 0)
+			{
+				entry = omo_get_library_base_entry(lp, id);
+			}
 			if(entry >= 0)
 			{
 				al_stop_timer(t3f_timer);
@@ -202,7 +206,7 @@ static void * cloud_submit_thread_proc(ALLEGRO_THREAD * thread, void * data)
 		{
 			if(omo_submit_track_tags(app->library, app->library->entry[i]->id, app->cloud_url, app->archive_handler_registry, app->codec_handler_registry, app->cloud_temp_path))
 			{
-				al_set_config_value(app->library->entry_database, app->ui->tags_entry, "Submitted", "true");
+				al_set_config_value(app->library->entry_database, app->library->entry[i]->id, "Submitted", "true");
 			}
 		}
 		if(al_get_thread_should_stop(thread))
