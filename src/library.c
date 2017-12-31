@@ -687,6 +687,7 @@ static int sort_by_title(const void *e1, const void *e2)
 	const char * val2;
 	const char * id1;
 	const char * id2;
+	char path[1024];
 	int i, c;
 
 	if(library_sort_cancelled)
@@ -694,8 +695,30 @@ static int sort_by_title(const void *e1, const void *e2)
 		return 0;
 	}
 
-	id1 = al_get_config_value(library->file_database, library->entry[entry1]->filename, "id");
-	id2 = al_get_config_value(library->file_database, library->entry[entry2]->filename, "id");
+	strcpy(path, library->entry[entry1]->filename);
+	if(library->entry[entry1]->sub_filename)
+	{
+		strcat(path, "/");
+		strcat(path, library->entry[entry1]->sub_filename);
+	}
+	if(library->entry[entry1]->track)
+	{
+		strcat(path, ":");
+		strcat(path, library->entry[entry1]->track);
+	}
+	id1 = al_get_config_value(library->file_database, path, "id");
+	strcpy(path, library->entry[entry2]->filename);
+	if(library->entry[entry2]->sub_filename)
+	{
+		strcat(path, "/");
+		strcat(path, library->entry[entry2]->sub_filename);
+	}
+	if(library->entry[entry2]->track)
+	{
+		strcat(path, ":");
+		strcat(path, library->entry[entry2]->track);
+	}
+	id2 = al_get_config_value(library->file_database, path, "id");
 
 	if(id1 && id2)
 	{
@@ -711,8 +734,17 @@ static int sort_by_title(const void *e1, const void *e2)
 					return c;
 				}
 			}
+			else if(val1)
+			{
+				return -1;
+			}
+			else if(val2)
+			{
+				return 1;
+			}
 		}
 	}
+
 	return sort_by_path(e1, e2);
 }
 
