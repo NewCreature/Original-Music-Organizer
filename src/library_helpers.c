@@ -79,7 +79,7 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 			val = get_library_folder(app->library_config, j);
 			if(val)
 			{
-				t3f_scan_files(val, omo_count_file, false, NULL, &app->loading_library_file_helper_data);
+				t3f_scan_files(val, omo_count_file, false, &app->loading_library_file_helper_data);
 				sprintf(app->status_bar_text, "Saving progress...");
 				omo_save_library(app->loading_library);
 			}
@@ -94,7 +94,7 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 			}
 			val = get_library_folder(app->library_config, j);
 			sprintf(app->status_bar_text, "Scanning folder %d of %d...", j + 1, c);
-			t3f_scan_files(val, omo_add_file, false, NULL, &app->loading_library_file_helper_data);
+			t3f_scan_files(val, omo_add_file, false, &app->loading_library_file_helper_data);
 			omo_save_library(app->loading_library);
 			sprintf(app->status_bar_text, "Saving progress...");
 		}

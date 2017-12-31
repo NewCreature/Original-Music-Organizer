@@ -240,7 +240,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 			{
 				if(!used_arg[i])
 				{
-					if(!t3f_scan_files(argv[i], omo_count_file, false, NULL, &file_helper_data))
+					if(!t3f_scan_files(argv[i], omo_count_file, false, &file_helper_data))
 					{
 						omo_count_file(argv[i], &file_helper_data);
 					}
@@ -256,7 +256,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 					{
 						if(!used_arg[i])
 						{
-							if(!t3f_scan_files(argv[i], omo_queue_file, false, NULL, &file_helper_data))
+							if(!t3f_scan_files(argv[i], omo_queue_file, false, &file_helper_data))
 							{
 								omo_queue_file(argv[i], &file_helper_data);
 							}

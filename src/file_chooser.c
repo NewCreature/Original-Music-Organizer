@@ -164,13 +164,13 @@ void omo_file_chooser_logic(void * data)
 						omo_destroy_queue(app->player->queue);
 					}
 					omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
-					if(t3f_scan_files(al_get_native_file_dialog_path(app->file_chooser, 0), omo_count_file, false, NULL, &file_helper_data))
+					if(t3f_scan_files(al_get_native_file_dialog_path(app->file_chooser, 0), omo_count_file, false, &file_helper_data))
 					{
 						app->player->queue = omo_create_queue(file_helper_data.file_count);
 						if(app->player->queue)
 						{
 							file_helper_data.queue = app->player->queue;
-							if(!t3f_scan_files(al_get_native_file_dialog_path(app->file_chooser, 0), omo_queue_file, false, NULL, &file_helper_data))
+							if(!t3f_scan_files(al_get_native_file_dialog_path(app->file_chooser, 0), omo_queue_file, false, &file_helper_data))
 							{
 								omo_destroy_queue(app->player->queue);
 							}
@@ -190,7 +190,7 @@ void omo_file_chooser_logic(void * data)
 				{
 					al_stop_timer(t3f_timer);
 					omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
-					if(t3f_scan_files(al_get_native_file_dialog_path(app->file_chooser, 0), omo_count_file, false, NULL, &file_helper_data))
+					if(t3f_scan_files(al_get_native_file_dialog_path(app->file_chooser, 0), omo_count_file, false, &file_helper_data))
 					{
 						if(app->player->queue)
 						{
@@ -204,7 +204,7 @@ void omo_file_chooser_logic(void * data)
 						if(app->player->queue)
 						{
 							file_helper_data.queue = app->player->queue;
-							if(t3f_scan_files(al_get_native_file_dialog_path(app->file_chooser, 0), omo_queue_file, false, NULL, &file_helper_data))
+							if(t3f_scan_files(al_get_native_file_dialog_path(app->file_chooser, 0), omo_queue_file, false, &file_helper_data))
 							{
 								omo_sort_queue(app->player->queue, app->library, 0, old_queue_size, app->player->queue->entry_count - old_queue_size);
 								omo_get_queue_tags(app->player->queue, app->library, app);
