@@ -72,7 +72,7 @@ static int omo_get_total_files(ALLEGRO_FILECHOOSER * fc, void * data)
 	omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
 	for(i = 0; i < al_get_native_file_dialog_count(fc); i++)
 	{
-		omo_count_file(al_get_native_file_dialog_path(fc, i), &file_helper_data);
+		omo_count_file(al_get_native_file_dialog_path(fc, i), false, &file_helper_data);
 	}
 	return file_helper_data.file_count;
 }
@@ -89,7 +89,7 @@ static void add_files_to_queue(ALLEGRO_FILECHOOSER * fc, OMO_QUEUE * queue, void
 	omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
 	for(i = 0; i < al_get_native_file_dialog_count(fc); i++)
 	{
-		omo_queue_file(al_get_native_file_dialog_path(fc, i), &file_helper_data);
+		omo_queue_file(al_get_native_file_dialog_path(fc, i), false, &file_helper_data);
 	}
 	app->player->queue = old_queue;
 }

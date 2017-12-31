@@ -2,6 +2,11 @@
 #include "instance.h"
 #include "file_helpers.h"
 
+time_t omo_get_folder_mtime(const char * path)
+{
+	return 0;
+}
+
 void omo_setup_file_helper_data(OMO_FILE_HELPER_DATA * fhdp, OMO_ARCHIVE_HANDLER_REGISTRY * ahrp, OMO_CODEC_HANDLER_REGISTRY * chrp, OMO_LIBRARY * lp, OMO_QUEUE * qp, ALLEGRO_PATH * temp_path, void * user_data)
 {
 	fhdp->archive_handler_registry = ahrp;
@@ -186,7 +191,7 @@ static const char * get_fn(const char * fn)
 	return fn;
 }
 
-bool omo_count_file(const char * fn, void * data)
+bool omo_count_file(const char * fn, bool isfolder, void * data)
 {
 	OMO_FILE_HELPER_DATA * file_helper_data = (OMO_FILE_HELPER_DATA *)data;
 	OMO_ARCHIVE_HANDLER * archive_handler;
@@ -196,6 +201,10 @@ bool omo_count_file(const char * fn, void * data)
 	const char * val;
 	char buf2[32] = {0};
 
+	if(isfolder)
+	{
+		return false;
+	}
 	if(file_helper_data->cancel_scan)
 	{
 		return false;
@@ -239,7 +248,7 @@ bool omo_count_file(const char * fn, void * data)
 	return false;
 }
 
-bool omo_add_file(const char * fn, void * data)
+bool omo_add_file(const char * fn, bool isfolder, void * data)
 {
 	OMO_FILE_HELPER_DATA * file_helper_data = (OMO_FILE_HELPER_DATA *)data;
 	OMO_ARCHIVE_HANDLER * archive_handler;
@@ -253,6 +262,10 @@ bool omo_add_file(const char * fn, void * data)
 	const char * target_fn = NULL;
 	int ret = 2; // don't update unless we get update signal from library function
 
+	if(isfolder)
+	{
+		return false;
+	}
 	if(file_helper_data->cancel_scan)
 	{
 		return false;
@@ -346,7 +359,7 @@ bool omo_add_file(const char * fn, void * data)
 	return true;
 }
 
-bool omo_queue_file(const char * fn, void * data)
+bool omo_queue_file(const char * fn, bool isfolder, void * data)
 {
 	OMO_FILE_HELPER_DATA * file_helper_data = (OMO_FILE_HELPER_DATA *)data;
 	OMO_ARCHIVE_HANDLER * archive_handler;
@@ -361,6 +374,10 @@ bool omo_queue_file(const char * fn, void * data)
 	const char * extracted_fn;
 	char fn_buffer[1024] = {0};
 
+	if(isfolder)
+	{
+		return false;
+	}
 	if(file_helper_data->cancel_scan)
 	{
 		return false;
