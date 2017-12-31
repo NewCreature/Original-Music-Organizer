@@ -90,10 +90,7 @@ static void * codec_load_file(const char * fn, const char * subfn)
 				free(data);
 				return NULL;
 			}
-			if(data->info->length)
-			{
-				data->loop = true;
-			}
+			data->loop = true;
 		}
 		data->volume = 1.0;
 	}
@@ -118,7 +115,6 @@ static bool codec_set_loop(void * data, double loop_start, double loop_end, doub
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
 	codec_data->info->length = ((loop_start + loop_end) * 1000.0) * loop_count;
-	codec_data->loop = true;
 
 	return true;
 }
