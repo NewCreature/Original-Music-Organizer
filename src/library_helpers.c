@@ -58,7 +58,7 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 		val = get_library_folder(app->library_config, i);
 		if(val)
 		{
-			mtime = get_path_mtime(val);
+			mtime = omo_get_folder_mtime(val);
 			if(mtime > app->loading_library->modified_time)
 			{
 				app->loading_library->modified_time = mtime;

@@ -1,10 +1,36 @@
 #include "t3f/t3f.h"
+#include "t3f/file_utils.h"
 #include "instance.h"
 #include "file_helpers.h"
 
+static bool omo_process_file_mtime(const char * fn, bool isfolder, void * data)
+{
+	ALLEGRO_FS_ENTRY * fs_entry;
+	time_t * mtime = (time_t *)data;
+	time_t new_mtime;
+
+	if(isfolder)
+	{
+		fs_entry = al_create_fs_entry(fn);
+		if(fs_entry)
+		{
+			new_mtime = al_get_fs_entry_mtime(fs_entry);
+			if(new_mtime > *mtime)
+			{
+				*mtime = new_mtime;
+			}
+		}
+	}
+	return false;
+}
+
 time_t omo_get_folder_mtime(const char * path)
 {
-	return 0;
+	time_t mtime = 0;
+
+	t3f_scan_files(path, omo_process_file_mtime, false, &mtime);
+
+	return mtime;
 }
 
 void omo_setup_file_helper_data(OMO_FILE_HELPER_DATA * fhdp, OMO_ARCHIVE_HANDLER_REGISTRY * ahrp, OMO_CODEC_HANDLER_REGISTRY * chrp, OMO_LIBRARY * lp, OMO_QUEUE * qp, ALLEGRO_PATH * temp_path, void * user_data)
