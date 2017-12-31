@@ -17,6 +17,7 @@ typedef struct
 	char track_buffer[16];
 	char tag_buffer[1024];
 	float volume;
+	bool loop;
 
 } CODEC_DATA;
 
@@ -89,6 +90,10 @@ static void * codec_load_file(const char * fn, const char * subfn)
 				free(data);
 				return NULL;
 			}
+			if(data->info->length)
+			{
+				data->loop = true;
+			}
 		}
 		data->volume = 1.0;
 	}
@@ -113,6 +118,17 @@ static bool codec_set_loop(void * data, double loop_start, double loop_end, doub
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
 	codec_data->info->length = ((loop_start + loop_end) * 1000.0) * loop_count;
+	codec_data->loop = true;
+
+	return true;
+}
+
+static bool codec_set_length(void * data, double length)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->info->length = length * 1000.0;
+	codec_data->loop = false;
 
 	return true;
 }
@@ -245,7 +261,10 @@ static bool codec_play(void * data)
 	{
 		codec_data->info->length = (long) (2.5 * 60 * 1000);
 	}
-	gme_set_fade(codec_data->emu, codec_data->info->length);
+	if(codec_data->loop)
+	{
+		gme_set_fade(codec_data->emu, codec_data->info->length);
+	}
 	codec_data->paused = false;
 
 	codec_data->codec_stream = al_create_audio_stream(4, buf_size, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
@@ -318,7 +337,7 @@ static double codec_get_length(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	return (double)codec_data->info->length / 1000.0 + 8.0;
+	return (double)codec_data->info->length / 1000.0 + (codec_data->loop ? 8.0 : 0.0);
 }
 
 /*static float codec_get_position(void)
@@ -351,6 +370,7 @@ OMO_CODEC_HANDLER * omo_codec_gme_get_codec_handler(void)
 	codec_handler.load_file = codec_load_file;
 	codec_handler.unload_file = codec_unload_file;
 	codec_handler.set_loop = codec_set_loop;
+	codec_handler.set_length = codec_set_length;
 	codec_handler.set_volume = codec_set_volume;
 	codec_handler.get_tag = codec_get_tag;
 	codec_handler.get_track_count = codec_get_track_count;

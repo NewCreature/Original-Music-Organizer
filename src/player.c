@@ -98,7 +98,7 @@ bool omo_play_next_song(OMO_PLAYER * pp)
 	return true;
 }
 
-static bool omo_player_play_file(OMO_PLAYER * pp, double loop_start, double loop_end, double fade_time, int loop_count)
+static bool omo_player_play_file(OMO_PLAYER * pp, double loop_start, double loop_end, double fade_time, int loop_count, double force_length)
 {
 	const char * val;
 
@@ -107,6 +107,13 @@ static bool omo_player_play_file(OMO_PLAYER * pp, double loop_start, double loop
 		if(loop_end > loop_start)
 		{
 			pp->track->codec_handler->set_loop(pp->track->codec_data, loop_start, loop_end, fade_time, loop_count);
+		}
+	}
+	if(pp->track->codec_handler->set_length)
+	{
+		if(force_length > 0.0)
+		{
+			pp->track->codec_handler->set_length(pp->track->codec_data, force_length);
 		}
 	}
 	if(pp->track->codec_handler->set_volume)
@@ -141,13 +148,32 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 	double loop_start = 0.0;
 	double loop_end = 0.0;
 	double fade_time = 0.0;
+	double current_time = -1.0;
+	double force_length = 0.0;
+	char buf[256];
 
 	if(pp->queue && pp->state == OMO_PLAYER_STATE_PLAYING)
 	{
 		if(pp->track)
 		{
+			if(pp->track->codec_handler->get_position)
+			{
+				current_time = pp->track->codec_handler->get_position(pp->track->codec_data);
+			}
 			if(pp->track->codec_handler->done_playing(pp->track->codec_data))
 			{
+				if(pp->track->codec_handler->get_length)
+				{
+					if(current_time < pp->track->codec_handler->get_length(pp->track->codec_data) - 5.0)
+					{
+						id = omo_get_library_file_id(lp, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track);
+						if(id)
+						{
+							sprintf(buf, "%f", current_time);
+							al_set_config_value(lp->entry_database, id, "Detected Length", buf);
+						}
+					}
+				}
 				al_stop_timer(t3f_timer);
 				omo_stop_player_playback(pp);
 				pp->state = OMO_PLAYER_STATE_FINISHED;
@@ -177,6 +203,11 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 						id = omo_get_library_file_id(lp, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track);
 						if(id)
 						{
+							val = al_get_config_value(lp->entry_database, id, "Detected Length");
+							if(val)
+							{
+								force_length = atof(val);
+							}
 							val = al_get_config_value(lp->entry_database, id, "Loop Start");
 							if(val)
 							{
@@ -194,7 +225,7 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 							}
 						}
 					}
-					if(omo_player_play_file(pp, loop_start, loop_end, fade_time, 1))
+					if(omo_player_play_file(pp, loop_start, loop_end, fade_time, 1, force_length))
 					{
 						break;
 					}

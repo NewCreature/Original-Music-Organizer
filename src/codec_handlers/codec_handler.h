@@ -24,6 +24,7 @@ typedef struct
 
 	/* playback functions */
 	bool (*set_loop)(void * data, double loop_start, double loop_end, double fade_time, int loop_count);
+	bool (*set_length)(void * data, double length);
 	bool (*set_volume)(void * data, float volume);
 	bool (*play)(void * data);
 	bool (*pause)(void * data);
