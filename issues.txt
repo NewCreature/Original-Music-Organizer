@@ -76,11 +76,11 @@ v0.4
 [X]Add a function to detect a top level folder modified time. This function
    should scan all subfolders and use the newest time.
 
+[X]If a song ends before it reaches its reported length, set an internal length
+   tag. This length tag should also be submitted.
+
 [ ]Add a way to mark the library as dirty and reload it when whatever process
    is operating on it completes.
-
-[ ]If a song ends before it reaches its reported length, set an internal length
-   tag. This length tag should also be submitted.
 
 [ ]Add library profiles. A library profile will contain library settings
    specific to that profile. For instance, you can have the default profile
