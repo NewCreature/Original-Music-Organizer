@@ -171,6 +171,7 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 						{
 							sprintf(buf, "%f", current_time);
 							al_set_config_value(lp->entry_database, id, "Detected Length", buf);
+							al_set_config_value(lp->entry_database, id, "Submitted", "false");
 						}
 					}
 				}
