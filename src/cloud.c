@@ -186,6 +186,11 @@ bool omo_retrieve_track_tags(OMO_LIBRARY * lp, const char * id, const char * url
 					omo_split_track(lp, lp->entry[entry]->filename, buffer);
 				}
 			}
+			track_val = t3net_get_data_entry_field(track_data, 0, convert_tag_name("Detected Length"));
+			if(track_val)
+			{
+				al_set_config_value(lp->entry_database, id, convert_tag_name("Detected Length"), track_val);
+			}
 			ret = true;
 		}
 	}
