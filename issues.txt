@@ -79,6 +79,16 @@ v0.4
 [X]If a song ends before it reaches its reported length, set an internal length
    tag. This length tag should also be submitted.
 
+[ ]Check places where we use the cloud functions in our main thread to ensure
+   the cloud thread is stopped before using them. We don't want to be operating
+   on our library database from multiple threads simultaneously.
+
+[ ]Add library mutex and lock it when we are performing certain operations on
+   the library database. Specifically, we need to ensure no data is written to
+   the database while a separate thread is attempting to read from it. The
+   library list code running in a separate thread might be reading data from
+   the database while the database is being altered. This could cause a crash.
+
 [ ]Add a way to mark the library as dirty and reload it when whatever process
    is operating on it completes.
 
