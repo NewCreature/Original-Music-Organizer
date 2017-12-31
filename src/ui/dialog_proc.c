@@ -80,7 +80,7 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
 			track = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Track");
 			if(title)
 			{
-				strcpy(ui_song_text, title);
+				strcpy(ui_song_text, strlen(title) ? title : "No Title");
 			}
 			else if(album && track)
 			{
