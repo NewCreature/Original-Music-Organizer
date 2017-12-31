@@ -73,7 +73,7 @@ v0.4
 [X]Look into why RSNs are being rescanned during library scan instead of using
    the data cached in file_database.
 
-[ ]Add a function to detect a top level folder modified time. This function
+[X]Add a function to detect a top level folder modified time. This function
    should scan all subfolders and use the newest time.
 
 [ ]Add a way to mark the library as dirty and reload it when whatever process
