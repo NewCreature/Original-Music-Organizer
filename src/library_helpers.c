@@ -119,7 +119,7 @@ bool omo_build_library_artists_list(APP_INSTANCE * app, OMO_LIBRARY * lp)
 	omo_add_artist_to_library(lp, "Unknown Artist");
 	for(i = 0; i < lp->entry_count; i++)
 	{
-		val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Artist");
+		val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
 		if(val)
 		{
 			omo_add_artist_to_library(lp, val);
@@ -295,7 +295,7 @@ const char * omo_get_library_file_id(OMO_LIBRARY * lp, const char * fn, const ch
 		strcat(full_path, ":");
 		strcat(full_path, track);
 	}
-	return al_get_config_value(lp->file_database, full_path, "id");
+	return omo_get_database_value(lp->file_database, full_path, "id");
 }
 
 const char * omo_get_library_file_base_id(OMO_LIBRARY * lp, const char * fn, char * buffer)
@@ -303,7 +303,7 @@ const char * omo_get_library_file_base_id(OMO_LIBRARY * lp, const char * fn, cha
 	const char * val;
 	char base_size[256];
 
-	val = al_get_config_value(lp->file_database, fn, "id");
+	val = omo_get_database_value(lp->file_database, fn, "id");
 	if(val)
 	{
 		/* get the file ID of the base file */
@@ -366,8 +366,8 @@ bool omo_split_track(OMO_LIBRARY * lp, const char * basefn, char * split_string)
 	{
 		return false;
 	}
-	al_set_config_value(lp->entry_database, base_id, "Split Track Info", split_string);
-	title_val = al_get_config_value(lp->entry_database, base_id, "Title");
+	omo_set_database_value(lp->entry_database, base_id, "Split Track Info", split_string);
+	title_val = omo_get_database_value(lp->entry_database, base_id, "Title");
 
 	token = strtok(split_string, ", ");
 	while(!done)
@@ -377,13 +377,13 @@ bool omo_split_track(OMO_LIBRARY * lp, const char * basefn, char * split_string)
 			if(current_track > 0)
 			{
 				sprintf(buf, "%d", current_track);
-				al_set_config_value(lp->file_database, basefn, "tracks", buf);
+				omo_set_database_value(lp->file_database, basefn, "tracks", buf);
 			}
 			else
 			{
-				al_set_config_value(lp->file_database, basefn, "tracks", "1");
-				al_remove_config_key(lp->file_database, basefn, "track_0");
-				al_remove_config_key(lp->entry_database, base_id, "Split Track Info");
+				omo_set_database_value(lp->file_database, basefn, "tracks", "1");
+				omo_remove_database_key(lp->file_database, basefn, "track_0");
+				omo_remove_database_key(lp->entry_database, base_id, "Split Track Info");
 			}
 			break;
 		}
@@ -392,19 +392,19 @@ bool omo_split_track(OMO_LIBRARY * lp, const char * basefn, char * split_string)
 			/* create entry in file database */
 			sprintf(fn, "%s:%s", basefn, token);
 			sprintf(id, "%s%s", base_id, token);
-			al_set_config_value(lp->file_database, fn, "id", id);
+			omo_set_database_value(lp->file_database, fn, "id", id);
 			sprintf(buf, "track_%d", current_track);
-			al_set_config_value(lp->file_database, basefn, buf, token);
+			omo_set_database_value(lp->file_database, basefn, buf, token);
 
 			/* copy base tags to new track */
 			for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 			{
 				if(omo_tag_type[i])
 				{
-					val = al_get_config_value(lp->entry_database, base_id, omo_tag_type[i]);
+					val = omo_get_database_value(lp->entry_database, base_id, omo_tag_type[i]);
 					if(val)
 					{
-						al_set_config_value(lp->entry_database, id, omo_tag_type[i], val);
+						omo_set_database_value(lp->entry_database, id, omo_tag_type[i], val);
 					}
 				}
 			}
@@ -413,8 +413,8 @@ bool omo_split_track(OMO_LIBRARY * lp, const char * basefn, char * split_string)
 			if(title_val)
 			{
 				sprintf(title_buf, "%s: Track %d", title_val, current_track + 1);
-				al_set_config_value(lp->entry_database, id, "Title", title_buf);
-				al_set_config_value(lp->entry_database, id, "scanned", "1");
+				omo_set_database_value(lp->entry_database, id, "Title", title_buf);
+				omo_set_database_value(lp->entry_database, id, "scanned", "1");
 			}
 			current_track++;
 		}

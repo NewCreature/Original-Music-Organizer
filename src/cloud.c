@@ -112,7 +112,7 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 				{
 					if(omo_tag_type[i])
 					{
-						val = al_get_config_value(lp->entry_database, id, omo_tag_type[i]);
+						val = omo_get_database_value(lp->entry_database, id, omo_tag_type[i]);
 						if(val)
 						{
 							track_val = get_track_tag(track, omo_tag_type[i]);
@@ -124,12 +124,12 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 						}
 					}
 				}
-				val = al_get_config_value(lp->entry_database, id, "Split Track Info");
+				val = omo_get_database_value(lp->entry_database, id, "Split Track Info");
 				if(val)
 				{
 					t3net_add_argument(arguments, convert_tag_name("Split Track Info"), val);
 				}
-				val = al_get_config_value(lp->entry_database, id, "Detected Length");
+				val = omo_get_database_value(lp->entry_database, id, "Detected Length");
 				if(val)
 				{
 					t3net_add_argument(arguments, convert_tag_name("Detected Length"), val);
@@ -172,7 +172,7 @@ bool omo_retrieve_track_tags(OMO_LIBRARY * lp, const char * id, const char * url
 					track_val = t3net_get_data_entry_field(track_data, 0, convert_tag_name(omo_tag_type[i]));
 					if(track_val)
 					{
-						al_set_config_value(lp->entry_database, id, omo_tag_type[i], track_val);
+						omo_set_database_value(lp->entry_database, id, omo_tag_type[i], track_val);
 					}
 				}
 			}
@@ -189,7 +189,7 @@ bool omo_retrieve_track_tags(OMO_LIBRARY * lp, const char * id, const char * url
 			track_val = t3net_get_data_entry_field(track_data, 0, convert_tag_name("Detected Length"));
 			if(track_val)
 			{
-				al_set_config_value(lp->entry_database, id, convert_tag_name("Detected Length"), track_val);
+				omo_set_database_value(lp->entry_database, id, convert_tag_name("Detected Length"), track_val);
 			}
 			ret = true;
 		}
@@ -206,12 +206,12 @@ static void * cloud_submit_thread_proc(ALLEGRO_THREAD * thread, void * data)
 	for(i = 0; i < app->library->entry_count; i++)
 	{
 		sprintf(app->status_bar_text, "Submitting tags: %s", app->library->entry[i]->id);
-		val = al_get_config_value(app->library->entry_database, app->library->entry[i]->id, "Submitted");
+		val = omo_get_database_value(app->library->entry_database, app->library->entry[i]->id, "Submitted");
 		if(val && !strcmp(val, "false"))
 		{
 			if(omo_submit_track_tags(app->library, app->library->entry[i]->id, app->cloud_url, app->archive_handler_registry, app->codec_handler_registry, app->cloud_temp_path))
 			{
-				al_set_config_value(app->library->entry_database, app->library->entry[i]->id, "Submitted", "true");
+				omo_set_database_value(app->library->entry_database, app->library->entry[i]->id, "Submitted", "true");
 			}
 		}
 		if(al_get_thread_should_stop(thread))

@@ -170,8 +170,8 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 						if(id)
 						{
 							sprintf(buf, "%f", current_time);
-							al_set_config_value(lp->entry_database, id, "Detected Length", buf);
-							al_set_config_value(lp->entry_database, id, "Submitted", "false");
+							omo_set_database_value(lp->entry_database, id, "Detected Length", buf);
+							omo_set_database_value(lp->entry_database, id, "Submitted", "false");
 						}
 					}
 				}
@@ -204,22 +204,22 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 						id = omo_get_library_file_id(lp, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track);
 						if(id)
 						{
-							val = al_get_config_value(lp->entry_database, id, "Detected Length");
+							val = omo_get_database_value(lp->entry_database, id, "Detected Length");
 							if(val)
 							{
 								force_length = atof(val);
 							}
-							val = al_get_config_value(lp->entry_database, id, "Loop Start");
+							val = omo_get_database_value(lp->entry_database, id, "Loop Start");
 							if(val)
 							{
 								loop_start = atof(val);
 							}
-							val = al_get_config_value(lp->entry_database, id, "Loop End");
+							val = omo_get_database_value(lp->entry_database, id, "Loop End");
 							if(val)
 							{
 								loop_end = atof(val);
 							}
-							val = al_get_config_value(lp->entry_database, id, "Fade Time");
+							val = omo_get_database_value(lp->entry_database, id, "Fade Time");
 							if(val)
 							{
 								fade_time = atof(val);

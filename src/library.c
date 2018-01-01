@@ -19,35 +19,15 @@ OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_
 	if(lp)
 	{
 		memset(lp, 0, sizeof(OMO_LIBRARY));
-		lp->file_database_fn = malloc(strlen(file_db_fn) + 1);
-		if(!lp->file_database_fn)
-		{
-			goto fail;
-		}
-		strcpy(lp->file_database_fn, file_db_fn);
-		lp->file_database = al_load_config_file(file_db_fn);
+		lp->file_database = omo_create_database(file_db_fn);
 		if(!lp->file_database)
 		{
-			lp->file_database = al_create_config();
-			if(!lp->file_database)
-			{
-				goto fail;
-			}
-		}
-		lp->entry_database_fn = malloc(strlen(entry_db_fn) + 1);
-		if(!lp->entry_database_fn)
-		{
 			goto fail;
 		}
-		strcpy(lp->entry_database_fn, entry_db_fn);
-		lp->entry_database = al_load_config_file(entry_db_fn);
+		lp->entry_database = omo_create_database(entry_db_fn);
 		if(!lp->entry_database)
 		{
-			lp->entry_database = al_create_config();
-			if(!lp->entry_database)
-			{
-				goto fail;
-			}
+			goto fail;
 		}
 	}
 	return lp;
@@ -56,21 +36,13 @@ OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_
 	{
 		if(lp)
 		{
-			if(lp->file_database_fn)
+			if(lp->entry_database)
 			{
-				free(lp->file_database_fn);
+				omo_destroy_database(lp->entry_database);
 			}
 			if(lp->file_database)
 			{
-				al_destroy_config(lp->file_database);
-			}
-			if(lp->entry_database_fn)
-			{
-				free(lp->entry_database_fn);
-			}
-			if(lp->entry_database)
-			{
-				al_destroy_config(lp->entry_database);
+				omo_destroy_database(lp->file_database);
 			}
 			free(lp);
 		}
@@ -180,10 +152,8 @@ void omo_destroy_library(OMO_LIBRARY * lp)
 	{
 		free(lp->song_entry);
 	}
-	free(lp->file_database_fn);
-	al_destroy_config(lp->file_database);
-	free(lp->entry_database_fn);
-	al_destroy_config(lp->entry_database);
+	omo_destroy_database(lp->file_database);
+	omo_destroy_database(lp->entry_database);
 	free(lp);
 }
 
@@ -191,11 +161,11 @@ bool omo_save_library(OMO_LIBRARY * lp)
 {
 	bool ret = true;
 
-	if(!al_save_config_file(lp->file_database_fn, lp->file_database))
+	if(!omo_save_database(lp->file_database))
 	{
 		ret = false;
 	}
-	if(!al_save_config_file(lp->entry_database_fn, lp->entry_database))
+	if(!omo_save_database(lp->entry_database))
 	{
 		ret = false;
 	}
@@ -224,7 +194,7 @@ static bool get_tags(OMO_LIBRARY * lp, const char * id, const char * fn, const c
 						val = codec_handler->get_tag(codec_data, omo_tag_type[i]);
 						if(val && strlen(val))
 						{
-							al_set_config_value(lp->entry_database, id, omo_tag_type[i], val);
+							omo_set_database_value(lp->entry_database, id, omo_tag_type[i], val);
 						}
 					}
 				}
@@ -282,10 +252,10 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
 			strcat(section, ":");
 			strcat(section, track);
 		}
-		val = al_get_config_value(lp->file_database, section, "id");
+		val = omo_get_database_value(lp->file_database, section, "id");
 		if(val)
 		{
-			val2 = al_get_config_value(lp->entry_database, val, "scanned");
+			val2 = omo_get_database_value(lp->entry_database, val, "scanned");
 		}
 		if(!val || !val2)
 		{
@@ -329,10 +299,10 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
 				{
 					strcat(sum_string, track);
 				}
-				al_set_config_value(lp->file_database, section, "id", sum_string);
+				omo_set_database_value(lp->file_database, section, "id", sum_string);
 				if(subfn)
 				{
-					al_set_config_value(lp->file_database, section, "subfn", subfn);
+					omo_set_database_value(lp->file_database, section, "subfn", subfn);
 				}
 				if(extracted_filename)
 				{
@@ -343,7 +313,7 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
 				{
 					get_tags(lp, sum_string, fn, track, crp);
 				}
-				al_set_config_value(lp->entry_database, sum_string, "scanned", "1");
+				omo_set_database_value(lp->entry_database, sum_string, "scanned", "1");
 				retval = 1;
 			}
 		}
@@ -383,7 +353,7 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
 			}
 			if(ret)
 			{
-				lp->entry[lp->entry_count]->id = al_get_config_value(lp->file_database, section, "id");
+				lp->entry[lp->entry_count]->id = omo_get_database_value(lp->file_database, section, "id");
 				if(lp->entry[lp->entry_count]->id)
 				{
 					lp->entry_count++;
@@ -571,15 +541,15 @@ static int sort_by_artist_album_title(const void *e1, const void *e2)
 		strcat(section2, library->entry[entry2]->track);
 	}
 
-	id1 = al_get_config_value(library->file_database, section1, "id");
-	id2 = al_get_config_value(library->file_database, section2, "id");
+	id1 = omo_get_database_value(library->file_database, section1, "id");
+	id2 = omo_get_database_value(library->file_database, section2, "id");
 
 	if(id1 && id2)
 	{
 		for(i = 0; i < 3; i++)
 		{
-			val1 = al_get_config_value(library->entry_database, id1, sort_field[i]);
-			val2 = al_get_config_value(library->entry_database, id2, sort_field[i]);
+			val1 = omo_get_database_value(library->entry_database, id1, sort_field[i]);
+			val2 = omo_get_database_value(library->entry_database, id2, sort_field[i]);
 			if(val1 && val2)
 			{
 				if(sort_type[i] == 0)
@@ -644,14 +614,14 @@ static int sort_by_track(const void *e1, const void *e2)
 		strcat(section2, ":");
 		strcat(section2, library->entry[entry2]->track);
 	}
-	id1 = al_get_config_value(library->file_database, section1, "id");
-	id2 = al_get_config_value(library->file_database, section2, "id");
+	id1 = omo_get_database_value(library->file_database, section1, "id");
+	id2 = omo_get_database_value(library->file_database, section2, "id");
 
 	if(id1 && id2)
 	{
 		/* sort by disc first */
-		val1 = al_get_config_value(library->entry_database, id1, "Disc");
-		val2 = al_get_config_value(library->entry_database, id2, "Disc");
+		val1 = omo_get_database_value(library->entry_database, id1, "Disc");
+		val2 = omo_get_database_value(library->entry_database, id2, "Disc");
 		if(val1 && val2)
 		{
 			i1 = atoi(val1);
@@ -663,8 +633,8 @@ static int sort_by_track(const void *e1, const void *e2)
 		}
 
 		/* if discs match, sort by track */
-		val1 = al_get_config_value(library->entry_database, id1, "Track");
-		val2 = al_get_config_value(library->entry_database, id2, "Track");
+		val1 = omo_get_database_value(library->entry_database, id1, "Track");
+		val2 = omo_get_database_value(library->entry_database, id2, "Track");
 		if(val1 && val2)
 		{
 			i1 = atoi(val1);
@@ -706,7 +676,7 @@ static int sort_by_title(const void *e1, const void *e2)
 		strcat(path, ":");
 		strcat(path, library->entry[entry1]->track);
 	}
-	id1 = al_get_config_value(library->file_database, path, "id");
+	id1 = omo_get_database_value(library->file_database, path, "id");
 	strcpy(path, library->entry[entry2]->filename);
 	if(library->entry[entry2]->sub_filename)
 	{
@@ -718,14 +688,14 @@ static int sort_by_title(const void *e1, const void *e2)
 		strcat(path, ":");
 		strcat(path, library->entry[entry2]->track);
 	}
-	id2 = al_get_config_value(library->file_database, path, "id");
+	id2 = omo_get_database_value(library->file_database, path, "id");
 
 	if(id1 && id2)
 	{
 		for(i = 0; i < 1; i++)
 		{
-			val1 = al_get_config_value(library->entry_database, id1, sort_field[i]);
-			val2 = al_get_config_value(library->entry_database, id2, sort_field[i]);
+			val1 = omo_get_database_value(library->entry_database, id1, sort_field[i]);
+			val2 = omo_get_database_value(library->entry_database, id2, sort_field[i]);
 			if(val1 && val2)
 			{
 				c = strcmp(val1, val2);
@@ -822,7 +792,7 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 				omo_add_album_to_library(lp, "Unknown Album");
 				for(i = 0; i < lp->entry_count; i++)
 				{
-					val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Album");
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
 					if(val)
 					{
 						omo_add_album_to_library(lp, val);
@@ -840,10 +810,10 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 			omo_add_album_to_library(lp, "Unknown Album");
 			for(i = 0; i < lp->entry_count; i++)
 			{
-				val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Artist");
+				val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
 				if(!val)
 				{
-					val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Album");
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
 					if(val)
 					{
 						omo_add_album_to_library(lp, val);
@@ -857,12 +827,12 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 			omo_add_album_to_library(lp, "Unknown Album");
 			for(i = 0; i < lp->entry_count; i++)
 			{
-				val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Artist");
+				val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
 				if(val)
 				{
 					if(!strcmp(val, artist))
 					{
-						val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Album");
+						val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
 						if(val)
 						{
 							omo_add_album_to_library(lp, val);
@@ -921,7 +891,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			{
 				for(i = 0; i < lp->entry_count; i++)
 				{
-					val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Album");
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
 					if(val)
 					{
 						if(!strcmp(val, "Unknown"))
@@ -948,7 +918,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			{
 				for(i = 0; i < lp->entry_count; i++)
 				{
-					val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Album");
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
 					if(val)
 					{
 						if(!strcmp(val, album))
@@ -974,7 +944,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			{
 				for(i = 0; i < lp->entry_count; i++)
 				{
-					val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
 					if(val)
 					{
 						if(!strcmp(val, artist))
@@ -1003,7 +973,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 				for(i = 0; i < lp->entry_count; i++)
 				{
 					unknown_artist = true;
-					val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
 					if(val)
 					{
 						if(!strcmp(val, artist))
@@ -1017,7 +987,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 					}
 					if(unknown_artist)
 					{
-						val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Album");
+						val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
 						if(val)
 						{
 							if(!strcmp(val, album))
@@ -1045,12 +1015,12 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			{
 				for(i = 0; i < lp->entry_count; i++)
 				{
-					val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
 					if(val)
 					{
 						if(!strcmp(val, artist))
 						{
-							val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Album");
+							val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
 							if(val)
 							{
 								if(!strcmp(val, album))
@@ -1078,7 +1048,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			{
 				for(i = 0; i < lp->entry_count; i++)
 				{
-					val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
 					if(val)
 					{
 						if(!strcmp(val, artist))
@@ -1103,7 +1073,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 				for(i = 0; i < lp->entry_count; i++)
 				{
 					artist_match = false;
-					val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
 					if(val)
 					{
 						if(!strcmp(val, artist))
@@ -1113,7 +1083,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 					}
 					if(artist_match)
 					{
-						val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Album");
+						val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
 						if(val)
 						{
 							if(!strcmp(val, album))
@@ -1141,12 +1111,12 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			{
 				for(i = 0; i < lp->entry_count; i++)
 				{
-					val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
 					if(val)
 					{
 						if(!strcmp(val, artist))
 						{
-							val = al_get_config_value(lp->entry_database, lp->entry[i]->id, "Album");
+							val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
 							if(val)
 							{
 								if(!strcmp(val, album))

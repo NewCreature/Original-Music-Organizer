@@ -58,16 +58,16 @@ static int sort_by_track(const void *e1, const void *e2)
 		return sort_by_path(e1, e2);
 	}
 	sprintf(buf, "%s%s%s", (*entry1)->file, (*entry1)->sub_file ? "/" : "", (*entry1)->sub_file ? (*entry1)->sub_file : "");
-	id1 = al_get_config_value(library->file_database, buf, "id");
+	id1 = omo_get_database_value(library->file_database, buf, "id");
 	sprintf(buf, "%s%s%s", (*entry2)->file, (*entry2)->sub_file ? "/" : "", (*entry2)->sub_file ? (*entry2)->sub_file : "");
-	id2 = al_get_config_value(library->file_database, buf, "id");
+	id2 = omo_get_database_value(library->file_database, buf, "id");
 
 	if(id1 && id2)
 	{
 		for(i = 0; i < 5; i++)
 		{
-			val1 = al_get_config_value(library->entry_database, id1, sort_field[i]);
-			val2 = al_get_config_value(library->entry_database, id2, sort_field[i]);
+			val1 = omo_get_database_value(library->entry_database, id1, sort_field[i]);
+			val2 = omo_get_database_value(library->entry_database, id2, sort_field[i]);
 			if(val1 && val2)
 			{
 				if(sort_type[i] == 0)
@@ -110,16 +110,16 @@ static int sort_by_artist_and_title(const void *e1, const void *e2)
 		return sort_by_path(e1, e2);
 	}
 	sprintf(buf, "%s%s%s", (*entry1)->file, (*entry1)->sub_file ? "/" : "", (*entry1)->sub_file ? (*entry1)->sub_file : "");
-	id1 = al_get_config_value(library->file_database, buf, "id");
+	id1 = omo_get_database_value(library->file_database, buf, "id");
 	sprintf(buf, "%s%s%s", (*entry2)->file, (*entry2)->sub_file ? "/" : "", (*entry2)->sub_file ? (*entry2)->sub_file : "");
-	id2 = al_get_config_value(library->file_database, buf, "id");
+	id2 = omo_get_database_value(library->file_database, buf, "id");
 
 	if(id1 && id2)
 	{
 		for(i = 0; i < 2; i++)
 		{
-			val1 = al_get_config_value(library->entry_database, id1, sort_field[i]);
-			val2 = al_get_config_value(library->entry_database, id2, sort_field[i]);
+			val1 = omo_get_database_value(library->entry_database, id1, sort_field[i]);
+			val2 = omo_get_database_value(library->entry_database, id2, sort_field[i]);
 			if(val1 && val2)
 			{
 				c = strcmp(val1, val2);
@@ -151,16 +151,16 @@ static int sort_by_title(const void *e1, const void *e2)
 		return sort_by_path(e1, e2);
 	}
 	sprintf(buf, "%s%s%s", (*entry1)->file, (*entry1)->sub_file ? "/" : "", (*entry1)->sub_file ? (*entry1)->sub_file : "");
-	id1 = al_get_config_value(library->file_database, buf, "id");
+	id1 = omo_get_database_value(library->file_database, buf, "id");
 	sprintf(buf, "%s%s%s", (*entry2)->file, (*entry2)->sub_file ? "/" : "", (*entry2)->sub_file ? (*entry2)->sub_file : "");
-	id2 = al_get_config_value(library->file_database, buf, "id");
+	id2 = omo_get_database_value(library->file_database, buf, "id");
 
 	if(id1 && id2)
 	{
 		for(i = 0; i < 1; i++)
 		{
-			val1 = al_get_config_value(library->entry_database, id1, sort_field[i]);
-			val2 = al_get_config_value(library->entry_database, id2, sort_field[i]);
+			val1 = omo_get_database_value(library->entry_database, id1, sort_field[i]);
+			val2 = omo_get_database_value(library->entry_database, id2, sort_field[i]);
 			if(val1 && val2)
 			{
 				c = strcmp(val1, val2);
@@ -199,13 +199,13 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 			strcat(section, ":");
 			strcat(section, qp->entry[i]->track);
 		}
-		val = al_get_config_value(lp->file_database, section, "id");
+		val = omo_get_database_value(lp->file_database, section, "id");
 		if(val)
 		{
-			artist = al_get_config_value(lp->entry_database, val, "Artist");
-			album = al_get_config_value(lp->entry_database, val, "Album");
-			title = al_get_config_value(lp->entry_database, val, "Title");
-			track = al_get_config_value(lp->entry_database, val, "Track");
+			artist = omo_get_database_value(lp->entry_database, val, "Artist");
+			album = omo_get_database_value(lp->entry_database, val, "Album");
+			title = omo_get_database_value(lp->entry_database, val, "Title");
+			track = omo_get_database_value(lp->entry_database, val, "Track");
 			if(artist)
 			{
 				strcpy(qp->entry[i]->tags.artist, artist);

@@ -75,9 +75,9 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
 		else
 		{
 			index--;
-			title = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Title");
-			album = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Album");
-			track = al_get_config_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Track");
+			title = omo_get_database_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Title");
+			album = omo_get_database_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Album");
+			track = omo_get_database_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Track");
 			if(title)
 			{
 				strcpy(ui_song_text, strlen(title) ? title : "No Title");

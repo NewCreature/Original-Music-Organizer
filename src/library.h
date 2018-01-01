@@ -3,6 +3,7 @@
 
 #include "archive_handlers/registry.h"
 #include "codec_handlers/registry.h"
+#include "database.h"
 
 typedef struct
 {
@@ -19,10 +20,8 @@ typedef struct
 
 	/* two databases, one for storing file paths and one for storing song
 	   information that the file database references by id */
-	char * file_database_fn;
-	ALLEGRO_CONFIG * file_database;
-	char * entry_database_fn;
-	ALLEGRO_CONFIG * entry_database;
+	OMO_DATABASE * file_database;
+	OMO_DATABASE * entry_database;
 
 	OMO_LIBRARY_ENTRY ** entry;
 	unsigned long entry_size;

@@ -50,7 +50,7 @@ static void open_tags_dialog(void * data, const char * fullfn)
 	const char * val2;
 	int i;
 
-	app->ui->tags_entry = al_get_config_value(app->library->file_database, fullfn, "id");
+	app->ui->tags_entry = omo_get_database_value(app->library->file_database, fullfn, "id");
 	if(app->ui->tags_entry)
 	{
 		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
@@ -58,7 +58,7 @@ static void open_tags_dialog(void * data, const char * fullfn)
 			strcpy(app->ui->tags_text[i], "");
 			if(omo_tag_type[i])
 			{
-				val2 = al_get_config_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i]);
+				val2 = omo_get_database_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i]);
 				if(val2)
 				{
 					strcpy(app->ui->tags_text[i], val2);
@@ -76,7 +76,7 @@ static void open_split_track_dialog(void * data, const char * basefn, const char
 	const char * base_id;
 	const char * val2;
 
-	app->ui->split_track_entry = al_get_config_value(app->library->file_database, basefn, "id");
+	app->ui->split_track_entry = omo_get_database_value(app->library->file_database, basefn, "id");
 	if(app->ui->split_track_entry)
 	{
 		/* get the file ID of the base file */
@@ -84,7 +84,7 @@ static void open_split_track_dialog(void * data, const char * basefn, const char
 		if(base_id)
 		{
 			app->ui->split_track_fn = basefn;
-			val2 = al_get_config_value(app->library->entry_database, base_id, "Split Track Info");
+			val2 = omo_get_database_value(app->library->entry_database, base_id, "Split Track Info");
 			if(val2)
 			{
 				strcpy(app->ui->split_track_text, val2);
