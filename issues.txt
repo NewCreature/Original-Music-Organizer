@@ -90,6 +90,9 @@ v0.4
 
 [ ]Investigate why certain files that have been split aren't playing (DUMBA5).
 
+   [ ]For some reason setting the start order doesn't work for PSM files. This
+      will have to be fixed in DUMB.
+
 [ ]Check places where we use the cloud functions in our main thread to ensure
    the cloud thread is stopped before using them. We don't want to be operating
    on our library database from multiple threads simultaneously.
