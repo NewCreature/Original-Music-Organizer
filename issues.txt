@@ -93,9 +93,9 @@ v0.4
    [ ]For some reason setting the start order doesn't work for PSM files. This
       will have to be fixed in DUMB.
 
-[ ]Check places where we use the cloud functions in our main thread to ensure
-   the cloud thread is stopped before using them. We don't want to be operating
-   on our library database from multiple threads simultaneously.
+[ ]Move all thread operations to a single place in the code. Instead of
+   creating/destroying threads in various places in the code, we should set a
+   flag. We might make a separate "thread logic" module which handles this.
 
 [ ]Add a way to mark the library as dirty and reload it when whatever process
    is operating on it completes.
