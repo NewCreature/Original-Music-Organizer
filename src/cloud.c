@@ -80,13 +80,14 @@ static int cloud_strcmp(const char * s1, const char * s2)
 bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, ALLEGRO_PATH * temp_path)
 {
 	T3NET_ARGUMENTS * arguments;
+	T3NET_DATA * submit_data;
+	const char * submit_error;
 	const char * tagger_key;
 	const char * val;
 	const char * track_val;
 	bool ret = false;
 	int entry;
 	OMO_TRACK * track;
-	int tag_count = 0;
 	int i;
 
 	arguments = t3net_create_arguments();
@@ -119,7 +120,6 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 							if(!track_val || cloud_strcmp(val, track_val))
 							{
 								t3net_add_argument(arguments, convert_tag_name(omo_tag_type[i]), val);
-								tag_count++;
 							}
 						}
 					}
@@ -138,7 +138,19 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 				{
 					omo_unload_track(track);
 				}
-				ret = t3net_get_data(url, arguments);
+				submit_data = t3net_get_data(url, arguments);
+				if(submit_data)
+				{
+					submit_error = t3net_get_error(submit_data);
+					if(submit_error)
+					{
+						if(!strcmp(submit_error, "Can't delete non-existent entry.\r\n"))
+						{
+							omo_remove_database_key(lp->entry_database, id, "Submitted");
+						}
+					}
+					t3net_destroy_data(submit_data);
+				}
 			}
 		}
 		t3net_destroy_arguments(arguments);
@@ -205,10 +217,10 @@ static void * cloud_submit_thread_proc(ALLEGRO_THREAD * thread, void * data)
 
 	for(i = 0; i < app->library->entry_count; i++)
 	{
-		sprintf(app->status_bar_text, "Submitting tags: %s", app->library->entry[i]->id);
 		val = omo_get_database_value(app->library->entry_database, app->library->entry[i]->id, "Submitted");
 		if(val && !strcmp(val, "false"))
 		{
+			sprintf(app->status_bar_text, "Submitting tags: %s", app->library->entry[i]->id);
 			if(omo_submit_track_tags(app->library, app->library->entry[i]->id, app->cloud_url, app->archive_handler_registry, app->codec_handler_registry, app->cloud_temp_path))
 			{
 				omo_set_database_value(app->library->entry_database, app->library->entry[i]->id, "Submitted", "true");
