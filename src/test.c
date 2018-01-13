@@ -4,6 +4,7 @@
 #include "test.h"
 #include "init.h"
 #include "queue_helpers.h"
+#include "library_helpers.h"
 
 static bool omo_test_mode;
 static int omo_test_state;
