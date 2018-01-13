@@ -311,7 +311,6 @@ char * t3net_get_raw_data(const char * url, const T3NET_ARGUMENTS * arguments)
 			strcat(final_url, arguments->val[i]);
 		}
 	}
-	printf("url: %s\n", final_url);
 	curl_easy_setopt(curl, CURLOPT_URL, final_url);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, t3net_internal_write_function);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &data);
