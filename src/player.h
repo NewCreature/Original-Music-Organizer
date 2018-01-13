@@ -17,6 +17,7 @@ typedef struct
 	int queue_pos;
 	OMO_TRACK * track;
 	int state;
+	bool new_tags;
 
 } OMO_PLAYER;
 

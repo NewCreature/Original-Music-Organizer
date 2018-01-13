@@ -226,6 +226,11 @@ void omo_logic(void * data)
 				}
 			}
 			omo_player_logic(app->player, app->library, app->archive_handler_registry, app->codec_handler_registry, app->player_temp_path);
+			if(app->player->new_tags)
+			{
+				app->spawn_cloud_thread = true;
+				app->player->new_tags = false;
+			}
 			update_seek_pos(app);
 			update_volume_pos(app);
 			app->ui->ui_queue_list_element->id2 = app->player->queue_pos;
