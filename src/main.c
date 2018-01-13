@@ -23,6 +23,7 @@
 #include "test.h"
 #include "queue_helpers.h"
 #include "library_helpers.h"
+#include "threads.h"
 
 static int queue_list_visible_elements(T3GUI_ELEMENT * element)
 {
@@ -144,7 +145,7 @@ void omo_logic(void * data)
 				app->library_thread = NULL;
 				if(app->library && app->player->queue)
 				{
-					omo_get_queue_tags(app->player->queue, app->library, app);
+					app->spawn_queue_thread = true;
 				}
 				if(app->library)
 				{
@@ -180,7 +181,7 @@ void omo_logic(void * data)
 						strcpy(app->edit_artist, "");
 						strcpy(app->edit_album, "");
 						strcpy(app->edit_song_id, "");
-						omo_setup_library_lists(app);
+						app->spawn_library_lists_thread = true;
 					}
 				}
 			}
@@ -255,6 +256,7 @@ void omo_logic(void * data)
 					app->ui->ui_queue_list_element->d2 = app->player->queue->entry_count - visible - 1;
 				}
 			}
+			omo_threads_logic(app);
 		}
 	}
 }

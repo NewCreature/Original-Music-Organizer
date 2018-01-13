@@ -96,12 +96,12 @@ void omo_tags_dialog_logic(void * data)
 		}
 		else
 		{
-			omo_get_queue_tags(app->player->queue, app->library, data);
+			app->spawn_queue_thread = true;
 		}
 		if(update_artists || update_albums || update_songs)
 		{
 			omo_clear_library_cache();
-			omo_setup_library_lists(app);
+			app->spawn_library_lists_thread = true;
 		}
 		app->button_pressed = -1;
 		t3f_key[ALLEGRO_KEY_ENTER] = 0;

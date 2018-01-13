@@ -54,6 +54,12 @@ typedef struct
 	ALLEGRO_PATH * player_temp_path;
 	ALLEGRO_PATH * cloud_temp_path;
 
+	/* thread flags */
+	bool spawn_library_thread;
+	bool spawn_library_lists_thread;
+	bool spawn_cloud_thread;
+	bool spawn_queue_thread;
+
 } APP_INSTANCE;
 
 #endif

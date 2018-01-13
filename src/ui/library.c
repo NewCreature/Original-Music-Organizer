@@ -95,7 +95,7 @@ static void queue_song_list(void * data, OMO_LIBRARY * lp)
 			omo_add_file_to_queue(app->player->queue, lp->entry[lp->song_entry[i]]->filename, lp->entry[lp->song_entry[i]]->sub_filename, lp->entry[lp->song_entry[i]]->track, true);
 		}
 		maybe_start_player(app);
-		omo_get_queue_tags(app->player->queue, lp, app);
+		app->spawn_queue_thread = true;
 	}
 	al_start_timer(t3f_timer);
 }
@@ -157,7 +157,7 @@ void omo_library_logic(void * data)
 			{
 				omo_add_file_to_queue(app->player->queue, app->library->entry[app->library->song_entry[app->ui->selected_song]]->filename, app->library->entry[app->library->song_entry[app->ui->selected_song]]->sub_filename, app->library->entry[app->library->song_entry[app->ui->selected_song]]->track, true);
 			}
-			omo_get_queue_tags(app->player->queue, app->library, app);
+			app->spawn_queue_thread = true;
 			maybe_start_player(app);
 		}
 		app->ui->ui_song_list_element->id1 = -1;

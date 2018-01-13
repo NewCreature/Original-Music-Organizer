@@ -126,7 +126,7 @@ void omo_file_chooser_logic(void * data)
 					{
 						add_files_to_queue(app->file_chooser, app->player->queue, data);
 						omo_sort_queue(app->player->queue, app->library, 0, 0, app->player->queue->entry_count);
-						omo_get_queue_tags(app->player->queue, app->library, app);
+						app->spawn_queue_thread = true;
 						app->player->queue_pos = 0;
 						app->player->state = OMO_PLAYER_STATE_PLAYING;
 					}
@@ -150,7 +150,7 @@ void omo_file_chooser_logic(void * data)
 					{
 						add_files_to_queue(app->file_chooser, app->player->queue, data);
 						omo_sort_queue(app->player->queue, app->library, 0, old_queue_size, app->player->queue->entry_count - old_queue_size);
-						omo_get_queue_tags(app->player->queue, app->library, app);
+						app->spawn_queue_thread = true;
 					}
 					al_start_timer(t3f_timer);
 					break;
@@ -179,7 +179,7 @@ void omo_file_chooser_logic(void * data)
 								omo_sort_queue(app->player->queue, app->library, 0, 0, app->player->queue->entry_count);
 								app->player->queue_pos = 0;
 								app->player->state = OMO_PLAYER_STATE_PLAYING;
-								omo_get_queue_tags(app->player->queue, app->library, app);
+								app->spawn_queue_thread = true;
 							}
 						}
 					}
@@ -207,7 +207,7 @@ void omo_file_chooser_logic(void * data)
 							if(t3f_scan_files(al_get_native_file_dialog_path(app->file_chooser, 0), omo_queue_file, false, &file_helper_data))
 							{
 								omo_sort_queue(app->player->queue, app->library, 0, old_queue_size, app->player->queue->entry_count - old_queue_size);
-								omo_get_queue_tags(app->player->queue, app->library, app);
+								app->spawn_queue_thread = true;
 							}
 						}
 					}
@@ -242,14 +242,8 @@ void omo_file_chooser_logic(void * data)
 						library_folders++;
 						sprintf(buffer, "%d", library_folders);
 						al_set_config_value(t3f_config, "Settings", "library_folders", buffer);
-						omo_cancel_library_setup(app);
-						if(app->library)
-						{
-							omo_destroy_library(app->library);
-							app->library = NULL;
-						}
 						omo_clear_library_cache();
-						omo_setup_library(app, app->file_database_fn, app->entry_database_fn, NULL);
+						app->spawn_library_thread = true;
 					}
 					al_start_timer(t3f_timer);
 					break;

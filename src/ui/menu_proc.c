@@ -284,7 +284,7 @@ int omo_menu_playback_shuffle(void * data)
 			{
 				omo_start_player(app->player);
 			}
-			omo_get_queue_tags(app->player->queue, app->library, app);
+			app->spawn_queue_thread = true;
 		}
 	}
 	return 1;
@@ -376,13 +376,8 @@ int omo_menu_library_clear_folders(void * data)
 
 	sprintf(buf, "%d", 0);
 	al_set_config_value(t3f_config, "Settings", "library_folders", buf);
-	omo_cancel_library_setup(app);
-	if(app->library)
-	{
-		omo_destroy_library(app->library);
-		app->library = NULL;
-	}
 	omo_clear_library_cache();
+	app->spawn_library_thread = true;
 	sprintf(app->status_bar_text, "No Library Folders");
 	return 1;
 }
@@ -470,7 +465,7 @@ int omo_menu_library_submit_tags(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	omo_submit_library_tags(app, "http://www.t3-i.com/omo/tag_track.php");
+	app->spawn_cloud_thread = true;
 
 	return 1;
 }

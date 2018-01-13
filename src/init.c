@@ -134,8 +134,6 @@ void omo_set_window_constraints(APP_INSTANCE * app)
 bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 {
 	OMO_FILE_HELPER_DATA file_helper_data;
-	char file_database_fn[1024];
-	char entry_database_fn[1024];
 	bool used_arg[1024] = {false};
 	const char * val;
 	int test_path;
@@ -267,7 +265,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 						app->player->queue_pos = 0;
 						omo_start_player(app->player);
 					}
-					omo_get_queue_tags(app->player->queue, app->library, app);
+					app->spawn_queue_thread = true;
 				}
 			}
 		}
@@ -315,9 +313,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	}
 	else
 	{
-		strcpy(file_database_fn, t3f_get_filename(t3f_data_path, "files.ini"));
-		strcpy(entry_database_fn, t3f_get_filename(t3f_data_path, "database.ini"));
-		omo_setup_library(app, file_database_fn, entry_database_fn, NULL);
+		app->spawn_library_thread = true;
 		if(!app->player->queue)
 		{
 			app->player->queue = omo_load_queue(t3f_get_filename(t3f_data_path, "omo.queue"));
@@ -331,7 +327,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 					app->ui->ui_queue_list_element->d1 = app->player->queue_pos;
 					app->ui->ui_queue_list_element->d2 = app->ui->ui_queue_list_element->d1;
 				}
-				omo_get_queue_tags(app->player->queue, app->library, app);
+				app->spawn_queue_thread = true;
 			}
 		}
 	}

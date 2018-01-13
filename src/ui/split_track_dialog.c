@@ -9,8 +9,6 @@
 void omo_split_track_dialog_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	char file_database_fn[1024];
-	char entry_database_fn[1024];
 
 	if(t3f_key[ALLEGRO_KEY_ESCAPE])
 	{
@@ -29,11 +27,7 @@ void omo_split_track_dialog_logic(void * data)
 			}
 			omo_save_library(app->library);
 			omo_clear_library_cache();
-			strcpy(file_database_fn, app->library->file_database->filename);
-			strcpy(entry_database_fn, app->library->entry_database->filename);
-			omo_destroy_library(app->library);
-			app->library = NULL;
-			omo_setup_library(app, file_database_fn, entry_database_fn, NULL);
+			app->spawn_library_thread = true;
 		}
 		omo_close_split_track_dialog(app->ui, app);
 		app->button_pressed = -1;
