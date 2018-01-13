@@ -85,6 +85,10 @@ v0.4
    library list code running in a separate thread might be reading data from
    the database while the database is being altered. This could cause a crash.
 
+[X]Move all thread operations to a single place in the code. Instead of
+   creating/destroying threads in various places in the code, we should set a
+   flag. We might make a separate "thread logic" module which handles this.
+
 [ ]Check Split Track Info when adding files to the queue. We should add all of
    the tracks if the file has been split.
 
@@ -92,10 +96,6 @@ v0.4
 
    [ ]For some reason setting the start order doesn't work for PSM files. This
       will have to be fixed in DUMB.
-
-[ ]Move all thread operations to a single place in the code. Instead of
-   creating/destroying threads in various places in the code, we should set a
-   flag. We might make a separate "thread logic" module which handles this.
 
 [ ]Add a way to mark the library as dirty and reload it when whatever process
    is operating on it completes.
