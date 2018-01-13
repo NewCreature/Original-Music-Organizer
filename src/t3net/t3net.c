@@ -311,6 +311,7 @@ char * t3net_get_raw_data(const char * url, const T3NET_ARGUMENTS * arguments)
 			strcat(final_url, arguments->val[i]);
 		}
 	}
+	printf("url: %s\n", final_url);
 	curl_easy_setopt(curl, CURLOPT_URL, final_url);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, t3net_internal_write_function);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &data);
@@ -492,13 +493,17 @@ T3NET_DATA * t3net_get_data_from_string(const char * raw_data)
 	}
 
 	/* check for error */
-	if(!strncmp(raw_data, "Error", 5))
-	{
-		return NULL;
-	}
-	else if(!strncmp(raw_data, "ack", 3))
+	if(strlen(raw_data) >= 5 && (!strncmp(raw_data, "Error", 5) || !strncmp(raw_data, "ack", 3)))
 	{
 		data = t3net_create_data(0, fields);
+		if(data)
+		{
+			data->header = malloc(strlen(raw_data) + 1);
+			if(data->header)
+			{
+				strcpy(data->header, raw_data);
+			}
+		}
 		return data;
 	}
 
@@ -646,8 +651,21 @@ void t3net_destroy_data(T3NET_DATA * data)
 			}
 			free(data->entry);
 		}
+		if(data->header)
+		{
+			free(data->header);
+		}
 		free(data);
 	}
+}
+
+const char * t3net_get_error(T3NET_DATA * data)
+{
+	if(data->header && strlen(data->header) > 7 && !strncmp(data->header, "Error", 5))
+	{
+		return &data->header[7];
+	}
+	return NULL;
 }
 
 const char * t3net_get_data_entry_field(T3NET_DATA * data, int entry, const char * field_name)
