@@ -21,10 +21,7 @@ void omo_split_track_dialog_logic(void * data)
 		{
 			omo_split_track(app->library, app->ui->split_track_fn, app->ui->split_track_text);
 			omo_set_database_value(app->library->entry_database, app->ui->split_track_entry, "Submitted", "false");
-			if(omo_submit_track_tags(app->library, app->ui->split_track_entry, "http://www.t3-i.com/omo/tag_track.php", app->archive_handler_registry, app->codec_handler_registry, app->cloud_temp_path))
-			{
-				omo_set_database_value(app->library->entry_database, app->ui->split_track_entry, "Submitted", "true");
-			}
+			app->spawn_cloud_thread = true;
 			omo_save_library(app->library);
 			omo_clear_library_cache();
 			app->spawn_library_thread = true;

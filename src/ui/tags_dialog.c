@@ -84,10 +84,7 @@ void omo_tags_dialog_logic(void * data)
 		if(update_tags)
 		{
 			omo_set_database_value(app->library->entry_database, app->ui->tags_entry, "Submitted", "false");
-			if(omo_submit_track_tags(app->library, app->ui->tags_entry, "http://www.t3-i.com/omo/tag_track.php", app->archive_handler_registry, app->codec_handler_registry, app->cloud_temp_path))
-			{
-				omo_set_database_value(app->library->entry_database, app->ui->tags_entry, "Submitted", "true");
-			}
+			app->spawn_cloud_thread = true;
 		}
 		omo_close_tags_dialog(app->ui, app);
 		if(app->ui->tags_queue_entry >= 0)
