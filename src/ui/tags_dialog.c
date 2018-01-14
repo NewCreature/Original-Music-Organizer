@@ -86,6 +86,7 @@ void omo_tags_dialog_logic(void * data)
 			omo_set_database_value(app->library->entry_database, app->ui->tags_entry, "Submitted", "false");
 			app->spawn_cloud_thread = true;
 		}
+		omo_discard_entry_backup(app->library);
 		omo_close_tags_dialog(app->ui, app);
 		if(app->ui->tags_queue_entry >= 0)
 		{
@@ -105,6 +106,7 @@ void omo_tags_dialog_logic(void * data)
 	}
 	else if(app->button_pressed == 1)
 	{
+		omo_restore_entry_tags(app->library);
 		omo_close_tags_dialog(app->ui, app);
 		app->button_pressed = -1;
 	}

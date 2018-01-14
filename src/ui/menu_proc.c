@@ -53,6 +53,10 @@ static void open_tags_dialog(void * data, const char * fullfn)
 	app->ui->tags_entry = omo_get_database_value(app->library->file_database, fullfn, "id");
 	if(app->ui->tags_entry)
 	{
+		if(omo_backup_entry_tags(app->library, app->ui->tags_entry))
+		{
+			omo_retrieve_track_tags(app->library, app->ui->tags_entry, "http://www.t3-i.com/omo/get_track_tags.php");
+		}
 		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 		{
 			strcpy(app->ui->tags_text[i], "");
@@ -83,6 +87,10 @@ static void open_split_track_dialog(void * data, const char * basefn, const char
 		base_id = omo_get_library_file_base_id(app->library, basefn, buffer);
 		if(base_id)
 		{
+			if(omo_backup_entry_tags(app->library, base_id))
+			{
+				omo_retrieve_track_tags(app->library, base_id, "http://www.t3-i.com/omo/get_track_tags.php");
+			}
 			app->ui->split_track_fn = basefn;
 			val2 = omo_get_database_value(app->library->entry_database, base_id, "Split Track Info");
 			if(val2)

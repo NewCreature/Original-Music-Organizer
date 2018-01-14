@@ -26,12 +26,14 @@ void omo_split_track_dialog_logic(void * data)
 			omo_clear_library_cache();
 			app->spawn_library_thread = true;
 		}
+		omo_discard_entry_backup(app->library);
 		omo_close_split_track_dialog(app->ui, app);
 		app->button_pressed = -1;
 		t3f_key[ALLEGRO_KEY_ENTER] = 0;
 	}
 	else if(app->button_pressed == 1)
 	{
+		omo_restore_entry_tags(app->library);
 		omo_close_split_track_dialog(app->ui, app);
 		app->button_pressed = -1;
 	}
