@@ -2,7 +2,7 @@
 #include "t3gui/t3gui.h"
 #include "instance.h"
 #include "constants.h"
-#include "init.h"
+#include "library_helpers.h"
 
 void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 {
