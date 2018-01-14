@@ -217,17 +217,30 @@ static void * cloud_submit_thread_proc(ALLEGRO_THREAD * thread, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	const char * val;
+	char buffer[1024];
+	const char * base_id;
+	const char * id;
 	int i;
 
 	for(i = 0; i < app->library->entry_count; i++)
 	{
+		id = app->library->entry[i]->id;
 		val = omo_get_database_value(app->library->entry_database, app->library->entry[i]->id, "Submitted");
+		if(!val)
+		{
+			base_id = omo_get_library_file_base_id(app->library, app->library->entry[i]->filename, buffer);
+			if(base_id)
+			{
+				id = base_id;
+				val = omo_get_database_value(app->library->entry_database, id, "Submitted");
+			}
+		}
 		if(val && !strcmp(val, "false"))
 		{
-			sprintf(app->status_bar_text, "Submitting tags: %s", app->library->entry[i]->id);
-			if(omo_submit_track_tags(app->library, app->library->entry[i]->id, app->cloud_url, app->archive_handler_registry, app->codec_handler_registry, app->cloud_temp_path))
+			sprintf(app->status_bar_text, "Submitting tags: %s", id);
+			if(omo_submit_track_tags(app->library, id, app->cloud_url, app->archive_handler_registry, app->codec_handler_registry, app->cloud_temp_path))
 			{
-				omo_set_database_value(app->library->entry_database, app->library->entry[i]->id, "Submitted", "true");
+				omo_remove_database_key(app->library->entry_database, id, "Submitted");
 			}
 		}
 		if(al_get_thread_should_stop(thread))
