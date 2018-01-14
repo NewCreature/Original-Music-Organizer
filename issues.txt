@@ -89,6 +89,10 @@ v0.4
    creating/destroying threads in various places in the code, we should set a
    flag. We might make a separate "thread logic" module which handles this.
 
+[ ]Retrieve tags from the cloud as part of the library scanning process.
+
+[ ]Retrieve tags when opening tags editor or split track dialog.
+
 [ ]Investigate why certain files that have been split aren't playing (DUMBA5).
 
    [ ]For some reason setting the start order doesn't work for PSM files. This
