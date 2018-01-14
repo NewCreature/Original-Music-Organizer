@@ -7,6 +7,7 @@ typedef struct
 	char * filename;
 	ALLEGRO_CONFIG * config;
 	ALLEGRO_MUTEX * mutex;
+	bool empty;
 
 } OMO_DATABASE;
 

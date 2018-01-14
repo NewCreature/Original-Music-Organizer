@@ -30,6 +30,10 @@ OMO_LIBRARY * omo_create_library(const char * file_db_fn, const char * entry_db_
 		{
 			goto fail;
 		}
+		if(lp->file_database->empty || lp->entry_database->empty)
+		{
+			omo_clear_library_cache();
+		}
 	}
 	return lp;
 

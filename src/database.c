@@ -8,6 +8,7 @@ OMO_DATABASE * omo_create_database(const char * fn)
 	dp = malloc(sizeof(OMO_DATABASE));
 	if(dp)
 	{
+		memset(dp, 0, sizeof(OMO_DATABASE));
 		dp->filename = malloc(strlen(fn) + 1);
 		if(!dp->filename)
 		{
@@ -18,6 +19,7 @@ OMO_DATABASE * omo_create_database(const char * fn)
 		dp->config = al_load_config_file(dp->filename);
 		if(!dp->config)
 		{
+			dp->empty = true;
 			dp->config = al_create_config();
 			if(!dp->config)
 			{
