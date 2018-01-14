@@ -485,6 +485,7 @@ T3NET_DATA * t3net_get_data_from_string(const char * raw_data)
 	unsigned int text_pos = 0;
 	int ecount = -1;
 	T3NET_TEMP_ELEMENT element;
+	int empty_data = 0;
 
 	if(!raw_data)
 	{
@@ -492,7 +493,15 @@ T3NET_DATA * t3net_get_data_from_string(const char * raw_data)
 	}
 
 	/* check for error */
-	if(strlen(raw_data) >= 5 && (!strncmp(raw_data, "Error", 5) || !strncmp(raw_data, "ack", 3)))
+	if(strlen(raw_data) >= 5 && !strncmp(raw_data, "Error", 5))
+	{
+		empty_data = 1;
+	}
+	else if(strlen(raw_data) >= 3 && !strncmp(raw_data, "ack", 3))
+	{
+		empty_data = 1;
+	}
+	if(empty_data)
 	{
 		data = t3net_create_data(0, fields);
 		if(data)
