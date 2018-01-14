@@ -149,6 +149,10 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 							omo_remove_database_key(lp->entry_database, id, "Submitted");
 						}
 					}
+					else
+					{
+						ret = true;
+					}
 					t3net_destroy_data(submit_data);
 				}
 			}
