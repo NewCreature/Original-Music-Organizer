@@ -22,6 +22,7 @@ typedef struct
 	   information that the file database references by id */
 	OMO_DATABASE * file_database;
 	OMO_DATABASE * entry_database;
+	ALLEGRO_CONFIG * entry_backup;
 
 	OMO_LIBRARY_ENTRY ** entry;
 	unsigned long entry_size;

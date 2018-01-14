@@ -12,5 +12,8 @@ const char * omo_get_library_file_base_id(OMO_LIBRARY * lp, const char * fn, cha
 int omo_get_library_entry(OMO_LIBRARY * lp, const char * id);
 int omo_get_library_base_entry(OMO_LIBRARY * lp, const char * id);
 bool omo_split_track(OMO_LIBRARY * lp, const char * basefn, char * split_string);
+bool omo_backup_entry_tags(OMO_LIBRARY * lp, const char * id);
+bool omo_restore_entry_tags(OMO_LIBRARY * lp);
+void omo_discard_entry_backup(OMO_LIBRARY * lp);
 
 #endif

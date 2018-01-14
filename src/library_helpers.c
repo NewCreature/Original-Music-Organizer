@@ -422,3 +422,105 @@ bool omo_split_track(OMO_LIBRARY * lp, const char * basefn, char * split_string)
 	}
 	return true;
 }
+
+bool omo_backup_entry_tags(OMO_LIBRARY * lp, const char * id)
+{
+	const char * val;
+	int i;
+
+	/* if we already have a backup, don't overwrite */
+	if(lp->entry_backup)
+	{
+		return false;
+	}
+
+	lp->entry_backup = al_create_config();
+	if(lp->entry_backup)
+	{
+		al_set_config_value(lp->entry_backup, NULL, "id", id);
+		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+		{
+			if(omo_tag_type[i])
+			{
+				val = omo_get_database_value(lp->entry_database, id, omo_tag_type[i]);
+				if(val)
+				{
+					al_set_config_value(lp->entry_backup, id, omo_tag_type[i], val);
+				}
+			}
+		}
+		val = omo_get_database_value(lp->entry_database, id, "Split Track Info");
+		if(val)
+		{
+			al_set_config_value(lp->entry_backup, id, "Split Track Info", val);
+		}
+		val = omo_get_database_value(lp->entry_database, id, "Detected Length");
+		if(val)
+		{
+			al_set_config_value(lp->entry_backup, id, "Detected Length", val);
+		}
+		return true;
+	}
+	return false;
+}
+
+bool omo_restore_entry_tags(OMO_LIBRARY * lp)
+{
+	const char * val;
+	const char * id;
+	int i;
+
+	if(lp->entry_backup)
+	{
+		id = al_get_config_value(lp->entry_backup, NULL, "id");
+		if(id)
+		{
+			for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+			{
+				if(omo_tag_type[i])
+				{
+					val = al_get_config_value(lp->entry_backup, id, omo_tag_type[i]);
+					if(val)
+					{
+						omo_set_database_value(lp->entry_database, id, omo_tag_type[i], val);
+					}
+					else
+					{
+						omo_remove_database_key(lp->entry_database, id, omo_tag_type[i]);
+					}
+				}
+			}
+			val = al_get_config_value(lp->entry_backup, id, "Split Track Info");
+			if(val)
+			{
+				omo_set_database_value(lp->entry_database, id, "Split Track Info", val);
+			}
+			else
+			{
+				omo_remove_database_key(lp->entry_database, id, "Split Track Info");
+			}
+			val = al_get_config_value(lp->entry_backup, id, "Detected Length");
+			if(val)
+			{
+				omo_set_database_value(lp->entry_database, id, "Detected Length", val);
+			}
+			else
+			{
+				omo_remove_database_key(lp->entry_database, id, "Detected Length");
+			}
+			al_destroy_config(lp->entry_backup);
+			lp->entry_backup = NULL;
+			return true;
+		}
+	}
+	return false;
+}
+
+void omo_discard_entry_backup(OMO_LIBRARY * lp)
+{
+	if(lp->entry_backup)
+	{
+		al_destroy_config(lp->entry_backup);
+		lp->entry_backup = NULL;
+	}
+}
