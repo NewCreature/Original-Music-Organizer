@@ -89,9 +89,11 @@ v0.4
    creating/destroying threads in various places in the code, we should set a
    flag. We might make a separate "thread logic" module which handles this.
 
+[X]Retrieve tags when opening tags editor or split track dialog.
+
 [ ]Retrieve tags from the cloud as part of the library scanning process.
 
-[ ]Retrieve tags when opening tags editor or split track dialog.
+[ ]Don't load library cache if we don't have library database files.
 
 [ ]Investigate why certain files that have been split aren't playing (DUMBA5).
 
