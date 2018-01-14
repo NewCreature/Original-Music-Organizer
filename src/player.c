@@ -162,7 +162,7 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 			}
 			if(pp->track->codec_handler->done_playing(pp->track->codec_data))
 			{
-				if(pp->track->codec_handler->get_length)
+				if(lp && pp->track->codec_handler->get_length)
 				{
 					if(current_time < pp->track->codec_handler->get_length(pp->track->codec_data) - 5.0)
 					{
