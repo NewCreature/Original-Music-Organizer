@@ -96,7 +96,7 @@ $result = mysql_query($query, $linkID) or die("Error: Invalid Entry.\r\n");
 if(mysql_affected_rows() == 0)
 {
 	// this most likely won't happen
-	print "Error: Invalid Request\r\n";
+	print "ack: Nothing changed.\r\n";
 	exit;
 }
 
