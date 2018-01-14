@@ -196,7 +196,7 @@ bool omo_retrieve_track_tags(OMO_LIBRARY * lp, const char * id, const char * url
 			if(track_val)
 			{
 				strcpy(buffer, track_val);
-				entry = omo_get_library_entry(lp, id);
+				entry = omo_get_library_base_entry(lp, id);
 				if(entry >= 0)
 				{
 					omo_split_track(lp, lp->entry[entry]->filename, buffer);
