@@ -36,12 +36,12 @@ void omo_threads_logic(APP_INSTANCE * app)
 		omo_setup_library(app, file_database_fn, entry_database_fn, NULL);
 		app->spawn_library_thread = false;
 	}
-	if(app->spawn_library_lists_thread)
+	if(app->spawn_library_lists_thread && app->library)
 	{
 		omo_setup_library_lists(app);
 		app->spawn_library_lists_thread = false;
 	}
-	if(app->spawn_cloud_thread)
+	if(app->spawn_cloud_thread && app->library)
 	{
 		omo_submit_library_tags(app, "http://www.t3-i.com/omo/tag_track.php");
 		app->spawn_cloud_thread = false;
