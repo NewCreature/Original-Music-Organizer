@@ -91,9 +91,9 @@ v0.4
 
 [X]Retrieve tags when opening tags editor or split track dialog.
 
-[ ]Retrieve tags from the cloud as part of the library scanning process.
+[X]Retrieve tags from the cloud as part of the library scanning process.
 
-[ ]Don't load library cache if we don't have library database files.
+[X]Don't load library cache if we don't have library database files.
 
 [ ]Investigate why certain files that have been split aren't playing (DUMBA5).
 
