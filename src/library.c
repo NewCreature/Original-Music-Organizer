@@ -8,6 +8,7 @@
 #include "md5.h"
 #include "queue_helpers.h"
 #include "library_cache.h"
+#include "cloud.h"
 
 static bool library_sort_cancelled = false;
 
@@ -313,6 +314,7 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
 				{
 					get_tags(lp, sum_string, fn, track, crp);
 				}
+				omo_retrieve_track_tags(lp, sum_string, "http://www.t3-i.com/omo/get_track_tags.php");
 				omo_set_database_value(lp->entry_database, sum_string, "scanned", "1");
 				retval = 1;
 			}
