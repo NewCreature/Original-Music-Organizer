@@ -16,6 +16,7 @@ typedef struct
 	int start_track;
 	char track_buffer[16];
 	char tag_buffer[1024];
+	char info_buffer[256];
 	float volume;
 	bool loop;
 
@@ -354,7 +355,10 @@ static bool codec_done_playing(void * data)
 
 static const char * codec_get_info(void * data)
 {
-	return "Game Music Emu";
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	sprintf(codec_data->info_buffer, "Game Music Emu (%s)", codec_data->info->system);
+	return codec_data->info_buffer;
 }
 
 static OMO_CODEC_HANDLER codec_handler;
