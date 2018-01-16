@@ -248,6 +248,7 @@ static void * cloud_submit_thread_proc(ALLEGRO_THREAD * thread, void * data)
 			break;
 		}
 	}
+	app->cloud_thread_done = true;
 	return NULL;
 }
 

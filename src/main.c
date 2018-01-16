@@ -219,6 +219,10 @@ void omo_logic(void * data)
 			{
 				strcpy(app->status_bar_text, "Library ready.");
 			}
+			if(app->library && app->library_thread && !app->cloud_thread)
+			{
+				strcpy(app->status_bar_text, "Generating library lists...");
+			}
 		}
 	}
 }

@@ -46,6 +46,7 @@ typedef struct
 	OMO_PLAYER * player;
 	T3F_RNG_STATE rng_state;
 	ALLEGRO_THREAD * cloud_thread;
+	bool cloud_thread_done;
 	char cloud_url[256];
 
 	ALLEGRO_PATH * library_temp_path;
