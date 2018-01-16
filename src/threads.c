@@ -22,6 +22,55 @@ void omo_threads_logic(APP_INSTANCE * app)
 {
 	char file_database_fn[1024];
 	char entry_database_fn[1024];
+	int i;
+
+	/* destroy thread when library scan finished */
+	if(app->library_thread && app->loading_library_file_helper_data.scan_done)
+	{
+		al_destroy_thread(app->library_thread);
+		app->library_thread = NULL;
+		if(app->library && app->player->queue)
+		{
+			app->spawn_queue_thread = true;
+		}
+		if(app->library)
+		{
+			if(app->library->loaded)
+			{
+				for(i = 0; i < app->library->artist_entry_count; i++)
+				{
+					if(!strcmp(app->library->artist_entry[i], app->edit_artist))
+					{
+						app->ui->ui_artist_list_element->d1 = i;
+						break;
+					}
+				}
+				for(i = 0; i < app->library->song_entry_count; i++)
+				{
+					if(!strcmp(app->library->entry[app->library->song_entry[i]]->id, app->edit_song_id))
+					{
+						app->ui->ui_song_list_element->d1 = i + 1;
+						break;
+					}
+				}
+				for(i = 0; i < app->library->album_entry_count; i++)
+				{
+					if(!strcmp(app->library->album_entry[i], app->edit_album))
+					{
+						app->ui->ui_album_list_element->d1 = i;
+						break;
+					}
+				}
+			}
+			else
+			{
+				strcpy(app->edit_artist, "");
+				strcpy(app->edit_album, "");
+				strcpy(app->edit_song_id, "");
+				app->spawn_library_lists_thread = true;
+			}
+		}
+	}
 
 	if(app->spawn_library_thread)
 	{
