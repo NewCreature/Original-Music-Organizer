@@ -215,6 +215,10 @@ void omo_logic(void * data)
 				}
 			}
 			omo_threads_logic(app);
+			if(app->library && !app->library_thread)
+			{
+				strcpy(app->status_bar_text, "Library ready.");
+			}
 		}
 	}
 }

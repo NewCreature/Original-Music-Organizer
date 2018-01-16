@@ -164,7 +164,6 @@ static bool omo_setup_library_helper(APP_INSTANCE * app)
 		return false;
 	}
 	app->loading_library_file_helper_data.scan_done = true;
-	sprintf(app->status_bar_text, "Library ready.");
 	return true;
 }
 
@@ -252,7 +251,6 @@ static bool omo_setup_library_lists_helper(APP_INSTANCE * app)
 	{
 		return false;
 	}
-	sprintf(app->status_bar_text, "Library ready.");
 	return true;
 }
 

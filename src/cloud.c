@@ -248,7 +248,6 @@ static void * cloud_submit_thread_proc(ALLEGRO_THREAD * thread, void * data)
 			break;
 		}
 	}
-	sprintf(app->status_bar_text, "Library ready.");
 	return NULL;
 }
 
@@ -283,7 +282,6 @@ static void * cloud_retrieve_thread_proc(ALLEGRO_THREAD * thread, void * data)
 			break;
 		}
 	}
-	sprintf(app->status_bar_text, "Library ready.");
 	return NULL;
 }
 
