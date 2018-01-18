@@ -95,6 +95,9 @@ v0.4
 
 [X]Don't load library cache if we don't have library database files.
 
+[ ]Ensure library folders are valid. If we hit on a file instead of a folder,
+   we should remove the path tail and see if we are at a valid folder.
+
 [ ]Investigate why certain files that have been split aren't playing (DUMBA5).
 
    [ ]For some reason setting the start order doesn't work for PSM files. This
