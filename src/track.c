@@ -35,6 +35,11 @@ OMO_TRACK * omo_load_track(OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_regist
 			}
 			archive_handler->close_archive(archive_handler_data);
 		}
+		else
+		{
+			free(tp);
+			tp = NULL;
+		}
 	}
 	else
 	{

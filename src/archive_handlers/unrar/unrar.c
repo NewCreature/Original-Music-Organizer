@@ -89,6 +89,11 @@ static void * open_archive(const char * fn, ALLEGRO_PATH * temp_path)
 			al_remove_filename(al_path_cstr(path, '/'));
 			sprintf(system_command, "%sunrar%s l \"%s\"", data->command_prefix, data->command_postfix, fn);
 			my_system(system_command, al_path_cstr(path, '/'));
+			if(!al_filename_exists(al_path_cstr(path, '/')))
+			{
+				free(data);
+				data = NULL;
+			}
 			al_destroy_path(path);
 		}
 	}
