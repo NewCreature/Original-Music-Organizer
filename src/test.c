@@ -5,6 +5,7 @@
 #include "init.h"
 #include "queue_helpers.h"
 #include "library_helpers.h"
+#include "profile.h"
 
 static bool omo_test_mode;
 static int omo_test_state;
@@ -53,6 +54,7 @@ static bool omo_test_setup_library(void * data)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	char file_database_fn[1024];
 	char entry_database_fn[1024];
+	char section_buffer[1024];
 
 	strcpy(file_database_fn, t3f_get_filename(t3f_data_path, "test_files.ini"));
 	strcpy(entry_database_fn, t3f_get_filename(t3f_data_path, "test_database.ini"));
@@ -61,8 +63,8 @@ static bool omo_test_setup_library(void * data)
 	{
 		return false;
 	}
-	al_set_config_value(test_config, "Settings", "library_folders", "1");
-	al_set_config_value(test_config, "Settings", "library_folder_0", app->test_path);
+	al_set_config_value(test_config, omo_get_profile_section(section_buffer), "library_folders", "1");
+	al_set_config_value(test_config, omo_get_profile_section(section_buffer), "library_folder_0", app->test_path);
 	omo_setup_library(app, file_database_fn, entry_database_fn, test_config);
 	return true;
 }

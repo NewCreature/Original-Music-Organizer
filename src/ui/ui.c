@@ -538,7 +538,7 @@ bool omo_open_tagger_key_dialog(OMO_UI * uip, void * data)
 	uip->tagger_key_popup_dialog = omo_create_popup_dialog("data/themes/basic/omo_theme.ini", 320, h, data);
 	if(uip->tagger_key_popup_dialog)
 	{
-		val = al_get_config_value(t3f_config, "Settings", "Tagger Name");
+		val = al_get_config_value(t3f_config, "Settings", "tagger_name");
 		if(val)
 		{
 			strcpy(uip->tagger_key_text, val);

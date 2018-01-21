@@ -4,6 +4,7 @@
 #include "instance.h"
 #include "library_cache.h"
 #include "constants.h"
+#include "profile.h"
 
 static int sort_names(const void *e1, const void *e2)
 {
@@ -40,11 +41,12 @@ static time_t get_path_mtime(const char * fn)
 
 static bool omo_scan_library_folders(APP_INSTANCE * app)
 {
+	char section_buffer[1024];
 	time_t mtime;
 	const char * val;
 	int c, i, j;
 
-	val = al_get_config_value(app->library_config, "Settings", "library_folders");
+	val = al_get_config_value(app->library_config, omo_get_profile_section(section_buffer), "library_folders");
 	if(!val || atoi(val) < 1)
 	{
 		sprintf(app->status_bar_text, "No Library Folders");

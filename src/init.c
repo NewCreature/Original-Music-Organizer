@@ -276,7 +276,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		printf("Error setting up menus!\n");
 		return false;
 	}
-	val = al_get_config_value(t3f_config, "App Settings", "disable_menu");
+	val = al_get_config_value(t3f_config, "Settings", "disable_menu");
 	if(!val || strcmp(val, "true"))
 	{
 		t3f_attach_menu(app->menu[OMO_MENU_MAIN]);
@@ -320,7 +320,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 			al_remove_filename(t3f_get_filename(t3f_data_path, "omo.queue"));
 			if(app->player->queue)
 			{
-				val = al_get_config_value(t3f_config, "Player", "Queue Position");
+				val = al_get_config_value(t3f_config, "Settings", "queue_position");
 				if(val)
 				{
 					app->player->queue_pos = atoi(val);
@@ -343,7 +343,7 @@ void omo_exit(APP_INSTANCE * app)
 		if(omo_save_queue(app->player->queue, t3f_get_filename(t3f_data_path, "omo.queue")))
 		{
 			sprintf(buf, "%d", app->player->queue_pos);
-			al_set_config_value(t3f_config, "Player", "Queue Position", buf);
+			al_set_config_value(t3f_config, "Settings", "queue_position", buf);
 		}
 	}
 	if(app->library)

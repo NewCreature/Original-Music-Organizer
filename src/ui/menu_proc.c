@@ -13,6 +13,7 @@
 #include "../constants.h"
 #include "../queue_helpers.h"
 #include "../cloud.h"
+#include "../profile.h"
 
 static char type_buf[1024] = {0};
 
@@ -380,10 +381,11 @@ int omo_menu_library_add_folder(void * data)
 int omo_menu_library_clear_folders(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	char section_buffer[1024];
 	char buf[4];
 
 	sprintf(buf, "%d", 0);
-	al_set_config_value(t3f_config, "Settings", "library_folders", buf);
+	al_set_config_value(t3f_config, omo_get_profile_section(section_buffer), "library_folders", buf);
 	omo_clear_library_cache();
 	app->spawn_library_thread = true;
 	sprintf(app->status_bar_text, "No Library Folders");

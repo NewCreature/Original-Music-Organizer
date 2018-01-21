@@ -36,8 +36,8 @@ void omo_tagger_key_dialog_logic(void * data)
 						key_val = t3net_get_data_entry_field(key_data, 0, "tagger_key");
 						if(key_val)
 						{
-							al_set_config_value(t3f_config, "Settings", "Tagger Name", app->ui->tagger_key_text);
-							al_set_config_value(t3f_config, "Settings", "Tagger ID", key_val);
+							al_set_config_value(t3f_config, "Settings", "tagger_name", app->ui->tagger_key_text);
+							al_set_config_value(t3f_config, "Settings", "tagger_id", key_val);
 							t3f_save_config();
 						}
 						t3net_destroy_data(key_data);
