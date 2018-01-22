@@ -46,23 +46,23 @@ static bool setup_temp_folder(ALLEGRO_PATH ** path, const char * name)
 
 static bool setup_temp_folders(APP_INSTANCE * app)
 {
-	if(!setup_temp_folder(&app->library_temp_path, "library_temp"))
+	if(!setup_temp_folder(&app->library_temp_path, "temp/library"))
 	{
 		return false;
 	}
-	if(!setup_temp_folder(&app->queue_temp_path, "queue_temp"))
+	if(!setup_temp_folder(&app->queue_temp_path, "temp/queue"))
 	{
 		return false;
 	}
-	if(!setup_temp_folder(&app->queue_tags_temp_path, "queue_tags_temp"))
+	if(!setup_temp_folder(&app->queue_tags_temp_path, "temp/queue_tags"))
 	{
 		return false;
 	}
-	if(!setup_temp_folder(&app->player_temp_path, "player_temp"))
+	if(!setup_temp_folder(&app->player_temp_path, "temp/player"))
 	{
 		return false;
 	}
-	if(!setup_temp_folder(&app->cloud_temp_path, "cloud_temp"))
+	if(!setup_temp_folder(&app->cloud_temp_path, "temp/cloud"))
 	{
 		return false;
 	}
@@ -360,6 +360,7 @@ void omo_exit(APP_INSTANCE * app)
 	{
 		al_destroy_thread(app->cloud_thread);
 	}
+	t3f_remove_directory(t3f_get_filename(t3f_data_path, "temp", buffer, 1024));
 	if(app->ui->tags_popup_dialog)
 	{
 		omo_close_tags_dialog(app->ui, app);
