@@ -164,6 +164,7 @@ bool t3f_remove_directory(const char * path)
 	bool ret = false;
 	int i;
 
+	printf("path: %s\n", path);
 	/* delete files */
 	t3f_scan_files(path, delete_file, false, NULL);
 
@@ -185,5 +186,6 @@ bool t3f_remove_directory(const char * path)
 		}
 		t3f_destroy_remove_directory_data(dir_data);
 	}
+	al_remove_filename(path);
 	return ret;
 }
