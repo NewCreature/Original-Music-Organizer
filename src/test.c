@@ -18,8 +18,10 @@ static ALLEGRO_CONFIG * test_config;
 
 static void omo_test_delete_library_files(void)
 {
-	al_remove_filename(t3f_get_filename(t3f_data_path, "test_files.ini"));
-	al_remove_filename(t3f_get_filename(t3f_data_path, "test_database.ini"));
+	char buffer[1024];
+
+	al_remove_filename(t3f_get_filename(t3f_data_path, "test_files.ini", buffer, 1024));
+	al_remove_filename(t3f_get_filename(t3f_data_path, "test_database.ini", buffer, 1024));
 }
 
 bool omo_test_init(void * data, int mode, const char * path)
@@ -55,9 +57,10 @@ static bool omo_test_setup_library(void * data)
 	char file_database_fn[1024];
 	char entry_database_fn[1024];
 	char section_buffer[1024];
+	char buffer[1024];
 
-	strcpy(file_database_fn, t3f_get_filename(t3f_data_path, "test_files.ini"));
-	strcpy(entry_database_fn, t3f_get_filename(t3f_data_path, "test_database.ini"));
+	strcpy(file_database_fn, t3f_get_filename(t3f_data_path, "test_files.ini", buffer, 1024));
+	strcpy(entry_database_fn, t3f_get_filename(t3f_data_path, "test_database.ini", buffer, 1024));
 	test_config = al_create_config();
 	if(!test_config)
 	{

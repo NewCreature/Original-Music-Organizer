@@ -539,8 +539,10 @@ bool omo_queue_file(const char * fn, bool isfolder, void * data)
 
 void omo_clear_library_cache(void)
 {
-	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.library"));
-	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.artists"));
-	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.albums"));
-	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.songs"));
+	char buffer[1024];
+
+	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.library", buffer, 1024));
+	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.artists", buffer, 1024));
+	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.albums", buffer, 1024));
+	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.songs", buffer, 1024));
 }

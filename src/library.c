@@ -778,6 +778,7 @@ static int sort_names(const void *e1, const void *e2)
 
 bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 {
+	char buffer[1024];
 	const char * val;
 	bool cache_loaded = false;
 	bool all_artists = false;
@@ -792,7 +793,7 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 		if(!strcmp(artist, "All Artists"))
 		{
 			all_artists = true;
-			if(lp->modified || !omo_load_library_albums_cache(lp, t3f_get_filename(t3f_data_path, "omo.albums")))
+			if(lp->modified || !omo_load_library_albums_cache(lp, t3f_get_filename(t3f_data_path, "omo.albums", buffer, 1024)))
 			{
 				omo_add_album_to_library(lp, "All Albums");
 				omo_add_album_to_library(lp, "Unknown Album");
@@ -852,7 +853,7 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 			qsort(&lp->album_entry[2], lp->album_entry_count - 2, sizeof(char *), sort_names);
 			if(all_artists)
 			{
-				omo_save_library_albums_cache(lp, t3f_get_filename(t3f_data_path, "omo.albums"));
+				omo_save_library_albums_cache(lp, t3f_get_filename(t3f_data_path, "omo.albums", buffer, 1024));
 			}
 		}
 	}
@@ -861,6 +862,7 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 
 bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char * album)
 {
+	char buffer[1024];
 	const char * val;
 	int i;
 
@@ -873,7 +875,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 	{
 		if(!strcmp(album, "All Albums"))
 		{
-			if(lp->modified || !omo_load_library_songs_cache(lp, t3f_get_filename(t3f_data_path, "omo.songs")))
+			if(lp->modified || !omo_load_library_songs_cache(lp, t3f_get_filename(t3f_data_path, "omo.songs", buffer, 1024)))
 			{
 				lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
 				if(lp->song_entry)
@@ -885,7 +887,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 					lp->song_entry_count = lp->entry_count;
 					omo_start_library_sort();
 					library_sort_by_title(lp);
-					omo_save_library_songs_cache(lp, t3f_get_filename(t3f_data_path, "omo.songs"));
+					omo_save_library_songs_cache(lp, t3f_get_filename(t3f_data_path, "omo.songs", buffer, 1024));
 				}
 			}
 		}

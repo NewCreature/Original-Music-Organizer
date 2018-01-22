@@ -96,7 +96,6 @@ ALLEGRO_PATH * t3f_data_path = NULL;
 ALLEGRO_PATH * t3f_config_path = NULL;
 ALLEGRO_PATH * t3f_temp_path = NULL;
 static char t3f_config_filename[1024] = {0};
-static char t3f_return_filename[1024] = {0};
 
 /* colors */
 ALLEGRO_COLOR t3f_color_white;
@@ -1487,17 +1486,22 @@ void t3f_run(void)
 	al_destroy_display(t3f_display);
 }
 
-const char * t3f_get_filename(ALLEGRO_PATH * path, const char * fn)
+char * t3f_get_filename(ALLEGRO_PATH * path, const char * fn, char * buffer, int buffer_size)
 {
+	const char * path_cstr;
 	ALLEGRO_PATH * temp_path = al_clone_path(path);
 	if(!temp_path)
 	{
 		return NULL;
 	}
 	al_set_path_filename(temp_path, fn);
-	strcpy(t3f_return_filename, al_path_cstr(temp_path, '/'));
+	path_cstr = al_path_cstr(temp_path, '/');
+	if(strlen(path_cstr) < buffer_size)
+	{
+		strcpy(buffer, path_cstr);
+	}
 	al_destroy_path(temp_path);
-	return t3f_return_filename;
+	return buffer;
 }
 
 void t3f_destroy_view(T3F_VIEW * vp)

@@ -22,6 +22,7 @@ void omo_threads_logic(APP_INSTANCE * app)
 {
 	char file_database_fn[1024];
 	char entry_database_fn[1024];
+	char buffer[1024];
 	int i;
 
 	/* destroy thread when library scan finished */
@@ -80,8 +81,8 @@ void omo_threads_logic(APP_INSTANCE * app)
 	if(app->spawn_library_thread)
 	{
 		kill_all_threads(app);
-		strcpy(file_database_fn, t3f_get_filename(t3f_data_path, "files.ini"));
-		strcpy(entry_database_fn, t3f_get_filename(t3f_data_path, "database.ini"));
+		strcpy(file_database_fn, t3f_get_filename(t3f_data_path, "files.ini", buffer, 1024));
+		strcpy(entry_database_fn, t3f_get_filename(t3f_data_path, "database.ini", buffer, 1024));
 		if(app->library)
 		{
 			omo_destroy_library(app->library);

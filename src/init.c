@@ -134,6 +134,7 @@ void omo_set_window_constraints(APP_INSTANCE * app)
 bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 {
 	OMO_FILE_HELPER_DATA file_helper_data;
+	char buffer[1024];
 	bool used_arg[1024] = {false};
 	const char * val;
 	int test_path;
@@ -316,8 +317,8 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		app->spawn_library_thread = true;
 		if(!app->player->queue)
 		{
-			app->player->queue = omo_load_queue(t3f_get_filename(t3f_data_path, "omo.queue"));
-			al_remove_filename(t3f_get_filename(t3f_data_path, "omo.queue"));
+			app->player->queue = omo_load_queue(t3f_get_filename(t3f_data_path, "omo.queue", buffer, 1024));
+			al_remove_filename(t3f_get_filename(t3f_data_path, "omo.queue", buffer, 1024));
 			if(app->player->queue)
 			{
 				val = al_get_config_value(t3f_config, "Settings", "queue_position");
@@ -336,11 +337,12 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 
 void omo_exit(APP_INSTANCE * app)
 {
+	char buffer[1024];
 	char buf[32] = {0};
 
 	if(app->player->queue)
 	{
-		if(omo_save_queue(app->player->queue, t3f_get_filename(t3f_data_path, "omo.queue")))
+		if(omo_save_queue(app->player->queue, t3f_get_filename(t3f_data_path, "omo.queue", buffer, 1024)))
 		{
 			sprintf(buf, "%d", app->player->queue_pos);
 			al_set_config_value(t3f_config, "Settings", "queue_position", buf);
@@ -348,7 +350,7 @@ void omo_exit(APP_INSTANCE * app)
 	}
 	if(app->library)
 	{
-		omo_save_library_cache(app->library, t3f_get_filename(t3f_data_path, "omo.library"));
+		omo_save_library_cache(app->library, t3f_get_filename(t3f_data_path, "omo.library", buffer, 1024));
 	}
 	t3f_save_config();
 	omo_destroy_player(app->player);
