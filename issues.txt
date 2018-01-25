@@ -95,6 +95,8 @@ v0.4
 
 [X]Don't load library cache if we don't have library database files.
 
+[ ]Reset scroll position of queue list when replacing the queue.
+
 [ ]Ensure library folders are valid. If we hit on a file instead of a folder,
    we should remove the path tail and see if we are at a valid folder.
 
