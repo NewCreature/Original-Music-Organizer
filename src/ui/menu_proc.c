@@ -459,7 +459,7 @@ int omo_menu_cloud_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	const char * val;
 
-	val = al_get_config_value(t3f_config, "Settings", "Tagger ID");
+	val = al_get_config_value(t3f_config, "Settings", "tagger_id");
 	if(app->library && val)
 	{
 		t3f_set_menu_item_flags(mp, item, 0);

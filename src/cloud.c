@@ -93,7 +93,7 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 	arguments = t3net_create_arguments();
 	if(arguments)
 	{
-		tagger_key = al_get_config_value(t3f_config, "Settings", "Tagger ID");
+		tagger_key = al_get_config_value(t3f_config, "Settings", "tagger_id");
 		if(tagger_key)
 		{
 			entry = omo_get_library_entry(lp, id);
