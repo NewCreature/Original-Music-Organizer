@@ -60,9 +60,12 @@ foreach($arguments as $filter)
 }
 
 /* Connect to database. */
-$linkID = mysql_connect($db_host, $db_user, $db_pass) or die("Error: Could not connect to host.\r\n");
-mysql_set_charset('utf8', $linkID);
-mysql_select_db($db_database, $linkID) or die("Error: Could not find database.\r\n");
+$mysqli = new mysqli($db_host, $db_user, $db_pass, $db_database);
+if($mysqli->connect_errno)
+{
+    print "Failed to connect to database: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+}
+$mysqli->set_charset('utf8');
 
 /* Build query. */
 $query = "SELECT * FROM " . $db_name;
@@ -76,18 +79,18 @@ foreach($db_fields as $filter)
 {
 	if(isset($_GET[$filter]))
 	{
-		$query .= " AND `" . mysql_real_escape_string($filter). "` = '" . mysql_real_escape_string($_GET[$filter]) . "'";
+		$query .= " AND `" . $mysqli->real_escape_string($filter). "` = '" . $mysqli->real_escape_string($_GET[$filter]) . "'";
 	}
 }
 
 /* ascending order or descending order (some games you will want the smallest score first) */
 if($ascend)
 {
-	$query .= " ORDER BY `" . $db_name . "`.`" . $order_field . "` ASC, `" . $db_name . "`.`ID` DESC";
+	$query .= " ORDER BY `" . $db_name . "`.`" . $order_field . "` ASC, `" . $db_name . "`.`id` DESC";
 }
 else
 {
-	$query .= " ORDER BY `" . $db_name . "`.`" . $order_field . "` DESC, `" . $db_name . "`.`ID` DESC";
+	$query .= " ORDER BY `" . $db_name . "`.`" . $order_field . "` DESC, `" . $db_name . "`.`id` DESC";
 }
 
 /* optionally impose limit on number of results returned */
@@ -96,18 +99,18 @@ if($limit > 0)
 	$query .= " LIMIT 0 , " . $limit;
 }
 
-$resultID = mysql_query($query, $linkID) or die("Error: Data not found.\r\n");
+$result = $mysqli->query($query) or die("Error: Data not found.\r\n");
 
-if(mysql_num_rows($resultID) == 0)
+if(mysqli_num_rows($result) == 0)
 {
 	die("Error: No track info.\r\n");
 }
 
 $output = $output_header . "\r\n\r\n";
 
-for($x = 0; $x < mysql_num_rows($resultID); $x++)
+for($x = 0; $x < mysqli_num_rows($result); $x++)
 {
-    $row = mysql_fetch_assoc($resultID);
+    $row = mysqli_fetch_assoc($result);
 	foreach($output_fields as $e)
 	{
 		if($row[$e])

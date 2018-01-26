@@ -31,16 +31,18 @@ if(strlen($_GET['track_id']) == 0)
 $update = false;
 
 /* connect to database */
-$linkID = mysql_connect($db_host, $db_user, $db_pass) or die("Error: Could not connect to host.\r\n");
-mysql_set_charset('utf8', $linkID);
-mysql_select_db($db_database, $linkID) or die("Error: Could not find database.\r\n");
+$mysqli = new mysqli($db_host, $db_user, $db_pass, $db_database);
+if($mysqli->connect_errno)
+{
+    print "Failed to connect to database: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+}
 
 /* validate tagger ID */
 $query = "SELECT * FROM " . $tagger_db_name;
 $query .= " WHERE dummy = '66'";
-$query .= " AND `tagger_key` = '" . mysql_real_escape_string($_GET['tagger']) . "'";
-$result = mysql_query($query, $linkID);
-if(mysql_num_rows($result) == 0)
+$query .= " AND `tagger_key` = '" . $mysqli->real_escape_string($_GET['tagger']) . "'";
+$result = $mysqli->query($query);
+if(mysqli_num_rows($result) == 0)
 {
 	die("Error: Invalid tagger ID.\r\n");
 }
@@ -48,10 +50,10 @@ if(mysql_num_rows($result) == 0)
 /* Check for existing entry. */
 $query = "SELECT * FROM " . $db_name;
 $query .= " WHERE `dummy` = '66'";
-$query .= " AND `track_id` = '" . mysql_real_escape_string($_GET['track_id']) . "'";
-$query .= " AND `tagger` = '" . mysql_real_escape_string($_GET['tagger']) . "'";
-$result = mysql_query($query, $linkID);
-if(mysql_num_rows($result) > 0)
+$query .= " AND `track_id` = '" . $mysqli->real_escape_string($_GET['track_id']) . "'";
+$query .= " AND `tagger` = '" . $mysqli->real_escape_string($_GET['tagger']) . "'";
+$result = $mysqli->query($query);
+if(mysqli_num_rows($result) > 0)
 {
 	$update = true;
 	$query = "UPDATE " . $db_name . " SET `dummy` = '66'";
@@ -67,12 +69,12 @@ foreach($db_fields as $field)
 {
 	if(strlen($_GET[$field]) > 0)
 	{
-		$query .= ", `" . mysql_real_escape_string($field) . "` = '" . mysql_real_escape_string($_GET[$field]) . "'";
+		$query .= ", `" . $mysqli->real_escape_string($field) . "` = '" . $mysqli->real_escape_string($_GET[$field]) . "'";
 		$tag_count++;
 	}
 	else
 	{
-		$query .= ", `" . mysql_real_escape_string($field) . "` = " . "NULL";
+		$query .= ", `" . $mysqli->real_escape_string($field) . "` = " . "NULL";
 	}
 }
 
@@ -92,8 +94,8 @@ if(!$update && $tag_count <= 2)
 }
 
 /* run the query */
-$result = mysql_query($query, $linkID) or die("Error: Invalid Entry.\r\n");
-if(mysql_affected_rows() == 0)
+$result = $mysqli->query($query) or die("Error: Invalid Entry.\r\n");
+if(mysqli_affected_rows($mysqli) == 0)
 {
 	// this most likely won't happen
 	print "ack: Nothing changed.\r\n";

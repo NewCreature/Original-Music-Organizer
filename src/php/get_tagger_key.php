@@ -67,16 +67,19 @@ foreach($arguments as $filter)
 }
 
 /* Connect to database. */
-$linkID = mysql_connect($db_host, $db_user, $db_pass) or die("Error: Could not connect to host.\r\n");
-mysql_set_charset('utf8', $linkID);
-mysql_select_db($db_database, $linkID) or die("Error: Could not find database.\r\n");
+$mysqli = new mysqli($db_host, $db_user, $db_pass, $db_database);
+if($mysqli->connect_errno)
+{
+    print "Failed to connect to database: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+}
+$mysqli->set_charset('utf8');
 
 /* see if tagger_key already exists */
 $query = "SELECT * FROM " . $db_name;
 $query .= " WHERE dummy = '66'";
 $query .= " AND `tagger_key` = '" . $tagger_key . "'";
-$resultID = mysql_query($query, $linkID);
-if(mysql_num_rows($resultID) > 0)
+$result = $mysqli->query($query);
+if(mysqli_num_rows($result) > 0)
 {
 	die("Error: Tagger ID already exists.\r\n");
 }
@@ -86,11 +89,11 @@ $query = "INSERT INTO " . $db_name . " SET dummy = '66'";
 $query .= ", `name` = '" . $_GET['name'] . "'";
 $query .= ", `tagger_key` = '" . $tagger_key . "'";
 
-$resultID = mysql_query($query, $linkID) or die("Error: Failed to add.\r\n");
+$result = $mysqli->query($query) or die("Error: Failed to add.\r\n");
 
 $output = $output_header . "\r\n\r\n";
 
-if(mysql_affected_rows() > 0)
+if(mysqli_affected_rows($mysqli) > 0)
 {
 	$output .= "\ttagger_key: " . $tagger_key . "\r\n\r\n";
 	echo $output;
