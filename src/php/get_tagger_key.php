@@ -86,7 +86,7 @@ if(mysqli_num_rows($result) > 0)
 
 /* add new tagger to database */
 $query = "INSERT INTO " . $db_name . " SET dummy = '66'";
-$query .= ", `name` = '" . $_GET['name'] . "'";
+$query .= ", `name` = '" . $mysqli->real_escape_string($_GET['name']) . "'";
 $query .= ", `tagger_key` = '" . $tagger_key . "'";
 
 $result = $mysqli->query($query) or die("Error: Failed to add.\r\n");

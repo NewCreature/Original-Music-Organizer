@@ -79,7 +79,7 @@ foreach($db_fields as $filter)
 {
 	if(isset($_GET[$filter]))
 	{
-		$query .= " AND `" . $mysqli->real_escape_string($filter). "` = '" . $mysqli->real_escape_string($_GET[$filter]) . "'";
+		$query .= " AND `" . $filter. "` = '" . $mysqli->real_escape_string($_GET[$filter]) . "'";
 	}
 }
 

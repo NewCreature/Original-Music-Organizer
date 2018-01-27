@@ -69,12 +69,12 @@ foreach($db_fields as $field)
 {
 	if(strlen($_GET[$field]) > 0)
 	{
-		$query .= ", `" . $mysqli->real_escape_string($field) . "` = '" . $mysqli->real_escape_string($_GET[$field]) . "'";
+		$query .= ", `" . $field . "` = '" . $mysqli->real_escape_string($_GET[$field]) . "'";
 		$tag_count++;
 	}
 	else
 	{
-		$query .= ", `" . $mysqli->real_escape_string($field) . "` = " . "NULL";
+		$query .= ", `" . $field . "` = " . "NULL";
 	}
 }
 
@@ -85,7 +85,7 @@ if($tag_count <= 2)
 }
 if($update)
 {
-	$query .= " WHERE `track_id` = '" . $_GET['track_id'] . "' AND `tagger` = '" . $_GET['tagger'] . "'";
+	$query .= " WHERE `track_id` = '" . $mysqli->real_escape_string($_GET['track_id']) . "' AND `tagger` = '" . $mysqli->real_escape_string($_GET['tagger']) . "'";
 }
 if(!$update && $tag_count <= 2)
 {
