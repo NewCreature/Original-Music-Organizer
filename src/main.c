@@ -249,6 +249,12 @@ void omo_render(void * data)
 				al_flip_display();
 				al_set_target_bitmap(al_get_backbuffer(t3f_display));
 			}
+			if(app->ui->tagger_key_popup_dialog)
+			{
+				al_set_target_bitmap(al_get_backbuffer(app->ui->tagger_key_popup_dialog->display));
+				al_flip_display();
+				al_set_target_bitmap(al_get_backbuffer(t3f_display));
+			}
 			break;
 		}
 	}
