@@ -1,11 +1,11 @@
 #include "t3f/t3f.h"
 #include "t3f/file_utils.h"
 
-const char * omo_get_profile_section(char * buffer)
+const char * omo_get_profile_section(ALLEGRO_CONFIG * cp, char * buffer)
 {
 	const char * val;
 
-	val = al_get_config_value(t3f_config, "Settings", "Profile");
+	val = al_get_config_value(cp, "Settings", "Profile");
 	if(val)
 	{
 		sprintf(buffer, "Profile %s", val);

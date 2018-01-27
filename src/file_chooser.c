@@ -220,7 +220,7 @@ void omo_file_chooser_logic(void * data)
 				{
 					al_stop_timer(t3f_timer);
 					al_set_config_value(t3f_config, "Settings", "last_music_folder", al_get_native_file_dialog_path(app->file_chooser, 0));
-					val = al_get_config_value(t3f_config, omo_get_profile_section(section_buffer), "library_folders");
+					val = al_get_config_value(t3f_config, omo_get_profile_section(t3f_config, section_buffer), "library_folders");
 					if(val)
 					{
 						library_folders = atoi(val);
@@ -228,7 +228,7 @@ void omo_file_chooser_logic(void * data)
 					for(i = 0; i < library_folders; i++)
 					{
 						sprintf(buffer, "library_folder_%d", i);
-						val = al_get_config_value(t3f_config, omo_get_profile_section(section_buffer), buffer);
+						val = al_get_config_value(t3f_config, omo_get_profile_section(t3f_config, section_buffer), buffer);
 						if(val)
 						{
 							if(!strcmp(val, al_get_native_file_dialog_path(app->file_chooser, 0)))
@@ -240,10 +240,10 @@ void omo_file_chooser_logic(void * data)
 					if(i == library_folders)
 					{
 						sprintf(buffer, "library_folder_%d", library_folders);
-						al_set_config_value(t3f_config, omo_get_profile_section(section_buffer), buffer, al_get_native_file_dialog_path(app->file_chooser, 0));
+						al_set_config_value(t3f_config, omo_get_profile_section(t3f_config, section_buffer), buffer, al_get_native_file_dialog_path(app->file_chooser, 0));
 						library_folders++;
 						sprintf(buffer, "%d", library_folders);
-						al_set_config_value(t3f_config, omo_get_profile_section(section_buffer), "library_folders", buffer);
+						al_set_config_value(t3f_config, omo_get_profile_section(t3f_config, section_buffer), "library_folders", buffer);
 						omo_clear_library_cache();
 						app->spawn_library_thread = true;
 					}

@@ -13,15 +13,65 @@ static int sort_names(const void *e1, const void *e2)
 	return strcasecmp(*s1, *s2);
 }
 
-static const char * get_library_folder(ALLEGRO_CONFIG * cp, int folder)
+static const char * get_library_folder(ALLEGRO_CONFIG * cp, int folder, char * buffer, int buffer_size)
 {
 	const char * val;
-	char buffer[64];
+	const char * profile_section;
+	char section_buffer[256];
+	char buf[64];
+	ALLEGRO_PATH * path;
+	ALLEGRO_FS_ENTRY * fs_entry;
+	uint32_t mode;
+	char * ret = NULL;
 
-	sprintf(buffer, "library_folder_%d", folder);
-	val = al_get_config_value(cp, "Settings", buffer);
+	profile_section = omo_get_profile_section(cp, section_buffer);
+	if(!profile_section)
+	{
+		return NULL;
+	}
+	sprintf(buf, "library_folder_%d", folder);
+	val = al_get_config_value(cp, profile_section, buf);
+	if(val)
+	{
+		fs_entry = al_create_fs_entry(val);
+		if(fs_entry)
+		{
+			mode = al_get_fs_entry_mode(fs_entry);
+			al_destroy_fs_entry(fs_entry);
+			if(mode & ALLEGRO_FILEMODE_ISDIR)
+			{
+				if(strlen(val) < buffer_size)
+				{
+					strcpy(buffer, val);
+					ret = buffer;
+				}
+			}
+			else
+			{
+				path = al_create_path(val);
+				if(path)
+				{
+					al_set_path_filename(path, NULL);
+					val = al_path_cstr(path, '/');
+					if(val && strlen(val) < buffer_size)
+					{
+						strcpy(buffer, val);
+						if(strlen(buffer) > 0)
+						{
+							if(buffer[strlen(buffer) - 1] == '/')
+							{
+								buffer[strlen(buffer) - 1] = 0;
+							}
+						}
+						ret = buffer;
+					}
+					al_destroy_path(path);
+				}
+			}
+		}
+	}
 
-	return val;
+	return ret;
 }
 
 static time_t get_path_mtime(const char * fn)
@@ -47,7 +97,7 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 	const char * val;
 	int c, i, j;
 
-	val = al_get_config_value(app->library_config, omo_get_profile_section(section_buffer), "library_folders");
+	val = al_get_config_value(app->library_config, omo_get_profile_section(app->library_config, section_buffer), "library_folders");
 	if(!val || atoi(val) < 1)
 	{
 		sprintf(app->status_bar_text, "No Library Folders");
@@ -58,7 +108,7 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 	app->loading_library->modified_time = 0;
 	for(i = 0; i < c; i++)
 	{
-		val = get_library_folder(app->library_config, i);
+		val = get_library_folder(app->library_config, i, buffer, 1024);
 		if(val)
 		{
 			mtime = omo_get_folder_mtime(val);
@@ -79,7 +129,7 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 		for(j = 0; j < c; j++)
 		{
 			sprintf(app->status_bar_text, "Scanning folder %d of %d...", j + 1, c);
-			val = get_library_folder(app->library_config, j);
+			val = get_library_folder(app->library_config, j, buffer, 1024);
 			if(val)
 			{
 				t3f_scan_files(val, omo_count_file, false, &app->loading_library_file_helper_data);
@@ -95,11 +145,14 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 				app->loading_library_file_helper_data.scan_done = true;
 				return false;
 			}
-			val = get_library_folder(app->library_config, j);
-			sprintf(app->status_bar_text, "Scanning folder %d of %d...", j + 1, c);
-			t3f_scan_files(val, omo_add_file, false, &app->loading_library_file_helper_data);
-			omo_save_library(app->loading_library);
-			sprintf(app->status_bar_text, "Saving progress...");
+			val = get_library_folder(app->library_config, j, buffer, 1024);
+			if(val)
+			{
+				sprintf(app->status_bar_text, "Scanning folder %d of %d...", j + 1, c);
+				t3f_scan_files(val, omo_add_file, false, &app->loading_library_file_helper_data);
+				omo_save_library(app->loading_library);
+				sprintf(app->status_bar_text, "Saving progress...");
+			}
 		}
 	}
 	return true;

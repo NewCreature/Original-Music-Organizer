@@ -66,8 +66,8 @@ static bool omo_test_setup_library(void * data)
 	{
 		return false;
 	}
-	al_set_config_value(test_config, omo_get_profile_section(section_buffer), "library_folders", "1");
-	al_set_config_value(test_config, omo_get_profile_section(section_buffer), "library_folder_0", app->test_path);
+	al_set_config_value(test_config, omo_get_profile_section(test_config, section_buffer), "library_folders", "1");
+	al_set_config_value(test_config, omo_get_profile_section(test_config, section_buffer), "library_folder_0", app->test_path);
 	omo_setup_library(app, file_database_fn, entry_database_fn, test_config);
 	return true;
 }
