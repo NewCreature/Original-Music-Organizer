@@ -350,7 +350,10 @@ void omo_exit(APP_INSTANCE * app)
 	}
 	if(app->library)
 	{
-		omo_save_library_cache(app->library, t3f_get_filename(t3f_data_path, "omo.library", buffer, 1024));
+		if(!app->loading_library_file_helper_data.cancel_scan)
+		{
+			omo_save_library_cache(app->library, t3f_get_filename(t3f_data_path, "omo.library", buffer, 1024));
+		}
 	}
 	t3f_save_config();
 	omo_destroy_player(app->player);
