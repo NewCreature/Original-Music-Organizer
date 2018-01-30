@@ -98,8 +98,12 @@ v0.4
 [X]Ensure library folders are valid. If we hit on a file instead of a folder,
    we should remove the path tail and see if we are at a valid folder.
 
-[ ]Don't save library cache if library scan cancelled. We don't want an
+[X]Don't save library cache if library scan cancelled. We don't want an
    incomplete library to be loaded on next startup.
+
+[ ]Fix initial archive scanning. The archive entry data is being saved
+   incorrectly in the file database on initial scan. This is making it
+   impossible to add archived files to the library.
 
 [ ]Investigate why certain files that have been split aren't playing (DUMBA5).
 
