@@ -150,11 +150,11 @@ static void omo_count_archive_files(const char * fn, OMO_ARCHIVE_HANDLER * archi
 	if(!need_scan)
 	{
 		c = omo_get_archive_file_count(fn, file_helper_data);
-	}
-	if(c >= 0)
-	{
-		file_helper_data->file_count += c;
-		return;
+		if(c >= 0)
+		{
+			file_helper_data->file_count += c;
+			return;
+		}
 	}
 	archive_handler_data = archive_handler->open_archive(fn, file_helper_data->temp_path);
 	if(archive_handler_data)
