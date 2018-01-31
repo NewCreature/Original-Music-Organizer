@@ -181,6 +181,7 @@ static void omo_count_archive_files(const char * fn, OMO_ARCHIVE_HANDLER * archi
 			target_fn = archive_handler->get_file(archive_handler_data, i, fn_buffer);
 			if(file_helper_data->library)
 			{
+				sprintf(buf, "entry_%d", i);
 				omo_set_database_value(file_helper_data->library->file_database, fn, buf, target_fn);
 			}
 			codec_handler = omo_get_codec_handler(file_helper_data->codec_handler_registry, target_fn);
@@ -193,6 +194,7 @@ static void omo_count_archive_files(const char * fn, OMO_ARCHIVE_HANDLER * archi
 					al_remove_filename(extracted_fn);
 					if(file_helper_data->library)
 					{
+						sprintf(buf, "entry_%d_tracks", i);
 						sprintf(buf2, "%d", c2);
 						omo_set_database_value(file_helper_data->library->file_database, fn, buf, buf2);
 					}
