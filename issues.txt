@@ -1,6 +1,22 @@
 OMO Issues
 ----------
 
+v0.5
+----
+
+[ ]Implement portable mode. In portable mode, the library databases and app
+   settings are stored alongside the executable. The idea is to allow a user to
+   copy their music collection to a thumb drive and use it on multiple machines
+   without having to generate library databases for each machine.
+
+[ ]Look into adding a lyrics window.
+
+[ ]Investigate why certain files that have been split aren't playing (DUMBA5).
+
+   [ ]For some reason setting the start order doesn't work for PSM files. This
+      will have to be fixed in DUMB.
+
+
 v0.4
 ----
 
@@ -101,19 +117,11 @@ v0.4
 [X]Don't save library cache if library scan cancelled. We don't want an
    incomplete library to be loaded on next startup.
 
-[ ]Fix initial archive scanning. The archive entry data is being saved
+[X]Fix initial archive scanning. The archive entry data is being saved
    incorrectly in the file database on initial scan. This is making it
    impossible to add archived files to the library.
 
-[ ]Investigate why certain files that have been split aren't playing (DUMBA5).
-
-   [ ]For some reason setting the start order doesn't work for PSM files. This
-      will have to be fixed in DUMB.
-
-[ ]Add a way to mark the library as dirty and reload it when whatever process
-   is operating on it completes.
-
-[ ]Add library profiles. A library profile will contain library settings
+[X]Add library profiles. A library profile will contain library settings
    specific to that profile. For instance, you can have the default profile
    contain all of your music and have a separate profile for just MODs or
    game music.
@@ -122,13 +130,6 @@ v0.4
    should take this list into account when looking for a codec handler and
    should return NULL if we are looking for a codec handler for a type that is
    on the ignore list.
-
-[ ]Implement portable mode. In portable mode, the library databases and app
-   settings are stored alongside the executable. The idea is to allow a user to
-   copy their music collection to a thumb drive and use it on multiple machines
-   without having to generate library databases for each machine.
-
-[ ]Look into adding a lyrics window.
 
 
 v0.3
