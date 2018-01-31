@@ -151,7 +151,7 @@ void omo_library_logic(void * data)
 				{
 					omo_add_file_to_queue(app->player->queue, app->library->entry[app->library->song_entry[i]]->filename, app->library->entry[app->library->song_entry[i]]->sub_filename, app->library->entry[app->library->song_entry[i]]->track, true);
 				}
-				omo_menu_playback_shuffle(app);
+				omo_menu_playback_shuffle(0, app);
 			}
 			else
 			{

@@ -11,11 +11,11 @@ static void omo_toggle_library_view(void * data)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	if(app->library_view)
 	{
-		omo_menu_view_basic(app);
+		omo_menu_view_basic(0, app);
 	}
 	else
 	{
-		omo_menu_view_library(app);
+		omo_menu_view_library(0, app);
 	}
 }
 
@@ -33,11 +33,11 @@ void omo_shortcut_logic(void * data)
 		app->ui->tags_queue_entry = -1;
 		if(app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
 		{
-			omo_menu_playback_edit_tags(app);
+			omo_menu_playback_edit_tags(0, app);
 		}
 		else if(app->ui->ui_song_list_element->flags & D_GOTFOCUS)
 		{
-			omo_menu_library_edit_tags(app);
+			omo_menu_library_edit_tags(0, app);
 		}
 		t3f_key[ALLEGRO_KEY_T] = 0;
 	}
@@ -105,7 +105,7 @@ void omo_shortcut_logic(void * data)
 	}
 	if(t3f_key[ALLEGRO_KEY_S])
 	{
-		omo_menu_playback_shuffle(app);
+		omo_menu_playback_shuffle(0, app);
 		t3f_key[ALLEGRO_KEY_S] = 0;
 	}
 }

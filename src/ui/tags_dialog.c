@@ -25,12 +25,12 @@ void omo_tags_dialog_logic(void * data)
 	}
 	if((t3f_key[ALLEGRO_KEY_LCTRL] || t3f_key[ALLEGRO_KEY_RCTRL] || t3f_key[ALLEGRO_KEY_COMMAND]) && t3f_key[ALLEGRO_KEY_C])
 	{
-		omo_menu_edit_copy_tags(data);
+		omo_menu_edit_copy_tags(0, data);
 		t3f_key[ALLEGRO_KEY_C] = 0;
 	}
 	else if((t3f_key[ALLEGRO_KEY_LCTRL] || t3f_key[ALLEGRO_KEY_RCTRL] || t3f_key[ALLEGRO_KEY_COMMAND]) && t3f_key[ALLEGRO_KEY_V])
 	{
-		omo_menu_edit_paste_tags(data);
+		omo_menu_edit_paste_tags(0, data);
 		t3f_key[ALLEGRO_KEY_V] = 0;
 	}
 
