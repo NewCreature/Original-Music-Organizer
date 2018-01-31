@@ -96,6 +96,7 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 	time_t mtime;
 	const char * val;
 	int c, i, j;
+	const char * cache_fn;
 
 	val = al_get_config_value(app->library_config, omo_get_profile_section(app->library_config, section_buffer), "library_folders");
 	if(!val || atoi(val) < 1)
@@ -118,12 +119,22 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 			}
 		}
 	}
-	if(app->loading_library->modified_time > get_path_mtime(t3f_get_filename(t3f_data_path, "omo.library", buffer, 1024)))
+	val = al_get_config_value(t3f_config, "Settings", "profile");
+	if(!val)
+	{
+		val = "Default";
+	}
+	cache_fn = omo_get_profile_path(omo_get_profile(), "omo.library", buffer, 1024);
+	if(!cache_fn)
+	{
+		return false;
+	}
+	if(app->loading_library->modified_time > get_path_mtime(cache_fn))
 	{
 		app->loading_library->modified = true;
 	}
 	sprintf(app->status_bar_text, "Attempting to load cached library data...");
-	if(app->loading_library->modified || !omo_load_library_cache(app->loading_library, t3f_get_filename(t3f_data_path, "omo.library", buffer, 1024)))
+	if(app->loading_library->modified || !omo_load_library_cache(app->loading_library, cache_fn))
 	{
 		omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->loading_library, app->player->queue, app->library_temp_path, app->status_bar_text);
 		for(j = 0; j < c; j++)
@@ -162,6 +173,7 @@ bool omo_build_library_artists_list(APP_INSTANCE * app, OMO_LIBRARY * lp)
 {
 	char buffer[1024];
 	const char * val;
+	const char * fn;
 	int i;
 
 	if(app->loading_library_file_helper_data.cancel_scan)
@@ -192,7 +204,11 @@ bool omo_build_library_artists_list(APP_INSTANCE * app, OMO_LIBRARY * lp)
 	{
 		qsort(&lp->artist_entry[2], lp->artist_entry_count - 2, sizeof(char *), sort_names);
 	}
-	omo_save_library_artists_cache(lp, t3f_get_filename(t3f_data_path, "omo.artists", buffer, 1024));
+	fn = omo_get_profile_path(omo_get_profile(), "omo.artists", buffer, 1024);
+	if(fn)
+	{
+		omo_save_library_artists_cache(lp, fn);
+	}
 
 	return true;
 }

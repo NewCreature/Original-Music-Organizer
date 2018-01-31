@@ -9,6 +9,7 @@
 #include "library_helpers.h"
 #include "queue_helpers.h"
 #include "library_cache.h"
+#include "profile.h"
 
 #include "archive_handlers/libarchive/libarchive.h"
 #include "archive_handlers/unrar/unrar.h"
@@ -191,6 +192,13 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_gme_get_codec_handler());
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_mp3a5_get_codec_handler());
 
+	/* create default profile */
+	if(!omo_setup_profile("Default"))
+	{
+		printf("Error setting up default profile!\n");
+		return false;
+	}
+
 	app->player = omo_create_player();
 	if(!app->player)
 	{
@@ -339,6 +347,7 @@ void omo_exit(APP_INSTANCE * app)
 {
 	char buffer[1024];
 	char buf[32] = {0};
+	const char * fn;
 
 	if(app->player->queue)
 	{
@@ -352,7 +361,11 @@ void omo_exit(APP_INSTANCE * app)
 	{
 		if(!app->loading_library_file_helper_data.cancel_scan)
 		{
-			omo_save_library_cache(app->library, t3f_get_filename(t3f_data_path, "omo.library", buffer, 1024));
+			fn = omo_get_profile_path(omo_get_profile(), "omo.library", buffer, 1024);
+			if(fn)
+			{
+				omo_save_library_cache(app->library, fn);
+			}
 		}
 	}
 	t3f_save_config();

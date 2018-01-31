@@ -1,5 +1,6 @@
 #include "t3f/t3f.h"
 #include "t3f/file_utils.h"
+#include "constants.h"
 
 const char * omo_get_profile_section(ALLEGRO_CONFIG * cp, char * buffer)
 {
@@ -74,4 +75,40 @@ void omo_remove_profile(const char * name)
 	}
 	sprintf(profile_path, "%s/%s", t3f_get_filename(t3f_data_path, "profiles", buffer, 1024), name);
 	t3f_remove_directory(profile_path);
+}
+
+const char * omo_get_profile_path(const char * name, const char * fn, char * buffer, int buffer_size)
+{
+	ALLEGRO_PATH * path;
+	const char * ret = NULL;
+	char tail[256];
+
+	sprintf(tail, "Profiles/%s", name);
+	path = al_clone_path(t3f_data_path);
+	if(path)
+	{
+		al_append_path_component(path, "Profiles");
+		al_append_path_component(path, name);
+		al_set_path_filename(path, fn);
+		if(strlen(al_path_cstr(path, '/')) < buffer_size)
+		{
+			strcpy(buffer, al_path_cstr(path, '/'));
+			ret = buffer;
+		}
+		al_destroy_path(path);
+	}
+
+	return ret;
+}
+
+const char * omo_get_profile(void)
+{
+	const char * val;
+
+	val = al_get_config_value(t3f_config, "Settings", "profile");
+	if(!val)
+	{
+		val = omo_default_profile;
+	}
+	return val;
 }

@@ -2,6 +2,7 @@
 #include "t3f/file_utils.h"
 #include "instance.h"
 #include "file_helpers.h"
+#include "profile.h"
 
 static bool omo_process_file_mtime(const char * fn, bool isfolder, void * data)
 {
@@ -542,9 +543,26 @@ bool omo_queue_file(const char * fn, bool isfolder, void * data)
 void omo_clear_library_cache(void)
 {
 	char buffer[1024];
+	const char * fn;
 
-	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.library", buffer, 1024));
-	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.artists", buffer, 1024));
-	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.albums", buffer, 1024));
-	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.songs", buffer, 1024));
+	fn = omo_get_profile_path(omo_get_profile(), "omo.library", buffer, 1024);
+	if(fn)
+	{
+		al_remove_filename(fn);
+	}
+	fn = omo_get_profile_path(omo_get_profile(), "omo.artists", buffer, 1024);
+	if(fn)
+	{
+		al_remove_filename(fn);
+	}
+	fn = omo_get_profile_path(omo_get_profile(), "omo.albums", buffer, 1024);
+	if(fn)
+	{
+		al_remove_filename(fn);
+	}
+	fn = omo_get_profile_path(omo_get_profile(), "omo.songs", buffer, 1024);
+	if(fn)
+	{
+		al_remove_filename(fn);
+	}
 }
