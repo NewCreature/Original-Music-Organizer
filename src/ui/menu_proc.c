@@ -386,7 +386,7 @@ int omo_menu_library_profile_delete_update_proc(ALLEGRO_MENU * mp, int item, voi
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	if(item == app->profile_delete_id)
+	if(app->selected_profile_id == app->profile_select_id[0])
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
 	}
