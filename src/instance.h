@@ -30,6 +30,10 @@ typedef struct
 	char edit_artist[256];
 	char edit_album[256];
 	char edit_song_id[256];
+	int profile_select_id[OMO_MAX_PROFILES];
+	int profile_count;
+	int selected_profile;
+	int profile_delete_id;
 
 	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;
 	OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry;

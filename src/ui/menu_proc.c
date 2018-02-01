@@ -368,6 +368,82 @@ int omo_menu_library_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * d
 	return 1;
 }
 
+int omo_menu_library_profile_update_proc(ALLEGRO_MENU * mp, int item, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	int i;
+
+	for(i = 0; i < OMO_MAX_PROFILES; i++)
+	{
+		if(app->profile_select_id[i] == item)
+		{
+			break;
+		}
+	}
+	if(i == app->selected_profile)
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_CHECKED);
+	}
+	else
+	{
+		t3f_set_menu_item_flags(mp, item, 0);
+	}
+	return 1;
+}
+
+int omo_menu_library_profile_delete_update_proc(ALLEGRO_MENU * mp, int item, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	if(item == app->profile_delete_id)
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
+	}
+	else
+	{
+		t3f_set_menu_item_flags(mp, item, 0);
+	}
+	return 1;
+}
+
+int omo_menu_library_select_profile(int id, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	char buf[64];
+	const char * val;
+	int i;
+
+	for(i = 0; i < OMO_MAX_PROFILES; i++)
+	{
+		if(app->profile_select_id[i] == id)
+		{
+			if(i != app->selected_profile)
+			{
+				app->selected_profile = i;
+				sprintf(buf, "profile_%d", i);
+				val = al_get_config_value(t3f_config, "Settings", buf);
+				if(val)
+				{
+					al_set_config_value(t3f_config, "Settings", "profile", val);
+				}
+				app->spawn_library_thread = true;
+			}
+			break;
+		}
+	}
+	return 1;
+}
+
+int omo_menu_library_add_profile(int id, void * data)
+{
+	return 1;
+}
+
+int omo_menu_library_remove_profile(int id, void * data)
+{
+	return 1;
+}
+
 int omo_menu_library_add_folder(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;

@@ -3,9 +3,52 @@
 #include "../instance.h"
 #include "menu_proc.h"
 
+void omo_update_profile_menu(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	const char * val;
+	char buf[64];
+	int i;
+
+	/* remove all items except Default */
+	for(i = 1; i < app->profile_count; i++)
+	{
+		al_remove_menu_item(app->menu[OMO_MENU_PROFILE], 1);
+	}
+
+	/* add menu items for all profiles */
+	val = al_get_config_value(t3f_config, "Settings", "profiles");
+	if(val)
+	{
+		app->profile_count = atoi(val);
+		for(i = 4; i < app->profile_count; i++)
+		{
+			sprintf(buf, "profile_%d", i);
+			val = al_get_config_value(t3f_config, "Settings", buf);
+			if(val)
+			{
+				app->profile_select_id[i] = t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], val, 0, NULL, omo_menu_library_select_profile, omo_menu_library_profile_update_proc);
+			}
+		}
+	}
+	t3f_refresh_menus();
+}
+
 bool omo_setup_menus(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	app->menu[OMO_MENU_PROFILE] = al_create_menu();
+	if(!app->menu[OMO_MENU_PROFILE])
+	{
+		return false;
+	}
+	t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], "Add", 0, NULL, omo_menu_library_add_profile, NULL);
+	app->profile_delete_id = t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], "Remove", 0, NULL, omo_menu_library_remove_profile, omo_menu_library_profile_delete_update_proc);
+	t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], NULL, 0, NULL, NULL, NULL);
+	app->profile_select_id[0] = t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], "Default", ALLEGRO_MENU_ITEM_CHECKBOX, NULL, omo_menu_library_select_profile, omo_menu_library_profile_update_proc);
+	app->profile_count = 1;
+	omo_update_profile_menu(data);
 
 	app->menu[OMO_MENU_FILE] = al_create_menu();
 	if(!app->menu[OMO_MENU_FILE])
@@ -44,6 +87,8 @@ bool omo_setup_menus(void * data)
 	{
 		return false;
 	}
+	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Profile", 0, app->menu[OMO_MENU_PROFILE], NULL, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Add Library Folder", 0, NULL, omo_menu_library_add_folder, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Clear Library Folders", 0, NULL, omo_menu_library_clear_folders, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);

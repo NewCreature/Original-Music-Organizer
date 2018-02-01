@@ -25,6 +25,11 @@ int omo_menu_playback_edit_tags(int id, void * data);
 int omo_menu_playback_split_track(int id, void * data);
 
 int omo_menu_library_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * data);
+int omo_menu_library_profile_update_proc(ALLEGRO_MENU * mp, int item, void * data);
+int omo_menu_library_profile_delete_update_proc(ALLEGRO_MENU * mp, int item, void * data);
+int omo_menu_library_select_profile(int id, void * data);
+int omo_menu_library_add_profile(int id, void * data);
+int omo_menu_library_remove_profile(int id, void * data);
 int omo_menu_library_add_folder(int id, void * data);
 int omo_menu_library_clear_folders(int id, void * data);
 int omo_menu_library_edit_tags(int id, void * data);
