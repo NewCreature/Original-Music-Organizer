@@ -41,7 +41,7 @@ bool omo_add_profile(const char * name)
 	{
 		sprintf(buf, "profile_%d", index);
 		al_set_config_value(t3f_config, "Settings", buf, name);
-		sprintf(buf, "%d", index);
+		sprintf(buf, "%d", index + 1);
 		al_set_config_value(t3f_config, "Settings", "profiles", buf);
 		return true;
 	}
@@ -75,7 +75,7 @@ const char * omo_get_profile_section(ALLEGRO_CONFIG * cp, char * buffer)
 {
 	const char * val;
 
-	val = al_get_config_value(cp, "Settings", "Profile");
+	val = al_get_config_value(cp, "Settings", "profile");
 	if(val)
 	{
 		sprintf(buffer, "Profile %s", val);

@@ -420,6 +420,10 @@ int omo_menu_library_select_profile(int id, void * data)
 
 int omo_menu_library_add_profile(int id, void * data)
 {
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	omo_open_new_profile_dialog(app->ui, data);
+
 	return 1;
 }
 

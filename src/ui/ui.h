@@ -62,6 +62,11 @@ typedef struct
 	char tagger_key_text[OMO_UI_MAX_TAG_LENGTH];
 	T3GUI_ELEMENT * tagger_key_ok_button_element;
 
+	/* new profile dialog */
+	OMO_UI_POPUP_DIALOG * new_profile_popup_dialog;
+	char new_profile_text[OMO_UI_MAX_TAG_LENGTH];
+	T3GUI_ELEMENT * new_profile_ok_button_element;
+
 	/* theme data */
 	OMO_THEME * main_theme;
 	char ui_button_text[6][8];
@@ -84,5 +89,8 @@ void omo_close_split_track_dialog(OMO_UI * uip, void * data);
 
 bool omo_open_tagger_key_dialog(OMO_UI * uip, void * data);
 void omo_close_tagger_key_dialog(OMO_UI * uip, void * data);
+
+bool omo_open_new_profile_dialog(OMO_UI * uip, void * data);
+void omo_close_new_profile_dialog(OMO_UI * uip, void * data);
 
 #endif
