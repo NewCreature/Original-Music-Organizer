@@ -21,15 +21,16 @@ void omo_new_profile_dialog_logic(void * data)
 	{
 		if(strlen(app->ui->new_profile_text))
 		{
+			omo_clear_profile_menu(data);
 			if(omo_add_profile(app->ui->new_profile_text))
 			{
 				if(omo_setup_profile(app->ui->new_profile_text))
 				{
 					omo_set_current_profile(omo_get_profile_count() - 1);
-					omo_update_profile_menu(data);
 					app->spawn_library_thread = true;
 				}
 			}
+			omo_update_profile_menu(data);
 		}
 		omo_close_new_profile_dialog(app->ui, app);
 		app->button_pressed = -1;

@@ -71,7 +71,7 @@ void omo_delete_profile(int index)
 	}
 }
 
-const char * omo_get_profile_section(ALLEGRO_CONFIG * cp, char * buffer)
+const char * omo_get_profile_section(ALLEGRO_CONFIG * cp, const char * name, char * buffer)
 {
 	const char * val;
 

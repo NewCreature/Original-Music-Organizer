@@ -14,6 +14,7 @@
 #include "../queue_helpers.h"
 #include "../cloud.h"
 #include "../profile.h"
+#include "menu_init.h"
 
 static char type_buf[1024] = {0};
 
@@ -429,10 +430,38 @@ int omo_menu_library_add_profile(int id, void * data)
 
 int omo_menu_library_remove_profile(int id, void * data)
 {
-	if(omo_get_current_profile() >= omo_get_profile_count())
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	char buffer[1024];
+	char fn[256];
+	const char * name;
+	int i;
+
+	i = omo_get_current_profile();
+	if(i >= 0)
 	{
-		omo_set_current_profile(omo_get_profile_count() - 1);
+		omo_cancel_library_setup(app);
+		name = omo_get_profile(i);
+		if(name)
+		{
+			sprintf(fn, "Profiles/%s", name);
+			t3f_remove_directory(t3f_get_filename(t3f_data_path, fn, buffer, 1024));
+		}
+		omo_get_profile_section(t3f_config, name, buffer);
+		if(strcmp(buffer, "Profile Default"))
+		{
+			al_remove_config_section(t3f_config, buffer);
+		}
+		omo_clear_profile_menu(data);
+		if(omo_get_current_profile() >= omo_get_profile_count())
+		{
+			omo_set_current_profile(omo_get_profile_count() - 1);
+		}
+		omo_delete_profile(omo_get_current_profile());
+		omo_set_current_profile(omo_get_current_profile());
 	}
+	omo_update_profile_menu(data);
+	app->spawn_library_thread = true;
+
 	return 1;
 }
 
@@ -453,7 +482,7 @@ int omo_menu_library_clear_folders(int id, void * data)
 	char buf[4];
 
 	sprintf(buf, "%d", 0);
-	al_set_config_value(t3f_config, omo_get_profile_section(t3f_config, section_buffer), "library_folders", buf);
+	al_set_config_value(t3f_config, omo_get_profile_section(t3f_config, omo_get_profile(omo_get_current_profile()), section_buffer), "library_folders", buf);
 	omo_clear_library_cache();
 	app->spawn_library_thread = true;
 	sprintf(app->status_bar_text, "No Library Folders");

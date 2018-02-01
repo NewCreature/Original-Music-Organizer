@@ -24,7 +24,7 @@ static const char * get_library_folder(ALLEGRO_CONFIG * cp, int folder, char * b
 	uint32_t mode;
 	char * ret = NULL;
 
-	profile_section = omo_get_profile_section(cp, section_buffer);
+	profile_section = omo_get_profile_section(cp, omo_get_profile(omo_get_current_profile()), section_buffer);
 	if(!profile_section)
 	{
 		return NULL;
@@ -98,7 +98,7 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 	int c, i, j;
 	const char * cache_fn;
 
-	val = al_get_config_value(app->library_config, omo_get_profile_section(app->library_config, section_buffer), "library_folders");
+	val = al_get_config_value(app->library_config, omo_get_profile_section(app->library_config, omo_get_profile(omo_get_current_profile()), section_buffer), "library_folders");
 	if(!val || atoi(val) < 1)
 	{
 		sprintf(app->status_bar_text, "No Library Folders");
