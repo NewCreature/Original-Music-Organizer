@@ -361,7 +361,7 @@ void omo_exit(APP_INSTANCE * app)
 	{
 		if(!app->loading_library_file_helper_data.cancel_scan)
 		{
-			fn = omo_get_profile_path(omo_get_profile(), "omo.library", buffer, 1024);
+			fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.library", buffer, 1024);
 			if(fn)
 			{
 				omo_save_library_cache(app->library, fn);

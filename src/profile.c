@@ -2,6 +2,75 @@
 #include "t3f/file_utils.h"
 #include "constants.h"
 
+int omo_get_profile_count(void)
+{
+	const char * val;
+
+	val = al_get_config_value(t3f_config, "Settings", "profiles");
+	if(val)
+	{
+		return atoi(val);
+	}
+	return 0;
+}
+
+const char * omo_get_profile(int index)
+{
+	char buf[64];
+	const char * val;
+
+	if(index >= 0 && index < omo_get_profile_count())
+	{
+		sprintf(buf, "profile_%d", index);
+		val = al_get_config_value(t3f_config, "Settings", buf);
+		if(val)
+		{
+			return val;
+		}
+	}
+	return omo_default_profile;
+}
+
+bool omo_add_profile(const char * name)
+{
+	char buf[64];
+	int index;
+
+	index = omo_get_profile_count();
+	if(index < OMO_MAX_PROFILES)
+	{
+		sprintf(buf, "profile_%d", index);
+		al_set_config_value(t3f_config, "Settings", buf, name);
+		sprintf(buf, "%d", index);
+		al_set_config_value(t3f_config, "Settings", "profiles", buf);
+		return true;
+	}
+	return false;
+}
+
+void omo_delete_profile(int index)
+{
+	const char * val;
+	char buf[64];
+	int i, c;
+
+	c = omo_get_profile_count();
+	if(c > 0 && index < c)
+	{
+		for(i = index; i < c - 1; i++)
+		{
+			val = omo_get_profile(i + 1);
+			if(val)
+			{
+				sprintf(buf, "profile_%d", i);
+				al_set_config_value(t3f_config, "Settings", buf, val);
+			}
+		}
+		sprintf(buf, "%d", c - 1);
+		al_set_config_value(t3f_config, "Settings", "profiles", buf);
+	}
+}
+
 const char * omo_get_profile_section(ALLEGRO_CONFIG * cp, char * buffer)
 {
 	const char * val;
@@ -101,14 +170,44 @@ const char * omo_get_profile_path(const char * name, const char * fn, char * buf
 	return ret;
 }
 
-const char * omo_get_profile(void)
+int omo_get_current_profile(void)
+{
+	const char * val;
+	const char * val2;
+	int i;
+
+	val = al_get_config_value(t3f_config, "Settings", "profile");
+	if(val)
+	{
+		for(i = 0; i < omo_get_profile_count(); i++)
+		{
+			val2 = omo_get_profile(i);
+			if(val2)
+			{
+				if(!strcmp(val, val2))
+				{
+					return i;
+				}
+			}
+		}
+	}
+	return -1;
+}
+
+void omo_set_current_profile(int index)
 {
 	const char * val;
 
-	val = al_get_config_value(t3f_config, "Settings", "profile");
-	if(!val)
+	if(index < 0)
 	{
-		val = omo_default_profile;
+		val = "Default";
 	}
-	return val;
+	else
+	{
+		val = omo_get_profile(index);
+	}
+	if(val)
+	{
+		al_set_config_value(t3f_config, "Settings", "profile", val);
+	}
 }

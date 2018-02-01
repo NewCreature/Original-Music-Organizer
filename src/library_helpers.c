@@ -124,7 +124,7 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 	{
 		val = "Default";
 	}
-	cache_fn = omo_get_profile_path(omo_get_profile(), "omo.library", buffer, 1024);
+	cache_fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.library", buffer, 1024);
 	if(!cache_fn)
 	{
 		return false;
@@ -204,7 +204,7 @@ bool omo_build_library_artists_list(APP_INSTANCE * app, OMO_LIBRARY * lp)
 	{
 		qsort(&lp->artist_entry[2], lp->artist_entry_count - 2, sizeof(char *), sort_names);
 	}
-	fn = omo_get_profile_path(omo_get_profile(), "omo.artists", buffer, 1024);
+	fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.artists", buffer, 1024);
 	if(fn)
 	{
 		omo_save_library_artists_cache(lp, fn);

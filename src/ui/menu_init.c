@@ -2,36 +2,31 @@
 
 #include "../instance.h"
 #include "menu_proc.h"
+#include "../profile.h"
 
 void omo_update_profile_menu(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	const char * val;
-	char buf[64];
 	int i;
 
 	/* remove all items except Default */
-	for(i = 1; i < app->profile_count; i++)
+	for(i = 1; i < omo_get_profile_count(); i++)
 	{
 		al_remove_menu_item(app->menu[OMO_MENU_PROFILE], 1);
 	}
 
 	/* add menu items for all profiles */
-	val = al_get_config_value(t3f_config, "Settings", "profiles");
-	if(val)
+	for(i = 0; i < omo_get_profile_count(); i++)
 	{
-		app->profile_count = atoi(val);
-		for(i = 4; i < app->profile_count; i++)
+		val = omo_get_profile(i);
+		if(val)
 		{
-			sprintf(buf, "profile_%d", i);
-			val = al_get_config_value(t3f_config, "Settings", buf);
-			if(val)
-			{
-				app->profile_select_id[i] = t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], val, 0, NULL, omo_menu_library_select_profile, omo_menu_library_profile_update_proc);
-			}
+			app->profile_select_id[i + 1] = t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], val, 0, NULL, omo_menu_library_select_profile, omo_menu_library_profile_update_proc);
 		}
 	}
-	t3f_refresh_menus();
+	i = omo_get_current_profile();
+	app->selected_profile_id = app->profile_select_id[i + 1];
 }
 
 bool omo_setup_menus(void * data)
@@ -47,7 +42,6 @@ bool omo_setup_menus(void * data)
 	app->profile_delete_id = t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], "Remove", 0, NULL, omo_menu_library_remove_profile, omo_menu_library_profile_delete_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], NULL, 0, NULL, NULL, NULL);
 	app->profile_select_id[0] = t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], "Default", ALLEGRO_MENU_ITEM_CHECKBOX, NULL, omo_menu_library_select_profile, omo_menu_library_profile_update_proc);
-	app->profile_count = 1;
 	omo_update_profile_menu(data);
 
 	app->menu[OMO_MENU_FILE] = al_create_menu();

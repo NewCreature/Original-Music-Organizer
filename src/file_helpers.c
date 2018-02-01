@@ -545,22 +545,22 @@ void omo_clear_library_cache(void)
 	char buffer[1024];
 	const char * fn;
 
-	fn = omo_get_profile_path(omo_get_profile(), "omo.library", buffer, 1024);
+	fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.library", buffer, 1024);
 	if(fn)
 	{
 		al_remove_filename(fn);
 	}
-	fn = omo_get_profile_path(omo_get_profile(), "omo.artists", buffer, 1024);
+	fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.artists", buffer, 1024);
 	if(fn)
 	{
 		al_remove_filename(fn);
 	}
-	fn = omo_get_profile_path(omo_get_profile(), "omo.albums", buffer, 1024);
+	fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.albums", buffer, 1024);
 	if(fn)
 	{
 		al_remove_filename(fn);
 	}
-	fn = omo_get_profile_path(omo_get_profile(), "omo.songs", buffer, 1024);
+	fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.songs", buffer, 1024);
 	if(fn)
 	{
 		al_remove_filename(fn);

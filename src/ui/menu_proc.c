@@ -371,16 +371,7 @@ int omo_menu_library_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * d
 int omo_menu_library_profile_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	int i;
-
-	for(i = 0; i < OMO_MAX_PROFILES; i++)
-	{
-		if(app->profile_select_id[i] == item)
-		{
-			break;
-		}
-	}
-	if(i == app->selected_profile)
+	if(item == app->selected_profile_id)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_CHECKED);
 	}
@@ -409,27 +400,20 @@ int omo_menu_library_profile_delete_update_proc(ALLEGRO_MENU * mp, int item, voi
 int omo_menu_library_select_profile(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	char buf[64];
-	const char * val;
 	int i;
 
-	for(i = 0; i < OMO_MAX_PROFILES; i++)
+	if(id != app->selected_profile_id)
 	{
-		if(app->profile_select_id[i] == id)
+		for(i = 0; i < OMO_MAX_PROFILES; i++)
 		{
-			if(i != app->selected_profile)
+			if(app->profile_select_id[i] == id)
 			{
-				app->selected_profile = i;
-				sprintf(buf, "profile_%d", i);
-				val = al_get_config_value(t3f_config, "Settings", buf);
-				if(val)
-				{
-					al_set_config_value(t3f_config, "Settings", "profile", val);
-				}
+				omo_set_current_profile(i - 1);
 				app->spawn_library_thread = true;
+				break;
 			}
-			break;
 		}
+		app->selected_profile_id = id;
 	}
 	return 1;
 }
@@ -441,6 +425,10 @@ int omo_menu_library_add_profile(int id, void * data)
 
 int omo_menu_library_remove_profile(int id, void * data)
 {
+	if(omo_get_current_profile() >= omo_get_profile_count())
+	{
+		omo_set_current_profile(omo_get_profile_count() - 1);
+	}
 	return 1;
 }
 

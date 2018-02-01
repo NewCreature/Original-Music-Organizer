@@ -787,7 +787,7 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 	int i;
 
 	omo_free_album_list(lp);
-	fn = omo_get_profile_path(omo_get_profile(), "omo.albums", buffer, 1024);
+	fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.albums", buffer, 1024);
 	if(!fn)
 	{
 		return false;
@@ -879,7 +879,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 		free(lp->song_entry);
 		lp->song_entry = NULL;
 	}
-	fn = omo_get_profile_path(omo_get_profile(), "omo.songs", buffer, 1024);
+	fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.songs", buffer, 1024);
 	if(!fn)
 	{
 		return false;
