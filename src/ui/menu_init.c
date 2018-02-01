@@ -11,9 +11,9 @@ void omo_update_profile_menu(void * data)
 	int i;
 
 	/* remove all items except Default */
-	for(i = 1; i < omo_get_profile_count(); i++)
+	for(i = 4; i < omo_get_profile_count(); i++)
 	{
-		al_remove_menu_item(app->menu[OMO_MENU_PROFILE], 1);
+		al_remove_menu_item(app->menu[OMO_MENU_PROFILE], 4);
 	}
 
 	/* add menu items for all profiles */
