@@ -22,7 +22,7 @@ void omo_update_profile_menu(void * data)
 		val = omo_get_profile(i);
 		if(val)
 		{
-			app->profile_select_id[i + 1] = t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], val, 0, NULL, omo_menu_library_select_profile, omo_menu_library_profile_update_proc);
+			app->profile_select_id[i + 1] = t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], val, ALLEGRO_MENU_ITEM_CHECKBOX, NULL, omo_menu_library_select_profile, omo_menu_library_profile_update_proc);
 		}
 	}
 	i = omo_get_current_profile();
