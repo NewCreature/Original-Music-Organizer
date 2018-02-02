@@ -14,62 +14,64 @@ OMO_THEME * omo_load_theme(const char * fn, int mode, int font_size)
 	if(tp)
 	{
 		memset(tp, 0, sizeof(OMO_THEME));
+		path = al_create_path(fn);
+		if(!path)
+		{
+			goto fail;
+		}
+		if(strcmp(al_get_path_filename(path), "omo_theme.ini"))
+		{
+			goto fail;
+		}
+		memset(tp, 0, sizeof(OMO_THEME));
 		tp->config = al_load_config_file(fn);
 		if(tp->config)
 		{
-			path = al_create_path(fn);
-			if(path)
+			if(mode == 0)
 			{
-				if(mode == 0)
+				for(i = 0; i < OMO_THEME_MAX_BITMAPS; i++)
 				{
-					for(i = 0; i < OMO_THEME_MAX_BITMAPS; i++)
-					{
-						sprintf(buf, "bitmap_%d", i);
-						val = al_get_config_value(tp->config, "Settings", buf);
-						if(val)
-						{
-							al_set_path_filename(path, val);
-							if(!t3f_load_resource((void **)(&tp->bitmap[i]), T3F_RESOURCE_TYPE_BITMAP, al_path_cstr(path, '/'), 0, 0, 0))
-							{
-								if(!t3f_load_resource((void **)(&tp->bitmap[i]), T3F_RESOURCE_TYPE_BITMAP, val, 0, 0, 0))
-								{
-									goto fail;
-								}
-							}
-						}
-					}
-				}
-				for(i = 0; i < OMO_THEME_MAX_GUI_THEMES; i++)
-				{
-					sprintf(buf, "theme_%d", i);
+					sprintf(buf, "bitmap_%d", i);
 					val = al_get_config_value(tp->config, "Settings", buf);
 					if(val)
 					{
 						al_set_path_filename(path, val);
-						tp->gui_theme[i] = t3gui_load_theme(al_path_cstr(path, '/'), font_size);
+						if(!t3f_load_resource((void **)(&tp->bitmap[i]), T3F_RESOURCE_TYPE_BITMAP, al_path_cstr(path, '/'), 0, 0, 0))
+						{
+							if(!t3f_load_resource((void **)(&tp->bitmap[i]), T3F_RESOURCE_TYPE_BITMAP, val, 0, 0, 0))
+							{
+								goto fail;
+							}
+						}
 					}
 				}
-				for(i = 0; i < OMO_THEME_MAX_TEXTS; i++)
-				{
-					strcpy(tp->text[i], "");
-					sprintf(buf, "text_%d", i);
-					val = al_get_config_value(tp->config, "Settings", buf);
-					if(val)
-					{
-						strcpy(tp->text[i], val);
-					}
-				}
-				al_destroy_path(path);
 			}
-			else
+			for(i = 0; i < OMO_THEME_MAX_GUI_THEMES; i++)
 			{
-				goto fail;
+				sprintf(buf, "theme_%d", i);
+				val = al_get_config_value(tp->config, "Settings", buf);
+				if(val)
+				{
+					al_set_path_filename(path, val);
+					tp->gui_theme[i] = t3gui_load_theme(al_path_cstr(path, '/'), font_size);
+				}
+			}
+			for(i = 0; i < OMO_THEME_MAX_TEXTS; i++)
+			{
+				strcpy(tp->text[i], "");
+				sprintf(buf, "text_%d", i);
+				val = al_get_config_value(tp->config, "Settings", buf);
+				if(val)
+				{
+					strcpy(tp->text[i], val);
+				}
 			}
 		}
 		else
 		{
 			goto fail;
 		}
+		al_destroy_path(path);
 	}
 	return tp;
 
