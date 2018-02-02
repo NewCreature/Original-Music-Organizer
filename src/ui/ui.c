@@ -258,10 +258,20 @@ static bool load_ui_data(OMO_UI * uip)
 	{
 		font_size = atoi(val);
 	}
-	uip->main_theme = omo_load_theme("data/themes/basic/omo_theme.ini", 0, font_size);
+	val = al_get_config_value(t3f_config, "Settings", "theme");
+	if(!val)
+	{
+		val = "data/themes/basic/omo_theme.ini";
+	}
+	uip->main_theme = omo_load_theme(val, 0, font_size);
 	if(!uip->main_theme)
 	{
-		return false;
+		al_remove_config_key(t3f_config, "Settings", "theme");
+		uip->main_theme = omo_load_theme("data/themes/basic/omo_theme.ini", 0, font_size);
+		if(!uip->main_theme)
+		{
+			return false;
+		}
 	}
 
 	return true;
@@ -437,6 +447,7 @@ void omo_close_popup_dialog(OMO_UI_POPUP_DIALOG * dp)
 
 bool omo_open_tags_dialog(OMO_UI * uip, void * data)
 {
+	const char * val;
 	int y = 8;
 	int h = 8;
 	int row = 0;
@@ -460,7 +471,12 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
 	h *= rows / 2;
 	h += 8;
 
-	uip->tags_popup_dialog = omo_create_popup_dialog("data/themes/basic/omo_theme.ini", 640, h, data);
+	val = al_get_config_value(t3f_config, "Settings", "theme");
+	if(!val)
+	{
+		val = "data/themes/basic/omo_theme.ini";
+	}
+	uip->tags_popup_dialog = omo_create_popup_dialog(val, 640, h, data);
 	if(uip->tags_popup_dialog)
 	{
 		t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, 640, h, 0, 0, 0, 0, NULL, NULL, NULL);
@@ -500,11 +516,17 @@ void omo_close_tags_dialog(OMO_UI * uip, void * data)
 
 bool omo_open_split_track_dialog(OMO_UI * uip, void * data)
 {
+	const char * val;
 	int pos_y = 8;
 	int h;
 
 	h = 8 + (al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 8) * 2 + 8 + 32 + 12;
-	uip->split_track_popup_dialog = omo_create_popup_dialog("data/themes/basic/omo_theme.ini", 320, h, data);
+	val = al_get_config_value(t3f_config, "Settings", "theme");
+	if(!val)
+	{
+		val = "data/themes/basic/omo_theme.ini";
+	}
+	uip->split_track_popup_dialog = omo_create_popup_dialog(val, 320, h, data);
 	if(uip->split_track_popup_dialog)
 	{
 		t3gui_dialog_add_element(uip->split_track_popup_dialog->dialog, uip->split_track_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, 320, h, 0, 0, 0, 0, NULL, NULL, NULL);
@@ -535,7 +557,12 @@ bool omo_open_tagger_key_dialog(OMO_UI * uip, void * data)
 	const char * val;
 
 	h = 8 + (al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 8) * 2 + 8 + 32 + 12;
-	uip->tagger_key_popup_dialog = omo_create_popup_dialog("data/themes/basic/omo_theme.ini", 320, h, data);
+	val = al_get_config_value(t3f_config, "Settings", "theme");
+	if(!val)
+	{
+		val = "data/themes/basic/omo_theme.ini";
+	}
+	uip->tagger_key_popup_dialog = omo_create_popup_dialog(val, 320, h, data);
 	if(uip->tagger_key_popup_dialog)
 	{
 		val = al_get_config_value(t3f_config, "Settings", "tagger_name");
@@ -570,11 +597,17 @@ void omo_close_tagger_key_dialog(OMO_UI * uip, void * data)
 
 bool omo_open_new_profile_dialog(OMO_UI * uip, void * data)
 {
+	const char * val;
 	int pos_y = 8;
 	int h;
 
 	h = 8 + (al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 8) * 2 + 8 + 32 + 12;
-	uip->new_profile_popup_dialog = omo_create_popup_dialog("data/themes/basic/omo_theme.ini", 320, h, data);
+	val = al_get_config_value(t3f_config, "Settings", "theme");
+	if(!val)
+	{
+		val = "data/themes/basic/omo_theme.ini";
+	}
+	uip->new_profile_popup_dialog = omo_create_popup_dialog(val, 320, h, data);
 	if(uip->new_profile_popup_dialog)
 	{
 		strcpy(uip->new_profile_text, "");
