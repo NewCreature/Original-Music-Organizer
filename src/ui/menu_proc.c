@@ -114,7 +114,7 @@ int omo_menu_file_play_files(int id, void * data)
 
 	app->file_chooser_mode = 0;
 	app->file_chooser_done = false;
-	omo_start_file_chooser(data, "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE, true);
+	omo_start_file_chooser(data, al_get_config_value(t3f_config, "Settings", "last_music_filename"), "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE, true);
 	return 1;
 }
 
@@ -124,7 +124,7 @@ int omo_menu_file_queue_files(int id, void * data)
 
 	app->file_chooser_mode = 1;
 	app->file_chooser_done = false;
-	omo_start_file_chooser(data, "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE, true);
+	omo_start_file_chooser(data, al_get_config_value(t3f_config, "Settings", "last_music_filename"), "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE, true);
 	return 1;
 }
 
@@ -134,7 +134,7 @@ int omo_menu_file_play_folder(int id, void * data)
 
 	app->file_chooser_mode = 2;
 	app->file_chooser_done = false;
-	omo_start_file_chooser(data, "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER, true);
+	omo_start_file_chooser(data, al_get_config_value(t3f_config, "Settings", "last_music_filename"), "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER, true);
 	return 1;
 }
 
@@ -144,7 +144,7 @@ int omo_menu_file_queue_folder(int id, void * data)
 
 	app->file_chooser_mode = 3;
 	app->file_chooser_done = false;
-	omo_start_file_chooser(data, "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER, true);
+	omo_start_file_chooser(data, al_get_config_value(t3f_config, "Settings", "last_music_filename"), "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER, true);
 	return 1;
 }
 
@@ -153,6 +153,17 @@ int omo_menu_file_get_tagger_key(int id, void * data)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
 	omo_open_tagger_key_dialog(app->ui, data);
+	return 1;
+}
+
+int omo_menu_file_load_theme(int id, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	app->file_chooser_mode = 5;
+	app->file_chooser_done = false;
+	omo_start_file_chooser(data, NULL, "Select theme file.", "*.ini", ALLEGRO_FILECHOOSER_FILE_MUST_EXIST, true);
+
 	return 1;
 }
 
@@ -471,7 +482,7 @@ int omo_menu_library_add_folder(int id, void * data)
 
 	app->file_chooser_mode = 4;
 	app->file_chooser_done = false;
-	omo_start_file_chooser(data, "Select library folder.", al_get_config_value(t3f_config, "Settings", "last_music_folder"), ALLEGRO_FILECHOOSER_FOLDER, true);
+	omo_start_file_chooser(data, al_get_config_value(t3f_config, "Settings", "last_music_filename"), "Select library folder.", al_get_config_value(t3f_config, "Settings", "last_music_folder"), ALLEGRO_FILECHOOSER_FOLDER, true);
 	return 1;
 }
 

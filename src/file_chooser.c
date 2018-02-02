@@ -27,10 +27,9 @@ static void * file_chooser_thread_proc(ALLEGRO_THREAD * thread, void * arg)
 	return NULL;
 }
 
-bool omo_start_file_chooser(void * data, const char * title, const char * types, int mode, bool threaded)
+bool omo_start_file_chooser(void * data, const char * initial, const char * title, const char * types, int mode, bool threaded)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	const char * last_music_filename = al_get_config_value(t3f_config, "Settings", "last_music_filename");
 
 	#ifdef ALLEGRO_WINDOWS
 	if(mode == ALLEGRO_FILECHOOSER_FOLDER)
@@ -39,7 +38,7 @@ bool omo_start_file_chooser(void * data, const char * title, const char * types,
 	}
 	#endif
 
-	app->file_chooser = al_create_native_file_dialog(last_music_filename, title, types, mode);
+	app->file_chooser = al_create_native_file_dialog(initial, title, types, mode);
 	if(!app->file_chooser)
 	{
 		return false;
@@ -105,6 +104,9 @@ void omo_file_chooser_logic(void * data)
 	char buffer[64] = {0};
 	int library_folders = 0;
 	char section_buffer[1024];
+	int d1[256];
+	int d2[256];
+	int d3[256];
 	int i;
 
 	if(app->file_chooser && app->file_chooser_done)
@@ -248,6 +250,45 @@ void omo_file_chooser_logic(void * data)
 						app->spawn_library_thread = true;
 					}
 					al_start_timer(t3f_timer);
+					break;
+				}
+				case 5:
+				{
+					al_set_config_value(t3f_config, "Settings", "theme", al_get_native_file_dialog_path(app->file_chooser, 0));
+					for(i = 0; i < app->ui->ui_dialog->elements; i++)
+					{
+						d1[i] = app->ui->ui_dialog->element[i].d1;
+						d2[i] = app->ui->ui_dialog->element[i].d2;
+						d3[i] = app->ui->ui_dialog->element[i].d3;
+					}
+					t3gui_close_dialog(app->ui->ui_dialog);
+					omo_destroy_ui(app->ui);
+					app->ui = omo_create_ui();
+					if(app->ui)
+					{
+						app->library_view = false;
+						val = al_get_config_value(t3f_config, "Settings", "last_view");
+						if(val && !strcmp(val, "library"))
+						{
+							app->library_view = true;
+						}
+						if(!omo_create_main_dialog(app->ui, app->library_view ? 1 : 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), app))
+						{
+							printf("Unable to create main dialog!\n");
+						}
+						for(i = 0; i < app->ui->ui_dialog->elements; i++)
+						{
+							app->ui->ui_dialog->element[i].d1 = d1[i];
+							app->ui->ui_dialog->element[i].d2 = d2[i];
+							app->ui->ui_dialog->element[i].d3 = d3[i];
+						}
+						for(i = 0; i < app->ui->ui_dialog->elements; i++)
+						{
+							app->ui->ui_dialog->element[i].id1 = -1;
+							app->ui->ui_dialog->element[i].id2 = -1;
+						}
+						t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
+					}
 					break;
 				}
 			}
