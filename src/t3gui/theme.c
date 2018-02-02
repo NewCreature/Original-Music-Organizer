@@ -131,7 +131,10 @@ static void t3gui_get_theme_state(ALLEGRO_CONFIG * cp, const char * section, T3G
         if(val)
         {
             al_set_path_filename(theme_path, val);
-            t3gui_load_bitmap(&sp->bitmap[j], al_path_cstr(theme_path, '/'));
+            if(!t3gui_load_bitmap(&sp->bitmap[j], al_path_cstr(theme_path, '/')))
+            {
+                t3gui_load_bitmap(&sp->bitmap[j], val);
+            }
         }
     }
     for(j = 0; j < T3GUI_THEME_MAX_COLORS; j++)
@@ -158,7 +161,10 @@ static void t3gui_get_theme_state(ALLEGRO_CONFIG * cp, const char * section, T3G
             if(val2)
             {
                 al_set_path_filename(theme_path, val);
-                t3gui_load_font(&sp->font[j], strlen(val) > 0 ? al_path_cstr(theme_path, '/') : NULL, atoi(val2));
+                if(!t3gui_load_font(&sp->font[j], strlen(val) > 0 ? al_path_cstr(theme_path, '/') : NULL, atoi(val2)))
+                {
+                    t3gui_load_font(&sp->font[j], strlen(val) > 0 ? val : NULL, atoi(val2));
+                }
                 if(j > 0)
                 {
                     if(sp->font[j - 1] && sp->font[j])
