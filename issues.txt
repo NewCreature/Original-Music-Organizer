@@ -131,6 +131,8 @@ v0.4
    contain all of your music and have a separate profile for just MODs or
    game music.
 
+[ ]Save library cache when library finishes loading.
+
 
 v0.3
 ----
