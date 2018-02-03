@@ -136,7 +136,7 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 	sprintf(app->status_bar_text, "Attempting to load cached library data...");
 	if(app->loading_library->modified || !omo_load_library_cache(app->loading_library, cache_fn))
 	{
-		omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->loading_library, app->player->queue, app->library_temp_path, app->status_bar_text);
+		omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, al_get_config_value(t3f_config, section_buffer, "filter"), app->loading_library, app->player->queue, app->library_temp_path, app->status_bar_text);
 		for(j = 0; j < c; j++)
 		{
 			sprintf(app->status_bar_text, "Scanning folder %d of %d...", j + 1, c);
@@ -219,7 +219,7 @@ static bool omo_setup_library_helper(APP_INSTANCE * app)
 	const char * fn;
 
 	/* load the library databases */
-	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->player->queue, NULL, app->status_bar_text);
+	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, NULL, app->player->queue, NULL, app->status_bar_text);
 	sprintf(app->status_bar_text, "Loading library databases...");
 	app->loading_library = omo_create_library(app->file_database_fn, app->entry_database_fn);
 	if(!app->loading_library)
@@ -295,7 +295,7 @@ static bool omo_setup_library_lists_helper(APP_INSTANCE * app)
 	char buffer[1024];
 
 	/* load the library databases */
-	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->player->queue, NULL, app->status_bar_text);
+	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, NULL, app->player->queue, NULL, app->status_bar_text);
 
 	/* tally up artists */
 	if(app->library->modified || !omo_load_library_artists_cache(app->library, t3f_get_filename(t3f_data_path, "omo.artists", buffer, 1024)))

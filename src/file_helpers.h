@@ -17,12 +17,13 @@ typedef struct
 	bool cancel_scan;
 	bool scan_done;
 	ALLEGRO_PATH * temp_path;
+	const char * filter;
 	void * user_data;
 
 } OMO_FILE_HELPER_DATA;
 
 time_t omo_get_folder_mtime(const char * path);
-void omo_setup_file_helper_data(OMO_FILE_HELPER_DATA * fhdp, OMO_ARCHIVE_HANDLER_REGISTRY * ahrp, OMO_CODEC_HANDLER_REGISTRY * chrp, OMO_LIBRARY * lp, OMO_QUEUE * qp, ALLEGRO_PATH * temp_path, void * user_data);
+void omo_setup_file_helper_data(OMO_FILE_HELPER_DATA * fhdp, OMO_ARCHIVE_HANDLER_REGISTRY * ahrp, OMO_CODEC_HANDLER_REGISTRY * chrp, const char * filter, OMO_LIBRARY * lp, OMO_QUEUE * qp, ALLEGRO_PATH * temp_path, void * user_data);
 bool omo_count_file(const char * fn, bool isfolder, void * data);
 bool omo_add_file(const char * fn, bool isfolder, void * data);
 

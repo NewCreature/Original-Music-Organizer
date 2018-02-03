@@ -213,7 +213,7 @@ static bool omo_test_setup_queue(void * data)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	OMO_FILE_HELPER_DATA file_helper_data;
 
-	omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
+	omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->library, app->player->queue, app->queue_temp_path, NULL);
 
 	printf("Counting files.\n");
 	if(!t3f_scan_files(app->test_path, omo_count_file, false, &file_helper_data))

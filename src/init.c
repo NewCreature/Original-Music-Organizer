@@ -242,7 +242,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		/* don't add files if we are running the test suite */
 		if(!app->test_mode)
 		{
-			omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, app->library, app->player->queue, app->queue_temp_path, NULL);
+			omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->library, app->player->queue, app->queue_temp_path, NULL);
 			for(i = 1; i < argc; i++)
 			{
 				if(!used_arg[i])
@@ -347,7 +347,6 @@ void omo_exit(APP_INSTANCE * app)
 {
 	char buffer[1024];
 	char buf[32] = {0};
-	const char * fn;
 
 	if(app->player->queue)
 	{

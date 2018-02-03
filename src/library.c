@@ -185,7 +185,7 @@ static bool get_tags(OMO_LIBRARY * lp, const char * id, const char * fn, const c
 	const char * val;
 	int i;
 
-	codec_handler = omo_get_codec_handler(crp, fn);
+	codec_handler = omo_get_codec_handler(crp, fn, NULL);
 	if(codec_handler)
 	{
 		if(codec_handler->get_tag)

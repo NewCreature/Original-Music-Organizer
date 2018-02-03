@@ -22,7 +22,7 @@ OMO_TRACK * omo_load_track(OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_regist
 		{
 			if(subfn)
 			{
-				tp->codec_handler = omo_get_codec_handler(codec_handler_registry, archive_handler->get_file(archive_handler_data, atoi(subfn), fn_buffer));
+				tp->codec_handler = omo_get_codec_handler(codec_handler_registry, archive_handler->get_file(archive_handler_data, atoi(subfn), fn_buffer), NULL);
 				if(tp->codec_handler)
 				{
 					subfile = archive_handler->extract_file(archive_handler_data, atoi(subfn), fn_buffer);
@@ -43,7 +43,7 @@ OMO_TRACK * omo_load_track(OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_regist
 	}
 	else
 	{
-		tp->codec_handler = omo_get_codec_handler(codec_handler_registry, fn);
+		tp->codec_handler = omo_get_codec_handler(codec_handler_registry, fn, NULL);
 		if(tp->codec_handler)
 		{
 			tp->codec_data = tp->codec_handler->load_file(fn, track);
