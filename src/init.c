@@ -357,17 +357,6 @@ void omo_exit(APP_INSTANCE * app)
 			al_set_config_value(t3f_config, "Settings", "queue_position", buf);
 		}
 	}
-	if(app->library)
-	{
-		if(!app->loading_library_file_helper_data.cancel_scan)
-		{
-			fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.library", buffer, 1024);
-			if(fn)
-			{
-				omo_save_library_cache(app->library, fn);
-			}
-		}
-	}
 	t3f_save_config();
 	omo_destroy_player(app->player);
 	app->player = NULL;

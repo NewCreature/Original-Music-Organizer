@@ -215,6 +215,8 @@ bool omo_build_library_artists_list(APP_INSTANCE * app, OMO_LIBRARY * lp)
 
 static bool omo_setup_library_helper(APP_INSTANCE * app)
 {
+	char buffer[1024];
+	const char * fn;
 
 	/* load the library databases */
 	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->player->queue, NULL, app->status_bar_text);
@@ -235,6 +237,14 @@ static bool omo_setup_library_helper(APP_INSTANCE * app)
 	if(!omo_scan_library_folders(app))
 	{
 		return false;
+	}
+	if(!app->loading_library_file_helper_data.cancel_scan)
+	{
+		fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.library", buffer, 1024);
+		if(fn)
+		{
+			omo_save_library_cache(app->loading_library, fn);
+		}
 	}
 	app->loading_library_file_helper_data.scan_done = true;
 	return true;
