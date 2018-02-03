@@ -5,6 +5,7 @@
 #include "ui.h"
 #include "dialog_proc.h"
 #include "../constants.h"
+#include "../profile.h"
 
 #define OMO_BEZEL_TOP    1
 #define OMO_BEZEL_BOTTOM 2
@@ -629,4 +630,171 @@ void omo_close_new_profile_dialog(OMO_UI * uip, void * data)
 {
 	omo_close_popup_dialog(uip->new_profile_popup_dialog);
 	uip->new_profile_popup_dialog = NULL;
+}
+
+typedef struct
+{
+
+	const char * type[256];
+	int types;
+
+} TYPE_LIST;
+
+static bool find_type(const char * check_type, TYPE_LIST * lp)
+{
+	int i;
+
+	for(i = 0; i < lp->types; i++)
+	{
+		if(!strcmp(lp->type[i], check_type))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+static void clear_tokens(char * filter, int length)
+{
+	int i;
+
+	for(i = 0; i < length; i++)
+	{
+		if(filter[i] == 0)
+		{
+			filter[i] = ';';
+		}
+	}
+}
+
+static bool check_filter(const char * type, char * filter)
+{
+	char * token;
+	int l;
+
+	if(filter)
+	{
+		l = strlen(filter);
+		token = strtok(filter, "; ");
+		while(token)
+		{
+			if(!strcasecmp(token, type))
+			{
+				clear_tokens(filter, l);
+				return true;
+			}
+			token = strtok(NULL, "; ");
+		}
+		clear_tokens(filter, l);
+		return false;
+	}
+	return true;
+}
+
+bool omo_open_filter_dialog(OMO_UI * uip, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	TYPE_LIST types;
+	char section_buffer[1024];
+	const char * val;
+	char * filter = NULL;
+	int y = 8;
+	int rows = 0;
+	int row = 0;
+	int old_column = 0;
+	int column = 0;
+	int columns = 4;
+	int i, j;
+	int w, h;
+	int flags;
+
+	/* get type list */
+	types.types = 0;
+	for(i = 0; i < app->codec_handler_registry->codec_handlers; i++)
+	{
+		for(j = 0; j < app->codec_handler_registry->codec_handler[i].types; j++)
+		{
+			if(!find_type(app->codec_handler_registry->codec_handler[i].type[j], &types))
+			{
+				types.type[types.types] = app->codec_handler_registry->codec_handler[i].type[j];
+				types.types++;
+			}
+		}
+	}
+	omo_get_profile_section(app->library_config, omo_get_profile(omo_get_current_profile()), section_buffer);
+	val = al_get_config_value(t3f_config, section_buffer, "filter");
+	if(val)
+	{
+		filter = strdup(val);
+	}
+
+	for(i = 0; i < types.types; i++)
+	{
+		rows++;
+	}
+	if(rows % columns)
+	{
+		rows += rows % columns;
+	}
+	w = al_get_text_width(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0], "FORMAT") + 32;
+	h = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) * 2 + 4;
+	h *= rows / columns;
+	h += 8;
+	h += 32;
+
+	val = al_get_config_value(t3f_config, "Settings", "theme");
+	if(!val)
+	{
+		val = "data/themes/basic/omo_theme.ini";
+	}
+	uip->filter_popup_dialog = omo_create_popup_dialog(val, w * columns, h, data);
+	if(uip->filter_popup_dialog)
+	{
+		uip->filter_types = 0;
+		t3gui_dialog_add_element(uip->filter_popup_dialog->dialog, uip->filter_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, w * columns, h, 0, 0, 0, 0, NULL, NULL, NULL);
+		for(i = 0; i < types.types; i++)
+		{
+			old_column = column;
+			column = row / (rows / columns);
+			if(column != old_column)
+			{
+				y = 8;
+			}
+			row++;
+			if(check_filter(&(types.type[i][1]), filter))
+			{
+				uip->filter_type_selected[i] = true;
+				flags = D_SELECTED;
+			}
+			else
+			{
+				uip->filter_type_selected[i] = false;
+				flags = 0;
+			}
+			uip->filter_type_element[i] = t3gui_dialog_add_element(uip->filter_popup_dialog->dialog, uip->filter_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_CHECK_BOX], t3gui_check_proc, 8 + w * column, y, w - 16, al_get_font_line_height(uip->filter_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_CHECK_BOX]->state[0].font[0]), 0, flags, 0, 0, (void *)&(types.type[i][1]), NULL, NULL);
+			uip->filter_types++;
+			y += al_get_font_line_height(uip->filter_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 2;
+			y += al_get_font_line_height(uip->filter_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 2;
+		}
+		y = h - 32 - 8;
+		uip->filter_ok_button_element = t3gui_dialog_add_element(uip->filter_popup_dialog->dialog, uip->filter_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8, y, (w * columns) / 2 - 8 - 4, 32, '\r', 0, 0, 0, "Okay", ui_tags_button_proc, NULL);
+		t3gui_dialog_add_element(uip->filter_popup_dialog->dialog, uip->filter_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, (w * columns) / 2 + 4, y, (w * columns) / 2 - 8 - 4, 32, 0, 0, 0, 1, "Cancel", ui_tags_button_proc, NULL);
+		t3gui_show_dialog(uip->filter_popup_dialog->dialog, t3f_queue, T3GUI_PLAYER_CLEAR, data);
+		if(filter)
+		{
+			free(filter);
+		}
+		return true;
+	}
+	if(filter)
+	{
+		free(filter);
+	}
+	return false;
+}
+
+void omo_close_filter_dialog(OMO_UI * uip, void * data)
+{
+	omo_close_popup_dialog(uip->filter_popup_dialog);
+	uip->filter_popup_dialog = NULL;
 }

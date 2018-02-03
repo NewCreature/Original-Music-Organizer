@@ -43,6 +43,7 @@ static void t3gui_expand_dialog_element(T3GUI_DIALOG * dp)
 	e = (dp->elements / T3GUI_DIALOG_ELEMENT_CHUNK_SIZE + 1) * T3GUI_DIALOG_ELEMENT_CHUNK_SIZE;
 	if(e != old_e)
 	{
+        printf("expand\n");
 		old_element = dp->element;
 		dp->element = t3gui_allocate_element(e);
 		if(dp->element)

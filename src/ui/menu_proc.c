@@ -500,6 +500,15 @@ int omo_menu_library_clear_folders(int id, void * data)
 	return 1;
 }
 
+int omo_menu_library_edit_filter(int id, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	omo_open_filter_dialog(app->ui, data);
+
+	return 1;
+}
+
 int omo_menu_library_edit_tags(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;

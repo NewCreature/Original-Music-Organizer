@@ -67,6 +67,13 @@ typedef struct
 	char new_profile_text[OMO_UI_MAX_TAG_LENGTH];
 	T3GUI_ELEMENT * new_profile_ok_button_element;
 
+	/* filter dialog */
+	OMO_UI_POPUP_DIALOG * filter_popup_dialog;
+	T3GUI_ELEMENT * filter_ok_button_element;
+	T3GUI_ELEMENT * filter_type_element[256];
+	bool filter_type_selected[256];
+	int filter_types;
+
 	/* theme data */
 	OMO_THEME * main_theme;
 	char ui_button_text[6][8];
@@ -92,5 +99,8 @@ void omo_close_tagger_key_dialog(OMO_UI * uip, void * data);
 
 bool omo_open_new_profile_dialog(OMO_UI * uip, void * data);
 void omo_close_new_profile_dialog(OMO_UI * uip, void * data);
+
+bool omo_open_filter_dialog(OMO_UI * uip, void * data);
+void omo_close_filter_dialog(OMO_UI * uip, void * data);
 
 #endif

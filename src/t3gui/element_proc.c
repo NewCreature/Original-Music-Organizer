@@ -582,51 +582,63 @@ int t3gui_text_proc(int msg, T3GUI_ELEMENT *d, int c)
  */
 int t3gui_check_proc(int msg, T3GUI_ELEMENT *d, int c)
 {
+    ALLEGRO_COLOR c1, c2;
+    int select = D_INTERACT;
+    int hover = D_GOTMOUSE;
+    int tx, ty;
    int ret = D_O_K;
    assert(d);
+   NINE_PATCH_BITMAP *p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[0];
+
+   if (d->flags & D_GOTFOCUS && d->theme->state[T3GUI_ELEMENT_STATE_HOVER].bitmap[0])
+   {
+       p9 = d->theme->state[T3GUI_ELEMENT_STATE_HOVER].bitmap[0];
+   }
+   if (d->flags & select && d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].bitmap[0])
+   {
+       p9 = d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].bitmap[0];
+   }
 
    if (msg==MSG_DRAW) {
       const char *text = d->dp;
       const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
       ALLEGRO_COLOR fg = (d->flags & D_DISABLED) ? d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_MG] : d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG];
       ALLEGRO_COLOR bg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG];
-      int h = d->h;
-      int textw = 0;
+      int w = max(d->w, get_nine_patch_bitmap_min_width(p9));
+      int h = max(d->h, get_nine_patch_bitmap_min_height(p9));
+      if(d->flags & hover)
+      {
+          if(d->flags & D_SELECTED)
+          {
+              c1 = d->theme->state[T3GUI_ELEMENT_STATE_EXTRA].color[T3GUI_THEME_COLOR_BG];
+          }
+          else
+          {
+              c1 = d->theme->state[T3GUI_ELEMENT_STATE_HOVER].color[T3GUI_THEME_COLOR_BG];
+          }
+          c2 = (d->flags & D_DISABLED) ? d->theme->state[T3GUI_ELEMENT_STATE_HOVER].color[T3GUI_THEME_COLOR_MG] : d->theme->state[T3GUI_ELEMENT_STATE_HOVER].color[T3GUI_THEME_COLOR_FG];
+      }
+      else if(d->flags & D_SELECTED)
+      {
+          c1 = d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_BG];
+          c2 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG];
+      }
+      else
+      {
+          c1 = (d->flags & D_DISABLED) ? d->theme->state[T3GUI_ELEMENT_STATE_DISABLED].color[T3GUI_THEME_COLOR_BG] : d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG];
+          c2 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG];
+      }
 
       if (d->w < h) h = d->w;
 
       float lw = 1.0;
       if (d->flags & D_GOTFOCUS) lw = 2.0;
 
-      if (text) textw = al_get_text_width(font, text);
-
       /* Draw check box */
-      float x1 = d->x+0.5 + (lw - 1.0)/2;
-      float y1 = d->y+0.5 + (lw - 1.0)/2;
-      float x2 = d->x+h-0.5;
-      float y2 = d->y+h-0.5;
-      int tx, ty;
-
-      if (d->d1) {   /* Text to the right of checkbox */
-         tx = x2 + 2.;
-         ty = d->y+0.5 + (h - al_get_font_line_height(font))/2;
-      } else {       /* Text to the left of checkbox */
-         //tx = x1 - (textw + 0.5);
-         ty = d->y+0.5 + (h - al_get_font_line_height(font))/2;
-         tx = d->x + 0.5;
-         x1 = x1 + d->w - h;
-         x2 = x2 + d->w - h;
-      }
-
-      if (textw)
-         al_draw_text(font, fg, tx, ty, ALLEGRO_ALIGN_LEFT, text);
-
-      al_draw_filled_rectangle(x1, y1, x2, y2, bg);
-      al_draw_rectangle(x1, y1, x2, y2, fg, lw);
-      if (d->flags & D_SELECTED) {
-         al_draw_line(x1, y1, x2, y2, fg, 1.0);
-         al_draw_line(x1, y2, x2, y1, fg, 1.0);
-      }
+      draw_nine_patch_bitmap(p9, c1, d->x, d->y, h, h);
+      tx = d->x + h + 8;
+      ty = d->y;
+      al_draw_text(font, c2, tx, ty, 0, text);
 
       return ret;
    }
