@@ -16,11 +16,6 @@ v0.5
    [ ]For some reason setting the start order doesn't work for PSM files. This
       will have to be fixed in DUMB.
 
-[X]Add file type ignore list configuration option. The codec handler registry
-   should take this list into account when looking for a codec handler and
-   should return NULL if we are looking for a codec handler for a type that is
-   on the ignore list.
-
 
 v0.4
 ----
@@ -131,7 +126,12 @@ v0.4
    contain all of your music and have a separate profile for just MODs or
    game music.
 
-[ ]Save library cache when library finishes loading.
+[X]Save library cache when library finishes loading.
+
+[X]Add file type ignore list configuration option. The codec handler registry
+   should take this list into account when looking for a codec handler and
+   should return NULL if we are looking for a codec handler for a type that is
+   on the ignore list.
 
 
 v0.3
