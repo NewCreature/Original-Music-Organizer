@@ -1,10 +1,19 @@
 OMO
 ---
 
-To-do:
+The goal of this project is to provide a way to organize and play back your
+entire music collection. I grew up listening to music on a computer and have a
+large collection of music in various formats. In the past I had used Winamp for
+its extensive support for audio formats through input plugins.
 
-    Implement tag scraper.
-    Add support for more formats.
+Since moving away from Windows several years ago, I've not really had a good
+way to play back a large portion of my music collection. I seek to change that
+situation with OMO. That music disk I downloaded from a BBS 25 years ago will
+live happily alongside that album I downloaded from Amazon last week.
+
+OMO leverages the power of the Internet to help you organize your collection by
+pulling tags submitted by others. Tag your own untagged music and submit those
+tags so others don't have to duplicate the work.
 
 
 Supported Formats
@@ -22,24 +31,6 @@ Additional support for these formats is available on Windows: MID.
 Supported for more formats on all platforms will be added in the future.
 
 
-Description
------------
-
-The goal of this project is to provide a way to organize and play back your
-entire music collection. I grew up listening to music on a computer and have a
-large collection of music in various formats. In the past I had used Winamp for
-its extensive support for audio formats through input plugins.
-
-Since moving away from Windows several years ago, I've not really had a good
-way to play back a large portion of my music collection. I seek to change that
-situation with OMO. That music disk I downloaded from a BBS 25 years ago will
-live happily alongside that album I downloaded from Amazon last week.
-
-OMO will leverage the power of the Internet to help you organize your
-collection by pulling tags submitted by others. Tag your own untagged music and
-submit those tags so others don't have to duplicate the work.
-
-
 Installation
 ------------
 
@@ -49,6 +40,36 @@ Linux: Use dpkg -i <package_file>, then apt-get install -f.
 
 Windows: Extract the ZIP file wherever you want and create a shortcut to
          omo.exe.
+
+
+Prominent Features
+------------------
+
+OMO is designed to make it as quick and easy as possible to organize and play
+back your entire music collection. It supports a wide variety of file formats
+and has a built in library to help you organize and find the music you want.
+
+Here are a few things that you can do with OMO:
+
+* Open music stored in archives such as ZIP and RAR files.
+* Use it as a simple music player to play back your music files, or scan your
+  entire library so you can easily browse your music by artist, album, and
+  song title.
+* Tag your obscure music files and share those tags online so others don't have
+  to duplicate your efforts. Your library tags are automatically synced, so
+  other OMO users will have the latest tags available to them as soon as you
+  hit Okay in the tags editor.
+* Keep track of and listen to individual songs even if there are multiple songs
+  stored in a single file.
+* Create profiles, each with their own library settings. Each profile has its
+  own library folder and filter settings. You can easily switch between
+  profiles to quickly get to the music you want to listen to.
+* Quickly open music using the command line or drag and drop music onto the OMO
+  icon.
+* Quickly queue up songs by artist or album. Double-clicking an artist in the
+  library will queue up all songs by that artist. Double-clicking an album will
+  queue up that specific album, sorted by disc and track number if that
+  information is available.
 
 
 Getting Started
@@ -69,21 +90,26 @@ Once you have told OMO where to find your music, it will scan your music
 collection. This process will be performed in the background so you can
 continue to use OMO to play back your music files. The library scanning process
 can take a long time if you have a large library. You can check the progress by
-opening up the library view ('View->Library'). If you quit close OMO, it will
-resume scanning your library next time you open it.
+opening up the library view ('View->Library'). If you close OMO, it will resume
+scanning your library next time you open it.
 
 The library scanner will retrieve as much metadata on each file as it can find.
-The tag sharing feature is not implemented yet, so tags cannot be retrieved
-from online sources at this time.
+Tags are retrieved from the file itself and the OMO online tags database.
+
+
+Tagging Your Music
+------------------
 
 Once you have set up a library folder, you can start tagging your music. To
 open the tags editor, select a file in the song list pane in library view
-(pane 3) or the queue list and press T.
+(pane 3) or the queue list and press T. You can also access this functionality
+by selecting 'Edit Tags' from the Playback or Library menu.
 
-Note: when using the library view, selecting All Artists or All Albums might
-seem to freeze OMO if you have a large library. The list generation code has
-not been optimized yet, so it can take a long time to generate the album and
-song lists.
+When opening the tags editor, OMO will retrieve any tags for the selected song
+from the OMO online tags database. Hitting Okay will accept the tags as
+displayed and store them in your library. Any tags you edit will automatically
+be submitted to the OMO online tags database, provided you have a tagger key.
+To get a tagger key, simply select 'Get Tagger Key' from the File menu.
 
 
 Contacting Us
