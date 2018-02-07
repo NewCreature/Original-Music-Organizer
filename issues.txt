@@ -133,6 +133,14 @@ v0.4
    should return NULL if we are looking for a codec handler for a type that is
    on the ignore list.
 
+[ ]Audit PHP code to check for vulnerabilities.
+
+[ ]Disable menu items that create popup dialogs when a popup dialog is
+   currently open.
+
+[ ]Review menu code to ensure we are enabling/disabling menu items under the
+   correct circumstances.
+
 
 v0.3
 ----
