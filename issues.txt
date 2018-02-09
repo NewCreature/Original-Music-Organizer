@@ -141,8 +141,6 @@ v0.4
 [ ]Review menu code to ensure we are enabling/disabling menu items under the
    correct circumstances.
 
-[ ]Don't submit tags unless user has actually edited something.
-
 
 v0.3
 ----
