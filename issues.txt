@@ -135,11 +135,13 @@ v0.4
 
 [ ]Audit PHP code to check for vulnerabilities.
 
-[ ]Disable menu items that create popup dialogs when a popup dialog is
-   currently open.
-
 [ ]Review menu code to ensure we are enabling/disabling menu items under the
    correct circumstances.
+
+   [ ]All menu items should be disabled when a popup dialog is being displayed.
+      We should create a base update proc that every menu item uses. Every menu
+      update proc should call the base update proc at the end of the proc's
+      logic.
 
 
 v0.3
