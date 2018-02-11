@@ -24,16 +24,7 @@ $output_header = "OMO Tags";
 /* settings */
 $ascend = false;
 $limit = 0;
-$order_field = "track_id";
-
-function xml_escape($str)
-{
-	$str = str_replace("&", "&", $str);
-	$str = str_replace("<", "<", $str);
-	$str = str_replace(">", "&gt;", $str);
-	$str = str_replace("\"", "&quot;", $str);
-	return $str;
-}
+$order_field = "id";
 
 /* check arguments */
 foreach($arguments as $filter)
@@ -96,7 +87,7 @@ else
 /* optionally impose limit on number of results returned */
 if($limit > 0)
 {
-	$query .= " LIMIT 0 , " . $limit;
+	$query .= " LIMIT 0 , " . $mysqli->real_escape_string($limit);
 }
 
 $result = $mysqli->query($query) or die("Error: Data not found.\r\n");
@@ -118,7 +109,7 @@ for($x = 0; $x < mysqli_num_rows($result); $x++)
 			$output .= "\t" . $e . ": ";
 			if(strlen($row[$e]) > 0)
 			{
-				$output .= xml_escape($row[$e]);
+				$output .= $row[$e];
 			}
 			$output .= "\r\n";
 		}
