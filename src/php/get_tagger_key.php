@@ -33,39 +33,6 @@ if(strlen($_GET['name']) == 0)
 }
 $tagger_key = md5($_GET['name'] . ':' . time());
 
-function xml_escape($str)
-{
-	$str = str_replace("&", "&", $str);
-	$str = str_replace("<", "<", $str);
-	$str = str_replace(">", "&gt;", $str);
-	$str = str_replace("\"", "&quot;", $str);
-	return $str;
-}
-
-/* check arguments */
-foreach($arguments as $filter)
-{
-	if(isset($_GET[$filter]))
-	{
-		if(!strcasecmp($filter, "ascend"))
-		{
-			if(!strcasecmp($_GET[$filter], "true"))
-			{
-				$ascend = true;
-			}
-		}
-		else if(!strcasecmp($filter, "limit"))
-		{
-			$limit = $_GET[$filter];
-		}
-		else if(!strcasecmp($filter, "other"))
-		{
-			/* insert handling for other argument here */
-		}
-		/* feel free to add more arguments here */
-	}
-}
-
 /* Connect to database. */
 $mysqli = new mysqli($db_host, $db_user, $db_pass, $db_database);
 if($mysqli->connect_errno)
