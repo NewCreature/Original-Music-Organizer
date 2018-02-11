@@ -133,7 +133,7 @@ v0.4
    should return NULL if we are looking for a codec handler for a type that is
    on the ignore list.
 
-[ ]Audit PHP code to check for vulnerabilities.
+[X]Audit PHP code to check for vulnerabilities.
 
 [ ]Review menu code to ensure we are enabling/disabling menu items under the
    correct circumstances.
