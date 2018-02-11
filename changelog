@@ -1,5 +1,38 @@
 omo (BUILD_VERSION) maverick; urgency=low
 
+  * Implement cloud tags submission and retrieval.
+  * Improve UI responsiveness.
+  * Fix issue where split tracks would not show in library.
+  * Improve handling of archived files.
+  * Improve detection of changes in library folders.
+  * Internally tag the length of a track if playback ends before the player
+    expects it to end.
+  * Fix crash bugs in library cache system.
+  * Improve library cache system.
+  * Add library file type filter settings. Users can now specify which file
+    types they want OMO to find when scanning library folders.
+  * Add library profiles. Users can now set the library folders and filter for
+    each profile.
+  * Implement copy/paste in tags editor.
+  * Fix possible deadlock in DUMBA5 codec handler.
+  * Library database improvements.
+  * Improve track splitting functionality.
+  * Improve sorting of library songs.
+  * Fix issues with handling loop settings in GME codec handler.
+  * Show more detailed info when playing a track with the GME codec handler.
+  * Standardize configuration file formats.
+  * Reorganize temp folders for cleanliness.
+  * Delete temp folders on exit.
+  * Don't save library cache if library scan was cancelled.
+  * Add option to load other GUI themes.
+  * Change license to GPLv3.
+  * Updated documentation.
+  * Other UI improvements.
+
+ -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
+
+omo (0.3) maverick; urgency=low
+
   * Remember queue from previous session.
   * Cache library data to speed up library loading.
   * Add configuration option to override the font size.
@@ -13,7 +46,7 @@ omo (BUILD_VERSION) maverick; urgency=low
   * Add support for Chinese, Japanese, and Korean languages.
   * Other bug fixes and improvements.
 
- -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
+ -- Todd Cope <todd@t3-i.com>  Sun, 03 Dec 2017 00:37:38 +0000
 
 omo (0.2) maverick; urgency=low
 
