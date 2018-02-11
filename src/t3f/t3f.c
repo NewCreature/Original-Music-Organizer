@@ -1483,8 +1483,6 @@ void t3f_run(void)
 	{
 		free(t3f_package_name);
 	}
-
-	al_destroy_display(t3f_display);
 }
 
 char * t3f_get_filename(ALLEGRO_PATH * path, const char * fn, char * buffer, int buffer_size)
