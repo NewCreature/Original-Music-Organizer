@@ -45,7 +45,7 @@ bool omo_setup_menus(void * data)
 	{
 		return false;
 	}
-	t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], "Add", 0, NULL, omo_menu_library_add_profile, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], "Add", 0, NULL, omo_menu_library_add_profile, omo_menu_base_update_proc);
 	app->profile_delete_id = t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], "Remove", 0, NULL, omo_menu_library_remove_profile, omo_menu_library_profile_delete_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], NULL, 0, NULL, NULL, NULL);
 	app->profile_select_id[0] = t3f_add_menu_item(app->menu[OMO_MENU_PROFILE], "Default", ALLEGRO_MENU_ITEM_CHECKBOX, NULL, omo_menu_library_select_profile, omo_menu_library_profile_update_proc);
@@ -57,15 +57,15 @@ bool omo_setup_menus(void * data)
 	{
 		return false;
 	}
-	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Play Files", 0, NULL, omo_menu_file_play_files, NULL);
-	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Queue Files", 0, NULL, omo_menu_file_queue_files, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Play Files", 0, NULL, omo_menu_file_play_files, omo_menu_base_update_proc);
+	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Queue Files", 0, NULL, omo_menu_file_queue_files, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
-	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Play Folder", 0, NULL, omo_menu_file_play_folder, NULL);
-	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Queue Folder", 0, NULL, omo_menu_file_queue_folder, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Play Folder", 0, NULL, omo_menu_file_play_folder, omo_menu_base_update_proc);
+	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Queue Folder", 0, NULL, omo_menu_file_queue_folder, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
-	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Get Tagger Key", 0, NULL, omo_menu_file_get_tagger_key, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Get Tagger Key", 0, NULL, omo_menu_file_get_tagger_key, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
-	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Load Theme", 0, NULL, omo_menu_file_load_theme, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Load Theme", 0, NULL, omo_menu_file_load_theme, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Exit", 0, NULL, omo_menu_file_exit, NULL);
 
@@ -93,10 +93,10 @@ bool omo_setup_menus(void * data)
 	}
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Profile", 0, app->menu[OMO_MENU_PROFILE], NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
-	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Add Library Folder", 0, NULL, omo_menu_library_add_folder, NULL);
-	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Clear Library Folders", 0, NULL, omo_menu_library_clear_folders, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Add Library Folder", 0, NULL, omo_menu_library_add_folder, omo_menu_base_update_proc);
+	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Clear Library Folders", 0, NULL, omo_menu_library_clear_folders, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
-	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Edit Filter", 0, NULL, omo_menu_library_edit_filter, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Edit Filter", 0, NULL, omo_menu_library_edit_filter, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Submit Library Tags", 0, NULL, omo_menu_library_submit_tags, omo_menu_cloud_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Retrieve Library Tags", 0, NULL, omo_menu_library_retrieve_tags, omo_menu_cloud_update_proc);
