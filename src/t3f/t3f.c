@@ -903,6 +903,7 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 	#ifdef ALLEGRO_WINDOWS
 		t3f_set_windows_icon("allegro_icon");
 	#endif
+	al_set_new_window_position(INT_MAX, INT_MAX);
 	return ret;
 }
 
