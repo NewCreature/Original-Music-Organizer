@@ -135,10 +135,10 @@ v0.4
 
 [X]Audit PHP code to check for vulnerabilities.
 
-[ ]Review menu code to ensure we are enabling/disabling menu items under the
+[X]Review menu code to ensure we are enabling/disabling menu items under the
    correct circumstances.
 
-   [ ]All menu items should be disabled when a popup dialog is being displayed.
+   [X]All menu items should be disabled when a popup dialog is being displayed.
       We should create a base update proc that every menu item uses. Every menu
       update proc should call the base update proc at the end of the proc's
       logic.
