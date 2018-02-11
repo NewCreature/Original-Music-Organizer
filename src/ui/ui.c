@@ -375,17 +375,35 @@ void omo_resize_ui(OMO_UI * uip, int mode, int width, int height)
 	resize_dialogs(uip, mode, width, height);
 }
 
+static void get_center(ALLEGRO_DISPLAY * dp, int w, int h, int * x, int * y)
+{
+	int dx, dy;
+
+	al_get_window_position(dp, &dx, &dy);
+	if(x)
+	{
+		*x = dx + al_get_display_width(dp) / 2 - w / 2;
+	}
+	if(y)
+	{
+		*y = dy + al_get_display_height(dp) / 2 - h / 2;
+	}
+}
+
 OMO_UI_POPUP_DIALOG * omo_create_popup_dialog(const char * theme_file, int w, int h, void * data)
 {
 	OMO_UI_POPUP_DIALOG * popup_dialog;
 	const char * val;
 	int font_size = 0;
+	int x, y;
 
 	popup_dialog = malloc(sizeof(OMO_UI_POPUP_DIALOG));
 	if(popup_dialog)
 	{
 		memset(popup_dialog, 0, sizeof(OMO_UI_POPUP_DIALOG));
 		al_set_new_display_flags(ALLEGRO_WINDOWED);
+		get_center(t3f_display, w, h, &x, &y);
+		al_set_new_window_position(x, y);
 		popup_dialog->display = al_create_display(w, h);
 		if(!popup_dialog->display)
 		{
