@@ -66,8 +66,10 @@ bool omo_setup_menus(void * data)
 	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Get Tagger Key", 0, NULL, omo_menu_file_get_tagger_key, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Load Theme", 0, NULL, omo_menu_file_load_theme, omo_menu_base_update_proc);
-	t3f_add_menu_item(app->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
-	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Exit", 0, NULL, omo_menu_file_exit, NULL);
+	#ifndef ALLEGRO_MACOSX
+		t3f_add_menu_item(app->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
+		t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Exit", 0, NULL, omo_menu_file_exit, NULL);
+	#endif
 
 	app->menu[OMO_MENU_PLAYER] = al_create_menu();
 	if(!app->menu[OMO_MENU_PLAYER])
