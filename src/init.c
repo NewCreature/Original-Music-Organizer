@@ -369,6 +369,22 @@ void omo_exit(APP_INSTANCE * app)
 	{
 		omo_close_tags_dialog(app->ui, app);
 	}
+	if(app->ui->split_track_popup_dialog)
+	{
+		omo_close_split_track_dialog(app->ui, app);
+	}
+	if(app->ui->tagger_key_popup_dialog)
+	{
+		omo_close_tagger_key_dialog(app->ui, app);
+	}
+	if(app->ui->new_profile_popup_dialog)
+	{
+		omo_close_new_profile_dialog(app->ui, app);
+	}
+	if(app->ui->filter_popup_dialog)
+	{
+		omo_close_filter_dialog(app->ui, app);
+	}
 	t3gui_close_dialog(app->ui->ui_dialog);
 	omo_destroy_ui(app->ui);
 }
