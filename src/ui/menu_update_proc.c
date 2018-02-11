@@ -1,6 +1,20 @@
 #include "../t3f/t3f.h"
 #include "../instance.h"
 
+/* called by other update procs */
+int omo_menu_base_update_disable_proc(ALLEGRO_MENU * mp, int item, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	if(app->ui->tags_popup_dialog || app->ui->split_track_popup_dialog || app->ui->tagger_key_popup_dialog || app->ui->new_profile_popup_dialog || app->ui->filter_popup_dialog)
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
+		return 0;
+	}
+	return 1;
+}
+
+/* called by any menu items without their own update ogic */
 int omo_menu_base_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
@@ -21,7 +35,7 @@ int omo_menu_playback_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	if(!omo_menu_base_update_proc(mp, item, data))
+	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
@@ -40,7 +54,7 @@ int omo_menu_playback_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * 
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	if(!omo_menu_base_update_proc(mp, item, data))
+	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
@@ -59,7 +73,7 @@ int omo_menu_library_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * d
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	if(!omo_menu_base_update_proc(mp, item, data))
+	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
@@ -78,7 +92,7 @@ int omo_menu_library_profile_update_proc(ALLEGRO_MENU * mp, int item, void * dat
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	if(!omo_menu_base_update_proc(mp, item, data))
+	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
@@ -97,7 +111,7 @@ int omo_menu_library_profile_delete_update_proc(ALLEGRO_MENU * mp, int item, voi
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	if(!omo_menu_base_update_proc(mp, item, data))
+	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
@@ -117,7 +131,7 @@ int omo_menu_cloud_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	const char * val;
 
-	if(!omo_menu_base_update_proc(mp, item, data))
+	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
@@ -137,7 +151,7 @@ int omo_menu_view_basic_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	if(!omo_menu_base_update_proc(mp, item, data))
+	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
@@ -156,7 +170,7 @@ int omo_menu_view_library_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	if(!omo_menu_base_update_proc(mp, item, data))
+	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
