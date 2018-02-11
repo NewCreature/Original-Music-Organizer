@@ -2,6 +2,7 @@
 
 #include "../instance.h"
 #include "menu_proc.h"
+#include "menu_update_proc.h"
 #include "../profile.h"
 
 void omo_clear_profile_menu(void * data)
