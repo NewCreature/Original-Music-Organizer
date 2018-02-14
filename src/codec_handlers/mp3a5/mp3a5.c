@@ -166,10 +166,26 @@ static void codec_stop(void * data)
 	mp3a5_stop_mp3(codec_data->codec_mp3);
 }
 
-/*static float codec_get_position(void)
+static double codec_get_position(void * data)
 {
-	return al_get_audio_stream_position_secs(t3f_stream);
-} */
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return mp3a5_get_position(codec_data->codec_mp3);
+}
+
+static bool codec_seek(void * data, double pos)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return mp3a5_set_position(codec_data->codec_mp3, pos);
+}
+
+static double codec_get_length(void * data)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return codec_data->codec_mp3->length;
+}
 
 static bool codec_done_playing(void * data)
 {
@@ -231,9 +247,9 @@ OMO_CODEC_HANDLER * omo_codec_mp3a5_get_codec_handler(void)
 	codec_handler.pause = codec_pause;
 	codec_handler.resume = codec_resume;
 	codec_handler.stop = codec_stop;
-	codec_handler.seek = NULL;
-	codec_handler.get_position = NULL;
-	codec_handler.get_length = NULL;
+	codec_handler.seek = codec_seek;
+	codec_handler.get_position = codec_get_position;
+	codec_handler.get_length = codec_get_length;
 	codec_handler.done_playing = codec_done_playing;
 	codec_handler.get_info = codec_get_info;
 	codec_handler.types = 0;

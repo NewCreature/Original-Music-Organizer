@@ -31,6 +31,7 @@ typedef struct
 	mpg123_handle * mp3;
 	MP3A5_MP3_TAGS * tags;
 	ALLEGRO_THREAD * thread;
+	ALLEGRO_MUTEX * mutex;
 	double length;
 	int buffer_size;
 	bool paused;
@@ -52,6 +53,7 @@ void mp3a5_stop_mp3(MP3A5_MP3 * mp);
 void mp3a5_pause_mp3(MP3A5_MP3 * mp);
 void mp3a5_resume_mp3(MP3A5_MP3 * mp);
 double mp3a5_get_position(MP3A5_MP3 * mp);
+bool mp3a5_set_position(MP3A5_MP3 * mp, double pos);
 
 #ifdef __cplusplus
 }

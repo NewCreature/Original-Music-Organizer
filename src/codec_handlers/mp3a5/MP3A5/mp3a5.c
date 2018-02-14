@@ -230,6 +230,14 @@ MP3A5_MP3 * mp3a5_load_mp3(const char *filename)
 			/* open file in preparation for streaming */
 			if(mpg123_open(mp3->mp3, filename) == MPG123_OK)
 			{
+				mp3->mutex = al_create_mutex();
+				if(!mp3->mutex)
+				{
+					mpg123_close(mp3->mp3);
+					mpg123_delete(mp3->mp3);
+					free(mp3);
+					return NULL;
+				}
 				mp3a5_get_length(mp3);
 				mp3->loop_start = 0.0;
 				mp3->loop_end = mp3->length;
@@ -317,7 +325,13 @@ static double sample_to_seconds(MP3A5_MP3 * mp, off_t sample)
 
 static bool mp3_rewind(MP3A5_MP3 * mp)
 {
-	return mpg123_seek(mp->mp3, seconds_to_sample(mp, mp->loop_start), SEEK_SET) >= 0 ? true : false;
+	bool ret;
+
+	al_lock_mutex(mp->mutex);
+	ret = mpg123_seek(mp->mp3, seconds_to_sample(mp, mp->loop_start), SEEK_SET) >= 0 ? true : false;
+	al_unlock_mutex(mp->mutex);
+
+	return ret;
 }
 
 static size_t feed_stream(MP3A5_MP3 * mp, void * buffer)
@@ -326,7 +340,7 @@ static size_t feed_stream(MP3A5_MP3 * mp, void * buffer)
 	double current_time = sample_to_seconds(mp, mpg123_tell(mp->mp3));
 	double buffer_time = ((double)mp->buffer_size / (double)word_size * 2.0) / 44100.0;
 	int read_length = sizeof(unsigned short) * mp->buffer_size * 2;
-	volatile unsigned long pos = 0;
+	volatile long pos = 0;
 	size_t read;
 	int r;
 
@@ -344,14 +358,16 @@ static size_t feed_stream(MP3A5_MP3 * mp, void * buffer)
 	}
 	while(pos < (unsigned long)read_length)
 	{
-		r = mpg123_read(mp->mp3, (unsigned char *)buffer + pos, read_length, &read);
+		al_lock_mutex(mp->mutex);
+		r = mpg123_read(mp->mp3, (unsigned char *)buffer + pos, read_length - pos, &read);
+		al_unlock_mutex(mp->mutex);
 		if(r != MPG123_OK && r != MPG123_NEW_FORMAT)
 		{
 			return pos;
 		}
 		pos += read;
 
-		if(read == 0)
+		if(read_length - pos <= 0)
 		{
 			/* Return the number of useful bytes written. */
 			return pos;
@@ -468,6 +484,7 @@ void mp3a5_stop_mp3(MP3A5_MP3 * mp)
 {
 	if(mp->thread && mp->audio_stream)
 	{
+		al_destroy_mutex(mp->mutex);
 		al_join_thread(mp->thread, NULL);
 		al_destroy_thread(mp->thread);
 		mp->thread = NULL;
@@ -490,5 +507,22 @@ void mp3a5_resume_mp3(MP3A5_MP3 * mp)
 
 double mp3a5_get_position(MP3A5_MP3 * mp)
 {
-	return sample_to_seconds(mp, mpg123_tell(mp->mp3));
+	double ret;
+
+	al_lock_mutex(mp->mutex);
+	ret = sample_to_seconds(mp, mpg123_tell(mp->mp3));
+	al_unlock_mutex(mp->mutex);
+
+	return ret;
+}
+
+bool mp3a5_set_position(MP3A5_MP3 * mp, double pos)
+{
+	bool ret;
+
+	al_lock_mutex(mp->mutex);
+	ret = mpg123_seek(mp->mp3, seconds_to_sample(mp, pos), SEEK_SET) >= 0;
+	al_unlock_mutex(mp->mutex);
+
+	return ret;
 }
