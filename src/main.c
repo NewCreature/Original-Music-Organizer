@@ -222,6 +222,10 @@ void omo_logic(void * data)
 				if(app->ui->ui_queue_list_element->d2 + visible > app->player->queue->entry_count)
 				{
 					app->ui->ui_queue_list_element->d2 = app->player->queue->entry_count - visible - 1;
+					if(app->ui->ui_queue_list_element->d2 < 0)
+					{
+						app->ui->ui_queue_list_element->d2 = 0;
+					}
 				}
 			}
 			omo_threads_logic(app);
