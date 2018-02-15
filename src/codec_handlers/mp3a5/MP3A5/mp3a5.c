@@ -260,6 +260,7 @@ MP3A5_MP3 * mp3a5_load_mp3(const char *filename)
 void mp3a5_destroy_mp3(MP3A5_MP3 * mp)
 {
 	mp3a5_stop_mp3(mp);
+	al_destroy_mutex(mp->mutex);
 	if(mp->tags)
 	{
 		if(mp->tags->artist)
@@ -484,7 +485,6 @@ void mp3a5_stop_mp3(MP3A5_MP3 * mp)
 {
 	if(mp->thread && mp->audio_stream)
 	{
-		al_destroy_mutex(mp->mutex);
 		al_join_thread(mp->thread, NULL);
 		al_destroy_thread(mp->thread);
 		mp->thread = NULL;
