@@ -25,6 +25,7 @@ omo (BUILD_VERSION) maverick; urgency=low
   * Delete temp folders on exit.
   * Don't save library cache if library scan was cancelled.
   * Add option to load other GUI themes.
+  * Finish implementing MP3A5 codec handler.
   * Change license to GPLv3.
   * Updated documentation.
   * Other UI improvements.
