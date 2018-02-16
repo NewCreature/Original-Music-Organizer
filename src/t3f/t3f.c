@@ -650,6 +650,7 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 	int dx, dy, doy;
 	int dw, dh;
 	int ret = 1;
+	bool restore_pos = false;
 
 	bool fsw_supported = true;
 	#ifdef ALLEGRO_ANDROID
@@ -857,6 +858,7 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 					cvalue2 = al_get_config_value(t3f_config, "T3F", "window_pos_y");
 					if(cvalue2)
 					{
+						restore_pos = true;
 						doy = 0;
 						dx = atoi(cvalue);
 						dy = atoi(cvalue2);
@@ -887,6 +889,10 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 		t3f_virtual_display_height = h;
 		t3f_get_base_transform();
 		al_set_window_title(t3f_display, t3f_window_title);
+		if(restore_pos)
+		{
+			al_set_window_position(t3f_display, dx, dy);
+		}
 	}
 	#ifdef ALLEGRO_WINDOWS
 		t3f_set_windows_icon("allegro_icon");
