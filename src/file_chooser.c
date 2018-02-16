@@ -296,7 +296,7 @@ void omo_file_chooser_logic(void * data)
 
 		/* clean up */
 		al_destroy_native_file_dialog(app->file_chooser);
-		app->file_chooser = false;
+		app->file_chooser = NULL;
 		app->file_chooser_done = false;
 	}
 }
