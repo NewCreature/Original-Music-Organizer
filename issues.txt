@@ -25,6 +25,9 @@ v0.5
 
 [ ]Implement keyboard shortcuts for all features.
 
+[ ]Don't count articles such as "the" and "and" as part of strings during
+   sorting.
+
 [ ]Implement portable mode. In portable mode, the library databases and app
    settings are stored alongside the executable. The idea is to allow a user to
    copy their music collection to a thumb drive and use it on multiple machines
