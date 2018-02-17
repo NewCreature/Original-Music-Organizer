@@ -4,6 +4,27 @@ OMO Issues
 v0.5
 ----
 
+[ ]Fix Debian category.
+
+[ ]Add search field above each library section.
+
+[ ]Consider adding ability to type in the library list boxes to jump to items
+   more quickly.
+
+[ ]Add Help menu.
+
+[ ]Add manual.
+
+[ ]Add about box.
+
+[ ]Look into file selector that can select folders and files. Maybe we should
+   provide our own file browser as an option.
+
+[ ]Add Album view. This will show album art and titles in a list box-style UI
+   element. You'll be able to queue up albums from this view.
+
+[ ]Implement keyboard shortcuts for all features.
+
 [ ]Implement portable mode. In portable mode, the library databases and app
    settings are stored alongside the executable. The idea is to allow a user to
    copy their music collection to a thumb drive and use it on multiple machines
