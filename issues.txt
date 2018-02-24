@@ -25,6 +25,14 @@ v0.5
 
 [ ]Implement keyboard shortcuts for all features.
 
+[ ]Look into global hot keys.
+
+[ ]Remember track position as well as queue position.
+
+[ ]Figure out a way to display track length in library and queue.
+
+[ ]Improve icon so it works better on dark backgrounds.
+
 [ ]Don't count articles such as "the" and "and" as part of strings during
    sorting.
 
