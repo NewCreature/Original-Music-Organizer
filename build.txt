@@ -1,0 +1,103 @@
+Building OMO from Source Code
+-----------------------------
+
+Before building OMO, check to see if a build is available for your platform on
+the project's home page:
+
+http://www.t3-i.com/pages/project.php?id=omo
+
+If a build is unavailable for your platform or you just wish to build from
+source, follow the instructions in this document.
+
+
+Dependencies
+------------
+
+OMO relies on several freely available libraries for its functionality. These
+dependencies must be installed prior to building OMO:
+
+ * libdumb
+ * libgme (with zlib support enabled)
+ * libogg
+ * libvorbis
+ * libvorbisfile
+ * libFLAC
+ * libmpg123
+ * libarchive
+ * libcurl
+ * Allegro 5
+ * Allegro 5 Audio Add-On
+ * Allegro 5 Audio Codec Add-On with Ogg Vorbis and FLAC support enabled
+ * Allegro 5 Image Add-On with PNG support enabled (requires libpng which
+   requires libz)
+ * Allegro 5 Font Add-On
+ * Allegro 5 TTF Add-On (requires libfreetype)
+ * Allegro 5 Primitives Add-On
+ * Allegro 5 Memfile Add-On
+ * unrar (non-free version)
+
+unrar notes: There are two versions of unrar available. One is the free
+implementation. The other is the freeware version. The free implementation will
+not work properly for certain RAR archives so the freeware version is required
+to enable RAR support. The unrar utility is called from OMO to handle RAR
+archives. For this to work, you can either place the unrar executable alongside
+the OMO executable (in bin), or placed somewhere it can be run globally (for
+example: /usr/local/bin). We include binary blobs for unrar for Windows and
+MacOS as part of the source distribution for convenience.
+
+
+Building OMO for Linux
+----------------------
+
+Once you have all the dependencies installed, building OMO is quite simple. For
+most users, it is sufficient to type 'make' from the 'src' directory. If all
+goes well, you should have a binary 'omo' in the 'bin' directory. You can then
+change to the 'bin' directory and run './omo' to launch the program.
+
+
+Building OMO for Other Platforms
+--------------------------------
+
+OMO's build process is tailored toward packaging and distribution. Building on
+other platforms is largely identical to Linux, except we use static
+dependencies. We do this to make it easier to package and distribute OMO
+binaries on various platforms. In fact, we also do this on Linux when producing
+the Debian package.
+
+So in order to build OMO for MacOS or Windows, all of the dependencies listed
+above must be build as static libraries. Once these static dependencies are
+installed, you can build OMO by typing 'make' from the 'src' directory. The
+'omo' binary will be located in the 'bin' directory and can be run from there.
+In addition, on MacOS there will be an application bundle in the 'packages'
+directory. This is a standalone bundle which can be copied to your Applications
+folder (or anywhere you want to put it).
+
+
+Packaging
+---------
+
+OMO has some built-in packaging capabilities in its build scripts. These
+packaging capabilities are platform-dependent so we will list them by platform.
+
+ * Debian Package (packages/omo_#.#_arch.deb)
+   make debian_package
+ * Mac Package (packages/omo-#.#-macosx.dmg)
+   make mac_pacakge
+ * Windows Package (packages/omo-#.#-windows.zip)
+   make windows_package
+ * Source Package (packages/omo-#.#-src.tar.gz)
+   make package
+
+Note: you cannot create the source package from Windows.
+
+
+Contact Information
+-------------------
+
+OMO was originally developed by Todd Cope for T^3 Software. The source code is
+licensed under the GNU GENERAL PUBLIC LICENSE version 3. You can use the source
+as that license permits.
+
+If you need to contact the original author, you can e-mail me at:
+
+ * care@t3-i.com
