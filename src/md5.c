@@ -295,18 +295,22 @@ void MD5_Final(unsigned char *result, MD5_CTX *ctx)
 
 static char md5_hash_string[33];
 
-char *str2md5(const char *str, int length) {
+void str2md5(const char *str, int length, char * out)
+{
 	int n;
 	MD5_CTX c;
 	unsigned char digest[16];
-	char *out = md5_hash_string;
 
 	MD5_Init(&c);
 
-	while (length > 0) {
-		if (length > 512) {
+	while(length > 0)
+	{
+		if(length > 512)
+		{
 			MD5_Update(&c, str, 512);
-		} else {
+		}
+		else
+		{
 			MD5_Update(&c, str, length);
 		}
 		length -= 512;
@@ -315,11 +319,10 @@ char *str2md5(const char *str, int length) {
 
 	MD5_Final(digest, &c);
 
-	for (n = 0; n < 16; ++n) {
+	for(n = 0; n < 16; ++n)
+	{
 		snprintf(&(out[n*2]), 16*2, "%02x", (unsigned int)digest[n]);
 	}
-
-	return out;
 }
 
 const char * md5_file(const char * fn)
@@ -327,7 +330,6 @@ const char * md5_file(const char * fn)
 	FILE * fp;
 	unsigned long file_size;
 	char * buffer;
-	char * output;
 	int hashed = 0;
 	int i;
 
@@ -345,8 +347,7 @@ const char * md5_file(const char * fn)
 			{
 				buffer[i] = fgetc(fp);
 			}
-			output = str2md5(buffer, file_size);
-			strcpy(md5_hash_string, output);
+			str2md5(buffer, file_size, md5_hash_string);
 			free(buffer);
 			hashed = 1;
 		}
