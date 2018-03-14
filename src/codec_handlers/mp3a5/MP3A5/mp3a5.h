@@ -40,6 +40,13 @@ typedef struct
 	double loop_end;
 	bool loop;
 
+	/* format */
+	long sample_rate;
+	int channels;
+	int encoding;
+	ALLEGRO_AUDIO_DEPTH depth;
+	ALLEGRO_CHANNEL_CONF channel_conf;
+
 } MP3A5_MP3;
 
 bool mp3a5_init(void);

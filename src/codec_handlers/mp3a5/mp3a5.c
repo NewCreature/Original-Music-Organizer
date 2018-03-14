@@ -7,6 +7,7 @@ typedef struct
 {
 	MP3A5_MP3 * codec_mp3;
 	char tag_buffer[1024];
+	char info[256];
 	bool loop;         // let us know we are looping this song
 	double fade_time;  // how long to fade out
 	int loop_count;    // how many times we want to loop
@@ -227,7 +228,11 @@ static bool codec_done_playing(void * data)
 
 static const char * codec_get_info(void * data)
 {
-	return "MPG123";
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	sprintf(codec_data->info, "%luhz %d-Bit %s (MPG123)", codec_data->codec_mp3->sample_rate, (codec_data->codec_mp3->depth == ALLEGRO_AUDIO_DEPTH_INT8 || codec_data->codec_mp3->depth == ALLEGRO_AUDIO_DEPTH_UINT8) ? 8 : 16, codec_data->codec_mp3->channels == 1 ? "Mono" : (codec_data->codec_mp3->channels == 2 ? "Stereo" : "Surround"));
+
+	return codec_data->info;
 }
 
 static OMO_CODEC_HANDLER codec_handler;

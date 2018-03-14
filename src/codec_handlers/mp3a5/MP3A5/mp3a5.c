@@ -241,6 +241,13 @@ MP3A5_MP3 * mp3a5_load_mp3(const char *filename)
 				mp3a5_get_length(mp3);
 				mp3->loop_start = 0.0;
 				mp3->loop_end = mp3->length;
+				if(mpg123_getformat(mp3->mp3, &mp3->sample_rate, &mp3->channels, &mp3->encoding) != MPG123_OK)
+				{
+					mpg123_close(mp3->mp3);
+					mpg123_delete(mp3->mp3);
+					free(mp3);
+					return NULL;
+				}
 				return mp3;
 			}
 			else
@@ -316,12 +323,12 @@ bool mp3a5_set_mp3_loop(MP3A5_MP3 * mp, double start, double end)
 
 static off_t seconds_to_sample(MP3A5_MP3 * mp, double seconds)
 {
-	return (seconds * 44100.0);
+	return (seconds * (double)mp->sample_rate);
 }
 
 static double sample_to_seconds(MP3A5_MP3 * mp, off_t sample)
 {
-	return sample / (44100.0);
+	return sample / (double)mp->sample_rate;
 }
 
 static bool mp3_rewind(MP3A5_MP3 * mp)
@@ -338,9 +345,13 @@ static bool mp3_rewind(MP3A5_MP3 * mp)
 static size_t feed_stream(MP3A5_MP3 * mp, void * buffer)
 {
 	int word_size = 2;
+	if(mp->depth == ALLEGRO_AUDIO_DEPTH_INT8 || mp->depth == ALLEGRO_AUDIO_DEPTH_UINT8)
+	{
+		word_size = 1;
+	}
 	double current_time = sample_to_seconds(mp, mpg123_tell(mp->mp3));
-	double buffer_time = ((double)mp->buffer_size / (double)word_size * 2.0) / 44100.0;
-	int read_length = sizeof(unsigned short) * mp->buffer_size * 2;
+	double buffer_time = ((double)mp->buffer_size / (double)word_size * (double)mp->channels) / (double)mp->sample_rate;
+	int read_length = mp->buffer_size * word_size * mp->channels;
 	volatile long pos = 0;
 	size_t read;
 	int r;
@@ -349,7 +360,7 @@ static size_t feed_stream(MP3A5_MP3 * mp, void * buffer)
 	{
 		if(current_time + buffer_time > mp->loop_end)
 		{
-			read_length = (mp->loop_end - current_time) * 44100.0 * (double)word_size * 2.0;
+			read_length = (mp->loop_end - current_time) * (double)mp->sample_rate * (double)word_size * (double)mp->channels;
 			if(read_length < 0)
 			{
 				return 0;
@@ -384,6 +395,11 @@ static void * mp3a5_thread_proc(ALLEGRO_THREAD * tp, void * data)
 	unsigned char *fragment;
 	int i;
 	volatile unsigned long pos = 0;
+	int word_size = 2;
+	if(mp3->depth == ALLEGRO_AUDIO_DEPTH_INT8 || mp3->depth == ALLEGRO_AUDIO_DEPTH_UINT8)
+	{
+		word_size = 1;
+	}
 
 	queue = al_create_event_queue();
 	al_register_event_source(queue, al_get_audio_stream_event_source(mp3->audio_stream));
@@ -405,21 +421,21 @@ static void * mp3a5_thread_proc(ALLEGRO_THREAD * tp, void * data)
 				pos = 0;
 				if(mp3->paused)
 				{
-					memset(fragment, 0, sizeof(unsigned short) * mp3->buffer_size * 2);
+					memset(fragment, 0, word_size * mp3->buffer_size * mp3->channels);
 				}
 				else
 				{
-					while(pos < sizeof(unsigned short) * mp3->buffer_size * 2)
+					while(pos < word_size * mp3->buffer_size * mp3->channels)
 					{
 						pos += feed_stream(mp3, fragment + pos);
 
-						if(pos < sizeof(unsigned short) * mp3->buffer_size * 2)
+						if(pos < word_size * mp3->buffer_size * mp3->channels)
 						{
 							/* didn't fill buffer all the way so check for loop */
 							if(mp3->loop)
 							{
 								/* Keep rewinding until the fragment is filled. */
-								while(pos < sizeof(unsigned short) * mp3->buffer_size * 2)
+								while(pos < word_size * mp3->buffer_size * mp3->channels)
 								{
 									mp3_rewind(mp3);
 									pos += feed_stream(mp3, fragment + pos);
@@ -428,7 +444,7 @@ static void * mp3a5_thread_proc(ALLEGRO_THREAD * tp, void * data)
 							/* if no loop, then we reached the end of the audio */
 							else
 							{
-								for(i = pos; i < sizeof(unsigned short) * mp3->buffer_size * 2; i++)
+								for(i = pos; i < word_size * mp3->buffer_size * mp3->channels; i++)
 								{
 									((unsigned short *)fragment)[i] = 0;
 								}
@@ -455,8 +471,47 @@ static void * mp3a5_thread_proc(ALLEGRO_THREAD * tp, void * data)
 
 bool mp3a5_play_mp3(MP3A5_MP3 * mp, size_t buffer_count, unsigned int samples)
 {
-	mp->audio_stream = al_create_audio_stream(buffer_count, samples, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
+	/* set up audio depth and channels */
+	if(mp->encoding == MPG123_ENC_SIGNED_8)
+	{
+		mp->depth = ALLEGRO_AUDIO_DEPTH_INT8;
+	}
+	else if(mp->encoding == MPG123_ENC_UNSIGNED_8)
+	{
+		mp->depth = ALLEGRO_AUDIO_DEPTH_UINT8;
+	}
+	else if(mp->encoding == MPG123_ENC_SIGNED_16)
+	{
+		mp->depth = ALLEGRO_AUDIO_DEPTH_INT16;
+	}
+	else if(mp->encoding == MPG123_ENC_UNSIGNED_16)
+	{
+		mp->depth = ALLEGRO_AUDIO_DEPTH_UINT16;
+	}
+	else if(mp->encoding == MPG123_ENC_FLOAT_32)
+	{
+		mp->depth = ALLEGRO_AUDIO_DEPTH_FLOAT32;
+	}
+	else
+	{
+		printf("Unsupported audio depth!\n");
+		return false;
+	}
+	if(mp->channels == 1)
+	{
+		mp->channel_conf = ALLEGRO_CHANNEL_CONF_1;
+	}
+	else if(mp->channels == 2)
+	{
+		mp->channel_conf = ALLEGRO_CHANNEL_CONF_2;
+	}
+	else
+	{
+		printf("Unsupported channel configuration!\n");
+		return false;
+	}
 
+	mp->audio_stream = al_create_audio_stream(buffer_count, samples, mp->sample_rate, mp->depth, mp->channel_conf);
 	if(mp->audio_stream)
 	{
 		if(mp->loop)
