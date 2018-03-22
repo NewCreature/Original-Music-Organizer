@@ -1,7 +1,7 @@
 include makefile.include
 
 T3GUI_OBJECTS = t3gui/dialog.o t3gui/element_proc.o t3gui/nine_patch.o t3gui/player.o t3gui/resource.o t3gui/t3gui.o t3gui/theme.o t3gui/unicode.o
-CODEC_OBJECTS = codec_handlers/dumba5/DUMBA5/dumba5.o codec_handlers/dumba5/dumba5.o codec_handlers/allegro_acodec/allegro_acodec.o codec_handlers/gme/gme.o codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o codec_handlers/codec_handler.o codec_handlers/registry.o
+CODEC_OBJECTS = codec_handlers/dumba5/DUMBA5/dumba5.o codec_handlers/dumba5/dumba5.o codec_handlers/allegro_acodec/allegro_acodec.o codec_handlers/gme/gme.o codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o codec_handlers/midia5/MIDIA5/midia5.o codec_handlers/midia5/midia5.o codec_handlers/codec_handler.o codec_handlers/registry.o
 ARCHIVE_HANDLER_OBJECTS = archive_handlers/libarchive/libarchive.o archive_handlers/unrar/unrar.o archive_handlers/archive_handler.o archive_handlers/registry.o
 
 #########################
@@ -31,13 +31,13 @@ app_clean:
 ################
 # global stuff #
 ################
-GLOBAL_CFLAGS = -O2 -fomit-frame-pointer -funroll-loops -Wall -I. -DT3F_DEVELOPER_NAME="\"$(APP_COMPANY)\"" -DT3F_PACKAGE_NAME="\"$(APP_NAME)\"" -DT3F_APP_VERSION="\"$(APP_VERSION)\"" -DT3F_APP_TITLE=\"$(APP_TITLE)\"
+GLOBAL_CFLAGS = -O2 -fomit-frame-pointer -funroll-loops -Wall -I. -DT3F_DEVELOPER_NAME="\"$(APP_COMPANY)\"" -DT3F_PACKAGE_NAME="\"$(APP_NAME)\"" -DT3F_APP_VERSION="\"$(APP_VERSION)\"" -DT3F_APP_TITLE=\"$(APP_TITLE)\" -Icodec_handlers/midia5/MIDIA5
 
 ##################
 # Mac OS X stuff #
 ##################
 #MACOSX_CFLAGS =
-MACOSX_PLATFORM_OBJECTS = codec_handlers/avmidiplayer/avmidiplayer.o codec_handlers/avplayer/avplayer.o
+MACOSX_PLATFORM_OBJECTS = codec_handlers/avmidiplayer/avmidiplayer.o codec_handlers/avplayer/avplayer.o codec_handlers/midia5/MIDIA5/macos/coremidi.o
 MACOSX_PLATFORM_LIBS = -framework AVFoundation
 MACOSX_DEPEND_LIBS = -lbz2 -liconv -lxml2 -larchive -lcurl-static
 #MACOSX_PLATFORM_TARGET =
@@ -46,7 +46,7 @@ MACOSX_DEPEND_LIBS = -lbz2 -liconv -lxml2 -larchive -lcurl-static
 # Linux stuff #
 ###############
 #LINUX_CFLAGS =
-LINUX_PLATFORM_OBJECTS =
+LINUX_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/unix/alsa.o
 #LINUX_PLATFORM_LIBS =
 LINUX_DEPEND_LIBS = -larchive -lcurl
 #LINUX_PLATFORM_TARGET =
@@ -55,7 +55,7 @@ LINUX_DEPEND_LIBS = -larchive -lcurl
 # Linux static stuff (for binary distrubution) #
 ################################################
 #LINUX_STATIC_CFLAGS =
-LINUX_STATIC_PLATFORM_OBJECTS =
+LINUX_STATIC_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/unix/alsa.o
 #LINUX_STATIC_PLATFORM_LIBS =
 LINUX_STATIC_DEPEND_LIBS = -larchive -lcurl
 #LINUX_STATIC_PLATFORM_TARGET =
@@ -64,7 +64,7 @@ LINUX_STATIC_DEPEND_LIBS = -larchive -lcurl
 # MinGW cross-compiler stuff #
 ##############################
 MINGW_CROSS_CFLAGS = -DCURL_STATICLIB
-MINGW_CROSS_PLATFORM_OBJECTS = codec_handlers/midiout/midiout.o
+MINGW_CROSS_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/windows/midiout.o
 #MINGW_CROSS_PLATFORM_LIBS =
 MINGW_CROSS_DEPEND_LIBS = -larchive_static -lcurl -lwldap32
 #MINGW_CROSS_PLATFORM_TARGET =
@@ -73,7 +73,7 @@ MINGW_CROSS_DEPEND_LIBS = -larchive_static -lcurl -lwldap32
 # MinGW stuff #
 ###############
 MINGW_CFLAGS = -DCURL_STATICLIB
-MINGW_PLATFORM_OBJECTS = codec_handlers/midiout/midiout.o
+MINGW_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/windows/midiout.o
 #MINGW_PLATFORM_LIBS =
 MINGW_DEPEND_LIBS = -larchive_static -lcurl -lwldap32
 #MINGW_PLATFORM_TARGET =

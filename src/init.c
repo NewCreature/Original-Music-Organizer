@@ -18,15 +18,12 @@
 #include "codec_handlers/allegro_acodec/allegro_acodec.h"
 #include "codec_handlers/gme/gme.h"
 #include "codec_handlers/mp3a5/mp3a5.h"
+#include "codec_handlers/midia5/midia5.h"
 
 /* Mac OS X codecs */
 #ifdef ALLEGRO_MACOSX
 	#include "codec_handlers/avmidiplayer/avmidiplayer.h"
 	#include "codec_handlers/avplayer/avplayer.h"
-#endif
-
-#ifdef ALLEGRO_WINDOWS
-	#include "codec_handlers/midiout/midiout.h"
 #endif
 
 static bool setup_temp_folder(ALLEGRO_PATH ** path, const char * name)
@@ -181,16 +178,14 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		return false;
 	}
 	#ifdef ALLEGRO_MACOSX
-		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avmidiplayer_get_codec_handler());
+//		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avmidiplayer_get_codec_handler());
 		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avplayer_get_codec_handler());
-	#endif
-	#ifdef ALLEGRO_WINDOWS
-		omo_register_codec_handler(app->codec_handler_registry, omo_codec_midiout_get_codec_handler());
 	#endif
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_dumba5_get_codec_handler());
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_allegro_acodec_get_codec_handler());
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_gme_get_codec_handler());
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_mp3a5_get_codec_handler());
+	omo_register_codec_handler(app->codec_handler_registry, omo_codec_midia5_get_codec_handler());
 
 	/* create default profile */
 	if(!omo_setup_profile("Default"))
