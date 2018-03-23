@@ -17,9 +17,8 @@ void * _midia5_init_output_platform_data(MIDIA5_OUTPUT_HANDLE * hp, int device)
     cm_data = malloc(sizeof(MIDIA5_COREMIDI_DATA));
     if(cm_data)
     {
-        char tmp[128], tmp1[128], tmp2[128];
 //        char * sound = uconvert_ascii("sound", tmp);
-        ComponentDescription desc;
+        AudioComponentDescription desc;
         AUNode synth_node, output_node;
         UInt32 quality, reverb_type;
         int reverb;
@@ -43,21 +42,21 @@ void * _midia5_init_output_platform_data(MIDIA5_OUTPUT_HANDLE * hp, int device)
         desc.componentManufacturer = kAudioUnitManufacturer_Apple;
         desc.componentFlags = 0;
         desc.componentFlagsMask = 0;
-        AUGraphNewNode(cm_data->graph, &desc, 0, NULL, &synth_node);
+        AUGraphAddNode(cm_data->graph, &desc, &synth_node);
 
         desc.componentType = kAudioUnitType_Output;
         desc.componentSubType = kAudioUnitSubType_DefaultOutput;
         desc.componentManufacturer = kAudioUnitManufacturer_Apple;
         desc.componentFlags = 0;
         desc.componentFlagsMask = 0;
-        AUGraphNewNode(cm_data->graph, &desc, 0, NULL, &output_node);
+        AUGraphAddNode(cm_data->graph, &desc, &output_node);
 
         AUGraphConnectNodeInput(cm_data->graph, synth_node, 0, output_node, 0);
 
         AUGraphOpen(cm_data->graph);
         AUGraphInitialize(cm_data->graph);
 
-        AUGraphGetNodeInfo(cm_data->graph, synth_node, NULL, NULL, NULL, &cm_data->synth_unit);
+        AUGraphNodeInfo(cm_data->graph, synth_node, NULL, &cm_data->synth_unit);
 
         quality = 127;
         AudioUnitSetProperty(cm_data->synth_unit, kAudioUnitProperty_RenderQuality, kAudioUnitScope_Output, 0, &quality, sizeof(quality));
