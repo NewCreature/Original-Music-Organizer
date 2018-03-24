@@ -12,6 +12,9 @@ typedef struct
 
 } MIDIA5_OUTPUT_HANDLE;
 
+int midia5_get_output_device_count(void);
+const char * midia5_get_output_device_name(int device);
+
 MIDIA5_OUTPUT_HANDLE * midia5_create_output_handle(int device);
 void midia5_destroy_output_handle(MIDIA5_OUTPUT_HANDLE * hp);
 

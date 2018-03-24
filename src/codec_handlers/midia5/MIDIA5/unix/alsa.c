@@ -10,6 +10,7 @@ typedef struct
 	/* sequencer data */
 	snd_seq_t * sequencer;
 	snd_seq_addr_t addr;
+	int port;
 
 	/* MIDI command data */
 	int command_step;
@@ -18,6 +19,86 @@ typedef struct
 	int command_data[16];
 
 } MIDIA5_ALSA_DATA;
+
+int _midia5_get_platform_output_device_count(void)
+{
+	snd_seq_t *seq;
+	snd_seq_client_info_t *cinfo;
+	snd_seq_port_info_t *pinfo;
+	int count = 0;
+
+	snd_seq_open(&seq, "default", SND_SEQ_OPEN_OUTPUT, 0);
+	snd_seq_client_info_alloca(&cinfo);
+	snd_seq_port_info_alloca(&pinfo);
+	snd_seq_client_info_set_client(cinfo, -1);
+	while(snd_seq_query_next_client(seq, cinfo) >= 0)
+	{
+		int client = snd_seq_client_info_get_client(cinfo);
+
+		snd_seq_port_info_set_client(pinfo, client);
+		snd_seq_port_info_set_port(pinfo, -1);
+		while(snd_seq_query_next_port(seq, pinfo) >= 0)
+		{
+			/* port must understand MIDI messages */
+			if(!(snd_seq_port_info_get_type(pinfo) & SND_SEQ_PORT_TYPE_MIDI_GENERIC))
+			{
+				continue;
+			}
+			/* we need both WRITE and SUBS_WRITE */
+			if((snd_seq_port_info_get_capability(pinfo) & (SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE)) != (SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE))
+			{
+				continue;
+			}
+			count++;
+		}
+	}
+	snd_seq_close(seq);
+	return count;
+}
+
+static char _midia5_platform_output_device_name_buffer[1024];
+
+const char * _midia5_get_platform_output_device_name(int device)
+{
+	snd_seq_t *seq;
+	snd_seq_client_info_t *cinfo;
+	snd_seq_port_info_t *pinfo;
+	int count = 0;
+
+	snd_seq_open(&seq, "default", SND_SEQ_OPEN_OUTPUT, 0);
+	snd_seq_client_info_alloca(&cinfo);
+	snd_seq_port_info_alloca(&pinfo);
+
+	strcpy(_midia5_platform_output_device_name_buffer, "");
+	snd_seq_client_info_set_client(cinfo, -1);
+	while(snd_seq_query_next_client(seq, cinfo) >= 0)
+	{
+		int client = snd_seq_client_info_get_client(cinfo);
+
+		snd_seq_port_info_set_client(pinfo, client);
+		snd_seq_port_info_set_port(pinfo, -1);
+		while(snd_seq_query_next_port(seq, pinfo) >= 0)
+		{
+			/* port must understand MIDI messages */
+			if(!(snd_seq_port_info_get_type(pinfo) & SND_SEQ_PORT_TYPE_MIDI_GENERIC))
+			{
+				continue;
+			}
+			/* we need both WRITE and SUBS_WRITE */
+			if((snd_seq_port_info_get_capability(pinfo) & (SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE)) != (SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE))
+			{
+				continue;
+			}
+			if(count == device)
+			{
+				sprintf(_midia5_platform_output_device_name_buffer, "%s:%d", snd_seq_client_info_get_name(cinfo), snd_seq_port_info_get_port(pinfo));
+			}
+			count++;
+		}
+	}
+	snd_seq_close(seq);
+	return _midia5_platform_output_device_name_buffer;
+}
 
 void * _midia5_init_output_platform_data(MIDIA5_OUTPUT_HANDLE * hp, int device)
 {
@@ -34,8 +115,25 @@ void * _midia5_init_output_platform_data(MIDIA5_OUTPUT_HANDLE * hp, int device)
 			return NULL;
 	 	}
 		snd_seq_set_client_name(cm_data->sequencer, "MIDIA5");
-		snd_seq_parse_address(cm_data->sequencer, &cm_data->addr, "FLUID Synth");
-		snd_seq_connect_to(cm_data->sequencer, 0, cm_data->addr.client, cm_data->addr.port);
+		if(snd_seq_parse_address(cm_data->sequencer, &cm_data->addr, midia5_get_output_device_name(device)) < 0)
+		{
+			free(cm_data);
+			printf("Failed to open MIDI device: %s!\n", midia5_get_output_device_name(device));
+			return NULL;
+		}
+		cm_data->port = snd_seq_create_simple_port(cm_data->sequencer, "MIDIA5", 0, SND_SEQ_PORT_TYPE_MIDI_GENERIC | SND_SEQ_PORT_TYPE_APPLICATION);
+		if(cm_data->port < 0)
+		{
+			printf("Failed to create MIDI port!\n");
+			free(cm_data);
+			return NULL;
+		}
+		if(snd_seq_connect_to(cm_data->sequencer, 0, cm_data->addr.client, cm_data->addr.port) < 0)
+		{
+			free(cm_data);
+			printf("Failed to open MIDI device!\n");
+			return NULL;
+		}
     }
     return cm_data;
 }
@@ -45,6 +143,7 @@ void _midia5_free_output_platform_data(MIDIA5_OUTPUT_HANDLE * hp)
     MIDIA5_ALSA_DATA * cm_data = (MIDIA5_ALSA_DATA *)hp->platform_data;
 
 	snd_seq_disconnect_from(cm_data->sequencer, 0, cm_data->addr.client, cm_data->addr.port);
+	snd_seq_delete_simple_port(cm_data->sequencer, cm_data->port);
 	snd_seq_close(cm_data->sequencer);
     free(cm_data);
 }
