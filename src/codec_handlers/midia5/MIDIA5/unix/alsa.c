@@ -7,23 +7,21 @@
 typedef struct
 {
 
+	/* sequencer data */
 	snd_seq_t * sequencer;
 	snd_seq_addr_t addr;
-	int in_port[4];
-	int out_port[4];
+
+	/* MIDI command data */
 	int command_step;
 	int command_type;
 	int command_channel;
 	int command_data[16];
-	int command[16];
-	snd_seq_addr_t port;
 
 } MIDIA5_ALSA_DATA;
 
 void * _midia5_init_output_platform_data(MIDIA5_OUTPUT_HANDLE * hp, int device)
 {
     MIDIA5_ALSA_DATA * cm_data;
-	int err;
 
     cm_data = malloc(sizeof(MIDIA5_ALSA_DATA));
     if(cm_data)
@@ -36,7 +34,8 @@ void * _midia5_init_output_platform_data(MIDIA5_OUTPUT_HANDLE * hp, int device)
 			return NULL;
 	 	}
 		snd_seq_set_client_name(cm_data->sequencer, "MIDIA5");
-		snd_seq_parse_address(cm_data->sequencer, &cm_data->addr, "FLUID:0");
+		snd_seq_parse_address(cm_data->sequencer, &cm_data->addr, "FLUID Synth");
+		snd_seq_connect_to(cm_data->sequencer, 0, cm_data->addr.client, cm_data->addr.port);
     }
     return cm_data;
 }
@@ -45,6 +44,8 @@ void _midia5_free_output_platform_data(MIDIA5_OUTPUT_HANDLE * hp)
 {
     MIDIA5_ALSA_DATA * cm_data = (MIDIA5_ALSA_DATA *)hp->platform_data;
 
+	snd_seq_disconnect_from(cm_data->sequencer, 0, cm_data->addr.client, cm_data->addr.port);
+	snd_seq_close(cm_data->sequencer);
     free(cm_data);
 }
 
