@@ -79,9 +79,13 @@ void * _midia5_init_output_platform_data(MIDIA5_OUTPUT_HANDLE * hp, int device)
 void _midia5_free_output_platform_data(MIDIA5_OUTPUT_HANDLE * hp)
 {
     MIDIA5_ALSA_DATA * cm_data = (MIDIA5_ALSA_DATA *)hp->platform_data;
-	snd_seq_event_type_t event;
 
     free(cm_data);
+}
+
+static int get_alsa_pitch_bend_value(int d1, int d2)
+{
+	return ((d1 & 127) | ((d2 & 127) << 7)) - 0x2000;
 }
 
 void _midia5_platform_send_data(MIDIA5_OUTPUT_HANDLE * hp, int data)
@@ -120,6 +124,7 @@ void _midia5_platform_send_data(MIDIA5_OUTPUT_HANDLE * hp, int data)
 				case 0x90:
 				case 0xA0:
 				case 0xB0:
+				case 0xE0:
 				{
 					cm_data->command_step = 2;
 					break;
@@ -139,17 +144,6 @@ void _midia5_platform_send_data(MIDIA5_OUTPUT_HANDLE * hp, int data)
 				{
 					snd_seq_ev_clear(&ev);
 					snd_seq_ev_set_chanpress(&ev, cm_data->command_channel, cm_data->command_data[0]);
-					snd_seq_ev_set_direct(&ev);
-					ev.dest = cm_data->addr;
-					snd_seq_event_output_direct(cm_data->sequencer, &ev);
-					snd_seq_drain_output(cm_data->sequencer);
-					cm_data->command_step = 0;
-					break;
-				}
-				case 0xE0:
-				{
-					snd_seq_ev_clear(&ev);
-					snd_seq_ev_set_pitchbend(&ev, cm_data->command_channel, cm_data->command_data[0]);
 					snd_seq_ev_set_direct(&ev);
 					ev.dest = cm_data->addr;
 					snd_seq_event_output_direct(cm_data->sequencer, &ev);
@@ -209,6 +203,17 @@ void _midia5_platform_send_data(MIDIA5_OUTPUT_HANDLE * hp, int data)
 					cm_data->command_step = 0;
 					break;
 				}
+				case 0xE0:
+				{
+					snd_seq_ev_clear(&ev);
+					snd_seq_ev_set_pitchbend(&ev, cm_data->command_channel, get_alsa_pitch_bend_value(cm_data->command_data[0], cm_data->command_data[1]));
+					snd_seq_ev_set_direct(&ev);
+					ev.dest = cm_data->addr;
+					snd_seq_event_output_direct(cm_data->sequencer, &ev);
+					snd_seq_drain_output(cm_data->sequencer);
+					cm_data->command_step = 0;
+					break;
+				}
 			}
 			break;
 		}
@@ -217,6 +222,18 @@ void _midia5_platform_send_data(MIDIA5_OUTPUT_HANDLE * hp, int data)
 
 void _midia5_platform_reset_output_device(MIDIA5_OUTPUT_HANDLE * hp)
 {
+	MIDIA5_ALSA_DATA * cm_data = (MIDIA5_ALSA_DATA *)hp->platform_data;
+	int i, j;
+
+	for(i = 0; i < 0xF; i++)
+	{
+		for(j = 0; j < 128; j++)
+		{
+			midia5_send_data(hp, 0x80 | i);
+			midia5_send_data(hp, j);
+			midia5_send_data(hp, 127);
+		}
+	}
 }
 
 bool _midia5_platform_set_output_gain(MIDIA5_OUTPUT_HANDLE * hp, float gain)
