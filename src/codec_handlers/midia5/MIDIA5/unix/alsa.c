@@ -20,43 +20,6 @@ typedef struct
 
 } MIDIA5_ALSA_DATA;
 
-/* Open ALSA sequencer wit num_in writeable ports and num_out readable ports. */
-/* The sequencer handle and the port IDs are returned.                        */
-static int open_seq(snd_seq_t **seq_handle, int in_ports[], int out_ports[], int num_in, int num_out)
-{
-	int l1;
-	char portname[64];
-	int client;
-
-	if(snd_seq_open(seq_handle, "default", SND_SEQ_OPEN_DUPLEX, 0) < 0)
-	{
-		fprintf(stderr, "Error opening ALSA sequencer.\n");
-		return -1;
- 	}
-	snd_seq_set_client_name(*seq_handle, "MIDIA5");
-	snd_seq_connect_to(*seq_handle, 0, 129, 0);
-	client = snd_seq_client_id(*seq_handle);
-	for(l1 = 0; l1 < num_in; l1++)
-	{
-    	sprintf(portname, "MIDI Router IN %d", l1);
-    	if((in_ports[l1] = snd_seq_create_simple_port(*seq_handle, portname, SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE, SND_SEQ_PORT_TYPE_APPLICATION)) < 0)
-		{
-			fprintf(stderr, "Error creating sequencer port.\n");
-			return -1;
-		}
-	}
-	for(l1 = 0; l1 < num_out; l1++)
-	{
-		sprintf(portname, "MIDI Router OUT %d", l1);
-		if((out_ports[l1] = snd_seq_create_simple_port(*seq_handle, portname, SND_SEQ_PORT_CAP_READ|SND_SEQ_PORT_CAP_SUBS_READ, SND_SEQ_PORT_TYPE_APPLICATION)) < 0)
-		{
-			fprintf(stderr, "Error creating sequencer port.\n");
-			return -1;
-		}
-	}
-	return 0;
-}
-
 void * _midia5_init_output_platform_data(MIDIA5_OUTPUT_HANDLE * hp, int device)
 {
     MIDIA5_ALSA_DATA * cm_data;
@@ -66,12 +29,14 @@ void * _midia5_init_output_platform_data(MIDIA5_OUTPUT_HANDLE * hp, int device)
     if(cm_data)
     {
 		cm_data->command_step = 0;
-		if(open_seq(&cm_data->sequencer, cm_data->in_port, cm_data->out_port, 1, 1) < 0)
+		if(snd_seq_open(&cm_data->sequencer, "default", SND_SEQ_OPEN_OUTPUT, 0) < 0)
 		{
-			fprintf(stderr, "ALSA Error.\n");
-			exit(1);
-		}
-		snd_seq_parse_address(cm_data->sequencer, &cm_data->addr, "129:0");
+			fprintf(stderr, "Error opening ALSA sequencer.\n");
+			free(cm_data);
+			return NULL;
+	 	}
+		snd_seq_set_client_name(cm_data->sequencer, "MIDIA5");
+		snd_seq_parse_address(cm_data->sequencer, &cm_data->addr, "FLUID:0");
     }
     return cm_data;
 }
