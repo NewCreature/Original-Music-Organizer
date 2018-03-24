@@ -10,6 +10,16 @@ typedef struct
 
 } MIDIA5_COREMIDI_DATA;
 
+int _midia5_get_platform_output_device_count(void)
+{
+	return 1;
+}
+
+const char * _midia5_get_platform_output_device_name(int device)
+{
+	return "CoreMIDI Software Synthesizer";
+}
+
 void * _midia5_init_output_platform_data(MIDIA5_OUTPUT_HANDLE * hp, int device)
 {
     MIDIA5_COREMIDI_DATA * cm_data;
