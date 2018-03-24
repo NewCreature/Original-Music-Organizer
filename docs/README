@@ -20,13 +20,10 @@ Supported Formats
 -----------------
 
 OMO currently supports playing back files in these formats on all supported
-platforms: MP3, MP2, MPG, MOD, S3M, XM, IT, 669, AMF, MTM, OKT, PSM, PTM, STM,
-WAV, OGG, FLAC, AY, GBS, GYM, HES, KSS, NSF, SAP, SPC, VGM, and VGZ.
+platforms: MP3, MP2, MPG, MOD, S3M, XM, IT, 669, AMF, DSM, MTM, OKT, PSM, PTM,
+STM, WAV, OGG, FLAC, AY, GBS, GYM, HES, KSS, NSF, SAP, SPC, VGM, VGZ, and MID.
 
-Additional support for these formats is available on MacOS: MP4, M4A, AAC, and
-MID.
-
-Additional support for these formats is available on Windows: MID.
+Additional support for these formats is available on MacOS: MP4, M4A, AAC.
 
 Supported for more formats on all platforms will be added in the future.
 
@@ -110,6 +107,32 @@ from the OMO online tags database. Hitting Okay will accept the tags as
 displayed and store them in your library. Any tags you edit will automatically
 be submitted to the OMO online tags database, provided you have a tagger key.
 To get a tagger key, simply select 'Get Tagger Key' from the File menu.
+
+
+Linux MIDI Support
+------------------
+
+On Linux, MIDI support is a little complicated. Since most computers don't come
+with built-in hardware MIDI synthesizers, many operating systems provide a
+software synthesizer that can be used for MIDI playback.
+
+On Linux, we don't get a built-in software synthesizer, so we rely on third
+party software synthesizers. If your computer has a hardware synthesizer, OMO
+will happily play music through that hardware utilizing the ALSA sequencer. If
+your computer lacks a hardware synthesizer, you will have to do a little extra
+work to get things set up for OMO to play back MIDI files.
+
+The two most common software synthesizers on Linux are TiMidity++ and
+FluidSynth. TiMidity++ is incompatible with OMO due to OMO's use of PulseAudio
+for audio support. FluidSynth works fine, though. On Linux, OMO will look for
+FluidSynth when attempting to play back MIDI files. If it's not found, OMO will
+then use the first available device (which should be your hardware synth, if
+you have one).
+
+Unfortunately, installing FluidSynth won't give you a system-wide software
+synthesizer in the same way other platforms do. You will have to manually run
+FluidSynth before OMO can use it. There is a GUI front-end for FluidSynth called
+Qsynth which makes the process a little more user-friendly.
 
 
 Contacting Us
