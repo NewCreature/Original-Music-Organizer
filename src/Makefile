@@ -26,6 +26,9 @@ endif
 top:
 	$(MAKE) -f makefile.$(SYSTEM) all
 
+static:
+	$(MAKE) -f makefile.$(SYSTEM)_static all
+
 clean:
 	$(MAKE) -f makefile.$(SYSTEM) clean
 
