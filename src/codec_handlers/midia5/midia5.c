@@ -9,6 +9,8 @@ typedef struct
 {
 
 	MIDIA5_OUTPUT_HANDLE * midia5_output;
+	int device;
+	char codec_info[1024];
 	RTK_MIDI * midi;
 	bool paused;
 	double elapsed_time;
@@ -237,20 +239,69 @@ static void * codec_thread_proc(ALLEGRO_THREAD * thread, void * arg)
 	return NULL;
 }
 
+static int get_midi_device(void)
+{
+	const char * val;
+	int val_i;
+	int device_count;
+	int i;
+
+	device_count = midia5_get_output_device_count();
+	val = al_get_config_value(t3f_config, "Settings", "midi_device");
+	if(val)
+	{
+		val_i = atoi(val);
+		if(val_i < device_count)
+		{
+			return val_i;
+		}
+	}
+	else
+	{
+		/* look for FLUID Synth */
+		for(i = 0; i < device_count; i++)
+		{
+			if(!memcmp(midia5_get_output_device_name(i), "FLUID", 5))
+			{
+				return i;
+			}
+		}
+	}
+	if(device_count < 0)
+	{
+		return -1;
+	}
+	return 0;
+}
+
 static bool codec_play(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	codec_data->midia5_output = midia5_create_output_handle(0);
-	if(codec_data->midia5_output)
+	codec_data->device = get_midi_device();
+	if(codec_data->device >= 0)
 	{
-		midia5_reset_output_device(codec_data->midia5_output);
-		codec_data->thread = al_create_thread(codec_thread_proc, codec_data);
-		if(codec_data->thread)
+		try_device:
 		{
-			al_start_thread(codec_data->thread);
+			codec_data->midia5_output = midia5_create_output_handle(codec_data->device);
+			if(codec_data->midia5_output)
+			{
+				midia5_reset_output_device(codec_data->midia5_output);
+				codec_data->thread = al_create_thread(codec_thread_proc, codec_data);
+				if(codec_data->thread)
+				{
+					al_start_thread(codec_data->thread);
+				}
+				sprintf(codec_data->codec_info, "MIDIA5: %s", midia5_get_output_device_name(codec_data->device));
+				return true;
+			}
+			else if(codec_data->device != 0)
+			{
+				printf("Failed to open MIDI device %d. Retry with device 0.", codec_data->device);
+				codec_data->device = 0;
+				goto try_device;
+			}
 		}
-		return true;
 	}
 	return false;
 }
@@ -352,7 +403,9 @@ static bool codec_done_playing(void * data)
 
 static const char * codec_get_info(void * data)
 {
-	return "MIDIA5";
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return codec_data->codec_info;
 }
 
 static OMO_CODEC_HANDLER codec_handler;
