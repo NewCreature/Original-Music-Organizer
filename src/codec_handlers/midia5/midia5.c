@@ -233,6 +233,7 @@ static void * codec_thread_proc(ALLEGRO_THREAD * thread, void * arg)
 	al_unregister_event_source(queue, al_get_timer_event_source(timer));
 	al_destroy_timer(timer);
 	al_destroy_event_queue(queue);
+	midia5_reset_output_device(codec_data->midia5_output);
 	return NULL;
 }
 
