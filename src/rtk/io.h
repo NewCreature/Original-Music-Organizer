@@ -23,6 +23,7 @@ int rtk_io_fwrite(void * fp, void * buffer, int n);
 int rtk_io_fgetc(void * fp);
 short rtk_io_mgetw(void * fp);
 long rtk_io_mgetl(void * fp);
+long rtk_io_igetl(void * fp);
 int rtk_io_fputc(int c, void * fp);
 int rtk_io_mputw(int w, void * fp);
 int rtk_io_mputl(long l, void * fp);

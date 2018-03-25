@@ -470,6 +470,46 @@ static void rtk_get_track_names(RTK_MIDI * mp)
 	}
 }
 
+static int riff_skip_to_smf(void * fp)
+{
+	char buf[4];
+	int i, len, skip_len, c;
+
+	rtk_io_mgetl(fp);
+	rtk_io_fread(fp, buf, 4);
+	if(memcmp(buf, "RMID", 4))
+	{
+		return 0;
+	}
+	for(;;)
+	{
+		rtk_io_fread(fp, buf, 4);
+		len = rtk_io_igetl(fp);
+		if(len == EOF)
+		{
+			return 0;
+		}
+		if(!memcmp(buf, "data", 4))
+		{
+			break;
+		}
+		if(len < 0)
+		{
+			return 0;
+		}
+		skip_len = (len + 1) & ~1;
+		for(i = 0; i < skip_len; i++)
+		{
+			c = rtk_io_fgetc(fp);
+			if(c == EOF)
+			{
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+
 RTK_MIDI * rtk_load_midi(const char * fn)
 {
 	int c;
@@ -492,6 +532,16 @@ RTK_MIDI * rtk_load_midi(const char * fn)
 	memset(midi, 0, sizeof(RTK_MIDI));
 
 	rtk_io_fread(fp, buf, 4); /* read midi header */
+
+	/* if we are dealing with RMID format, skip to standard MIDI portion */
+	if(!memcmp(buf, "RIFF", 4))
+	{
+		if(!riff_skip_to_smf(fp))
+		{
+			goto err;
+		}
+		rtk_io_fread(fp, buf, 4); /* read midi header */
+	}
 
 	if(memcmp(buf, "MThd", 4))
 	{

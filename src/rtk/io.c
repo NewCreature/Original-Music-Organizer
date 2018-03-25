@@ -38,7 +38,7 @@ int rtk_io_fgetc(void * fp)
 {
 	unsigned char buf[1] = {0};
 	int r;
-	
+
 	r = rtk_io_current_driver->read(fp, buf, 1);
 	if(r >= 1)
 	{
@@ -83,11 +83,32 @@ long rtk_io_mgetl(void * fp)
 	return EOF;
 }
 
+long rtk_io_igetl(void * fp)
+{
+	int b1, b2, b3, b4;
+
+	if((b1 = rtk_io_fgetc(fp)) != EOF)
+	{
+		if((b2 = rtk_io_fgetc(fp)) != EOF)
+		{
+			if((b3 = rtk_io_fgetc(fp)) != EOF)
+			{
+				if((b4 = rtk_io_fgetc(fp)) != EOF)
+				{
+					return (((long)b1) | ((long)b2 << 8) | ((long)b3 << 16) | (long)b4 << 24);
+				}
+			}
+		}
+	}
+
+	return EOF;
+}
+
 int rtk_io_fputc(int c, void * fp)
 {
 	char buf[1];
 	int r;
-	
+
 	buf[0] = c;
 	r = rtk_io_current_driver->write(fp, buf, 1);
 	if(r == 1)

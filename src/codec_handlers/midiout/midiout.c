@@ -402,6 +402,7 @@ OMO_CODEC_HANDLER * omo_codec_midiout_get_codec_handler(void)
 	codec_handler.get_info = codec_get_info;
 	codec_handler.types = 0;
 	omo_codec_handler_add_type(&codec_handler, ".mid");
+	omo_codec_handler_add_type(&codec_handler, ".rmi");
 	if(codec_handler.initialize())
 	{
 		return &codec_handler;
