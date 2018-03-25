@@ -30,6 +30,11 @@ OMO_TRACK * omo_load_track(OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_regist
 					{
 						strcpy(tp->extracted_filename, subfile);
 						tp->codec_data = tp->codec_handler->load_file(tp->extracted_filename, track);
+						if(!tp->codec_data)
+						{
+							free(tp);
+							tp = NULL;
+						}
 					}
 				}
 			}
@@ -47,6 +52,11 @@ OMO_TRACK * omo_load_track(OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_regist
 		if(tp->codec_handler)
 		{
 			tp->codec_data = tp->codec_handler->load_file(fn, track);
+			if(!tp->codec_data)
+			{
+				free(tp);
+				tp = NULL;
+			}
 		}
 	}
 	return tp;
