@@ -4,7 +4,23 @@ OMO Issues
 v0.5
 ----
 
+[ ]See if we can rework MIDIA5 player code to use timers that line up with the
+   MIDI divisions and BPM settings. This will require modifying the timer each
+   time a BPM change occurs. Not sure if we will get good results when
+   modifying timers, but the increased accuracy and smaller CPU load will be
+   worth the effort if it works out.
+
+   [ ]Basically, we want to use the formula 1 / (DIVISIONS * (BPM / 60)). If
+      the timer speed is too high, we should cut it in half until it is
+      reasonable. I think a minimum of 1 / 1000 (1ms) per tick should be used.
+
+   [ ]The player loop will have to track BPM change events and, when the
+      elapsed time crosses the BPM change, modify the timer.
+
 [ ]Fix Debian category.
+
+   [ ]The category is already set to sound. Need to investigate whether there
+      is some other issue causing it to be put in the wrong category.
 
 [ ]Add search field above each library section.
 
