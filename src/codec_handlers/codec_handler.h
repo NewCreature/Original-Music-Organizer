@@ -1,6 +1,10 @@
 #ifndef OMO_CODEC_HANDLER_H
 #define OMO_CODEC_HANDLER_H
 
+#ifdef __cplusplus
+   extern "C" {
+#endif
+
 #include "t3f/t3f.h"
 
 #define OMO_CODEC_HANDLER_MAX_TYPES     128
@@ -42,5 +46,9 @@ typedef struct
 } OMO_CODEC_HANDLER;
 
 bool omo_codec_handler_add_type(OMO_CODEC_HANDLER * pp, const char * type);
+
+#ifdef __cplusplus
+	}
+#endif
 
 #endif
