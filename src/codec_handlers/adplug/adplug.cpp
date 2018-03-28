@@ -8,10 +8,11 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
-static int buf_size = 1024;
+static int buf_size = 4096;
 
 typedef struct
 {
+
 	Copl * opl_emu;
 	CPlayer * player;
 	ALLEGRO_AUDIO_STREAM * codec_stream;
@@ -23,22 +24,8 @@ typedef struct
 	bool done;
 	float elapsed_time;
 	int ticker;
-
-	char player_filename[1024];
-	char codec_file_extension[16];
-	char codec_tag_buffer[1024];
-	char tag_name[32];
-	bool loop;         // let us know we are looping this song
-	double loop_start;
-	double loop_end;
-	double fade_time;  // how long to fade out
-	int loop_count;    // how many times we want to loop
-	int current_loop;  // how many times have we looped
-	double last_pos;   // compare last_pos to current stream pos to detect loop
-	bool fade_out;     // let us know we are fading out
-	double fade_start; // time the fade began
+	double length;
 	float volume;
-	char info[256];
 
 } CODEC_DATA;
 
@@ -46,7 +33,6 @@ static void * codec_load_file(const char * fn, const char * subfn)
 {
 	CODEC_DATA * data;
 
-	printf("break 1\n");
 	data = (CODEC_DATA *)malloc(sizeof(CODEC_DATA));
 	if(data)
 	{
@@ -55,7 +41,6 @@ static void * codec_load_file(const char * fn, const char * subfn)
 		if(!data->opl_emu)
 		{
 			free(data);
-			printf("break 2\n");
 			return NULL;
 		}
 		data->player = CAdPlug::factory(fn, data->opl_emu);
@@ -70,15 +55,14 @@ static void * codec_load_file(const char * fn, const char * subfn)
 			{
 				data->subsong = 0;
 			}
+			data->length = data->player->songlength(data->subsong) / 1000.0;
 		}
 		else
 		{
 			free(data);
-			printf("break 3\n");
 			return NULL;
 		}
 	}
-	printf("break 4\n");
 	return data;
 }
 
@@ -152,6 +136,30 @@ static bool codec_set_volume(void * data, float volume)
 		al_set_audio_stream_gain(codec_data->codec_stream, codec_data->volume);
 	}
 	return true;
+}
+
+static void new_write_audio(void * data, char * bytes)
+{
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	static long minicnt = 0;
+    long i, towrite = buf_size;
+    char *pos = bytes;
+
+    // Prepare audiobuf with emulator output
+    while(towrite > 0)
+	{
+		while(minicnt < 0)
+		{
+			minicnt += 44100;
+			codec_data->done = !codec_data->player->update();
+		}
+		i = MIN(towrite, (long)(minicnt / codec_data->player->getrefresh() + 4) & ~3);
+		codec_data->opl_emu->update((short *)pos, i);
+		pos += i * 4;
+		towrite -= i;
+    	i = (long)(codec_data->player->getrefresh() * i);
+    	minicnt -= MAX(1, i);
+	}
 }
 
 static int write_audio(void * data, char * bytes)
@@ -229,7 +237,7 @@ static void * adplug_update_thread(ALLEGRO_THREAD * thread, void * arg)
 				else
 				{
 					al_lock_mutex(codec_data->codec_mutex);
-					write_audio(codec_data, fragment);
+					new_write_audio(codec_data, fragment);
 					codec_data->sample_count += buf_size;
 					al_unlock_mutex(codec_data->codec_mutex);
 				}
@@ -333,7 +341,7 @@ static double codec_get_length(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	return codec_data->player->songlength(codec_data->subsong) / 1000.0;
+	return codec_data->length;
 }
 
 static bool codec_done_playing(void * data)
@@ -343,10 +351,7 @@ static bool codec_done_playing(void * data)
 
 	if(codec_data->codec_stream)
 	{
-		if(!codec_data->player->update())
-		{
-			return true;
-		}
+		return codec_data->done;
 	}
 	return false;
 }
