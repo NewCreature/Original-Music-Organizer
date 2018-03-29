@@ -1,7 +1,7 @@
 include makefile.include
 
 T3GUI_OBJECTS = t3gui/dialog.o t3gui/element_proc.o t3gui/nine_patch.o t3gui/player.o t3gui/resource.o t3gui/t3gui.o t3gui/theme.o t3gui/unicode.o
-CODEC_OBJECTS = codec_handlers/dumba5/DUMBA5/dumba5.o codec_handlers/dumba5/dumba5.o codec_handlers/allegro_acodec/allegro_acodec.o codec_handlers/gme/gme.o codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o codec_handlers/midia5/MIDIA5/midia5.o codec_handlers/midia5/midia5.o codec_handlers/codec_handler.o codec_handlers/registry.o
+CODEC_OBJECTS = codec_handlers/dumba5/DUMBA5/dumba5.o codec_handlers/dumba5/dumba5.o codec_handlers/allegro_acodec/allegro_acodec.o codec_handlers/gme/gme.o codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o codec_handlers/midia5/MIDIA5/midia5.o codec_handlers/midia5/midia5.o codec_handlers/adplug/adplug.o codec_handlers/codec_handler.o codec_handlers/registry.o
 ARCHIVE_HANDLER_OBJECTS = archive_handlers/libarchive/libarchive.o archive_handlers/unrar/unrar.o archive_handlers/archive_handler.o archive_handlers/registry.o
 
 #########################
@@ -21,7 +21,7 @@ APP_COPYRIGHT = Copyright\ (C)\ 2017\ T\^3\ Software
 APP_ANDROID_PACKAGE = com.t3i.omo
 APP_URL = http://www.t3-i.com
 APP_OBJECTS = $(T3GUI_OBJECTS) $(CODEC_OBJECTS) $(ARCHIVE_HANDLER_OBJECTS) queue.o library.o md5.o ui/menu_init.o ui/menu_proc.o ui/menu_update_proc.o ui/ui.o ui/dialog_proc.o player.o main.o file_chooser.o constants.o init.o events.o file_helpers.o theme.o ui/shortcut.o ui/queue_list.o ui/library.o ui/tags_dialog.o rtk/io.o rtk/io_allegro.o rtk/midi.o test.o library_helpers.o queue_helpers.o library_cache.o ui/split_track_dialog.o ui/player.o t3net/t3net.o ui/tagger_key_dialog.o ui/new_profile_dialog.o ui/filter_dialog.o cloud.o track.o database.o threads.o profile.o
-APP_LIBS = -ldumb -lgme -logg -lvorbis -lvorbisfile -lFLAC -lmpg123 -lstdc++ -stdlib=libstdc++
+APP_LIBS = -ldumb -lgme -logg -lvorbis -lvorbisfile -lFLAC -lmpg123 -ladplug -lbinio -lstdc++ -stdlib=libstdc++
 #APP_CFLAGS =
 APP_PACKAGE_DIR = ../packages
 #APP_EXTRA_TARGET =
