@@ -37,7 +37,7 @@ static void * codec_load_file(const char * fn, const char * subfn)
 	if(data)
 	{
 		memset(data, 0, sizeof(CODEC_DATA));
-		data->opl_emu = new CEmuopl(44100, 1, 1);
+		data->opl_emu = new CEmuopl(44100, 1, 0);
 		if(!data->opl_emu)
 		{
 			free(data);
@@ -155,7 +155,7 @@ static void new_write_audio(void * data, char * bytes)
 		}
 		i = MIN(towrite, (long)(minicnt / codec_data->player->getrefresh() + 4) & ~3);
 		codec_data->opl_emu->update((short *)pos, i);
-		pos += i * 4;
+		pos += i * 2;
 		towrite -= i;
     	i = (long)(codec_data->player->getrefresh() * i);
     	minicnt -= MAX(1, i);
@@ -166,7 +166,6 @@ static void * adplug_update_thread(ALLEGRO_THREAD * thread, void * arg)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)arg;
 	ALLEGRO_EVENT_QUEUE * queue;
-	ALLEGRO_TIMER * timer;
 	float refresh_rate;
 	char * fragment;
 	bool done = false;
@@ -174,15 +173,8 @@ static void * adplug_update_thread(ALLEGRO_THREAD * thread, void * arg)
 	al_lock_mutex(codec_data->codec_mutex);
 	refresh_rate = codec_data->player->getrefresh();
 	al_unlock_mutex(codec_data->codec_mutex);
-	timer = al_create_timer(1.0 / 1000.0);
-	if(!timer)
-	{
-		return NULL;
-	}
-	al_start_timer(timer);
 	queue = al_create_event_queue();
 	al_register_event_source(queue, al_get_audio_stream_event_source(codec_data->codec_stream));
-	al_register_event_source(queue, al_get_timer_event_source(timer));
 
 	while(!done)
 	{
@@ -218,7 +210,6 @@ static void * adplug_update_thread(ALLEGRO_THREAD * thread, void * arg)
 	}
 
 	al_destroy_event_queue(queue);
-	al_destroy_timer(timer);
 
 	return NULL;
 }
@@ -228,7 +219,7 @@ static bool codec_play(void * data)
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
 	codec_data->player->rewind(codec_data->subsong);
-	codec_data->codec_stream = al_create_audio_stream(4, buf_size, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
+	codec_data->codec_stream = al_create_audio_stream(4, buf_size, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_1);
 	codec_data->sample_count = 0;
 	codec_data->paused = false;
 	codec_data->done = false;
