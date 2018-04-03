@@ -36,9 +36,9 @@ GLOBAL_CFLAGS = -O2 -fomit-frame-pointer -funroll-loops -Wall -I. -DT3F_DEVELOPE
 ##################
 # Mac OS X stuff #
 ##################
-#MACOSX_CFLAGS =
+MACOSX_CFLAGS = -I/usr/local/include/binio
 MACOSX_PLATFORM_OBJECTS = codec_handlers/avmidiplayer/avmidiplayer.o codec_handlers/avplayer/avplayer.o codec_handlers/midia5/MIDIA5/macos/coremidi.o
-MACOSX_PLATFORM_LIBS = -framework AVFoundation
+MACOSX_PLATFORM_LIBS = -framework AVFoundation -stdlib=libstdc++
 MACOSX_DEPEND_LIBS = -lbz2 -liconv -lxml2 -larchive -lcurl-static
 #MACOSX_PLATFORM_TARGET =
 
