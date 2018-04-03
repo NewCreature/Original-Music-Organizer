@@ -162,39 +162,6 @@ static void new_write_audio(void * data, char * bytes)
 	}
 }
 
-static int write_audio(void * data, char * bytes)
-{
-	CODEC_DATA * codec_data = (CODEC_DATA *)data;
-
-	// fill sound buffer
-	long towrite = buf_size;
-	char *sndbufpos = bytes;
-	long toadd = 0;
-	bool stopped;
-	int sampsize = 4;
-
-	while(towrite > 0)
-	{
-		while(toadd < 0)
-		{
-			toadd += 44100;
-			codec_data->ticker++;
-			stopped = !codec_data->player->update();
-			codec_data->elapsed_time += 1000 / codec_data->player->getrefresh();
-		}
-
-		long i = MIN(towrite,(long)(toadd / codec_data->player->getrefresh() + 4) & ~3);
-
-		codec_data->opl_emu->update((short *)sndbufpos, i);
-
-		sndbufpos += i * sampsize;
-		towrite -= i;
-		i = (long)(i * codec_data->player->getrefresh());
-		toadd -= MAX(1, i);
-	}
-	return 1;
-}
-
 static void * adplug_update_thread(ALLEGRO_THREAD * thread, void * arg)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)arg;
@@ -202,8 +169,6 @@ static void * adplug_update_thread(ALLEGRO_THREAD * thread, void * arg)
 	ALLEGRO_TIMER * timer;
 	float refresh_rate;
 	char * fragment;
-	double last_update = 0.0;
-	double elapsed_time = 0.0;
 	bool done = false;
 
 	al_lock_mutex(codec_data->codec_mutex);
@@ -347,7 +312,6 @@ static double codec_get_length(void * data)
 static bool codec_done_playing(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
-	float volume;
 
 	if(codec_data->codec_stream)
 	{
