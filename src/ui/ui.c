@@ -653,7 +653,7 @@ void omo_close_new_profile_dialog(OMO_UI * uip, void * data)
 typedef struct
 {
 
-	const char * type[256];
+	char * type[256];
 	int types;
 
 } TYPE_LIST;
@@ -709,10 +709,17 @@ static bool check_filter(const char * type, char * filter)
 	return true;
 }
 
+static int sort_types(const void *e1, const void *e2)
+{
+	char * s1 = *(char **)e1;
+	char * s2 = *(char **)e2;
+	return strcmp(s1, s2);
+}
+
 bool omo_open_filter_dialog(OMO_UI * uip, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
-	TYPE_LIST types;
+	static TYPE_LIST types;
 	char section_buffer[1024];
 	const char * val;
 	char * filter = NULL;
@@ -740,6 +747,7 @@ bool omo_open_filter_dialog(OMO_UI * uip, void * data)
 			}
 		}
 	}
+	qsort(types.type, types.types, sizeof(char *), sort_types);
 	omo_get_profile_section(app->library_config, omo_get_profile(omo_get_current_profile()), section_buffer);
 	val = al_get_config_value(t3f_config, section_buffer, "filter");
 	if(val)
