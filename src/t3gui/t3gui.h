@@ -6,7 +6,7 @@
 #include "nine_patch.h"
 #include "player.h"
 
-#define T3GUI_DIALOG_ELEMENT_CHUNK_SIZE 64
+#define T3GUI_DIALOG_ELEMENT_CHUNK_SIZE 128
 #define T3GUI_DIALOG_PLAYER_CHUNK_SIZE  16
 
 typedef struct
