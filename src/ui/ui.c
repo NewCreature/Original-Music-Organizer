@@ -718,10 +718,11 @@ bool omo_open_filter_dialog(OMO_UI * uip, void * data)
 	char * filter = NULL;
 	int y = 8;
 	int rows = 0;
+	int row_exp = 0;
 	int row = 0;
 	int old_column = 0;
 	int column = 0;
-	int columns = 4;
+	int columns = 6;
 	int i, j;
 	int w, h;
 	int flags;
@@ -746,17 +747,18 @@ bool omo_open_filter_dialog(OMO_UI * uip, void * data)
 		filter = strdup(val);
 	}
 
+	columns = ceil(sqrt(types.types));
 	for(i = 0; i < types.types; i++)
 	{
 		rows++;
 	}
 	if(rows % columns)
 	{
-		rows += rows % columns;
+		row_exp = 1;
 	}
 	w = al_get_text_width(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0], "FORMAT") + 32;
 	h = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) * 2 + 4;
-	h *= rows / columns;
+	h *= rows / columns + row_exp;
 	h += 8;
 	h += 32;
 
@@ -773,7 +775,7 @@ bool omo_open_filter_dialog(OMO_UI * uip, void * data)
 		for(i = 0; i < types.types; i++)
 		{
 			old_column = column;
-			column = row / (rows / columns);
+			column = row / (rows / columns + row_exp);
 			if(column != old_column)
 			{
 				y = 8;
