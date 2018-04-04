@@ -78,18 +78,31 @@ static void codec_unload_file(void * data)
 static const char * codec_get_tag(void * data, const char * name)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	std::string tag;
 
-	if(strcmp(name, "Title"))
+	if(!strcmp(name, "Title"))
 	{
-		return codec_data->player->gettitle().c_str();
+		tag = codec_data->player->gettitle();
+		if(!tag.empty())
+		{
+			return tag.c_str();
+		}
 	}
-	else if(strcmp(name, "Artist"))
+	else if(!strcmp(name, "Artist"))
 	{
-		return codec_data->player->getauthor().c_str();
+		tag = codec_data->player->getauthor();
+		if(!tag.empty())
+		{
+			return tag.c_str();
+		}
 	}
-	else if(strcmp(name, "Comment"))
+	else if(!strcmp(name, "Comment"))
 	{
-		return codec_data->player->getdesc().c_str();
+		tag = codec_data->player->getdesc();
+		if(!tag.empty())
+		{
+			return tag.c_str();
+		}
 	}
 	return NULL;
 }
@@ -174,6 +187,10 @@ static void * adplug_update_thread(ALLEGRO_THREAD * thread, void * arg)
 	refresh_rate = codec_data->player->getrefresh();
 	al_unlock_mutex(codec_data->codec_mutex);
 	queue = al_create_event_queue();
+	if(!queue)
+	{
+		return NULL;
+	}
 	al_register_event_source(queue, al_get_audio_stream_event_source(codec_data->codec_stream));
 
 	while(!done)
@@ -281,7 +298,7 @@ static bool codec_seek(void * data, double pos)
 
 	al_lock_mutex(codec_data->codec_mutex);
 	codec_data->player->seek(pos * 1000.0);
-	codec_data->sample_count = pos * 44100.0 * 2.0;
+	codec_data->sample_count = pos * 44100.0;
 	al_unlock_mutex(codec_data->codec_mutex);
 	return true;
 }
@@ -290,7 +307,7 @@ static double codec_get_position(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	return (codec_data->sample_count / 2) / 44100.0;
+	return (codec_data->sample_count) / 44100.0;
 }
 
 static double codec_get_length(void * data)
@@ -338,6 +355,40 @@ extern "C" OMO_CODEC_HANDLER * omo_codec_adplug_get_codec_handler(void)
 	codec_handler.done_playing = codec_done_playing;
 	codec_handler.get_info = codec_get_info;
 	codec_handler.types = 0;
+//	omo_codec_handler_add_type(&codec_handler, ".a2m");
+	omo_codec_handler_add_type(&codec_handler, ".adl");
+	omo_codec_handler_add_type(&codec_handler, ".amd");
+	omo_codec_handler_add_type(&codec_handler, ".bam");
+	omo_codec_handler_add_type(&codec_handler, ".cff");
 	omo_codec_handler_add_type(&codec_handler, ".cmf");
+	omo_codec_handler_add_type(&codec_handler, ".d00");
+	omo_codec_handler_add_type(&codec_handler, ".dfm");
+	omo_codec_handler_add_type(&codec_handler, ".dmo");
+	omo_codec_handler_add_type(&codec_handler, ".dro");
+	omo_codec_handler_add_type(&codec_handler, ".dtm");
+	omo_codec_handler_add_type(&codec_handler, ".hsc");
+	omo_codec_handler_add_type(&codec_handler, ".hsp");
+	omo_codec_handler_add_type(&codec_handler, ".imf");
+	omo_codec_handler_add_type(&codec_handler, ".ksm");
+	omo_codec_handler_add_type(&codec_handler, ".laa");
+	omo_codec_handler_add_type(&codec_handler, ".lds");
+	omo_codec_handler_add_type(&codec_handler, ".m");
+	omo_codec_handler_add_type(&codec_handler, ".mad");
+	omo_codec_handler_add_type(&codec_handler, ".mid");
+	omo_codec_handler_add_type(&codec_handler, ".mkj");
+	omo_codec_handler_add_type(&codec_handler, ".msc");
+	omo_codec_handler_add_type(&codec_handler, ".mtk");
+	omo_codec_handler_add_type(&codec_handler, ".rad");
+//	omo_codec_handler_add_type(&codec_handler, ".raw");
+	omo_codec_handler_add_type(&codec_handler, ".rix");
+	omo_codec_handler_add_type(&codec_handler, ".rol");
+	omo_codec_handler_add_type(&codec_handler, ".s3m");
+	omo_codec_handler_add_type(&codec_handler, ".sa2");
+	omo_codec_handler_add_type(&codec_handler, ".sat");
+	omo_codec_handler_add_type(&codec_handler, ".sci");
+	omo_codec_handler_add_type(&codec_handler, ".sng");
+	omo_codec_handler_add_type(&codec_handler, ".xad");
+	omo_codec_handler_add_type(&codec_handler, ".xms");
+	omo_codec_handler_add_type(&codec_handler, ".xsm");
 	return &codec_handler;
 }
