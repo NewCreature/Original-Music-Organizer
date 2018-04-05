@@ -138,6 +138,8 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	const char * val;
 	int test_path;
 	int test_mode = 0;
+	double start_pos;
+	int player_state;
 	int i;
 
 	/* initialize T3F */
@@ -331,6 +333,26 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 					app->player->queue_pos = atoi(val);
 					app->ui->ui_queue_list_element->d1 = app->player->queue_pos;
 					app->ui->ui_queue_list_element->d2 = app->ui->ui_queue_list_element->d1;
+					val = al_get_config_value(t3f_config, "Settings", "queue_track_position");
+					if(val)
+					{
+						start_pos = atof(val);
+						val = al_get_config_value(t3f_config, "Settings", "player_state");
+						if(val)
+						{
+							player_state = atoi(val);
+							omo_start_player(app->player);
+							omo_player_logic(app->player, app->library, app->archive_handler_registry, app->codec_handler_registry, app->player_temp_path);
+							if(app->player->track && app->player->track->codec_handler->seek)
+							{
+								app->player->track->codec_handler->seek(app->player->track->codec_data, start_pos);
+							}
+							if(player_state == OMO_PLAYER_STATE_PAUSED)
+							{
+								omo_pause_player(app->player);
+							}
+						}
+					}
 				}
 				app->spawn_queue_thread = true;
 			}
@@ -345,6 +367,7 @@ void omo_exit(APP_INSTANCE * app)
 	char buf[32] = {0};
 
 	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.queue", buffer, 1024));
+	al_remove_config_key(t3f_config, "Settings", "queue_position");
 	if(app->player->queue)
 	{
 		if(omo_save_queue(app->player->queue, t3f_get_filename(t3f_data_path, "omo.queue", buffer, 1024)))

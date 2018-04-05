@@ -289,12 +289,25 @@ void omo_render(void * data)
 int main(int argc, char * argv[])
 {
 	APP_INSTANCE app;
+	char buf[256];
 
 	if(omo_initialize(&app, argc, argv))
 	{
 		t3f_run();
+		al_remove_config_key(t3f_config, "Settings", "queue_track_position");
+		al_remove_config_key(t3f_config, "Settings", "player_state");
 		if(app.player)
 		{
+			if(app.player->state == OMO_PLAYER_STATE_PLAYING || app.player->state == OMO_PLAYER_STATE_PAUSED)
+			{
+				if(app.player->track->codec_handler->get_position)
+				{
+					sprintf(buf, "%f", app.player->track->codec_handler->get_position(app.player->track->codec_data));
+					al_set_config_value(t3f_config, "Settings", "queue_track_position", buf);
+					sprintf(buf, "%d", app.player->state);
+					al_set_config_value(t3f_config, "Settings", "player_state", buf);
+				}
+			}
 			omo_stop_player(app.player);
 		}
 		if(app.library)
