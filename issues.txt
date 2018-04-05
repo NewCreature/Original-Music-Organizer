@@ -6,19 +6,6 @@ v0.5
 
 [X]Remember track position as well as queue position.
 
-[ ]See if we can rework MIDIA5 player code to use timers that line up with the
-   MIDI divisions and BPM settings. This will require modifying the timer each
-   time a BPM change occurs. Not sure if we will get good results when
-   modifying timers, but the increased accuracy and smaller CPU load will be
-   worth the effort if it works out.
-
-   [ ]Basically, we want to use the formula 1 / (DIVISIONS * (BPM / 60)). If
-      the timer speed is too high, we should cut it in half until it is
-      reasonable. I think a minimum of 1 / 1000 (1ms) per tick should be used.
-
-   [ ]The player loop will have to track BPM change events and, when the
-      elapsed time crosses the BPM change, modify the timer.
-
 [ ]Fix Debian category.
 
    [ ]The category is already set to sound. Need to investigate whether there
@@ -63,6 +50,15 @@ v0.5
 
    [ ]For some reason setting the start order doesn't work for PSM files. This
       will have to be fixed in DUMB.
+
+[ ]Allow codec handler to be specified for each file. OMO will always default
+   to using the first available codec handler that supports the file's type.
+   Some file types are supported by multiple codec handlers. We want to be able
+   to specify the desired codec handler in case the file works better with a
+   specific one.
+
+   [ ]We need to add identifiers to all codec handlers to support this
+      addition.
 
 
 v0.4
