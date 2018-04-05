@@ -323,7 +323,6 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		if(!app->player->queue)
 		{
 			app->player->queue = omo_load_queue(t3f_get_filename(t3f_data_path, "omo.queue", buffer, 1024));
-			al_remove_filename(t3f_get_filename(t3f_data_path, "omo.queue", buffer, 1024));
 			if(app->player->queue)
 			{
 				val = al_get_config_value(t3f_config, "Settings", "queue_position");
@@ -345,6 +344,7 @@ void omo_exit(APP_INSTANCE * app)
 	char buffer[1024];
 	char buf[32] = {0};
 
+	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.queue", buffer, 1024));
 	if(app->player->queue)
 	{
 		if(omo_save_queue(app->player->queue, t3f_get_filename(t3f_data_path, "omo.queue", buffer, 1024)))
