@@ -6,6 +6,9 @@ v0.5
 
 [X]Remember track position as well as queue position.
 
+[X]Don't count articles such as "the" and "and" as part of strings during
+   sorting.
+
 [ ]Fix Debian category.
 
    [ ]The category is already set to sound. Need to investigate whether there
@@ -35,9 +38,6 @@ v0.5
 [ ]Figure out a way to display track length in library and queue.
 
 [ ]Improve icon so it works better on dark backgrounds.
-
-[ ]Don't count articles such as "the" and "and" as part of strings during
-   sorting.
 
 [ ]Implement portable mode. In portable mode, the library databases and app
    settings are stored alongside the executable. The idea is to allow a user to
