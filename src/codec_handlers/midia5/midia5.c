@@ -339,8 +339,16 @@ static bool codec_seek(void * data, double pos)
 	double current_time;
 	unsigned long target_tick = ~0;
 	double target_time = 100000.0;
+	int track_program_change[128][16];
 	int i, j;
 
+	for(i = 0; i < 128; i++)
+	{
+		for(j = 0; j < 16; j++)
+		{
+			track_program_change[i][j] = -1;
+		}
+	}
 	al_lock_mutex(codec_data->mutex);
 	midia5_reset_output_device(codec_data->midia5_output);
 	for(i = 0; i < codec_data->midi->tracks; i++)
@@ -350,6 +358,11 @@ static bool codec_seek(void * data, double pos)
 		current_time = 0;
 		for(j = 0; j < codec_data->midi->track[i]->events; j++)
 		{
+			/* make note of latest program change */
+			if(codec_data->midi->track[i]->event[j]->type == RTK_MIDI_EVENT_TYPE_PROGRAM_CHANGE)
+			{
+				track_program_change[i][codec_data->midi->track[i]->event[j]->channel] = j;
+			}
 			if(codec_data->midi->track[i]->event[j]->pos_sec >= pos)
 			{
 				codec_data->midi_event[i] = current_event;
@@ -365,6 +378,19 @@ static bool codec_seek(void * data, double pos)
 				current_tick = codec_data->midi->track[i]->event[j]->tick;
 				current_event = j;
 				current_time = codec_data->midi->track[i]->event[j]->pos_sec;
+			}
+		}
+	}
+
+	/* send program changes for all tracks and channels */
+	for(i = 0; i < codec_data->midi->tracks; i++)
+	{
+		for(j = 0; j < 16; j++)
+		{
+			if(track_program_change[i][j] >= 0)
+			{
+				midia5_send_data(codec_data->midia5_output, codec_data->midi->track[i]->event[track_program_change[i][j]]->type + j);
+				midia5_send_data(codec_data->midia5_output, codec_data->midi->track[i]->event[track_program_change[i][j]]->data_i[0]);
 			}
 		}
 	}
