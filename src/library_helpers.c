@@ -1052,6 +1052,7 @@ static bool omo_setup_library_lists_helper(APP_INSTANCE * app)
 	{
 		return false;
 	}
+	app->library->modified = false;
 	return true;
 }
 
