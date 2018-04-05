@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include "t3f/t3f.h"
 #include "t3f/file.h"
 #include "t3f/file_utils.h"
@@ -6,11 +7,345 @@
 #include "constants.h"
 #include "profile.h"
 
+static OMO_LIBRARY * library = NULL;
+static bool library_sort_cancelled = false;
+
+void omo_start_library_sort(void)
+{
+	library_sort_cancelled = false;
+}
+
+void omo_cancel_library_sort(void)
+{
+	library_sort_cancelled = true;
+}
+static const char * skip_articles_word(const char * s, const char * skip_word)
+{
+	int l = strlen(s);
+	int skip_l = strlen(skip_word);
+	int i;
+
+	for(i = 0; i < l && i < skip_l; i++)
+	{
+		if(tolower(s[i]) != tolower(skip_word[i]))
+		{
+			return s;
+		}
+	}
+	if(i == skip_l)
+	{
+		if(s[i] == ' ')
+		{
+			return &s[i + 1];
+		}
+	}
+	return s;
+}
+
+static const char * skip_articles(const char * s)
+{
+	const char * skip_word[3] = {"a", "and", "the"};
+	const char * final_s = s;
+	int pos = 0;
+	int i;
+
+	if(s[pos] == '\"')
+	{
+		pos++;
+	}
+	if(s[pos] == '\'')
+	{
+		pos++;
+	}
+	final_s = &s[pos];
+	for(i = 0; i < 3; i++)
+	{
+		final_s = skip_articles_word(final_s, skip_word[i]);
+	}
+	return final_s;
+}
+
+/* when all else fails, sort by path */
+static int sort_by_path(const void *e1, const void *e2)
+{
+	int entry1 = *((int *)e1);
+	int entry2 = *((int *)e2);
+	char section1[1024];
+	char section2[1024];
+
+	if(library_sort_cancelled)
+	{
+		return 0;
+	}
+
+	strcpy(section1, library->entry[entry1]->filename);
+	if(library->entry[entry1]->sub_filename)
+	{
+		strcat(section1, "/");
+		strcat(section1, library->entry[entry1]->sub_filename);
+	}
+	if(library->entry[entry1]->track)
+	{
+		strcat(section1, ":");
+		strcat(section1, library->entry[entry1]->track);
+	}
+	strcpy(section2, library->entry[entry2]->filename);
+	if(library->entry[entry2]->sub_filename)
+	{
+		strcat(section2, "/");
+		strcat(section2, library->entry[entry2]->sub_filename);
+	}
+	if(library->entry[entry2]->track)
+	{
+		strcat(section2, ":");
+		strcat(section2, library->entry[entry2]->track);
+	}
+
+	return strcmp(section1, section2);
+}
+
+/* sort by artist, album, title */
+static int sort_by_artist_album_title(const void *e1, const void *e2)
+{
+	int entry1 = *((int *)e1);
+	int entry2 = *((int *)e2);
+	char section1[1024];
+	char section2[1024];
+	const char * sort_field[3] = {"Artist", "Album", "Title"};
+	int sort_type[3] = {0, 0, 0};
+	const char * val1;
+	const char * val2;
+	const char * id1;
+	const char * id2;
+	int i1, i2;
+	int i, c;
+
+	if(library_sort_cancelled)
+	{
+		return 0;
+	}
+
+	strcpy(section1, library->entry[entry1]->filename);
+	if(library->entry[entry1]->sub_filename)
+	{
+		strcat(section1, "/");
+		strcat(section1, library->entry[entry1]->sub_filename);
+	}
+	if(library->entry[entry1]->track)
+	{
+		strcat(section1, ":");
+		strcat(section1, library->entry[entry1]->track);
+	}
+	strcpy(section2, library->entry[entry2]->filename);
+	if(library->entry[entry2]->sub_filename)
+	{
+		strcat(section2, "/");
+		strcat(section2, library->entry[entry2]->sub_filename);
+	}
+	if(library->entry[entry2]->track)
+	{
+		strcat(section2, ":");
+		strcat(section2, library->entry[entry2]->track);
+	}
+
+	id1 = omo_get_database_value(library->file_database, section1, "id");
+	id2 = omo_get_database_value(library->file_database, section2, "id");
+
+	if(id1 && id2)
+	{
+		for(i = 0; i < 3; i++)
+		{
+			val1 = omo_get_database_value(library->entry_database, id1, sort_field[i]);
+			val2 = omo_get_database_value(library->entry_database, id2, sort_field[i]);
+			if(val1 && val2)
+			{
+				if(sort_type[i] == 0)
+				{
+					val1 = skip_articles(val1);
+					val2 = skip_articles(val2);
+					c = strcmp(val1, val2);
+					if(c != 0)
+					{
+						return c;
+					}
+				}
+				else
+				{
+					i1 = atoi(val1);
+					i2 = atoi(val2);
+					if(i1 != i2)
+					{
+						return i1 - i2;
+					}
+				}
+			}
+		}
+	}
+	return sort_by_path(e1, e2);
+}
+
+static int sort_by_track(const void *e1, const void *e2)
+{
+	int entry1 = *((int *)e1);
+	int entry2 = *((int *)e2);
+	char section1[1024];
+	char section2[1024];
+	const char * val1;
+	const char * val2;
+	const char * id1;
+	const char * id2;
+	int i1, i2;
+
+	if(library_sort_cancelled)
+	{
+		return 0;
+	}
+
+	strcpy(section1, library->entry[entry1]->filename);
+	if(library->entry[entry1]->sub_filename)
+	{
+		strcat(section1, "/");
+		strcat(section1, library->entry[entry1]->sub_filename);
+	}
+	if(library->entry[entry1]->track)
+	{
+		strcat(section1, ":");
+		strcat(section1, library->entry[entry1]->track);
+	}
+	strcpy(section2, library->entry[entry2]->filename);
+	if(library->entry[entry2]->sub_filename)
+	{
+		strcat(section2, "/");
+		strcat(section2, library->entry[entry2]->sub_filename);
+	}
+	if(library->entry[entry2]->track)
+	{
+		strcat(section2, ":");
+		strcat(section2, library->entry[entry2]->track);
+	}
+	id1 = omo_get_database_value(library->file_database, section1, "id");
+	id2 = omo_get_database_value(library->file_database, section2, "id");
+
+	if(id1 && id2)
+	{
+		/* sort by disc first */
+		val1 = omo_get_database_value(library->entry_database, id1, "Disc");
+		val2 = omo_get_database_value(library->entry_database, id2, "Disc");
+		if(val1 && val2)
+		{
+			i1 = atoi(val1);
+			i2 = atoi(val2);
+			if(i1 != i2)
+			{
+				return i1 - i2;
+			}
+		}
+
+		/* if discs match, sort by track */
+		val1 = omo_get_database_value(library->entry_database, id1, "Track");
+		val2 = omo_get_database_value(library->entry_database, id2, "Track");
+		if(val1 && val2)
+		{
+			i1 = atoi(val1);
+			i2 = atoi(val2);
+			if(i1 != i2)
+			{
+				return i1 - i2;
+			}
+		}
+	}
+	return sort_by_artist_album_title(e1, e2);
+}
+
+static int sort_by_title(const void *e1, const void *e2)
+{
+	int entry1 = *((int *)e1);
+	int entry2 = *((int *)e2);
+	const char * sort_field[1] = {"Title"};
+	const char * val1;
+	const char * val2;
+	const char * id1;
+	const char * id2;
+	char path[1024];
+	int i, c;
+
+	if(library_sort_cancelled)
+	{
+		return 0;
+	}
+
+	strcpy(path, library->entry[entry1]->filename);
+	if(library->entry[entry1]->sub_filename)
+	{
+		strcat(path, "/");
+		strcat(path, library->entry[entry1]->sub_filename);
+	}
+	if(library->entry[entry1]->track)
+	{
+		strcat(path, ":");
+		strcat(path, library->entry[entry1]->track);
+	}
+	id1 = omo_get_database_value(library->file_database, path, "id");
+	strcpy(path, library->entry[entry2]->filename);
+	if(library->entry[entry2]->sub_filename)
+	{
+		strcat(path, "/");
+		strcat(path, library->entry[entry2]->sub_filename);
+	}
+	if(library->entry[entry2]->track)
+	{
+		strcat(path, ":");
+		strcat(path, library->entry[entry2]->track);
+	}
+	id2 = omo_get_database_value(library->file_database, path, "id");
+
+	if(id1 && id2)
+	{
+		for(i = 0; i < 1; i++)
+		{
+			val1 = omo_get_database_value(library->entry_database, id1, sort_field[i]);
+			val2 = omo_get_database_value(library->entry_database, id2, sort_field[i]);
+			if(val1 && val2)
+			{
+				val1 = skip_articles(val1);
+				val2 = skip_articles(val2);
+				c = strcmp(val1, val2);
+				if(c != 0)
+				{
+					return c;
+				}
+			}
+			else if(val1)
+			{
+				return -1;
+			}
+			else if(val2)
+			{
+				return 1;
+			}
+		}
+	}
+
+	return sort_by_path(e1, e2);
+}
+
+static void library_sort_by_track(OMO_LIBRARY * lp)
+{
+	library = lp;
+	qsort(lp->song_entry, lp->song_entry_count, sizeof(unsigned long), sort_by_track);
+}
+
+static void library_sort_by_title(OMO_LIBRARY * lp)
+{
+	library = lp;
+	qsort(lp->song_entry, lp->song_entry_count, sizeof(unsigned long), sort_by_title);
+}
+
 static int sort_names(const void *e1, const void *e2)
 {
 	char ** s1 = (char **)e1;
 	char ** s2 = (char **)e2;
-	return strcasecmp(*s1, *s2);
+	return strcasecmp(skip_articles(*s1), skip_articles(*s2));
 }
 
 static const char * get_library_folder(ALLEGRO_CONFIG * cp, int folder, char * buffer, int buffer_size)
@@ -208,6 +543,388 @@ bool omo_build_library_artists_list(APP_INSTANCE * app, OMO_LIBRARY * lp)
 	if(fn)
 	{
 		omo_save_library_artists_cache(lp, fn);
+	}
+
+	return true;
+}
+
+bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
+{
+	char buffer[1024];
+	const char * val;
+	const char * fn;
+	bool cache_loaded = false;
+	bool all_artists = false;
+	int i;
+
+	omo_free_album_list(lp);
+	fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.albums", buffer, 1024);
+	if(!fn)
+	{
+		return false;
+	}
+	lp->album_entry = malloc(sizeof(char *) * lp->entry_count + 2);
+	if(lp->album_entry)
+	{
+		strcpy(lp->last_album_name, "");
+		memset(lp->album_entry, 0, sizeof(char *) * lp->entry_count + 2);
+		if(!strcmp(artist, "All Artists"))
+		{
+			all_artists = true;
+			if(lp->modified || !omo_load_library_albums_cache(lp, fn))
+			{
+				omo_add_album_to_library(lp, "All Albums");
+				omo_add_album_to_library(lp, "Unknown Album");
+				for(i = 0; i < lp->entry_count; i++)
+				{
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
+					if(val)
+					{
+						omo_add_album_to_library(lp, val);
+					}
+				}
+			}
+			else
+			{
+				cache_loaded = true;
+			}
+		}
+		else if(!strcmp(artist, "Unknown Artist"))
+		{
+			omo_add_album_to_library(lp, "All Albums");
+			omo_add_album_to_library(lp, "Unknown Album");
+			for(i = 0; i < lp->entry_count; i++)
+			{
+				val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+				if(!val)
+				{
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
+					if(val)
+					{
+						omo_add_album_to_library(lp, val);
+					}
+				}
+			}
+		}
+		else
+		{
+			omo_add_album_to_library(lp, "All Albums");
+			omo_add_album_to_library(lp, "Unknown Album");
+			for(i = 0; i < lp->entry_count; i++)
+			{
+				val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+				if(val)
+				{
+					if(!strcmp(val, artist))
+					{
+						val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
+						if(val)
+						{
+							omo_add_album_to_library(lp, val);
+						}
+					}
+				}
+			}
+		}
+		if(lp->album_entry_count > 2 && !cache_loaded)
+		{
+			qsort(&lp->album_entry[2], lp->album_entry_count - 2, sizeof(char *), sort_names);
+			if(all_artists)
+			{
+				omo_save_library_albums_cache(lp, fn);
+			}
+		}
+	}
+	return true;
+}
+
+bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char * album)
+{
+	char buffer[1024];
+	const char * val;
+	const char * fn;
+	int i;
+
+	if(lp->song_entry)
+	{
+		free(lp->song_entry);
+		lp->song_entry = NULL;
+	}
+	fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.songs", buffer, 1024);
+	if(!fn)
+	{
+		return false;
+	}
+	if(!strcmp(artist, "All Artists"))
+	{
+		if(!strcmp(album, "All Albums"))
+		{
+			if(lp->modified || !omo_load_library_songs_cache(lp, fn))
+			{
+				lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
+				if(lp->song_entry)
+				{
+					for(i = 0; i < lp->entry_count; i++)
+					{
+						lp->song_entry[i] = i;
+					}
+					lp->song_entry_count = lp->entry_count;
+					omo_start_library_sort();
+					library_sort_by_title(lp);
+					omo_save_library_songs_cache(lp, fn);
+				}
+			}
+		}
+		else if(!strcmp(album, "Unknown Album"))
+		{
+			lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
+			lp->song_entry_count = 0;
+			if(lp->song_entry)
+			{
+				for(i = 0; i < lp->entry_count; i++)
+				{
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
+					if(val)
+					{
+						if(!strcmp(val, "Unknown"))
+						{
+							lp->song_entry[lp->song_entry_count] = i;
+							lp->song_entry_count++;
+						}
+					}
+					else
+					{
+						lp->song_entry[lp->song_entry_count] = i;
+						lp->song_entry_count++;
+					}
+				}
+				omo_start_library_sort();
+				library_sort_by_title(lp);
+			}
+		}
+		else
+		{
+			lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
+			lp->song_entry_count = 0;
+			if(lp->song_entry)
+			{
+				for(i = 0; i < lp->entry_count; i++)
+				{
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
+					if(val)
+					{
+						if(!strcmp(val, album))
+						{
+							lp->song_entry[lp->song_entry_count] = i;
+							lp->song_entry_count++;
+						}
+					}
+				}
+				omo_start_library_sort();
+				library_sort_by_track(lp);
+			}
+		}
+		omo_get_library_album_list(lp, artist);
+	}
+	else if(!strcmp(artist, "Unknown Artist"))
+	{
+		if(!strcmp(album, "All Albums"))
+		{
+			lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
+			lp->song_entry_count = 0;
+			if(lp->song_entry)
+			{
+				for(i = 0; i < lp->entry_count; i++)
+				{
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					if(val)
+					{
+						if(!strcmp(val, artist))
+						{
+							lp->song_entry[lp->song_entry_count] = i;
+							lp->song_entry_count++;
+						}
+					}
+					else
+					{
+						lp->song_entry[lp->song_entry_count] = i;
+						lp->song_entry_count++;
+					}
+				}
+				omo_start_library_sort();
+				library_sort_by_title(lp);
+			}
+		}
+		else if(!strcmp(album, "Unknown Album"))
+		{
+			bool unknown_artist;
+			lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
+			lp->song_entry_count = 0;
+			if(lp->song_entry)
+			{
+				for(i = 0; i < lp->entry_count; i++)
+				{
+					unknown_artist = true;
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					if(val)
+					{
+						if(!strcmp(val, artist))
+						{
+							unknown_artist = true;
+						}
+					}
+					else
+					{
+						unknown_artist = true;
+					}
+					if(unknown_artist)
+					{
+						val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
+						if(val)
+						{
+							if(!strcmp(val, album))
+							{
+								lp->song_entry[lp->song_entry_count] = i;
+								lp->song_entry_count++;
+							}
+						}
+						else
+						{
+							lp->song_entry[lp->song_entry_count] = i;
+							lp->song_entry_count++;
+						}
+					}
+				}
+				omo_start_library_sort();
+				library_sort_by_title(lp);
+			}
+		}
+		else
+		{
+			lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
+			lp->song_entry_count = 0;
+			if(lp->song_entry)
+			{
+				for(i = 0; i < lp->entry_count; i++)
+				{
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					if(val)
+					{
+						if(!strcmp(val, artist))
+						{
+							val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
+							if(val)
+							{
+								if(!strcmp(val, album))
+								{
+									lp->song_entry[lp->song_entry_count] = i;
+									lp->song_entry_count++;
+								}
+							}
+						}
+					}
+				}
+				omo_start_library_sort();
+				library_sort_by_track(lp);
+			}
+		}
+		omo_get_library_album_list(lp, artist);
+	}
+	else
+	{
+		if(!strcmp(album, "All Albums"))
+		{
+			lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
+			lp->song_entry_count = 0;
+			if(lp->song_entry)
+			{
+				for(i = 0; i < lp->entry_count; i++)
+				{
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					if(val)
+					{
+						if(!strcmp(val, artist))
+						{
+							lp->song_entry[lp->song_entry_count] = i;
+							lp->song_entry_count++;
+						}
+					}
+				}
+				omo_start_library_sort();
+				library_sort_by_title(lp);
+			}
+		}
+		else if(!strcmp(album, "Unknown Album"))
+		{
+			bool artist_match;
+
+			lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
+			lp->song_entry_count = 0;
+			if(lp->song_entry)
+			{
+				for(i = 0; i < lp->entry_count; i++)
+				{
+					artist_match = false;
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					if(val)
+					{
+						if(!strcmp(val, artist))
+						{
+							artist_match = true;
+						}
+					}
+					if(artist_match)
+					{
+						val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
+						if(val)
+						{
+							if(!strcmp(val, album))
+							{
+								lp->song_entry[lp->song_entry_count] = i;
+								lp->song_entry_count++;
+							}
+						}
+						else
+						{
+							lp->song_entry[lp->song_entry_count] = i;
+							lp->song_entry_count++;
+						}
+					}
+				}
+				omo_start_library_sort();
+				library_sort_by_title(lp);
+			}
+		}
+		else
+		{
+			lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
+			lp->song_entry_count = 0;
+			if(lp->song_entry)
+			{
+				for(i = 0; i < lp->entry_count; i++)
+				{
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					if(val)
+					{
+						if(!strcmp(val, artist))
+						{
+							val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
+							if(val)
+							{
+								if(!strcmp(val, album))
+								{
+									lp->song_entry[lp->song_entry_count] = i;
+									lp->song_entry_count++;
+								}
+							}
+						}
+					}
+				}
+				omo_start_library_sort();
+				library_sort_by_track(lp);
+			}
+		}
+		omo_get_library_album_list(lp, artist);
 	}
 
 	return true;

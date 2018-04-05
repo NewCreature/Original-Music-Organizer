@@ -2,6 +2,7 @@
 #include "../queue_helpers.h"
 #include "dialog_proc.h"
 #include "menu_proc.h"
+#include "../library_helpers.h"
 
 static int old_artist_d1 = -1;
 static int old_album_d1 = -1;

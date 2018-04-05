@@ -3,8 +3,12 @@
 
 #include "instance.h"
 
+void omo_start_library_sort(void);
+void omo_cancel_library_sort(void);
 void omo_cancel_library_setup(APP_INSTANCE * app);
 bool omo_build_library_artists_list(APP_INSTANCE * app, OMO_LIBRARY * lp);
+bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist);
+bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char * album);
 void omo_setup_library(APP_INSTANCE * app, const char * file_database_fn, const char * entry_database_fn, ALLEGRO_CONFIG * config);
 void omo_setup_library_lists(APP_INSTANCE * app);
 const char * omo_get_library_file_id(OMO_LIBRARY * lp, const char * fn, const char * subfn, const char * track);
