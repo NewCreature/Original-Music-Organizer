@@ -4,6 +4,8 @@ OMO Issues
 v0.5
 ----
 
+[X]Remember track position as well as queue position.
+
 [ ]See if we can rework MIDIA5 player code to use timers that line up with the
    MIDI divisions and BPM settings. This will require modifying the timer each
    time a BPM change occurs. Not sure if we will get good results when
@@ -42,8 +44,6 @@ v0.5
 [ ]Implement keyboard shortcuts for all features.
 
 [ ]Look into global hot keys.
-
-[ ]Remember track position as well as queue position.
 
 [ ]Figure out a way to display track length in library and queue.
 
