@@ -97,6 +97,7 @@ bool omo_setup_menus(void * data)
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Add Library Folder", 0, NULL, omo_menu_library_add_folder, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Clear Library Folders", 0, NULL, omo_menu_library_clear_folders, omo_menu_base_update_proc);
+	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Rescan Library Folders", 0, NULL, omo_menu_library_rescan_folders, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Edit Filter", 0, NULL, omo_menu_library_edit_filter, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);

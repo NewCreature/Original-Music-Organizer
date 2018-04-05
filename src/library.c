@@ -182,6 +182,8 @@ static bool get_tags(OMO_LIBRARY * lp, const char * id, const char * fn, const c
 	OMO_CODEC_HANDLER * codec_handler;
 	void * codec_data = NULL;
 	const char * val;
+	double length;
+	char buf[256];
 	int i;
 
 	codec_handler = omo_get_codec_handler(crp, fn, NULL);
@@ -202,6 +204,12 @@ static bool get_tags(OMO_LIBRARY * lp, const char * id, const char * fn, const c
 							omo_set_database_value(lp->entry_database, id, omo_tag_type[i], val);
 						}
 					}
+				}
+				if(codec_handler->get_length)
+				{
+					length = codec_handler->get_length(codec_data);
+					sprintf(buf, "%f", length);
+					omo_set_database_value(lp->entry_database, id, "track_length", buf);
 				}
 				if(codec_handler->unload_file)
 				{
@@ -262,7 +270,9 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
 		{
 			val2 = omo_get_database_value(lp->entry_database, val, "scanned");
 		}
-		if(!val || !val2)
+
+		/* get file id */
+		if(!val)
 		{
 			if(subfn)
 			{
@@ -309,20 +319,35 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
 				{
 					omo_set_database_value(lp->file_database, section, "subfn", subfn);
 				}
-				if(extracted_filename)
-				{
-					get_tags(lp, sum_string, extracted_filename, track, crp);
-					al_remove_filename(extracted_filename);
-				}
-				else
-				{
-					get_tags(lp, sum_string, fn, track, crp);
-				}
-				omo_retrieve_track_tags(lp, sum_string, "http://www.t3-i.com/omo/get_track_tags.php");
-				omo_set_database_value(lp->entry_database, sum_string, "scanned", "1");
-				retval = 1;
 			}
 		}
+		else
+		{
+			strcpy(sum_string, val);
+		}
+
+		/* get tags */
+		if(!val2)
+		{
+			if(extracted_filename)
+			{
+				get_tags(lp, sum_string, extracted_filename, track, crp);
+			}
+			else
+			{
+				get_tags(lp, sum_string, fn, track, crp);
+			}
+			omo_retrieve_track_tags(lp, sum_string, "http://www.t3-i.com/omo/get_track_tags.php");
+			omo_set_database_value(lp->entry_database, sum_string, "scanned", "1");
+			retval = 1;
+		}
+
+		/* clean up */
+		if(extracted_filename)
+		{
+			al_remove_filename(extracted_filename);
+		}
+
 		lp->entry[lp->entry_count] = malloc(sizeof(OMO_LIBRARY_ENTRY));
 		if(lp->entry[lp->entry_count])
 		{

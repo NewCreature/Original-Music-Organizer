@@ -426,6 +426,21 @@ int omo_menu_library_clear_folders(int id, void * data)
 	return 1;
 }
 
+int omo_menu_library_rescan_folders(int id, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	int i;
+
+	for(i = 0; i < app->library->entry_count; i++)
+	{
+		omo_remove_database_key(app->library->entry_database, app->library->entry[i]->id, "scanned");
+	}
+	omo_save_library(app->library);
+	omo_clear_library_cache();
+	app->spawn_library_thread = true;
+	return 1;
+}
+
 int omo_menu_library_edit_filter(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
