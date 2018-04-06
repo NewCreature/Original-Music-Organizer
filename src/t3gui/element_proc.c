@@ -1933,9 +1933,8 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
             {
                 flush_render();
                 list_width = d->w - d->d3;
-                al_set_clipping_rectangle(d->x, d->y, list_width, d->h);
             }
-            for(n = d->d2; n<nelem; n++)
+            for(n = d->d2; n < nelem; n++)
             {
                 right_text = NULL;
                 ALLEGRO_COLOR fg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG];
@@ -1954,6 +1953,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
                 {
                     fg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_EG];
                 }
+                al_set_clipping_rectangle(d->x, d->y, list_width, d->h);
                 if(d->d1 == n && d->flags & D_GOTFOCUS)
                 {
                     al_draw_filled_rectangle(d->x+2.5,y+1.5,d->x+d->w-1.5,y+al_get_font_line_height(font)+1.5, d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_FG]);
