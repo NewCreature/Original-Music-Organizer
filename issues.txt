@@ -9,6 +9,20 @@ v0.5
 [X]Don't count articles such as "the" and "and" as part of strings during
    sorting.
 
+[X]Allow codec handler to be specified for each file. OMO will always default
+   to using the first available codec handler that supports the file's type.
+   Some file types are supported by multiple codec handlers. We want to be able
+   to specify the desired codec handler in case the file works better with a
+   specific one.
+
+   [X]We need to add identifiers to all codec handlers to support this
+      addition.
+
+[ ]Allow disabling individual codec handlers at run time. We should keep a list
+   of all enabled codec handlers in the config file. All codec handlers should
+   be registered even if some are disabled. When searching for a codec handler,
+   we should not return a disabled codec handler.
+
 [ ]Fix Debian category.
 
    [ ]The category is already set to sound. Need to investigate whether there
@@ -50,15 +64,6 @@ v0.5
 
    [ ]For some reason setting the start order doesn't work for PSM files. This
       will have to be fixed in DUMB.
-
-[ ]Allow codec handler to be specified for each file. OMO will always default
-   to using the first available codec handler that supports the file's type.
-   Some file types are supported by multiple codec handlers. We want to be able
-   to specify the desired codec handler in case the file works better with a
-   specific one.
-
-   [ ]We need to add identifiers to all codec handlers to support this
-      addition.
 
 
 v0.4
