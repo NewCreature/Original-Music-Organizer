@@ -334,7 +334,11 @@ static double codec_get_length(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	return (double)codec_data->info->length / 1000.0 + (codec_data->loop ? 8.0 : 0.0);
+	if(codec_data->info->length > 0.0)
+	{
+		return (double)codec_data->info->length / 1000.0 + (codec_data->loop ? 8.0 : 0.0);
+	}
+	return 0.0;
 }
 
 /*static float codec_get_position(void)
