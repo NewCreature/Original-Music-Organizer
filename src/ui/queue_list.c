@@ -1,3 +1,4 @@
+#include <math.h>
 #include "../instance.h"
 #include "menu_proc.h"
 
@@ -27,10 +28,42 @@ static void get_path_filename(const char * fn, char * outfn)
 	}
 }
 
+static char sec_to_clock_buffer[64];
+
+static const char * sec_to_clock(double sec)
+{
+    char hour[16] = {0};
+    char minute[4] = {0};
+    char second[4] = {0};
+    if(sec >= 3600.0)
+    {
+        sprintf(hour, "%d:", (int)(sec + 0.5) / 3600);
+		if(sec >= 60.0)
+		{
+        	sprintf(minute, "%02d", (int)(fmod(sec, 3600.0)) / 60);
+		}
+    }
+    else
+    {
+		if(sec >= 60.0)
+		{
+        	sprintf(minute, "%d", (int)(fmod(sec, 3600.0)) / 60);
+		}
+    }
+    if(sec >= 60.0)
+    {
+        strcat(minute, ":");
+    }
+    sprintf(second, "%02d", ((int)(fmod(sec, 3600.0))) % 60);
+    sprintf(sec_to_clock_buffer, "%s%s%s", hour, minute, second);
+    return sec_to_clock_buffer;
+}
+
 char * omo_get_queue_item_text(OMO_QUEUE * qp, int index, char * buffer)
 {
 	char display_fn[256] = {0};
 	char prefix[16] = {0};
+	char buf[64];
 
 	sprintf(prefix, "%s", "");
 	if(strlen(qp->entry[index]->tags.track))
@@ -83,6 +116,9 @@ char * omo_get_queue_item_text(OMO_QUEUE * qp, int index, char * buffer)
 			strcat(buffer, qp->entry[index]->track);
 		}
 	}
+	strcat(buffer, "\t");
+	sprintf(buf, "%s", sec_to_clock(qp->entry[index]->tags.length + 0.5));
+	strcat(buffer, buf);
 	return buffer;
 }
 
