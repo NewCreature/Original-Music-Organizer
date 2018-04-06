@@ -45,16 +45,13 @@ static const char * sec_to_clock(double sec)
     }
     else
     {
-		if(sec >= 60.0)
-		{
-        	sprintf(minute, "%d", (int)(fmod(sec, 3600.0)) / 60);
-		}
+    	sprintf(minute, "%d", (int)(fmod(sec, 3600.0)) / 60);
     }
-    if(sec >= 60.0)
-    {
-        strcat(minute, ":");
-    }
-    sprintf(second, "%02d", ((int)(fmod(sec, 3600.0))) % 60);
+    strcat(minute, ":");
+	if(sec > 0.0)
+	{
+		sprintf(second, "%02d", ((int)(fmod(sec, 3600.0))) % 60);
+	}
     sprintf(sec_to_clock_buffer, "%s%s%s", hour, minute, second);
     return sec_to_clock_buffer;
 }
