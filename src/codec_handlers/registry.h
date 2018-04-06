@@ -17,6 +17,6 @@ OMO_CODEC_HANDLER_REGISTRY * omo_create_codec_handler_registry(void);
 void omo_destroy_codec_handler_registry(OMO_CODEC_HANDLER_REGISTRY * rp);
 bool omo_register_codec_handler(OMO_CODEC_HANDLER_REGISTRY * rp, OMO_CODEC_HANDLER * pp);
 OMO_CODEC_HANDLER * omo_get_codec_handler(OMO_CODEC_HANDLER_REGISTRY * rp, const char * fn, const char * filter);
-OMO_CODEC_HANDLER * omo_get_codec_handler_from_id(OMO_CODEC_HANDLER_REGISTRY * rp, const char * fn, const char * id, const char * filter);
+OMO_CODEC_HANDLER * omo_get_codec_handler_from_id(OMO_CODEC_HANDLER_REGISTRY * rp, const char * id);
 
 #endif

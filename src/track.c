@@ -24,7 +24,7 @@ OMO_TRACK * omo_load_track(OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_regist
 			{
 				if(codec_handler_id)
 				{
-					tp->codec_handler = omo_get_codec_handler_from_id(codec_handler_registry, archive_handler->get_file(archive_handler_data, atoi(subfn), fn_buffer), codec_handler_id, NULL);
+					tp->codec_handler = omo_get_codec_handler_from_id(codec_handler_registry, codec_handler_id);
 				}
 				else
 				{
@@ -57,7 +57,7 @@ OMO_TRACK * omo_load_track(OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_regist
 	{
 		if(codec_handler_id)
 		{
-			tp->codec_handler = omo_get_codec_handler_from_id(codec_handler_registry, fn, codec_handler_id, NULL);
+			tp->codec_handler = omo_get_codec_handler_from_id(codec_handler_registry, codec_handler_id);
 		}
 		else
 		{

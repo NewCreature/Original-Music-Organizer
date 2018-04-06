@@ -116,35 +116,19 @@ OMO_CODEC_HANDLER * omo_get_codec_handler(OMO_CODEC_HANDLER_REGISTRY * rp, const
 	return codec_handler;
 }
 
-OMO_CODEC_HANDLER * omo_get_codec_handler_from_id(OMO_CODEC_HANDLER_REGISTRY * rp, const char * fn, const char * id, const char * filter)
+OMO_CODEC_HANDLER * omo_get_codec_handler_from_id(OMO_CODEC_HANDLER_REGISTRY * rp, const char * id)
 {
-	ALLEGRO_PATH * path;
-	const char * extension;
 	int i;
 	OMO_CODEC_HANDLER * codec_handler = NULL;
 
-	path = al_create_path(fn);
-	if(path)
+	/* find codec handler */
+	for(i = 0; i < rp->codec_handlers; i++)
 	{
-		extension = al_get_path_extension(path);
-
-		/* use filter if one is supplied */
-		if(!check_filter(extension, filter))
+		if(!strcmp(id, rp->codec_handler[i].id))
 		{
-			al_destroy_path(path);
-			return NULL;
+			codec_handler = &rp->codec_handler[i];
+			break;
 		}
-
-		/* find codec handler */
-		for(i = 0; i < rp->codec_handlers; i++)
-		{
-			if(!strcmp(id, rp->codec_handler[i].id))
-			{
-				codec_handler = &rp->codec_handler[i];
-				break;
-			}
-		}
-		al_destroy_path(path);
 	}
 	return codec_handler;
 }
