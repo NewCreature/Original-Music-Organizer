@@ -70,6 +70,7 @@ static bool omo_save_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE_ENTRY * ep)
 		{
 			return false;
 		}
+		t3f_fwrite_float(fp, ep->tags.length);
 	}
 	return true;
 }
@@ -180,6 +181,7 @@ static bool omo_load_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE * qp)
 			goto fail;
 		}
 		strcpy(qp->entry[qp->entry_count - 1]->tags.track, tag);
+		qp->entry[qp->entry_count - 1]->tags.length = t3f_fread_float(fp);
 	}
 	return true;
 

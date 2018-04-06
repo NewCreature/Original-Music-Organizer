@@ -299,6 +299,10 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 					{
 						strcpy(app->player->queue->entry[i]->tags.track, tag);
 					}
+					if(codec_handler->get_length)
+					{
+						app->player->queue->entry[i]->tags.length = codec_handler->get_length(codec_handler_data);
+					}
 					codec_handler->unload_file(codec_handler_data);
 					app->player->queue->entry[i]->tags_retrieved = true;
 				}

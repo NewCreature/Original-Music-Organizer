@@ -11,6 +11,7 @@ typedef struct
 	char album[256];
 	char title[256];
 	char track[8];
+	double length;
 
 } OMO_QUEUE_TAGS;
 
