@@ -3,7 +3,7 @@
 #include "codec_handlers/registry.h"
 #include "track.h"
 
-OMO_TRACK * omo_load_track(OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, const char * fn, const char * subfn, const char * track, ALLEGRO_PATH * temp_path)
+OMO_TRACK * omo_load_track(OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, const char * fn, const char * subfn, const char * track, ALLEGRO_PATH * temp_path, const char * codec_handler_id)
 {
 	OMO_ARCHIVE_HANDLER * archive_handler;
 	void * archive_handler_data;
@@ -22,7 +22,14 @@ OMO_TRACK * omo_load_track(OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_regist
 		{
 			if(subfn)
 			{
-				tp->codec_handler = omo_get_codec_handler(codec_handler_registry, archive_handler->get_file(archive_handler_data, atoi(subfn), fn_buffer), NULL);
+				if(codec_handler_id)
+				{
+					tp->codec_handler = omo_get_codec_handler_from_id(codec_handler_registry, archive_handler->get_file(archive_handler_data, atoi(subfn), fn_buffer), codec_handler_id, NULL);
+				}
+				else
+				{
+					tp->codec_handler = omo_get_codec_handler(codec_handler_registry, archive_handler->get_file(archive_handler_data, atoi(subfn), fn_buffer), NULL);
+				}
 				if(tp->codec_handler)
 				{
 					subfile = archive_handler->extract_file(archive_handler_data, atoi(subfn), fn_buffer);
@@ -48,7 +55,14 @@ OMO_TRACK * omo_load_track(OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_regist
 	}
 	else
 	{
-		tp->codec_handler = omo_get_codec_handler(codec_handler_registry, fn, NULL);
+		if(codec_handler_id)
+		{
+			tp->codec_handler = omo_get_codec_handler_from_id(codec_handler_registry, fn, codec_handler_id, NULL);
+		}
+		else
+		{
+			tp->codec_handler = omo_get_codec_handler(codec_handler_registry, fn, NULL);
+		}
 		if(tp->codec_handler)
 		{
 			tp->codec_data = tp->codec_handler->load_file(fn, track);

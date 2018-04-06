@@ -145,6 +145,7 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 	bool next_file = false;
 	const char * val;
 	const char * id;
+	const char * codec_handler_id = NULL;
 	double loop_start = 0.0;
 	double loop_end = 0.0;
 	double fade_time = 0.0;
@@ -196,7 +197,11 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 			if(pp->queue_pos < pp->queue->entry_count)
 			{
 				al_stop_timer(t3f_timer);
-				pp->track = omo_load_track(archive_handler_registry, codec_handler_registry, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track, temp_path);
+				if(lp)
+				{
+					codec_handler_id = omo_get_database_value(lp->entry_database, id, "Codec Handler");
+				}
+				pp->track = omo_load_track(archive_handler_registry, codec_handler_registry, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track, temp_path, codec_handler_id);
 				al_start_timer(t3f_timer);
 				if(pp->track)
 				{
