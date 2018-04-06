@@ -1771,6 +1771,10 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
 {
     int ret = D_O_K;
     assert(d);
+    int i;
+    const char * right_text = NULL;
+    int list_width = d->w;
+    int text_width = d->w;
 
     getfuncptr *func = d->dp;
     const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
@@ -1928,12 +1932,24 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
             if(d->d3 > 0 && dd.d1 > 0)
             {
                 flush_render();
-                al_set_clipping_rectangle(d->x, d->y, d->w - d->d3, d->h);
+                list_width = d->w - d->d3;
+                al_set_clipping_rectangle(d->x, d->y, list_width, d->h);
             }
             for(n = d->d2; n<nelem; n++)
             {
+                right_text = NULL;
                 ALLEGRO_COLOR fg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG];
-                const char *text = func(n, NULL, d->dp3);
+                char text[1024];
+                strcpy(text, func(n, NULL, d->dp3));
+                for(i = 0; i < strlen(text); i++)
+                {
+                    if(text[i] == '\t')
+                    {
+                        right_text = &text[i + 1];
+                        text[i] = '\0';
+                        break;
+                    }
+                }
                 if(n == d->id2)
                 {
                     fg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_EG];
@@ -1947,7 +1963,18 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
                         fg = d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_EG];
                     }
                 }
+                if(right_text)
+                {
+                    text_width = list_width - al_get_text_width(font, right_text) - 4 - 4;
+                    al_set_clipping_rectangle(d->x, d->y, text_width, d->h);
+                }
                 al_draw_text(font, fg, d->x+4, y+2, 0, text);
+                if(right_text)
+                {
+                    text_width = al_get_text_width(font, right_text);
+                    al_set_clipping_rectangle(d->x + list_width - text_width - 4, d->y, text_width, d->h);
+                    al_draw_text(font, fg, d->x + list_width - 4, y+2, ALLEGRO_ALIGN_RIGHT, right_text);
+                }
                 y += al_get_font_line_height(font);
                 if(y > d->y + d->h)
                 {
