@@ -338,6 +338,7 @@ static OMO_CODEC_HANDLER codec_handler;
 extern "C" OMO_CODEC_HANDLER * omo_codec_adplug_get_codec_handler(void)
 {
 	memset(&codec_handler, 0, sizeof(OMO_CODEC_HANDLER));
+	strcpy(codec_handler.id, "AdPlug");
 	codec_handler.initialize = NULL;
 	codec_handler.load_file = codec_load_file;
 	codec_handler.unload_file = codec_unload_file;

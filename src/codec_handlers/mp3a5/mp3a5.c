@@ -240,6 +240,7 @@ static OMO_CODEC_HANDLER codec_handler;
 OMO_CODEC_HANDLER * omo_codec_mp3a5_get_codec_handler(void)
 {
 	memset(&codec_handler, 0, sizeof(OMO_CODEC_HANDLER));
+	strcpy(codec_handler.id, "MP3A5");
 	codec_handler.initialize = codec_initialize;
 	codec_handler.exit = codec_exit;
 	codec_handler.load_file = codec_load_file;

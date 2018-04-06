@@ -13,7 +13,8 @@
 typedef struct
 {
 
-	char type[OMO_CODEC_HANDLER_MAX_TYPES][OMO_CODEC_HANDLER_MAX_TYPE_SIZE];
+    char id[128];
+    char type[OMO_CODEC_HANDLER_MAX_TYPES][OMO_CODEC_HANDLER_MAX_TYPE_SIZE];
 	int types;
 
 	/* init/exit routines */
@@ -39,9 +40,6 @@ typedef struct
 	double (*get_length)(void * data);
 	bool (*done_playing)(void * data);
 	const char * (*get_info)(void * data);
-
-	/* instance data */
-	void * data;
 
 } OMO_CODEC_HANDLER;
 

@@ -439,6 +439,7 @@ static OMO_CODEC_HANDLER codec_handler;
 OMO_CODEC_HANDLER * omo_codec_midia5_get_codec_handler(void)
 {
 	memset(&codec_handler, 0, sizeof(OMO_CODEC_HANDLER));
+	strcpy(codec_handler.id, "MIDIA5");
 	codec_handler.initialize = codec_init;
 	codec_handler.load_file = codec_load_file;
 	codec_handler.unload_file = codec_unload_file;
