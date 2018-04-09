@@ -129,11 +129,22 @@ static void setup_player_module(OMO_UI * uip, int x, int y, int w, int h, int fl
 
 static void setup_queue_list_module(OMO_UI * uip, int x, int y, int w, int h, int flags)
 {
+	int font_height;
+
+	font_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]);
 	setup_module_box(&x, &y, &w, &h, flags);
 	uip->ui_queue_list_element->x = x;
 	uip->ui_queue_list_element->y = y;
 	uip->ui_queue_list_element->w = w;
-	uip->ui_queue_list_element->h = h;
+	uip->ui_queue_list_element->h = h - bezel - font_height - 4;
+	uip->ui_queue_info_box_element->x = x;
+	uip->ui_queue_info_box_element->y = y + uip->ui_queue_list_element->h + bezel;
+	uip->ui_queue_info_box_element->w = w;
+	uip->ui_queue_info_box_element->h = font_height + 4;
+	uip->ui_queue_info_element->x = x + 4;
+	uip->ui_queue_info_element->y = y + uip->ui_queue_list_element->h + bezel;
+	uip->ui_queue_info_element->w = w - bezel;
+	uip->ui_queue_info_element->h = font_height + 4;
 }
 
 static void setup_library_artist_list_module(OMO_UI * uip, int x, int y, int w, int h, int flags)
@@ -169,7 +180,7 @@ static void setup_library_status_module(OMO_UI * uip, int x, int y, int w, int h
 	uip->ui_status_bar_element->x = x;
 	uip->ui_status_bar_element->y = y;
 	uip->ui_status_bar_element->w = w;
-	uip->ui_status_bar_element->h = h;
+	uip->ui_status_bar_element->h = h - bezel;
 }
 
 static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
@@ -291,6 +302,8 @@ static bool omo_add_player_elements(OMO_UI * uip, void * data)
 	int i;
 
 	uip->ui_queue_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, D_SETFOCUS, 0, 0, ui_queue_list_proc, NULL, data);
+	uip->ui_queue_info_box_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_box_proc, 8, 8, width - 16, height - 16, 0, 0, 0, 0, NULL, NULL, data);
+	uip->ui_queue_info_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_INFO], t3gui_text_proc, 8, 8, width - 16, height - 16, 0, D_SETFOCUS, 0, 0, uip->queue_info_text, NULL, data);
 	uip->ui_song_info_box_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_box_proc, 8, 8, width - 16, height - 16, 0, 0, 0, 0, NULL, NULL, data);
 	uip->ui_song_info_1_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_INFO], t3gui_text_proc, 8, 8, width - 16, height - 16, 0, D_SETFOCUS, 0, 0, uip->song_info_text[0], NULL, data);
 	uip->ui_song_info_2_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_INFO], t3gui_text_proc, 8, 8, width - 16, height - 16, 0, D_SETFOCUS, 0, 0, uip->song_info_text[1], NULL, data);

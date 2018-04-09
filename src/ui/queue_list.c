@@ -123,6 +123,14 @@ void omo_queue_list_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
+	if((!app->player || !app->player->queue) || app->player->queue->entry_count < 1)
+	{
+		strcpy(app->ui->queue_info_text, "Queue Empty");
+	}
+	else
+	{
+		sprintf(app->ui->queue_info_text, "%d/%d", app->player->queue_pos + 1, app->player->queue->entry_count);
+	}
 	if(app->player->queue && app->ui->ui_queue_list_element->id1 >= 0)
 	{
 		if(app->player->state == OMO_PLAYER_STATE_PLAYING)
