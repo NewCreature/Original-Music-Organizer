@@ -91,6 +91,15 @@ static void * codec_load_file(const char * fn, const char * subfn)
 				free(data);
 				return NULL;
 			}
+			/* calculate track length */
+			if(data->info->length <= 0)
+			{
+				data->info->length = data->info->intro_length + data->info->loop_length * 2;
+			}
+			if(data->info->length <= 0)
+			{
+				data->info->length = (long) (2.5 * 60 * 1000);
+			}
 			data->loop = true;
 		}
 		data->volume = 1.0;
@@ -249,15 +258,6 @@ static bool codec_play(void * data)
 
 	gme_start_track(codec_data->emu, codec_data->start_track);
 
-	/* calculate track length */
-	if(codec_data->info->length <= 0)
-	{
-		codec_data->info->length = codec_data->info->intro_length + codec_data->info->loop_length * 2;
-	}
-	if(codec_data->info->length <= 0)
-	{
-		codec_data->info->length = (long) (2.5 * 60 * 1000);
-	}
 	if(codec_data->loop)
 	{
 		gme_set_fade(codec_data->emu, codec_data->info->length);
