@@ -35,6 +35,10 @@ static const char * sec_to_clock(double sec)
     char hour[16] = {0};
     char minute[4] = {0};
     char second[4] = {0};
+	if(sec <= 0.5)
+	{
+		return "--:--";
+	}
     if(sec >= 3600.0)
     {
         sprintf(hour, "%d:", (int)(sec + 0.5) / 3600);
