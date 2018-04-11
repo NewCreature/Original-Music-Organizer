@@ -209,7 +209,11 @@ static bool get_tags(OMO_LIBRARY * lp, const char * id, const char * fn, const c
 				{
 					length = codec_handler->get_length(codec_data);
 					sprintf(buf, "%f", length);
-					omo_set_database_value(lp->entry_database, id, "track_length", buf);
+					omo_set_database_value(lp->entry_database, id, "Length", buf);
+				}
+				else
+				{
+					omo_set_database_value(lp->entry_database, id, "Length", "0.0");
 				}
 				if(codec_handler->unload_file)
 				{

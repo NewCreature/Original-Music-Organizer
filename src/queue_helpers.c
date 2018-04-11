@@ -183,6 +183,7 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 	const char * album = NULL;
 	const char * title = NULL;
 	const char * track = NULL;
+	const char * length = NULL;
 	bool ret = false;
 
 	qp->entry[i]->tags_retrieved = false;
@@ -206,6 +207,7 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 			album = omo_get_database_value(lp->entry_database, val, "Album");
 			title = omo_get_database_value(lp->entry_database, val, "Title");
 			track = omo_get_database_value(lp->entry_database, val, "Track");
+			length = omo_get_database_value(lp->entry_database, val, "Length");
 			if(artist)
 			{
 				strcpy(qp->entry[i]->tags.artist, artist);
@@ -225,6 +227,14 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 			{
 				strcpy(qp->entry[i]->tags.track, track);
 				ret = true;
+			}
+			if(length)
+			{
+				qp->entry[i]->tags.length = atof(length);
+			}
+			else
+			{
+				ret = false;
 			}
 		}
 	}
