@@ -275,8 +275,7 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
 			val2 = omo_get_database_value(lp->entry_database, val, "scanned");
 		}
 
-		/* get file id */
-		if(!val)
+		if(!val || !val2)
 		{
 			if(subfn)
 			{
@@ -291,6 +290,11 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
 					}
 				}
 			}
+		}
+
+		/* get file id */
+		if(!val)
+		{
 			if(extracted_filename)
 			{
 				md5_hash = md5_file(extracted_filename);
