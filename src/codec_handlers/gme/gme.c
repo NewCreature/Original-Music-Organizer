@@ -71,6 +71,7 @@ static void * gme_update_thread(ALLEGRO_THREAD * thread, void * arg)
 static void * codec_load_file(const char * fn, const char * subfn)
 {
 	CODEC_DATA * data;
+	bool no_length = false;
 
 	data = malloc(sizeof(CODEC_DATA));
 	if(data)
@@ -95,12 +96,16 @@ static void * codec_load_file(const char * fn, const char * subfn)
 			if(data->info->length <= 0)
 			{
 				data->info->length = data->info->intro_length + data->info->loop_length * 2;
+				no_length = true;
 			}
 			if(data->info->length <= 0)
 			{
 				data->info->length = (long) (2.5 * 60 * 1000);
 			}
-			data->loop = true;
+			if(data->info->loop_length > 0 || no_length)
+			{
+				data->loop = true;
+			}
 		}
 		data->volume = 1.0;
 	}
@@ -222,17 +227,17 @@ static const char * codec_get_tag(void * data, const char * name)
 			{
 				return NULL;
 			}
-			sprintf(codec_data->tag_buffer, "%f", (double)codec_data->info->length / 1000.0);
+			sprintf(codec_data->tag_buffer, "%f", ((double)codec_data->info->intro_length + (double)codec_data->info->loop_length) / 1000.0);
 			return codec_data->tag_buffer;
 		}
 		else if(!strcmp(name, "Fade Time"))
 		{
-			if(codec_data->info->loop_length <= 0)
+			if(codec_data->loop)
 			{
-				return NULL;
+				sprintf(codec_data->tag_buffer, "8.0");
+				return codec_data->tag_buffer;
 			}
-			sprintf(codec_data->tag_buffer, "0.0");
-			return codec_data->tag_buffer;
+			return NULL;
 		}
 	}
 	return NULL;
