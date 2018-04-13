@@ -19,6 +19,8 @@ typedef struct
 	char info_buffer[256];
 	float volume;
 	bool loop;
+	double buffer_time;
+	double current_time;
 
 } CODEC_DATA;
 
@@ -50,6 +52,7 @@ static void * gme_update_thread(ALLEGRO_THREAD * thread, void * arg)
 				{
 					al_lock_mutex(codec_data->codec_mutex);
 					gme_play(codec_data->emu, buf_size * 2, fragment);
+					codec_data->current_time += codec_data->buffer_time;
 					al_unlock_mutex(codec_data->codec_mutex);
 				}
 				if(!al_set_audio_stream_fragment(codec_data->codec_stream, fragment))
@@ -130,6 +133,7 @@ static bool codec_set_loop(void * data, double loop_start, double loop_end, doub
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
 	codec_data->info->length = ((loop_start + loop_end) * 1000.0) * loop_count;
+	codec_data->loop = true;
 
 	return true;
 }
@@ -272,6 +276,7 @@ static bool codec_play(void * data)
 	codec_data->codec_stream = al_create_audio_stream(4, buf_size, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
 	if(codec_data->codec_stream)
 	{
+		codec_data->buffer_time = (double)buf_size / 44100.0;
 		al_set_audio_stream_gain(codec_data->codec_stream, codec_data->volume);
 		al_attach_audio_stream_to_mixer(codec_data->codec_stream, al_get_default_mixer());
 		codec_data->codec_thread = al_create_thread(gme_update_thread, codec_data);
@@ -323,6 +328,7 @@ static bool codec_seek(void * data, double pos)
 
 	al_lock_mutex(codec_data->codec_mutex);
 	ret = gme_seek(codec_data->emu, pos * 1000.0);
+	codec_data->current_time = pos;
 	al_unlock_mutex(codec_data->codec_mutex);
 
 	return !ret;
@@ -355,7 +361,7 @@ static bool codec_done_playing(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	if(gme_track_ended(codec_data->emu))
+	if(gme_track_ended(codec_data->emu) || (!codec_data->loop && codec_data->current_time >= codec_data->info->length / 1000.0))
 	{
 		return true;
 	}
