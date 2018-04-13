@@ -66,12 +66,7 @@ char * omo_get_queue_item_text(OMO_QUEUE * qp, int index, char * buffer)
 	char prefix[16] = {0};
 	char buf[64];
 
-	sprintf(prefix, "%s", "");
-	if(strlen(qp->entry[index]->tags.track))
-	{
-		strcat(prefix, qp->entry[index]->tags.track);
-		strcat(prefix, ". ");
-	}
+	sprintf(prefix, "%d. ", index + 1);
 	if(strlen(qp->entry[index]->tags.artist) && strlen(qp->entry[index]->tags.album))
 	{
 		if(strlen(qp->entry[index]->tags.title))
