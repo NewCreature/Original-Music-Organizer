@@ -236,6 +236,10 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 					test_mode = 1;
 				}
 			}
+			else if(!strcmp(argv[i], "--prune-library"))
+			{
+				app->prune_library = true;
+			}
 		}
 
 		/* don't add files if we are running the test suite */

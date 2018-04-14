@@ -27,6 +27,7 @@ typedef struct
 	int button_pressed;
 	bool library_view;
 	bool test_mode;
+	bool prune_library;
 	char edit_artist[256];
 	char edit_album[256];
 	char edit_song_id[256];

@@ -967,12 +967,37 @@ static bool omo_setup_library_helper(APP_INSTANCE * app)
 	return true;
 }
 
+static void prune_library(OMO_LIBRARY * lp)
+{
+	int i, j;
+	const char * val;
+
+	for(i = 0; i < lp->entry_count; i++)
+	{
+		for(j = 0; j < OMO_MAX_TAG_TYPES; j++)
+		{
+			if(omo_tag_type[j])
+			{
+				val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, omo_tag_type[j]);
+				if(val && strlen(val) < 1)
+				{
+					omo_remove_database_key(lp->entry_database, lp->entry[i]->id, omo_tag_type[j]);
+				}
+			}
+		}
+	}
+}
+
 static void * library_setup_thread_proc(ALLEGRO_THREAD * thread, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
 	if(omo_setup_library_helper(app))
 	{
+		if(app->prune_library)
+		{
+			prune_library(app->loading_library);
+		}
 		app->library = app->loading_library;
 	}
 	return NULL;
