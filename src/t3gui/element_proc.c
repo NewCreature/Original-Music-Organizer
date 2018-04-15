@@ -603,7 +603,7 @@ int t3gui_text_proc(int msg, T3GUI_ELEMENT *d, int c)
             x += d->w;
         }
 
-        al_draw_text(font, fg, x, d->y, flags, text);
+        render_split_text(font, fg, x, d->y, d->w, 4, text);
     }
 
     return ret;
