@@ -638,11 +638,26 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 	return true;
 }
 
+static bool add_song(OMO_LIBRARY * lp, unsigned long entry, const char * ignore_genre)
+{
+	const char * genre;
+
+	genre = omo_get_database_value(lp->entry_database, lp->entry[entry]->id, "Genre");
+	if(!genre || !ignore_genre || strcmp(genre, ignore_genre))
+	{
+		lp->song_entry[lp->song_entry_count] = entry;
+		lp->song_entry_count++;
+		return true;
+	}
+	return false;
+}
+
 bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char * album)
 {
 	char buffer[1024];
 	const char * val;
 	const char * fn;
+	const char * ignore_genre;
 	int i;
 
 	if(lp->song_entry)
@@ -650,6 +665,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 		free(lp->song_entry);
 		lp->song_entry = NULL;
 	}
+	ignore_genre = al_get_config_value(t3f_config, "Settings", "Ignore Genre");
 	fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.songs", buffer, 1024);
 	if(!fn)
 	{
@@ -666,9 +682,8 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 				{
 					for(i = 0; i < lp->entry_count; i++)
 					{
-						lp->song_entry[i] = i;
+						add_song(lp, i, ignore_genre);
 					}
-					lp->song_entry_count = lp->entry_count;
 					omo_start_library_sort();
 					library_sort_by_title(lp);
 					omo_save_library_songs_cache(lp, fn);
@@ -688,14 +703,12 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 					{
 						if(!strcmp(val, "Unknown"))
 						{
-							lp->song_entry[lp->song_entry_count] = i;
-							lp->song_entry_count++;
+							add_song(lp, i, ignore_genre);
 						}
 					}
 					else
 					{
-						lp->song_entry[lp->song_entry_count] = i;
-						lp->song_entry_count++;
+						add_song(lp, i, ignore_genre);
 					}
 				}
 				omo_start_library_sort();
@@ -715,8 +728,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 					{
 						if(!strcmp(val, album))
 						{
-							lp->song_entry[lp->song_entry_count] = i;
-							lp->song_entry_count++;
+							add_song(lp, i, ignore_genre);
 						}
 					}
 				}
@@ -741,14 +753,12 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 					{
 						if(!strcmp(val, artist))
 						{
-							lp->song_entry[lp->song_entry_count] = i;
-							lp->song_entry_count++;
+							add_song(lp, i, ignore_genre);
 						}
 					}
 					else
 					{
-						lp->song_entry[lp->song_entry_count] = i;
-						lp->song_entry_count++;
+						add_song(lp, i, ignore_genre);
 					}
 				}
 				omo_start_library_sort();
@@ -784,14 +794,12 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 						{
 							if(!strcmp(val, album))
 							{
-								lp->song_entry[lp->song_entry_count] = i;
-								lp->song_entry_count++;
+								add_song(lp, i, ignore_genre);
 							}
 						}
 						else
 						{
-							lp->song_entry[lp->song_entry_count] = i;
-							lp->song_entry_count++;
+							add_song(lp, i, ignore_genre);
 						}
 					}
 				}
@@ -817,8 +825,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 							{
 								if(!strcmp(val, album))
 								{
-									lp->song_entry[lp->song_entry_count] = i;
-									lp->song_entry_count++;
+									add_song(lp, i, ignore_genre);
 								}
 							}
 						}
@@ -845,8 +852,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 					{
 						if(!strcmp(val, artist))
 						{
-							lp->song_entry[lp->song_entry_count] = i;
-							lp->song_entry_count++;
+							add_song(lp, i, ignore_genre);
 						}
 					}
 				}
@@ -880,14 +886,12 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 						{
 							if(!strcmp(val, album))
 							{
-								lp->song_entry[lp->song_entry_count] = i;
-								lp->song_entry_count++;
+								add_song(lp, i, ignore_genre);
 							}
 						}
 						else
 						{
-							lp->song_entry[lp->song_entry_count] = i;
-							lp->song_entry_count++;
+							add_song(lp, i, ignore_genre);
 						}
 					}
 				}
@@ -913,8 +917,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 							{
 								if(!strcmp(val, album))
 								{
-									lp->song_entry[lp->song_entry_count] = i;
-									lp->song_entry_count++;
+									add_song(lp, i, ignore_genre);
 								}
 							}
 						}

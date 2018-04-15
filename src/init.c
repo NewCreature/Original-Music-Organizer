@@ -240,6 +240,25 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 			{
 				app->prune_library = true;
 			}
+			else if(!strcmp(argv[i], "--ignore-genre"))
+			{
+				if(argc < i + 2)
+				{
+					printf("Usage: omo --ignore-genre <genre name>\n\n");
+					return false;
+				}
+				else
+				{
+					if(!strcmp(argv[i + 1], "none"))
+					{
+						al_remove_config_key(t3f_config, "Settings", "Ignore Genre");
+					}
+					else
+					{
+						al_set_config_value(t3f_config, "Settings", "Ignore Genre", argv[i + 1]);
+					}
+				}
+			}
 		}
 
 		/* don't add files if we are running the test suite */
