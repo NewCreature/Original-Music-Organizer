@@ -240,6 +240,14 @@ static int sort_by_track(const void *e1, const void *e2)
 				return i1 - i2;
 			}
 		}
+		else if(val1)
+		{
+			return -1;
+		}
+		else if(val2)
+		{
+			return 1;
+		}
 
 		/* if discs match, sort by track */
 		val1 = omo_get_database_value(library->entry_database, id1, "Track");
@@ -252,6 +260,14 @@ static int sort_by_track(const void *e1, const void *e2)
 			{
 				return i1 - i2;
 			}
+		}
+		else if(val1)
+		{
+			return -1;
+		}
+		else if(val2)
+		{
+			return 1;
 		}
 	}
 	return sort_by_artist_album_title(e1, e2);
