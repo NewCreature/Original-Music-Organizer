@@ -678,6 +678,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			if(lp->modified || !omo_load_library_songs_cache(lp, fn))
 			{
 				lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
+				lp->song_entry_count = 0;
 				if(lp->song_entry)
 				{
 					for(i = 0; i < lp->entry_count; i++)

@@ -322,7 +322,7 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 
 	for(i = 0; i < app->player->queue->entry_count && !al_get_thread_should_stop(thread); i++)
 	{
-		if(!app->player->queue->entry[i]->tags_retrieved && !strlen(app->player->queue->entry[i]->tags.artist) && !strlen(app->player->queue->entry[i]->tags.album) && !strlen(app->player->queue->entry[i]->tags.title) && !strlen(app->player->queue->entry[i]->tags.track))
+		if(!app->player->queue->entry[i]->tags_retrieved)
 		{
 			extracted_fn = NULL;
 			target_fn = NULL;
@@ -347,25 +347,37 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 				codec_handler_data = codec_handler->load_file(target_fn, app->player->queue->entry[i]->track);
 				if(codec_handler_data)
 				{
-					tag = codec_handler->get_tag(codec_handler_data, "Artist");
-					if(tag)
+					if(!strlen(app->player->queue->entry[i]->tags.artist))
 					{
-						strcpy(app->player->queue->entry[i]->tags.artist, tag);
+						tag = codec_handler->get_tag(codec_handler_data, "Artist");
+						if(tag)
+						{
+							strcpy(app->player->queue->entry[i]->tags.artist, tag);
+						}
 					}
-					tag = codec_handler->get_tag(codec_handler_data, "Album");
-					if(tag)
+					if(!strlen(app->player->queue->entry[i]->tags.album))
 					{
-						strcpy(app->player->queue->entry[i]->tags.album, tag);
+						tag = codec_handler->get_tag(codec_handler_data, "Album");
+						if(tag)
+						{
+							strcpy(app->player->queue->entry[i]->tags.album, tag);
+						}
 					}
-					tag = codec_handler->get_tag(codec_handler_data, "Title");
-					if(tag)
+					if(!strlen(app->player->queue->entry[i]->tags.title))
 					{
-						strcpy(app->player->queue->entry[i]->tags.title, tag);
+						tag = codec_handler->get_tag(codec_handler_data, "Title");
+						if(tag)
+						{
+							strcpy(app->player->queue->entry[i]->tags.title, tag);
+						}
 					}
-					tag = codec_handler->get_tag(codec_handler_data, "Track");
-					if(tag)
+					if(!strlen(app->player->queue->entry[i]->tags.track))
 					{
-						strcpy(app->player->queue->entry[i]->tags.track, tag);
+						tag = codec_handler->get_tag(codec_handler_data, "Track");
+						if(tag)
+						{
+							strcpy(app->player->queue->entry[i]->tags.track, tag);
+						}
 					}
 					if(codec_handler->get_length)
 					{
