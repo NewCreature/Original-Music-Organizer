@@ -101,13 +101,16 @@ OMO_CODEC_HANDLER * omo_get_codec_handler(OMO_CODEC_HANDLER_REGISTRY * rp, const
 		/* find codec handler */
 		for(i = 0; i < rp->codec_handlers; i++)
 		{
-			for(j = 0; j < rp->codec_handler[i].types; j++)
+			if(!rp->codec_handler[i].disabled)
 			{
-				if(!strcasecmp(extension, rp->codec_handler[i].type[j]))
+				for(j = 0; j < rp->codec_handler[i].types; j++)
 				{
-					codec_handler = &rp->codec_handler[i];
-					i = rp->codec_handlers;
-					break;
+					if(!strcasecmp(extension, rp->codec_handler[i].type[j]))
+					{
+						codec_handler = &rp->codec_handler[i];
+						i = rp->codec_handlers;
+						break;
+					}
 				}
 			}
 		}

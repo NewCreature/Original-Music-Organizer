@@ -16,6 +16,7 @@ typedef struct
     char id[128];
     char type[OMO_CODEC_HANDLER_MAX_TYPES][OMO_CODEC_HANDLER_MAX_TYPE_SIZE];
 	int types;
+    bool disabled;
 
 	/* init/exit routines */
 	bool (*initialize)(void);

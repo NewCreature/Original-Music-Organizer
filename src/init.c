@@ -129,6 +129,19 @@ void omo_set_window_constraints(APP_INSTANCE * app)
 	}
 }
 
+static void disable_codec_handler(OMO_CODEC_HANDLER_REGISTRY * rp, const char * name)
+{
+	int i;
+
+	for(i = 0; i < rp->codec_handlers; i++)
+	{
+		if(!strcmp(rp->codec_handler[i].id, name))
+		{
+			rp->codec_handler[i].disabled = true;
+		}
+	}
+}
+
 /* initialize our app, load graphics, etc. */
 bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 {
@@ -257,6 +270,18 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 					{
 						al_set_config_value(t3f_config, "Settings", "Ignore Genre", argv[i + 1]);
 					}
+				}
+			}
+			else if(!strcmp(argv[i], "--disable-codec-handler"))
+			{
+				if(argc < i + 2)
+				{
+					printf("Usage: omo --disable-codec-handler <codec handler id>\n\n");
+					return false;
+				}
+				else
+				{
+					disable_codec_handler(app->codec_handler_registry, argv[i + 1]);
 				}
 			}
 		}
