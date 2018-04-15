@@ -35,6 +35,7 @@ typedef struct
 	int entry_size;
 	int entry_count;
 	double length;
+	bool untallied_length;
 
 	ALLEGRO_THREAD * thread; // tags scanner thread
 	bool thread_done;

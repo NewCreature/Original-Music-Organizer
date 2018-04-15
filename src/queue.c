@@ -3,7 +3,7 @@
 #include "instance.h"
 #include "queue.h"
 
-static const char * omo_queue_file_header = "OQ01";
+static const char * omo_queue_file_header = "OQ02";
 
 OMO_QUEUE * omo_create_queue(int files)
 {
@@ -99,6 +99,8 @@ bool omo_save_queue(OMO_QUEUE * qp, const char * fn)
 				goto fail;
 			}
 		}
+		t3f_fwrite_float(fp, qp->length);
+		al_fwrite32le(fp, qp->untallied_length);
 		al_fclose(fp);
 		return true;
 	}
@@ -237,6 +239,8 @@ OMO_QUEUE * omo_load_queue(const char * fn)
 				goto fail;
 			}
 		}
+		qp->length = t3f_fread_float(fp);
+		qp->untallied_length = al_fread32le(fp);
 		al_fclose(fp);
 		return qp;
 	}

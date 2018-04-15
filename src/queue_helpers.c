@@ -294,6 +294,7 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 					ret = false;
 				}
 			}
+			qp->length += qp->entry[i]->tags.length;
 		}
 	}
 	if(qp->entry[i]->skip_scan)
@@ -382,6 +383,7 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 					if(codec_handler->get_length)
 					{
 						app->player->queue->entry[i]->tags.length = codec_handler->get_length(codec_handler_data);
+						app->player->queue->length += app->player->queue->entry[i]->tags.length;
 					}
 					codec_handler->unload_file(codec_handler_data);
 					app->player->queue->entry[i]->tags_retrieved = true;
@@ -393,10 +395,13 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 			}
 		}
 	}
-	app->player->queue->length = 0.0;
+	app->player->queue->untallied_length = false;
 	for(i = 0; i < app->player->queue->entry_count; i++)
 	{
-		app->player->queue->length += app->player->queue->entry[i]->tags.length;
+		if(app->player->queue->entry[i]->tags.length <= 0.0)
+		{
+			app->player->queue->untallied_length = true;
+		}
 	}
 	app->player->queue->thread_done = true;
 	return NULL;
@@ -415,15 +420,32 @@ void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp, void * data)
 			al_destroy_thread(qp->thread);
 			qp->thread = NULL;
 		}
+
+		/* don't bother scanning queue if we already have all the tags */
 		for(i = 0; i < qp->entry_count; i++)
 		{
-			if(!omo_get_queue_entry_tags(qp, i, lp))
+			if(!qp->entry[i]->tags_retrieved)
+			{
+				break;
+			}
+		}
+		if(i == qp->entry_count)
+		{
+			return;
+		}
+
+		qp->length = 0.0;
+		qp->untallied_length = true;
+		for(i = 0; i < qp->entry_count; i++)
+		{
+			if(!qp->entry[i]->tags_retrieved && !omo_get_queue_entry_tags(qp, i, lp))
 			{
 				rescan = true;
 			}
 		}
 		if(rescan)
 		{
+			qp->length = 0.0;
 			qp->thread = al_create_thread(get_queue_tags_thread_proc, data);
 			if(qp->thread)
 			{
@@ -433,11 +455,7 @@ void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp, void * data)
 		}
 		else
 		{
-			qp->length = 0.0;
-			for(i = 0; i < qp->entry_count; i++)
-			{
-				qp->length += qp->entry[i]->tags.length;
-			}
+			qp->untallied_length = false;
 		}
 	}
 }

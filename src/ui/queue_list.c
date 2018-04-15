@@ -139,7 +139,7 @@ void omo_queue_list_logic(void * data)
 			strcpy(current_length, "");
 		}
 		strcpy(total_length, sec_to_clock(app->player->queue->length + 0.5));
-		sprintf(app->ui->queue_info_text, "%d/%d\t%s/%s", app->player->queue_pos + 1, app->player->queue->entry_count, current_length, total_length);
+		sprintf(app->ui->queue_info_text, "%d/%d\t%s/%s%s", app->player->queue_pos + 1, app->player->queue->entry_count, current_length, total_length, app->player->queue->untallied_length ? "+" : "");
 	}
 	if(app->player->queue && app->ui->ui_queue_list_element->id1 >= 0)
 	{
