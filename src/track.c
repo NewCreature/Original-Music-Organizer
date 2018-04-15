@@ -44,6 +44,11 @@ OMO_TRACK * omo_load_track(OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_regist
 						}
 					}
 				}
+				else
+				{
+					free(tp);
+					tp = NULL;
+				}
 			}
 			archive_handler->close_archive(archive_handler_data);
 		}
@@ -71,6 +76,11 @@ OMO_TRACK * omo_load_track(OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_regist
 				free(tp);
 				tp = NULL;
 			}
+		}
+		else
+		{
+			free(tp);
+			tp = NULL;
 		}
 	}
 	return tp;
