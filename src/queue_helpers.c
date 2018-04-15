@@ -230,21 +230,21 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 			if(artist)
 			{
 				strcpy(qp->entry[i]->tags.artist, artist);
-				ret = true;
 			}
 			if(album)
 			{
 				strcpy(qp->entry[i]->tags.album, album);
-				ret = true;
 			}
 			if(title)
 			{
 				strcpy(qp->entry[i]->tags.title, title);
-				ret = true;
 			}
 			if(track)
 			{
 				strcpy(qp->entry[i]->tags.track, track);
+			}
+			if(artist && album && title && track)
+			{
 				ret = true;
 			}
 			/* use 'Detected Length' or 'Length' database values */
@@ -392,11 +392,11 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 				al_remove_filename(extracted_fn);
 			}
 		}
-		app->player->queue->length = 0.0;
-		for(i = 0; i < app->player->queue->entry_count; i++)
-		{
-			app->player->queue->length += app->player->queue->entry[i]->tags.length;
-		}
+	}
+	app->player->queue->length = 0.0;
+	for(i = 0; i < app->player->queue->entry_count; i++)
+	{
+		app->player->queue->length += app->player->queue->entry[i]->tags.length;
 	}
 	app->player->queue->thread_done = true;
 	return NULL;
