@@ -6,6 +6,39 @@ static int min(int x, int y) { return (x<y)?x:y; }
 static int max(int x, int y) { return (x>y)?x:y; }
 static int clamp(int x, int y, int z) {return max(x, min(y, z));}
 
+static void render_split_text(ALLEGRO_FONT * fp, ALLEGRO_COLOR color, float x, float y, int max_width, int min_space, const char * text)
+{
+    const char * right_text = NULL;
+    char full_text[1024];
+    int text_width;
+    int i;
+
+    /* split the text */
+    strcpy(full_text, text);
+    for(i = 0; i < strlen(full_text); i++)
+    {
+        if(full_text[i] == '\t')
+        {
+            right_text = &full_text[i + 1];
+            full_text[i] = '\0';
+            break;
+        }
+    }
+
+    if(right_text)
+    {
+        text_width = max_width - al_get_text_width(fp, right_text) - min_space;
+        al_set_clipping_rectangle(x, y, text_width, al_get_font_line_height(fp));
+    }
+    al_draw_text(fp, color, x, y, 0, full_text);
+    if(right_text)
+    {
+        text_width = al_get_text_width(fp, right_text);
+        al_set_clipping_rectangle(x + max_width - text_width, y, text_width, al_get_font_line_height(fp));
+        al_draw_text(fp, color, x + max_width, y, ALLEGRO_ALIGN_RIGHT, right_text);
+    }
+}
+
 void initialise_vertical_scroll(const T3GUI_ELEMENT *parent, T3GUI_ELEMENT *scroll, int w)
 {
    scroll->proc   = t3gui_scroll_proc;
@@ -1772,9 +1805,9 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
     int ret = D_O_K;
     assert(d);
     int i;
-    const char * right_text = NULL;
+//    const char * right_text = NULL;
     int list_width = d->w;
-    int text_width = d->w;
+//    int text_width = d->w;
 
     getfuncptr *func = d->dp;
     const ALLEGRO_FONT *font = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0];
@@ -1936,19 +1969,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
             }
             for(n = d->d2; n < nelem; n++)
             {
-                right_text = NULL;
                 ALLEGRO_COLOR fg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_FG];
-                char text[1024];
-                strcpy(text, func(n, NULL, d->dp3));
-                for(i = 0; i < strlen(text); i++)
-                {
-                    if(text[i] == '\t')
-                    {
-                        right_text = &text[i + 1];
-                        text[i] = '\0';
-                        break;
-                    }
-                }
                 if(n == d->id2)
                 {
                     fg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_EG];
@@ -1963,18 +1984,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
                         fg = d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_EG];
                     }
                 }
-                if(right_text)
-                {
-                    text_width = list_width - al_get_text_width(font, right_text) - 4 - 4;
-                    al_set_clipping_rectangle(d->x, d->y, text_width, d->h);
-                }
-                al_draw_text(font, fg, d->x+4, y+2, 0, text);
-                if(right_text)
-                {
-                    text_width = al_get_text_width(font, right_text);
-                    al_set_clipping_rectangle(d->x + list_width - text_width - 4, d->y, text_width, d->h);
-                    al_draw_text(font, fg, d->x + list_width - 4, y+2, ALLEGRO_ALIGN_RIGHT, right_text);
-                }
+                render_split_text(font, fg, d->x + 4, y + 2, list_width - 8, 4, func(n, NULL, d->dp3));
                 y += al_get_font_line_height(font);
                 if(y > d->y + d->h)
                 {
