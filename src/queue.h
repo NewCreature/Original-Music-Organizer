@@ -34,6 +34,7 @@ typedef struct
 	OMO_QUEUE_ENTRY ** entry;
 	int entry_size;
 	int entry_count;
+	double length;
 
 	ALLEGRO_THREAD * thread; // tags scanner thread
 	bool thread_done;

@@ -380,6 +380,11 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 				al_remove_filename(extracted_fn);
 			}
 		}
+		app->player->queue->length = 0.0;
+		for(i = 0; i < app->player->queue->entry_count; i++)
+		{
+			app->player->queue->length += app->player->queue->entry[i]->tags.length;
+		}
 	}
 	app->player->queue->thread_done = true;
 	return NULL;
@@ -412,6 +417,14 @@ void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp, void * data)
 			{
 				qp->thread_done = false;
 				al_start_thread(qp->thread);
+			}
+		}
+		else
+		{
+			qp->length = 0.0;
+			for(i = 0; i < qp->entry_count; i++)
+			{
+				qp->length += qp->entry[i]->tags.length;
 			}
 		}
 	}

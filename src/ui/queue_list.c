@@ -121,6 +121,8 @@ char * omo_get_queue_item_text(OMO_QUEUE * qp, int index, char * buffer)
 void omo_queue_list_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	char current_length[16];
+	char total_length[16];
 
 	if((!app->player || !app->player->queue) || app->player->queue->entry_count < 1)
 	{
@@ -128,7 +130,16 @@ void omo_queue_list_logic(void * data)
 	}
 	else
 	{
-		sprintf(app->ui->queue_info_text, "%d/%d", app->player->queue_pos + 1, app->player->queue->entry_count);
+		if(app->player->queue_pos < app->player->queue->entry_count)
+		{
+			strcpy(current_length, sec_to_clock(app->player->queue->entry[app->player->queue_pos]->tags.length + 0.5));
+		}
+		else
+		{
+			strcpy(current_length, "");
+		}
+		strcpy(total_length, sec_to_clock(app->player->queue->length + 0.5));
+		sprintf(app->ui->queue_info_text, "%d/%d\t%s/%s", app->player->queue_pos + 1, app->player->queue->entry_count, current_length, total_length);
 	}
 	if(app->player->queue && app->ui->ui_queue_list_element->id1 >= 0)
 	{
