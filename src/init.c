@@ -194,7 +194,6 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		return false;
 	}
 	#ifdef ALLEGRO_MACOSX
-//		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avmidiplayer_get_codec_handler());
 		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avplayer_get_codec_handler());
 	#endif
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_dumba5_get_codec_handler());
@@ -202,6 +201,9 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_gme_get_codec_handler());
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_mp3a5_get_codec_handler());
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_midia5_get_codec_handler());
+	#ifdef ALLEGRO_MACOSX
+		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avmidiplayer_get_codec_handler());
+	#endif
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_adplug_get_codec_handler());
 
 	/* create default profile */
