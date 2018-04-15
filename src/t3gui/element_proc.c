@@ -11,7 +11,10 @@ static void render_split_text(ALLEGRO_FONT * fp, ALLEGRO_COLOR color, float x, f
     const char * right_text = NULL;
     char full_text[1024];
     int text_width;
+    int cx, cy, cw, ch;
     int i;
+
+    al_get_clipping_rectangle(&cx, &cy, &cw, &ch);
 
     /* split the text */
     strcpy(full_text, text);
@@ -28,15 +31,16 @@ static void render_split_text(ALLEGRO_FONT * fp, ALLEGRO_COLOR color, float x, f
     if(right_text)
     {
         text_width = max_width - al_get_text_width(fp, right_text) - min_space;
-        al_set_clipping_rectangle(x, y, text_width, al_get_font_line_height(fp));
+        al_set_clipping_rectangle(x, cy, text_width, ch);
     }
     al_draw_text(fp, color, x, y, 0, full_text);
     if(right_text)
     {
         text_width = al_get_text_width(fp, right_text);
-        al_set_clipping_rectangle(x + max_width - text_width, y, text_width, al_get_font_line_height(fp));
+        al_set_clipping_rectangle(x + max_width - text_width, cy, text_width, ch);
         al_draw_text(fp, color, x + max_width, y, ALLEGRO_ALIGN_RIGHT, right_text);
     }
+    al_set_clipping_rectangle(cx, cy, cw, ch);
 }
 
 void initialise_vertical_scroll(const T3GUI_ELEMENT *parent, T3GUI_ELEMENT *scroll, int w)
