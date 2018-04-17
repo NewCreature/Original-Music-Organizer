@@ -180,7 +180,7 @@ static void setup_library_status_module(OMO_UI * uip, int x, int y, int w, int h
 	uip->ui_status_bar_element->x = x;
 	uip->ui_status_bar_element->y = y;
 	uip->ui_status_bar_element->w = w;
-	uip->ui_status_bar_element->h = h - bezel;
+	uip->ui_status_bar_element->h = h - 4;
 }
 
 static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
