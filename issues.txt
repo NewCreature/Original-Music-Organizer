@@ -65,6 +65,9 @@ v0.5
    [ ]For some reason setting the start order doesn't work for PSM files. This
       will have to be fixed in DUMB.
 
+[ ]Figure out why the song list updates don't work when okaying edited tags
+   while the library lists are regenerating.
+
 
 v0.4
 ----
