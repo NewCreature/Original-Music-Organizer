@@ -1,5 +1,6 @@
 #include <math.h>
 #include "../instance.h"
+#include "../text_helpers.h"
 #include "menu_proc.h"
 
 static void get_path_filename(const char * fn, char * outfn)
@@ -26,38 +27,6 @@ static void get_path_filename(const char * fn, char * outfn)
 			break;
 		}
 	}
-}
-
-static char sec_to_clock_buffer[64];
-
-static const char * sec_to_clock(double sec)
-{
-    char hour[16] = {0};
-    char minute[4] = {0};
-    char second[4] = {0};
-	if(sec <= 0.5)
-	{
-		return "--:--";
-	}
-    if(sec >= 3600.0)
-    {
-        sprintf(hour, "%d:", (int)(sec + 0.5) / 3600);
-		if(sec >= 60.0)
-		{
-        	sprintf(minute, "%02d", (int)(fmod(sec, 3600.0)) / 60);
-		}
-    }
-    else
-    {
-    	sprintf(minute, "%d", (int)(fmod(sec, 3600.0)) / 60);
-    }
-    strcat(minute, ":");
-	if(sec > 0.0)
-	{
-		sprintf(second, "%02d", ((int)(fmod(sec, 3600.0))) % 60);
-	}
-    sprintf(sec_to_clock_buffer, "%s%s%s", hour, minute, second);
-    return sec_to_clock_buffer;
 }
 
 char * omo_get_queue_item_text(OMO_QUEUE * qp, int index, char * buffer)
@@ -113,8 +82,7 @@ char * omo_get_queue_item_text(OMO_QUEUE * qp, int index, char * buffer)
 		}
 	}
 	strcat(buffer, "\t");
-	sprintf(buf, "%s", sec_to_clock(qp->entry[index]->tags.length + 0.5));
-	strcat(buffer, buf);
+	strcat(buffer, omo_sec_to_clock(qp->entry[index]->tags.length + 0.5, buf, 64));
 	return buffer;
 }
 
@@ -123,6 +91,7 @@ void omo_queue_list_logic(void * data)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	char current_length[16];
 	char total_length[16];
+	char buf[64];
 
 	if((!app->player || !app->player->queue) || app->player->queue->entry_count < 1)
 	{
@@ -132,13 +101,13 @@ void omo_queue_list_logic(void * data)
 	{
 		if(app->player->queue_pos < app->player->queue->entry_count)
 		{
-			strcpy(current_length, sec_to_clock(app->player->queue->entry[app->player->queue_pos]->tags.length + 0.5));
+			strcpy(current_length, omo_sec_to_clock(app->player->queue->entry[app->player->queue_pos]->tags.length + 0.5, buf, 64));
 		}
 		else
 		{
 			strcpy(current_length, "");
 		}
-		strcpy(total_length, sec_to_clock(app->player->queue->length + 0.5));
+		strcpy(total_length, omo_sec_to_clock(app->player->queue->length + 0.5, buf, 64));
 		sprintf(app->ui->queue_info_text, "%d/%d\t%s/%s%s", app->player->queue_pos + 1, app->player->queue->entry_count, current_length, total_length, app->player->queue->untallied_length ? "+" : "");
 	}
 	if(app->player->queue && app->ui->ui_queue_list_element->id1 >= 0)
