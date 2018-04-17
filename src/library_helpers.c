@@ -109,8 +109,6 @@ static int sort_by_artist_album_title(const void *e1, const void *e2)
 {
 	int entry1 = *((int *)e1);
 	int entry2 = *((int *)e2);
-	char section1[1024];
-	char section2[1024];
 	const char * sort_field[3] = {"Artist", "Album", "Title"};
 	int sort_type[3] = {0, 0, 0};
 	const char * val1;
@@ -125,58 +123,32 @@ static int sort_by_artist_album_title(const void *e1, const void *e2)
 		return 0;
 	}
 
-	strcpy(section1, library->entry[entry1]->filename);
-	if(library->entry[entry1]->sub_filename)
-	{
-		strcat(section1, "/");
-		strcat(section1, library->entry[entry1]->sub_filename);
-	}
-	if(library->entry[entry1]->track)
-	{
-		strcat(section1, ":");
-		strcat(section1, library->entry[entry1]->track);
-	}
-	strcpy(section2, library->entry[entry2]->filename);
-	if(library->entry[entry2]->sub_filename)
-	{
-		strcat(section2, "/");
-		strcat(section2, library->entry[entry2]->sub_filename);
-	}
-	if(library->entry[entry2]->track)
-	{
-		strcat(section2, ":");
-		strcat(section2, library->entry[entry2]->track);
-	}
+	id1 = library->entry[entry1]->id;
+	id2 = library->entry[entry2]->id;
 
-	id1 = omo_get_database_value(library->file_database, section1, "id");
-	id2 = omo_get_database_value(library->file_database, section2, "id");
-
-	if(id1 && id2)
+	for(i = 0; i < 3; i++)
 	{
-		for(i = 0; i < 3; i++)
+		val1 = omo_get_database_value(library->entry_database, id1, sort_field[i]);
+		val2 = omo_get_database_value(library->entry_database, id2, sort_field[i]);
+		if(val1 && val2)
 		{
-			val1 = omo_get_database_value(library->entry_database, id1, sort_field[i]);
-			val2 = omo_get_database_value(library->entry_database, id2, sort_field[i]);
-			if(val1 && val2)
+			if(sort_type[i] == 0)
 			{
-				if(sort_type[i] == 0)
+				val1 = skip_articles(val1);
+				val2 = skip_articles(val2);
+				c = strcasecmp(val1, val2);
+				if(c != 0)
 				{
-					val1 = skip_articles(val1);
-					val2 = skip_articles(val2);
-					c = strcmp(val1, val2);
-					if(c != 0)
-					{
-						return c;
-					}
+					return c;
 				}
-				else
+			}
+			else
+			{
+				i1 = atoi(val1);
+				i2 = atoi(val2);
+				if(i1 != i2)
 				{
-					i1 = atoi(val1);
-					i2 = atoi(val2);
-					if(i1 != i2)
-					{
-						return i1 - i2;
-					}
+					return i1 - i2;
 				}
 			}
 		}
@@ -188,8 +160,6 @@ static int sort_by_track(const void *e1, const void *e2)
 {
 	int entry1 = *((int *)e1);
 	int entry2 = *((int *)e2);
-	char section1[1024];
-	char section2[1024];
 	const char * val1;
 	const char * val2;
 	const char * id1;
@@ -201,74 +171,49 @@ static int sort_by_track(const void *e1, const void *e2)
 		return 0;
 	}
 
-	strcpy(section1, library->entry[entry1]->filename);
-	if(library->entry[entry1]->sub_filename)
-	{
-		strcat(section1, "/");
-		strcat(section1, library->entry[entry1]->sub_filename);
-	}
-	if(library->entry[entry1]->track)
-	{
-		strcat(section1, ":");
-		strcat(section1, library->entry[entry1]->track);
-	}
-	strcpy(section2, library->entry[entry2]->filename);
-	if(library->entry[entry2]->sub_filename)
-	{
-		strcat(section2, "/");
-		strcat(section2, library->entry[entry2]->sub_filename);
-	}
-	if(library->entry[entry2]->track)
-	{
-		strcat(section2, ":");
-		strcat(section2, library->entry[entry2]->track);
-	}
-	id1 = omo_get_database_value(library->file_database, section1, "id");
-	id2 = omo_get_database_value(library->file_database, section2, "id");
+	id1 = library->entry[entry1]->id;
+	id2 = library->entry[entry2]->id;
 
-	if(id1 && id2)
+	/* sort by disc first */
+	val1 = omo_get_database_value(library->entry_database, id1, "Disc");
+	val2 = omo_get_database_value(library->entry_database, id2, "Disc");
+	if(val1 && val2)
 	{
-		/* sort by disc first */
-		val1 = omo_get_database_value(library->entry_database, id1, "Disc");
-		val2 = omo_get_database_value(library->entry_database, id2, "Disc");
-		if(val1 && val2)
+		i1 = atoi(val1);
+		i2 = atoi(val2);
+		if(i1 != i2)
 		{
-			i1 = atoi(val1);
-			i2 = atoi(val2);
-			if(i1 != i2)
-			{
-				return i1 - i2;
-			}
+			return i1 - i2;
 		}
-		else if(val1)
-		{
-			return -1;
-		}
-		else if(val2)
-		{
-			return 1;
-		}
+	}
+	else if(val1)
+	{
+		return -1;
+	}
+	else if(val2)
+	{
+		return 1;
+	}
 
-		/* if discs match, sort by track */
-		val1 = omo_get_database_value(library->entry_database, id1, "Track");
-		val2 = omo_get_database_value(library->entry_database, id2, "Track");
-		if(val1 && val2)
+	/* if discs match, sort by track */
+	val1 = omo_get_database_value(library->entry_database, id1, "Track");
+	val2 = omo_get_database_value(library->entry_database, id2, "Track");
+	if(val1 && val2)
+	{
+		i1 = atoi(val1);
+		i2 = atoi(val2);
+		if(i1 != i2)
 		{
-			i1 = atoi(val1);
-			i2 = atoi(val2);
-			if(i1 != i2)
-			{
-				return i1 - i2;
-			}
+			return i1 - i2;
 		}
-		else if(val1)
-		{
-			return -1;
-		}
-		else if(val2)
-		{
-			return 1;
-		}
+	}
+	else if(val1)
+	{
+		return -1;
+	}
+	else if(val2)
+	{
+		return 1;
 	}
 	return sort_by_artist_album_title(e1, e2);
 }
@@ -277,69 +222,79 @@ static int sort_by_title(const void *e1, const void *e2)
 {
 	int entry1 = *((int *)e1);
 	int entry2 = *((int *)e2);
-	const char * sort_field[1] = {"Title"};
+	char buf1[1024];
+	char buf2[1024];
 	const char * val1;
 	const char * val2;
 	const char * id1;
 	const char * id2;
-	char path[1024];
-	int i, c;
+	int c;
 
 	if(library_sort_cancelled)
 	{
 		return 0;
 	}
 
-	strcpy(path, library->entry[entry1]->filename);
-	if(library->entry[entry1]->sub_filename)
-	{
-		strcat(path, "/");
-		strcat(path, library->entry[entry1]->sub_filename);
-	}
-	if(library->entry[entry1]->track)
-	{
-		strcat(path, ":");
-		strcat(path, library->entry[entry1]->track);
-	}
-	id1 = omo_get_database_value(library->file_database, path, "id");
-	strcpy(path, library->entry[entry2]->filename);
-	if(library->entry[entry2]->sub_filename)
-	{
-		strcat(path, "/");
-		strcat(path, library->entry[entry2]->sub_filename);
-	}
-	if(library->entry[entry2]->track)
-	{
-		strcat(path, ":");
-		strcat(path, library->entry[entry2]->track);
-	}
-	id2 = omo_get_database_value(library->file_database, path, "id");
+	id1 = library->entry[entry1]->id;
+	id2 = library->entry[entry2]->id;
 
-	if(id1 && id2)
+	val1 = omo_get_database_value(library->entry_database, id1, "Title");
+	if(!val1)
 	{
-		for(i = 0; i < 1; i++)
+		val1 = omo_get_database_value(library->entry_database, id1, "Album");
+		if(val1)
 		{
-			val1 = omo_get_database_value(library->entry_database, id1, sort_field[i]);
-			val2 = omo_get_database_value(library->entry_database, id2, sort_field[i]);
-			if(val1 && val2)
+			strcpy(buf1, val1);
+			strcat(buf1, " - Track ");
+			val1 = omo_get_database_value(library->entry_database, id1, "Track");
+			if(val1)
 			{
-				val1 = skip_articles(val1);
-				val2 = skip_articles(val2);
-				c = strcmp(val1, val2);
-				if(c != 0)
-				{
-					return c;
-				}
+				strcat(buf1, val1);
+				val1 = buf1;
 			}
-			else if(val1)
+			else
 			{
-				return -1;
-			}
-			else if(val2)
-			{
-				return 1;
+				val1 = NULL;
 			}
 		}
+	}
+	val2 = omo_get_database_value(library->entry_database, id2, "Title");
+	if(!val2)
+	{
+		val2 = omo_get_database_value(library->entry_database, id2, "Album");
+		if(val2)
+		{
+			strcpy(buf2, val2);
+			strcat(buf2, " - Track ");
+			val2 = omo_get_database_value(library->entry_database, id2, "Track");
+			if(val2)
+			{
+				strcat(buf2, val2);
+				val2 = buf2;
+			}
+			else
+			{
+				val2 = NULL;
+			}
+		}
+	}
+	if(val1 && val2)
+	{
+		val1 = skip_articles(val1);
+		val2 = skip_articles(val2);
+		c = strcasecmp(val1, val2);
+		if(c != 0)
+		{
+			return c;
+		}
+	}
+	else if(val1)
+	{
+		return -1;
+	}
+	else if(val2)
+	{
+		return 1;
 	}
 
 	return sort_by_path(e1, e2);
