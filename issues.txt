@@ -20,11 +20,11 @@ v0.5
 
 [X]Figure out a way to display track length in library and queue.
 
-[ ]Use Album Artist tag when appropriate.
+[X]Use Album Artist tag when appropriate.
 
-   [ ]See if we can list the album artist and artist in the artist list.
+   [X]See if we can list the album artist and artist in the artist list.
 
-   [ ]When sorting by artist, we should prioritize using the album artist if
+   [X]When sorting by artist, we should prioritize using the album artist if
       the album artist tag exists.
 
 [ ]Figure out why the first press of the 'T' key doesn't bring up the tags
