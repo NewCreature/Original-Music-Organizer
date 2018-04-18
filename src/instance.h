@@ -26,7 +26,6 @@ typedef struct
 	int state;
 	int button_pressed;
 	bool library_view;
-	bool test_mode;
 	bool prune_library;
 	char edit_artist[256];
 	char edit_album[256];
@@ -64,6 +63,10 @@ typedef struct
 	bool spawn_library_lists_thread;
 	bool spawn_cloud_thread;
 	bool spawn_queue_thread;
+
+	/* test data */
+	int test_mode;
+	int test_path_arg;
 
 } APP_INSTANCE;
 

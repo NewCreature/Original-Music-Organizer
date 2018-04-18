@@ -10,6 +10,7 @@
 #include "queue_helpers.h"
 #include "library_cache.h"
 #include "profile.h"
+#include "command_line.h"
 
 #include "archive_handlers/libarchive/libarchive.h"
 #include "archive_handlers/unrar/unrar.h"
@@ -129,31 +130,13 @@ void omo_set_window_constraints(APP_INSTANCE * app)
 	}
 }
 
-static void disable_codec_handler(OMO_CODEC_HANDLER_REGISTRY * rp, const char * name)
-{
-	int i;
-
-	for(i = 0; i < rp->codec_handlers; i++)
-	{
-		if(!strcmp(rp->codec_handler[i].id, name))
-		{
-			rp->codec_handler[i].disabled = true;
-		}
-	}
-}
-
 /* initialize our app, load graphics, etc. */
 bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 {
-	OMO_FILE_HELPER_DATA file_helper_data;
 	char buffer[1024];
-	bool used_arg[1024] = {false};
 	const char * val;
-	int test_path;
-	int test_mode = 0;
 	double start_pos;
 	int player_state;
-	int i;
 
 	/* initialize T3F */
 	if(!t3f_initialize(T3F_APP_TITLE, 640, 480, 60.0, omo_logic, omo_render, T3F_DEFAULT | T3F_RESIZABLE | T3F_USE_MENU, app))
@@ -219,114 +202,9 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		printf("Error creating player!\n");
 		return false;
 	}
-	if(argc > 1)
+	if(!omo_process_command_line_arguments(app, argc, argv))
 	{
-		/* check for command line options */
-		for(i = 1; i < argc; i++)
-		{
-			if(!strcmp(argv[i], "--test"))
-			{
-				if(argc < i + 2)
-				{
-					printf("Usage: omo --test <test_files_path>\n\n");
-					return false;
-				}
-				else
-				{
-					test_path = i + 1;
-					app->test_mode = true;
-				}
-			}
-			else if(!strcmp(argv[i], "--quick-test"))
-			{
-				if(argc < i + 2)
-				{
-					printf("Usage: omo --quick-test <test_files_path>\n\n");
-					return false;
-				}
-				else
-				{
-					test_path = i + 1;
-					app->test_mode = true;
-					test_mode = 1;
-				}
-			}
-			else if(!strcmp(argv[i], "--prune-library"))
-			{
-				app->prune_library = true;
-			}
-			else if(!strcmp(argv[i], "--ignore-genre"))
-			{
-				if(argc < i + 2)
-				{
-					printf("Usage: omo --ignore-genre <genre name>\n\n");
-					return false;
-				}
-				else
-				{
-					if(!strcmp(argv[i + 1], "none"))
-					{
-						al_remove_config_key(t3f_config, "Settings", "Ignore Genre");
-					}
-					else
-					{
-						al_set_config_value(t3f_config, "Settings", "Ignore Genre", argv[i + 1]);
-					}
-				}
-			}
-			else if(!strcmp(argv[i], "--disable-codec-handler"))
-			{
-				if(argc < i + 2)
-				{
-					printf("Usage: omo --disable-codec-handler <codec handler id>\n\n");
-					return false;
-				}
-				else
-				{
-					disable_codec_handler(app->codec_handler_registry, argv[i + 1]);
-				}
-			}
-		}
-
-		/* don't add files if we are running the test suite */
-		if(!app->test_mode)
-		{
-			omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->library, app->player->queue, app->queue_temp_path, NULL);
-			for(i = 1; i < argc; i++)
-			{
-				if(!used_arg[i])
-				{
-					if(!t3f_scan_files(argv[i], omo_count_file, false, &file_helper_data))
-					{
-						omo_count_file(argv[i], false, &file_helper_data);
-					}
-				}
-			}
-			if(file_helper_data.file_count > 0)
-			{
-				app->player->queue = omo_create_queue(file_helper_data.file_count);
-				if(app->player->queue)
-				{
-					file_helper_data.queue = app->player->queue;
-					for(i = 1; i < argc; i++)
-					{
-						if(!used_arg[i])
-						{
-							if(!t3f_scan_files(argv[i], omo_queue_file, false, &file_helper_data))
-							{
-								omo_queue_file(argv[i], false, &file_helper_data);
-							}
-						}
-					}
-					if(app->player->queue->entry_count)
-					{
-						app->player->queue_pos = 0;
-						omo_start_player(app->player);
-					}
-					app->spawn_queue_thread = true;
-				}
-			}
-		}
+		return false;
 	}
 
 	if(!omo_setup_menus(app))
@@ -365,9 +243,9 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
 
 	/* set up library */
-	if(app->test_mode)
+	if(app->test_mode >= 0)
 	{
-		omo_test_init(app, test_mode, argv[test_path]);
+		omo_test_init(app, app->test_mode, argv[app->test_path_arg]);
 	}
 	else
 	{
