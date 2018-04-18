@@ -494,6 +494,11 @@ bool omo_build_library_artists_list(APP_INSTANCE * app, OMO_LIBRARY * lp)
 	omo_add_artist_to_library(lp, "Unknown Artist");
 	for(i = 0; i < lp->entry_count; i++)
 	{
+		val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album Artist");
+		if(val)
+		{
+			omo_add_artist_to_library(lp, val);
+		}
 		val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
 		if(val)
 		{
@@ -566,7 +571,11 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 			omo_add_album_to_library(lp, "Unknown Album");
 			for(i = 0; i < lp->entry_count; i++)
 			{
-				val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+				val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album Artist");
+				if(!val)
+				{
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+				}
 				if(!val)
 				{
 					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
@@ -583,7 +592,11 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 			omo_add_album_to_library(lp, "Unknown Album");
 			for(i = 0; i < lp->entry_count; i++)
 			{
-				val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+				val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album Artist");
+				if(!val)
+				{
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+				}
 				if(val)
 				{
 					if(!strcmp(val, artist))
@@ -627,6 +640,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 {
 	char buffer[1024];
 	const char * val;
+	const char * val2;
 	const char * fn;
 	const char * ignore_genre;
 	int i;
@@ -720,7 +734,11 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			{
 				for(i = 0; i < lp->entry_count; i++)
 				{
-					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album Artist");
+					if(!val)
+					{
+						val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					}
 					if(val)
 					{
 						if(!strcmp(val, artist))
@@ -746,7 +764,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			{
 				for(i = 0; i < lp->entry_count; i++)
 				{
-					unknown_artist = true;
+					unknown_artist = false;
 					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
 					if(val)
 					{
@@ -787,18 +805,19 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			{
 				for(i = 0; i < lp->entry_count; i++)
 				{
-					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
-					if(val)
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album Artist");
+					if(!val)
 					{
-						if(!strcmp(val, artist))
+						val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					}
+					if(!val || !strcmp(val, artist))
+					{
+						val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
+						if(val)
 						{
-							val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
-							if(val)
+							if(!strcmp(val, album))
 							{
-								if(!strcmp(val, album))
-								{
-									add_song(lp, i, ignore_genre);
-								}
+								add_song(lp, i, ignore_genre);
 							}
 						}
 					}
@@ -819,13 +838,11 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			{
 				for(i = 0; i < lp->entry_count; i++)
 				{
-					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
-					if(val)
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album Artist");
+					val2 = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					if((val && !strcmp(val, artist)) || (val2 && !strcmp(val2, artist)))
 					{
-						if(!strcmp(val, artist))
-						{
-							add_song(lp, i, ignore_genre);
-						}
+						add_song(lp, i, ignore_genre);
 					}
 				}
 				omo_start_library_sort();
@@ -843,10 +860,11 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 				for(i = 0; i < lp->entry_count; i++)
 				{
 					artist_match = false;
-					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album Artist");
+					val2 = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
 					if(val)
 					{
-						if(!strcmp(val, artist))
+						if((val && !strcmp(val, artist)) || (val2 && !strcmp(val2, artist)))
 						{
 							artist_match = true;
 						}
@@ -879,10 +897,11 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			{
 				for(i = 0; i < lp->entry_count; i++)
 				{
-					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album Artist");
+					val2 = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
 					if(val)
 					{
-						if(!strcmp(val, artist))
+						if((val && !strcmp(val, artist)) || (val2 && !strcmp(val2, artist)))
 						{
 							val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
 							if(val)
