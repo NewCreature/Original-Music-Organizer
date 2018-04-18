@@ -19,5 +19,6 @@ bool omo_split_track(OMO_LIBRARY * lp, const char * basefn, char * split_string)
 bool omo_backup_entry_tags(OMO_LIBRARY * lp, const char * id);
 bool omo_restore_entry_tags(OMO_LIBRARY * lp);
 void omo_discard_entry_backup(OMO_LIBRARY * lp);
+double omo_get_library_entry_length(OMO_LIBRARY * lp, const char * id);
 
 #endif

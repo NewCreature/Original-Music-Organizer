@@ -1,6 +1,7 @@
 #include "t3f/t3f.h"
 #include "instance.h"
 #include "library.h"
+#include "library_helpers.h"
 
 static OMO_LIBRARY * library = NULL;
 
@@ -183,15 +184,6 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 	const char * album = NULL;
 	const char * title = NULL;
 	const char * track = NULL;
-	const char * length = NULL;
-	const char * loop_start = NULL;
-	const char * loop_end = NULL;
-	const char * fade_time = NULL;
-	const char * loop_length = NULL;
-	double d_loop_start = 0.0;
-	double d_loop_end = 0.0;
-	double d_fade_time = 0.0;
-	double d_loop_length = 0.0;
 	bool ret = false;
 
 	qp->entry[i]->tags_retrieved = false;
@@ -215,18 +207,6 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 			album = omo_get_database_value(lp->entry_database, val, "Album");
 			title = omo_get_database_value(lp->entry_database, val, "Title");
 			track = omo_get_database_value(lp->entry_database, val, "Track");
-			length = omo_get_database_value(lp->entry_database, val, "Detected Length");
-			if(!length)
-			{
-				loop_start = omo_get_database_value(lp->entry_database, val, "Loop Start");
-				loop_end = omo_get_database_value(lp->entry_database, val, "Loop End");
-				fade_time = omo_get_database_value(lp->entry_database, val, "Fade Time");
-				loop_length = omo_get_database_value(lp->entry_database, val, "Length");
-				if(!loop_start || !loop_end)
-				{
-					length = omo_get_database_value(lp->entry_database, val, "Length");
-				}
-			}
 			if(artist)
 			{
 				strcpy(qp->entry[i]->tags.artist, artist);
@@ -247,53 +227,7 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 			{
 				ret = true;
 			}
-			/* use 'Detected Length' or 'Length' database values */
-			if(length)
-			{
-				qp->entry[i]->tags.length = atof(length);
-			}
-			/* use 'Loop Start', 'Loop End', 'Fade Time', and 'Length' database values */
-			else
-			{
-				if(loop_start && loop_end)
-				{
-					d_loop_start = atof(loop_start);
-					d_loop_end = atof(loop_end);
-					if(fade_time)
-					{
-						d_fade_time = atof(fade_time);
-					}
-					if(loop_length)
-					{
-						d_loop_length = atof(loop_length);
-					}
-
-					/* loop end is < 0.0 means we use the track's original length */
-					if(d_loop_end < 0)
-					{
-						if(loop_length)
-						{
-							d_loop_end = d_loop_length;
-						}
-						else
-						{
-							ret = false;
-						}
-					}
-					else
-					{
-						qp->entry[i]->tags.length = d_loop_start + (d_loop_end - d_loop_start) * 2.0;
-						if(fade_time)
-						{
-							qp->entry[i]->tags.length += d_fade_time;
-						}
-					}
-				}
-				else
-				{
-					ret = false;
-				}
-			}
+			qp->entry[i]->tags.length = omo_get_library_entry_length(lp, val);
 			qp->length += qp->entry[i]->tags.length;
 		}
 	}
