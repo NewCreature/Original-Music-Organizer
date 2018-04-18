@@ -37,7 +37,7 @@ bool omo_process_command_line_arguments(APP_INSTANCE * app, int argc, char * arg
 				else
 				{
 					app->test_path_arg = i + 1;
-					app->test_mode = true;
+					app->test_mode = 0;
 				}
 			}
 			else if(!strcmp(argv[i], "--quick-test"))
@@ -50,12 +50,13 @@ bool omo_process_command_line_arguments(APP_INSTANCE * app, int argc, char * arg
 				else
 				{
 					app->test_path_arg = i + 1;
-					app->test_mode = true;
+					app->test_mode = 1;
 				}
 			}
 			else if(!strcmp(argv[i], "--prune-library"))
 			{
 				app->prune_library = true;
+				used_arg[i] = true;
 			}
 			else if(!strcmp(argv[i], "--ignore-genre"))
 			{
@@ -75,6 +76,8 @@ bool omo_process_command_line_arguments(APP_INSTANCE * app, int argc, char * arg
 						al_set_config_value(t3f_config, "Settings", "Ignore Genre", argv[i + 1]);
 					}
 				}
+				used_arg[i] = true;
+				used_arg[i + 1] = true;
 			}
 			else if(!strcmp(argv[i], "--disable-codec-handler"))
 			{
@@ -87,11 +90,13 @@ bool omo_process_command_line_arguments(APP_INSTANCE * app, int argc, char * arg
 				{
 					disable_codec_handler(app->codec_handler_registry, argv[i + 1]);
 				}
+				used_arg[i] = true;
+				used_arg[i + 1] = true;
 			}
 		}
 
 		/* don't add files if we are running the test suite */
-		if(!app->test_mode)
+		if(app->test_mode < 0)
 		{
 			omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->library, app->player->queue, app->queue_temp_path, NULL);
 			for(i = 1; i < argc; i++)
