@@ -119,7 +119,7 @@ void omo_logic(void * data)
 	int volume_pos;
 
 	t3f_refresh_menus();
-	if(app->test_mode)
+	if(app->test_mode >= 0)
 	{
 		if(!omo_test_logic(app))
 		{
