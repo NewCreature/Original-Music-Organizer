@@ -93,6 +93,19 @@ bool omo_process_command_line_arguments(APP_INSTANCE * app, int argc, char * arg
 				used_arg[i] = true;
 				used_arg[i + 1] = true;
 			}
+			else if(!strcmp(argv[i], "--set"))
+			{
+				if(argc < i + 4)
+				{
+					printf("Usage: omo --set <section> <key> <value>\n\n");
+					return false;
+				}
+				al_set_config_value(t3f_config, argv[i + 1], argv[i + 2], argv[i + 3]);
+				used_arg[i] = true;
+				used_arg[i + 1] = true;
+				used_arg[i + 2] = true;
+				used_arg[i + 3] = true;
+			}
 		}
 
 		/* don't add files if we are running the test suite */
