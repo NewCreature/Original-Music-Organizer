@@ -18,6 +18,8 @@ v0.5
    [X]We need to add identifiers to all codec handlers to support this
       addition.
 
+[X]Figure out a way to display track length in library and queue.
+
 [ ]Use Album Artist tag when appropriate.
 
    [ ]See if we can list the album artist and artist in the artist list.
@@ -58,8 +60,6 @@ v0.5
 [ ]Implement keyboard shortcuts for all features.
 
 [ ]Look into global hot keys.
-
-[ ]Figure out a way to display track length in library and queue.
 
 [ ]Improve icon so it works better on dark backgrounds.
 
