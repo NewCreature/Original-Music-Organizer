@@ -1,6 +1,8 @@
 #include "../t3f/t3f.h"
 
 #include "../instance.h"
+#include "../library_helpers.h"
+#include "../text_helpers.h"
 #include "queue_list.h"
 
 static char buffer[1024] = {0};
@@ -57,6 +59,7 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
 	const char * title;
 	const char * album;
 	const char * track;
+	char buf[64];
 
 	if(index < 0)
 	{
@@ -70,7 +73,7 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
 	{
 		if(index == 0)
 		{
-			strcpy(ui_song_text, "Shuffle All");
+			sprintf(ui_song_text, "Shuffle All (%d Track%s)", app->library->song_entry_count, app->library->song_entry_count > 1 ? "s" : "");
 		}
 		else
 		{
@@ -90,6 +93,8 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
 			{
 				strcpy(ui_song_text, app->library->entry[app->library->song_entry[index]]->filename);
 			}
+			strcat(ui_song_text, "\t");
+			strcat(ui_song_text, omo_sec_to_clock(omo_get_library_entry_length(app->library, app->library->entry[app->library->song_entry[index]]->id), buf, 64));
 		}
 		return ui_song_text;
    }
