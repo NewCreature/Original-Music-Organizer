@@ -348,6 +348,7 @@ int omo_menu_library_select_profile(int id, void * data)
 			{
 				omo_set_current_profile(i - 1);
 				app->spawn_library_thread = true;
+				omo_configure_codec_handlers(app);
 				break;
 			}
 		}

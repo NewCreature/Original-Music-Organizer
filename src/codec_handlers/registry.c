@@ -135,3 +135,36 @@ OMO_CODEC_HANDLER * omo_get_codec_handler_from_id(OMO_CODEC_HANDLER_REGISTRY * r
 	}
 	return codec_handler;
 }
+
+void omo_reconfigure_codec_handlers(OMO_CODEC_HANDLER_REGISTRY * rp, const char * val)
+{
+	char * val_copy;
+	char * token;
+	int i;
+
+	for(i = 0; i < rp->codec_handlers; i++)
+	{
+		rp->codec_handler[i].disabled = false;
+	}
+
+	if(val)
+	{
+		val_copy = strdup(val);
+		if(val_copy)
+		{
+			token = strtok(val_copy, "; ");
+			while(token != NULL)
+			{
+				for(i = 0; i < rp->codec_handlers; i++)
+				{
+					if(!strcmp(token, rp->codec_handler[i].id))
+					{
+						rp->codec_handler[i].disabled = true;
+					}
+				}
+				token = strtok(NULL, "; ");
+			}
+			free(val_copy);
+		}
+	}
+}

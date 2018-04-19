@@ -130,6 +130,15 @@ void omo_set_window_constraints(APP_INSTANCE * app)
 	}
 }
 
+void omo_configure_codec_handlers(APP_INSTANCE * app)
+{
+	char section[256];
+	const char * val;
+
+	val = al_get_config_value(t3f_config, omo_get_profile_section(t3f_config, omo_get_profile(omo_get_current_profile()), section), "disabled_codec_handlers");
+	omo_reconfigure_codec_handlers(app->codec_handler_registry, val);
+}
+
 /* initialize our app, load graphics, etc. */
 bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 {
@@ -188,6 +197,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avmidiplayer_get_codec_handler());
 	#endif
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_adplug_get_codec_handler());
+	omo_configure_codec_handlers(app);
 
 	/* create default profile */
 	if(!omo_setup_profile("Default"))
