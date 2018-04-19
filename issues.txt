@@ -35,7 +35,7 @@ v0.5
       selected library or queue item. If no valid item is selected, it won't
       bring up the tags dialog.
 
-[ ]Allow disabling individual codec handlers at run time. We should keep a list
+[X]Allow disabling individual codec handlers at run time. We should keep a list
    of all enabled codec handlers in the config file. All codec handlers should
    be registered even if some are disabled. When searching for a codec handler,
    we should not return a disabled codec handler.
