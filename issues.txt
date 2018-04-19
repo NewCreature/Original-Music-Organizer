@@ -27,8 +27,13 @@ v0.5
    [X]When sorting by artist, we should prioritize using the album artist if
       the album artist tag exists.
 
-[ ]Figure out why the first press of the 'T' key doesn't bring up the tags
+[X]Figure out why the first press of the 'T' key doesn't bring up the tags
    editor.
+
+   [X]This seems to be a problem, but it is really the interface being a little
+      unintuitive. The 'T' key activates the tags editor for the currently
+      selected library or queue item. If no valid item is selected, it won't
+      bring up the tags dialog.
 
 [ ]Allow disabling individual codec handlers at run time. We should keep a list
    of all enabled codec handlers in the config file. All codec handlers should
