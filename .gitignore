@@ -41,6 +41,7 @@ docs/changelog
 src/makefile.config
 bin/omo
 bin/unrar
+icons/macosx_icon.icns
 
 # other files
 src/php/settings.php

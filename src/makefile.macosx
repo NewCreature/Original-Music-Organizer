@@ -17,7 +17,24 @@ PATH_SEPARATOR = /
 
 include makefile.common
 
-$(APP_PACKAGE_DIR)/$(APP_TITLE).app : $(APP_EXE_NAME)
+../icons/macosx_icon.icns: ../icons/16.png ../icons/32.png ../icons/64.png ../icons/128.png ../icons/256.png ../icons/512.png ../icons/1024.png
+	@mkdir -p temp.iconset
+	@cp ../icons/16.png temp.iconset/icon_16x16.png
+	@cp ../icons/32.png temp.iconset/icon_16x16@2x.png
+	@cp ../icons/32.png temp.iconset/icon_32x32.png
+	@cp ../icons/64.png temp.iconset/icon_32x32@2x.png
+	@cp ../icons/64.png temp.iconset/icon_64x64.png
+	@cp ../icons/128.png temp.iconset/icon_64x64@2x.png
+	@cp ../icons/128.png temp.iconset/icon_128x128.png
+	@cp ../icons/256.png temp.iconset/icon_128x128@2x.png
+	@cp ../icons/256.png temp.iconset/icon_256x256.png
+	@cp ../icons/512.png temp.iconset/icon_256x256@2x.png
+	@cp ../icons/512.png temp.iconset/icon_512x512.png
+	@cp ../icons/1024.png temp.iconset/icon_512x512@2x.png
+	@iconutil --convert icns temp.iconset -o ../icons/macosx_icon.icns
+	@rm -rf temp.iconset
+
+$(APP_PACKAGE_DIR)/$(APP_TITLE).app : $(APP_EXE_NAME) ../icons/macosx_icon.icns
 	@$(DEL_FOLDER_COMMAND) $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@mkdir $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@mkdir $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents
