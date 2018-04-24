@@ -57,6 +57,9 @@ windows_package:
 mac_package:
 	$(MAKE) -f makefile.macosx mac_package
 
+iphone_package:
+	$(MAKE) -f makefile.iphone iphone_package
+
 demo:
 	$(MAKE) -f makefile.$(SYSTEM) demo
 

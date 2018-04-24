@@ -1,6 +1,8 @@
 #include <allegro5/allegro5.h>
 #ifndef ALLEGRO_MACOSX
-#include <malloc.h>
+	#ifndef ALLEGRO_IPHONE
+		#include <malloc.h>
+	#endif
 #endif
 #include <stdio.h>
 #include <string.h>
