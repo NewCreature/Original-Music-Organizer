@@ -44,15 +44,15 @@ build_android:
 	@echo Copying data to Android project...
 	cp -a ../bin/data ../temp/android/template/assets
 	mkdir -p ../temp/android/template/res/drawable
-	cp ../icons/android_icon-mdpi_48.png ../temp/android/template/res/drawable/icon.png
+	cp ../icons/48.png ../temp/android/template/res/drawable/icon.png
 	mkdir -p ../temp/android/template/res/drawable-hdpi
-	cp ../icons/android_icon-hdpi_72.png ../temp/android/template/res/drawable-hdpi/icon.png
+	cp ../icons/72.png ../temp/android/template/res/drawable-hdpi/icon.png
 	mkdir -p ../temp/android/template/res/drawable-ldpi
-	cp ../icons/android_icon-ldpi_36.png ../temp/android/template/res/drawable-ldpi/icon.png
+	cp ../icons/36.png ../temp/android/template/res/drawable-ldpi/icon.png
 	mkdir -p ../temp/android/template/res/drawable-mdpi
-	cp ../icons/android_icon-mdpi_48.png ../temp/android/template/res/drawable-mdpi/icon.png
+	cp ../icons/48.png ../temp/android/template/res/drawable-mdpi/icon.png
 	mkdir -p ../temp/android/template/res/drawable-xhdpi
-	cp ../icons/android_icon-xhdpi_96.png ../temp/android/template/res/drawable-xhdpi/icon.png
+	cp ../icons/96.png ../temp/android/template/res/drawable-xhdpi/icon.png
 	@echo Editing project data to match our project definitions...
 	sed -i '' "s|org.liballeg.example|$(APP_ANDROID_PACKAGE)|" ../temp/android/template/AndroidManifest.xml
 	sed -i '' "s|allegro-example|$(APP_NAME)|" ../temp/android/template/AndroidManifest.xml
