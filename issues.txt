@@ -40,6 +40,8 @@ v0.5
    be registered even if some are disabled. When searching for a codec handler,
    we should not return a disabled codec handler.
 
+[X]Improve icon so it works better on dark backgrounds.
+
 [ ]Fix Debian category.
 
    [ ]The category is already set to sound. Need to investigate whether there
@@ -65,8 +67,6 @@ v0.5
 [ ]Implement keyboard shortcuts for all features.
 
 [ ]Look into global hot keys.
-
-[ ]Improve icon so it works better on dark backgrounds.
 
 [ ]Implement portable mode. In portable mode, the library databases and app
    settings are stored alongside the executable. The idea is to allow a user to
