@@ -65,3 +65,6 @@ demo:
 
 demo_gp:
 	$(MAKE) -f makefile.$(SYSTEM) demo_gp
+
+makeicon:
+	$(MAKE) -f makefile.$(SYSTEM) ../win32/makeicon

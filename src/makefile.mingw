@@ -17,6 +17,9 @@ PATH_SEPARATOR = \\
 
 include makefile.common
 
+../icons/windows_icon.ico: ../icons/16.png ../icons/24.png ../icons/32.png ../icons/48.png ../icons/256.png ../win32/makeicon$(EXE_SUFFIX)
+	../win32/makeicon -o ../icons/windows_icon.ico ../icons/16.png ../icons/24.png ../icons/32.png ../icons/48.png ../icons/64.png ../icons/256.png
+
 icon.o : ../icons/windows_icon.ico ../win32/icon.rc
 	windres --include-dir=../icons -o icon.o ../win32/icon.rc
 

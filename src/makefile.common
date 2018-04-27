@@ -66,3 +66,6 @@ demo: very_clean
 demo_gp: demo
 	$(SED_COMMAND) 's|-DT3F_ANDROID|-DT3F_ANDROID -DT3F_ANDROID_GP|' $(DEMO_DIR)/android/template/jni/Android.mk
 	mv $(DEMO_DIR) $(DEMO_DIR)_gp
+
+../win32/makeicon: ../win32/makeicon.o
+	$(CC) $(LFLAGS) ../win32/makeicon.o $(PLATFORM_LIBS) $(T3F_DEPEND_LIBS) $(DEPEND_LIBS) -o ../win32/makeicon
