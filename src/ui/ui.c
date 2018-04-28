@@ -81,8 +81,12 @@ static void setup_player_module(OMO_UI * uip, int x, int y, int w, int h, int fl
 	int i;
 	int pos_y;
 	int font_height;
+	int time_width;
+	int time_height;
 
 	font_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]);
+	time_width = al_get_text_width(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_INFO]->state[0].font[0], "00:00:00");
+	time_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_INFO]->state[0].font[0]);
 
 	/* adjust bezels so adjacent items are only 'bezel' pixels away */
 	setup_module_box(&x, &y, &w, &h, flags);
@@ -110,8 +114,12 @@ static void setup_player_module(OMO_UI * uip, int x, int y, int w, int h, int fl
 
 	uip->ui_seek_control_element->x = x;
 	uip->ui_seek_control_element->y = pos_y;
-	uip->ui_seek_control_element->w = w;
+	uip->ui_seek_control_element->w = w - time_width - bezel;
 	uip->ui_seek_control_element->h = slider_size;
+	uip->ui_current_time_element->x = x + w - time_width + bezel;
+	uip->ui_current_time_element->y = pos_y - 2;
+	uip->ui_current_time_element->w = time_width - bezel;
+	uip->ui_current_time_element->h = time_height;
 	pos_y += slider_size + bezel;
 
 	button_height = button_size;
@@ -309,6 +317,7 @@ static bool omo_add_player_elements(OMO_UI * uip, void * data)
 	uip->ui_song_info_2_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_INFO], t3gui_text_proc, 8, 8, width - 16, height - 16, 0, D_SETFOCUS, 0, 0, uip->song_info_text[1], NULL, data);
 	uip->ui_volume_control_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_SLIDER], t3gui_slider_proc, 0, 0, width, height, 0, 0, OMO_UI_VOLUME_RESOLUTION, 0, NULL, NULL, NULL);
 	uip->ui_seek_control_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_SLIDER], t3gui_slider_proc, 0, 0, width, height, 0, 0, OMO_UI_SEEK_RESOLUTION, 0, NULL, NULL, NULL);
+	uip->ui_current_time_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_INFO], t3gui_text_proc, 8, 8, width - 16, height - 16, 0, D_SETFOCUS, 0, 0, uip->current_time_text, NULL, data);
 	for(i = 0; i < 6; i++)
 	{
 		uip->ui_button_element[i] = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8, 8, 16, 16, 0, 0, 0, i, uip->ui_button_text[i], ui_player_button_proc, uip->main_theme->bitmap[buttons[i]]);

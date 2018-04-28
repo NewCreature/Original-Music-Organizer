@@ -33,6 +33,7 @@ typedef struct
 	T3GUI_ELEMENT * ui_song_info_1_element;
 	T3GUI_ELEMENT * ui_song_info_2_element;
 	T3GUI_ELEMENT * ui_seek_control_element;
+	T3GUI_ELEMENT * ui_current_time_element;
 	T3GUI_ELEMENT * ui_volume_control_element;
 	T3GUI_ELEMENT * ui_status_bar_element;
 	bool ui_seeked;
@@ -40,6 +41,7 @@ typedef struct
 	int selected_song;
 	int mode;
 	char queue_info_text[1024];
+	char current_time_text[32];
 	char song_info_text[2][1024];
 
 	/* tags dialog */
