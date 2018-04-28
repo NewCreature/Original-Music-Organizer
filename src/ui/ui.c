@@ -100,13 +100,13 @@ static void setup_player_module(OMO_UI * uip, int x, int y, int w, int h, int fl
 	uip->ui_song_info_1_element->x = x + 4;
 	uip->ui_song_info_1_element->y = pos_y;
 	uip->ui_song_info_1_element->w = w - slider_size - bezel - 5;
-	uip->ui_song_info_1_element->h = font_height * 2 + 4;
+	uip->ui_song_info_1_element->h = font_height + 4;
 	pos_y += font_height;
 	uip->ui_song_info_2_element->x = x + 4;
 	uip->ui_song_info_2_element->y = pos_y;
 	uip->ui_song_info_2_element->w = w - slider_size - bezel - 5;
-	uip->ui_song_info_2_element->h = font_height * 2 + 4;
-	pos_y += font_height + 4 + bezel / 2;
+	uip->ui_song_info_2_element->h = font_height + 4;
+	pos_y += font_height + 4 + bezel - 2;
 
 	uip->ui_seek_control_element->x = x;
 	uip->ui_seek_control_element->y = pos_y;
@@ -142,7 +142,7 @@ static void setup_queue_list_module(OMO_UI * uip, int x, int y, int w, int h, in
 	uip->ui_queue_info_box_element->w = w;
 	uip->ui_queue_info_box_element->h = font_height + 4;
 	uip->ui_queue_info_element->x = x + 4;
-	uip->ui_queue_info_element->y = y + uip->ui_queue_list_element->h + bezel;
+	uip->ui_queue_info_element->y = y + uip->ui_queue_list_element->h + bezel + 2;
 	uip->ui_queue_info_element->w = w - bezel;
 	uip->ui_queue_info_element->h = font_height + 4;
 }
@@ -206,7 +206,7 @@ static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
 	if(mode == 0)
 	{
 		player_width = width;
-		player_height = bezel + button_size + bezel / 2 + slider_size + bezel / 2 + font_height * 2 + 4 + bezel / 2 + bezel;
+		player_height = bezel + button_size + bezel + slider_size + bezel + font_height * 2 + 4 + bezel / 2;
 		player_x = 0;
 		player_y = height - player_height;
 		queue_list_x = 0;
