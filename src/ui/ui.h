@@ -79,6 +79,9 @@ typedef struct
 	bool filter_type_selected[256];
 	int filter_types;
 
+	/* about dialog */
+	OMO_UI_POPUP_DIALOG * about_popup_dialog;
+	
 	/* theme data */
 	OMO_THEME * main_theme;
 	char ui_button_text[6][8];

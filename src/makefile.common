@@ -23,7 +23,7 @@ APP_PACKAGE_FILENAME = $(APP_PACKAGE_NAME)-src.tar.gz
 all : $(APP_EXE_NAME) $(PLATFORM_TARGET) $(APP_EXTRA_TARGET)
 	@echo All targets built!
 
-$(APP_EXE_NAME) : $(PROJECT_OBJECTS) update_changelog
+$(APP_EXE_NAME) : update_version $(PROJECT_OBJECTS) update_changelog
 	$(CC) $(LFLAGS) $(PROJECT_OBJECTS) $(PLATFORM_LIBS) $(APP_LIBS) $(T3F_DEPEND_LIBS) $(DEPEND_LIBS) -o $(APP_EXE_NAME)
 	@echo Executable built!
 
@@ -36,6 +36,15 @@ update_changelog: ../changelog
 	$(COPY_COMMAND) $(subst /,$(PATH_SEPARATOR),../changelog ../docs)
 	$(SED_COMMAND) "s|BUILD_DATE|`date -u +"%a, %d %b %Y %T"`|" ../docs/changelog
 	$(SED_COMMAND) "s|BUILD_VERSION|$(APP_VERSION)|" ../docs/changelog
+
+update_version: makefile.defines
+	@$(DEL_COMMAND) version.h
+	@echo \#ifndef APP_VERSION_H > version.h
+	@echo \#define APP_VERSION_H >> version.h
+	@echo \#define APP_TITLE \"$(APP_TITLE)\" >> version.h
+	@echo \#define APP_VERSION \"$(APP_VERSION)\" >> version.h
+	@echo \#define APP_COPYRIGHT \"$(APP_COPYRIGHT)\" >> version.h
+	@echo \#endif >> version.h
 
 clean: app_clean
 	@$(PLATFORM_CLEAN)

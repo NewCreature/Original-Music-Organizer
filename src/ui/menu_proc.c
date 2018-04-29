@@ -15,6 +15,7 @@
 #include "../cloud.h"
 #include "../profile.h"
 #include "menu_init.h"
+#include "about_dialog.h"
 
 static char type_buf[1024] = {0};
 
@@ -653,6 +654,15 @@ int omo_menu_view_library(int id, void * data)
 		omo_set_window_constraints(app);
 		t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
 	}
+
+	return 1;
+}
+
+int omo_menu_help_about(int id, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	omo_open_about_dialog(app->ui, data);
 
 	return 1;
 }

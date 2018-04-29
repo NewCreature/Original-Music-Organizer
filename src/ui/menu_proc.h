@@ -38,4 +38,6 @@ int omo_menu_library_retrieve_tags(int id, void * data);
 int omo_menu_view_basic(int id, void * data);
 int omo_menu_view_library(int id, void * data);
 
+int omo_menu_help_about(int id, void * data);
+
 #endif

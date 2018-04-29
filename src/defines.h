@@ -8,6 +8,7 @@
 #define OMO_MENU_LIBRARY  3
 #define OMO_MENU_VIEW     4
 #define OMO_MENU_PROFILE  5
+#define OMO_MENU_HELP     6
 
 #ifdef ALLEGRO_MACOSX
 	#define OMO_KEY_CTRL (t3f_key[ALLEGRO_KEY_COMMAND])

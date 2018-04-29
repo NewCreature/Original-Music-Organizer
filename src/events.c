@@ -3,6 +3,7 @@
 #include "instance.h"
 #include "constants.h"
 #include "library_helpers.h"
+#include "ui/about_dialog.h"
 
 void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 {
@@ -31,6 +32,10 @@ void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 			else if(app->ui->filter_popup_dialog && event->display.source == app->ui->filter_popup_dialog->display)
 			{
 				omo_close_filter_dialog(app->ui, data);
+			}
+			else if(app->ui->about_popup_dialog && event->display.source == app->ui->about_popup_dialog->display)
+			{
+				omo_close_about_dialog(app->ui, data);
 			}
 			else
 			{

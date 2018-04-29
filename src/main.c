@@ -26,6 +26,7 @@
 #include "queue_helpers.h"
 #include "library_helpers.h"
 #include "threads.h"
+#include "ui/about_dialog.h"
 
 static int queue_list_visible_elements(T3GUI_ELEMENT * element)
 {
@@ -173,6 +174,10 @@ void omo_logic(void * data)
 			{
 				omo_filter_dialog_logic(data);
 			}
+			else if(app->ui->about_popup_dialog)
+			{
+				omo_about_dialog_logic(data);
+			}
 			else
 			{
 				if(app->library_view)
@@ -278,6 +283,12 @@ void omo_render(void * data)
 			if(app->ui->filter_popup_dialog)
 			{
 				al_set_target_bitmap(al_get_backbuffer(app->ui->filter_popup_dialog->display));
+				al_flip_display();
+				al_set_target_bitmap(al_get_backbuffer(t3f_display));
+			}
+			if(app->ui->about_popup_dialog)
+			{
+				al_set_target_bitmap(al_get_backbuffer(app->ui->about_popup_dialog->display));
 				al_flip_display();
 				al_set_target_bitmap(al_get_backbuffer(t3f_display));
 			}

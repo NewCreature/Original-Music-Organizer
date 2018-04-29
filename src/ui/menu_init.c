@@ -116,6 +116,13 @@ bool omo_setup_menus(void * data)
 	t3f_add_menu_item(app->menu[OMO_MENU_VIEW], "Basic", ALLEGRO_MENU_ITEM_CHECKBOX, NULL, omo_menu_view_basic, omo_menu_view_basic_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_VIEW], "Library", ALLEGRO_MENU_ITEM_CHECKBOX, NULL, omo_menu_view_library, omo_menu_view_library_update_proc);
 
+	app->menu[OMO_MENU_HELP] = al_create_menu();
+	if(!app->menu[OMO_MENU_HELP])
+	{
+		return false;
+	}
+	t3f_add_menu_item(app->menu[OMO_MENU_HELP], "About", 0, NULL, omo_menu_help_about, NULL);
+
 	app->menu[OMO_MENU_MAIN] = al_create_menu();
 	if(!app->menu[OMO_MENU_MAIN])
 	{
@@ -125,6 +132,7 @@ bool omo_setup_menus(void * data)
 	t3f_add_menu_item(app->menu[OMO_MENU_MAIN], "View", 0, app->menu[OMO_MENU_VIEW], NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_MAIN], "Player", 0, app->menu[OMO_MENU_PLAYER], NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_MAIN], "Library", 0, app->menu[OMO_MENU_LIBRARY], NULL, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_MAIN], "Help", 0, app->menu[OMO_MENU_HELP], NULL, NULL);
 
 	return true;
 }
