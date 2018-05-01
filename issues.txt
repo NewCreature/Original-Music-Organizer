@@ -1,6 +1,43 @@
 OMO Issues
 ----------
 
+Long Term Goals
+---------------
+
+[ ]We need to modularize the UI so we can enable developing multiple UI
+   systems. The current Allegro-based UI is the main UI, but I'd also like
+   provide a curses UI. Other UIs could also be developed, such as native
+   Android or MacOS UIs. The library and playback engines are self-contained,
+   so we should be able to easily add new UI systems.
+
+   Ultimately, we should have a separate UI folder for each UI system. There
+   should be a standard API for initializing and utilizing a UI system.
+   Multiple UI systems should be able to coexist and be selected by the user at
+   run time.
+
+[ ]Implement portable mode. In portable mode, the library databases and app
+   settings are stored alongside the executable. The idea is to allow a user to
+   copy their music collection to a thumb drive and use it on multiple machines
+   without having to generate library databases for each machine.
+
+[ ]Look into adding a lyrics window.
+
+[ ]Investigate why certain files that have been split aren't playing (DUMBA5).
+
+   [ ]For some reason setting the start order doesn't work for PSM files. This
+      will have to be fixed in DUMB.
+
+[ ]Add album art view. I'm not sure what the best way to handle this is yet. We
+   might want to add a separate view type that has 3 panes. Alternately, we
+   could just add an option to show album art in the album list in the 3rd
+   pane.
+
+   We will probably want to make the album art icons the size of two lines of
+   text or maybe just pick a standard size or allow the user to decide how big
+   they want it. If we make it user configurable, the default should be the
+   size of two lines of text.
+
+
 v0.5
 ----
 
@@ -42,46 +79,54 @@ v0.5
 
 [X]Improve icon so it works better on dark backgrounds.
 
+[X]Add Help menu.
+
+[X]Add about box.
+
+[ ]Automatically generate an anonymous tagger key on startup if there isn't one
+   configured. We need to look at the PHP tagger key generation code to ensure
+   we get unique keys for every user.
+
+   Generating a unique anonymous tagger key for each user might seem wasteful,
+   but it will make maintaining the database easier. If any users abuse the
+   tagging function, we'll be able to wipe the bad tags out with less effort.
+
 [ ]Fix Debian category.
 
-   [ ]The category is already set to sound. Need to investigate whether there
-      is some other issue causing it to be put in the wrong category.
+   [ ]The Debian category is correct, but we need to ensure the desktop file
+      also has the correct category. We may have to add another variable to the
+      build script for the desktop category if it differs from the control
+      category.
 
 [ ]Add search field above each library section.
 
-[ ]Consider adding ability to type in the library list boxes to jump to items
-   more quickly.
+   [ ]We'll probably need to make 'real' lists which contain pointers to the
+      main lists. The real lists will be generated as the user types in the
+      search box. I think we'll be able to make it work like Live Studio
+      Sessions without too much trouble.
 
-[ ]Add Help menu.
+   [ ]The filtered lists should still show All and Unknown entries at the top.
+
+   [ ]Typing in the search field should probably reset the state of the list
+      box. The filter might eliminate the selected item from the list, which
+      would just lead to confusion for the user.
 
 [ ]Add manual.
 
-[ ]Add about box.
-
 [ ]Look into file selector that can select folders and files. Maybe we should
    provide our own file browser as an option.
-
-[ ]Add Album view. This will show album art and titles in a list box-style UI
-   element. You'll be able to queue up albums from this view.
 
 [ ]Implement keyboard shortcuts for all features.
 
 [ ]Look into global hot keys.
 
-[ ]Implement portable mode. In portable mode, the library databases and app
-   settings are stored alongside the executable. The idea is to allow a user to
-   copy their music collection to a thumb drive and use it on multiple machines
-   without having to generate library databases for each machine.
-
-[ ]Look into adding a lyrics window.
-
-[ ]Investigate why certain files that have been split aren't playing (DUMBA5).
-
-   [ ]For some reason setting the start order doesn't work for PSM files. This
-      will have to be fixed in DUMB.
-
 [ ]Figure out why the song list updates don't work when okaying edited tags
    while the library lists are regenerating.
+
+[ ]Allow multiple items to be selected in the list boxes. We need to add
+   another argument to the list box callbacks to check whether an item is
+   selected. We also need a way to check whether the list box is single-select
+   or multi-select.
 
 
 v0.4
