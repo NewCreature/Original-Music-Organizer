@@ -37,6 +37,16 @@ Long Term Goals
    they want it. If we make it user configurable, the default should be the
    size of two lines of text.
 
+[ ]Allow accessing a library remotely. The user should be able to sync a
+   library over a LAN or WAN. The music files will remain on the remote device,
+   while the local device will download songs from the remote device as needed.
+
+   A synching mechanism should be provided so that the user can get some songs
+   on their local device before going offline.
+
+   An instance of OMO will need to be running on the remote device for this to
+   work.
+
 
 v0.5
 ----
