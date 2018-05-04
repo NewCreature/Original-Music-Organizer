@@ -97,6 +97,8 @@ PACKAGE_EXCLUSIONS = --exclude-from ../.gitignore
 ##########################
 DEBIAN_APP_NAME = $(subst _,-,$(APP_NAME))
 DEBIAN_SECTION = sound
+DEBIAN_MENU_SECTION = Sound
+DEBIAN_DESKTOP_CATEGORIES = Audio
 DEBIAN_DIR = bin
 DEBIAN_DEPENDS = libc6,\ unrar
 DEBIAN_MAINTAINER = Todd\ Cope\ \<todd\@t3-i.com\>

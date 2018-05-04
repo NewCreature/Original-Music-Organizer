@@ -19,8 +19,8 @@ include makefile.common
 #generate Debian package
 debian_package: $(APP_EXE_NAME) ../debian/control_gen
 	echo Generating files...
-	echo "!C menu-2\n?package("$(DEBIAN_APP_NAME)"):\n	needs=\"X11\"\n	section=\"Games/Action\"\n	title=\""$(APP_TITLE)"\"\n	command=\"/usr/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)\"\n	;" > ../debian/menu
-	echo "[Desktop Entry]\nName="$(APP_TITLE)"\nExec=/usr/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)\nIcon=$(DEBIAN_APP_NAME)\nTerminal=false\nType=Application\nCategories=Game;" > ../debian/app.desktop
+	echo "!C menu-2\n?package("$(DEBIAN_APP_NAME)"):\n	needs=\"X11\"\n	section=\"$(DEBIAN_MENU_SECTION)\"\n	title=\""$(APP_TITLE)"\"\n	command=\"/usr/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)\"\n	;" > ../debian/menu
+	echo "[Desktop Entry]\nName="$(APP_TITLE)"\nExec=/usr/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)\nIcon=$(DEBIAN_APP_NAME)\nTerminal=false\nType=Application\nCategories=$(DEBIAN_DESKTOP_CATEGORIES);" > ../debian/app.desktop
 	../debian/control_gen ../debian $(DEBIAN_APP_NAME) $(APP_VERSION) $(DEBIAN_SECTION) optional `dpkg-architecture -l -qDEB_BUILD_ARCH` $(DEBIAN_DEPENDS) "`du -s --block-size=1024 ../bin`" $(DEBIAN_MAINTAINER) $(DEBIAN_DESCRIPTION) $(DEBIAN_LONG_DESCRIPTION)
 	echo Building directory structure...
 	mkdir -p ../temp
