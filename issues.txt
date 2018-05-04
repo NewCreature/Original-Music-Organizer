@@ -47,6 +47,12 @@ Long Term Goals
    An instance of OMO will need to be running on the remote device for this to
    work.
 
+[ ]Implement a system for a user to rate or otherwise mark tracks they like or
+   dislike.
+
+[X]Look into file selector that can select folders and files. Maybe we should
+   provide our own file browser as an option.
+
 
 v0.5
 ----
@@ -93,6 +99,13 @@ v0.5
 
 [X]Add about box.
 
+[X]Fix Debian category.
+
+   [X]The Debian category is correct, but we need to ensure the desktop file
+      also has the correct category. We may have to add another variable to the
+      build script for the desktop category if it differs from the control
+      category.
+
 [ ]Automatically generate an anonymous tagger key on startup if there isn't one
    configured. We need to look at the PHP tagger key generation code to ensure
    we get unique keys for every user.
@@ -100,13 +113,6 @@ v0.5
    Generating a unique anonymous tagger key for each user might seem wasteful,
    but it will make maintaining the database easier. If any users abuse the
    tagging function, we'll be able to wipe the bad tags out with less effort.
-
-[ ]Fix Debian category.
-
-   [ ]The Debian category is correct, but we need to ensure the desktop file
-      also has the correct category. We may have to add another variable to the
-      build script for the desktop category if it differs from the control
-      category.
 
 [ ]Add search field above each library section.
 
@@ -123,9 +129,6 @@ v0.5
 
 [ ]Add manual.
 
-[ ]Look into file selector that can select folders and files. Maybe we should
-   provide our own file browser as an option.
-
 [ ]Implement keyboard shortcuts for all features.
 
 [ ]Look into global hot keys.
@@ -137,6 +140,8 @@ v0.5
    another argument to the list box callbacks to check whether an item is
    selected. We also need a way to check whether the list box is single-select
    or multi-select.
+
+[ ]Add option to locate a song in the library.
 
 
 v0.4
