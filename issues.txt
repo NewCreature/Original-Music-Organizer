@@ -106,6 +106,16 @@ v0.5
       build script for the desktop category if it differs from the control
       category.
 
+[X]Add option to locate a song in the library.
+
+[ ]Fix song list not working when selecting an artist+album combo. Many times
+   it will generate an empty list.
+
+[ ]See if we can show albums that an artist contributed to that contain other
+   artists as well. Many albums contain songs from various artists and it would
+   be nice to have those albums listed under every artist that contributed to
+   it.
+
 [ ]Automatically generate an anonymous tagger key on startup if there isn't one
    configured. We need to look at the PHP tagger key generation code to ensure
    we get unique keys for every user.
@@ -140,8 +150,6 @@ v0.5
    another argument to the list box callbacks to check whether an item is
    selected. We also need a way to check whether the list box is single-select
    or multi-select.
-
-[ ]Add option to locate a song in the library.
 
 
 v0.4
