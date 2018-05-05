@@ -84,6 +84,8 @@ bool omo_setup_menus(void * data)
 	t3f_add_menu_item(app->menu[OMO_MENU_PLAYER], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_PLAYER], "Shuffle", 0, NULL, omo_menu_playback_shuffle, omo_menu_playback_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_PLAYER], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_PLAYER], "Find Song", 0, NULL, omo_menu_playback_find_track, omo_menu_playback_edit_tags_update_proc);
+	t3f_add_menu_item(app->menu[OMO_MENU_PLAYER], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_PLAYER], "Split Song", 0, NULL, omo_menu_playback_split_track, omo_menu_playback_edit_tags_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_PLAYER], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_PLAYER], "Edit Song Tags", 0, NULL, omo_menu_playback_edit_tags, omo_menu_playback_edit_tags_update_proc);

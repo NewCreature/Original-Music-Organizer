@@ -22,6 +22,7 @@ int omo_menu_playback_next_track(int id, void * data);
 int omo_menu_playback_shuffle(int id, void * data);
 int omo_menu_playback_edit_tags(int id, void * data);
 int omo_menu_playback_split_track(int id, void * data);
+int omo_menu_playback_find_track(int id, void * data);
 
 int omo_menu_library_select_profile(int id, void * data);
 int omo_menu_library_add_profile(int id, void * data);

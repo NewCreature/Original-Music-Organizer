@@ -282,6 +282,43 @@ int omo_menu_playback_shuffle(int id, void * data)
 	return 1;
 }
 
+static bool get_full_filename(const char * fn, const char * subfn, const char * track, char * buffer, int buffer_size)
+{
+	if(strlen(fn) < buffer_size)
+	{
+		strcpy(buffer, fn);
+	}
+	else
+	{
+		return false;
+	}
+	if(subfn)
+	{
+		if(strlen(buffer) + strlen(subfn) + 1 < buffer_size)
+		{
+			strcat(buffer, "/");
+			strcat(buffer, subfn);
+		}
+		else
+		{
+			return false;
+		}
+	}
+	if(track)
+	{
+		if(strlen(buffer) + strlen(track) + 1 < buffer_size)
+		{
+			strcat(buffer, ":");
+			strcat(buffer, track);
+		}
+		else
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 int omo_menu_playback_edit_tags(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
@@ -292,19 +329,11 @@ int omo_menu_playback_edit_tags(int id, void * data)
 	if(app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
 	{
 		j = app->ui->ui_queue_list_element->d1;
-		strcpy(fullfn, app->player->queue->entry[j]->file);
-		if(app->player->queue->entry[j]->sub_file)
+		if(get_full_filename(app->player->queue->entry[j]->file, app->player->queue->entry[j]->sub_file, app->player->queue->entry[j]->track, fullfn, 1024))
 		{
-			strcat(fullfn, "/");
-			strcat(fullfn, app->player->queue->entry[j]->sub_file);
+			app->ui->tags_queue_entry = app->ui->ui_queue_list_element->d1;
+			open_tags_dialog(app, fullfn);
 		}
-		if(app->player->queue->entry[j]->track)
-		{
-			strcat(fullfn, ":");
-			strcat(fullfn, app->player->queue->entry[j]->track);
-		}
-		app->ui->tags_queue_entry = app->ui->ui_queue_list_element->d1;
-		open_tags_dialog(app, fullfn);
 	}
 	return 1;
 }
@@ -319,19 +348,69 @@ int omo_menu_playback_split_track(int id, void * data)
 	if(app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
 	{
 		j = app->ui->ui_queue_list_element->d1;
-		strcpy(fullfn, app->player->queue->entry[j]->file);
-		if(app->player->queue->entry[j]->sub_file)
+		if(get_full_filename(app->player->queue->entry[j]->file, app->player->queue->entry[j]->sub_file, app->player->queue->entry[j]->track, fullfn, 1024))
 		{
-			strcat(fullfn, "/");
-			strcat(fullfn, app->player->queue->entry[j]->sub_file);
+			app->ui->split_track_queue_entry = app->ui->ui_queue_list_element->d1;
+			open_split_track_dialog(app, app->player->queue->entry[j]->file, fullfn);
 		}
-		if(app->player->queue->entry[j]->track)
+	}
+	return 1;
+}
+
+int omo_menu_playback_find_track(int id, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	const char * track_id;
+	const char * artist;
+	const char * album;
+	char fullfn[1024];
+	int i, j;
+
+	j = app->ui->ui_queue_list_element->d1;
+	if(get_full_filename(app->player->queue->entry[j]->file, app->player->queue->entry[j]->sub_file, app->player->queue->entry[j]->track, fullfn, 1024))
+	{
+		omo_get_library_song_list(app->library, "All Artists", "All Albums");
+		track_id = omo_get_database_value(app->library->file_database, fullfn, "id");
+		if(track_id)
 		{
-			strcat(fullfn, ":");
-			strcat(fullfn, app->player->queue->entry[j]->track);
+			artist = omo_get_database_value(app->library->entry_database, track_id, "Artist");
+			if(artist)
+			{
+				for(i = 0; i < app->library->artist_entry_count; i++)
+				{
+					if(!strcmp(artist, app->library->artist_entry[i]))
+					{
+						app->ui->ui_artist_list_element->d1 = i;
+						app->ui->ui_artist_list_element->d2 = i;
+						break;
+					}
+				}
+				omo_get_library_album_list(app->library, artist);
+			}
+			album = omo_get_database_value(app->library->entry_database, track_id, "Album");
+			if(album)
+			{
+				for(i = 0; i < app->library->album_entry_count; i++)
+				{
+					if(!strcmp(album, app->library->album_entry[i]))
+					{
+						app->ui->ui_album_list_element->d1 = i;
+						app->ui->ui_album_list_element->d2 = i;
+						break;
+					}
+				}
+				omo_get_library_song_list(app->library, artist ? artist : "All Artists", album);
+			}
+			for(i = 0; i < app->library->song_entry_count; i++)
+			{
+				if(!strcmp(app->library->entry[app->library->song_entry[i]]->id, track_id))
+				{
+					app->ui->ui_song_list_element->d1 = i;
+					app->ui->ui_song_list_element->d2 = i;
+					break;
+				}
+			}
 		}
-		app->ui->split_track_queue_entry = app->ui->ui_queue_list_element->d1;
-		open_split_track_dialog(app, app->player->queue->entry[j]->file, fullfn);
 	}
 	return 1;
 }
