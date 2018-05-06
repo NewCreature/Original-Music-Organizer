@@ -528,6 +528,7 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 {
 	char buffer[1024];
 	const char * val;
+	const char * val2;
 	const char * fn;
 	bool cache_loaded = false;
 	bool all_artists = false;
@@ -593,19 +594,13 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 			for(i = 0; i < lp->entry_count; i++)
 			{
 				val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album Artist");
-				if(!val)
+				val2 = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
+				if((val && !strcmp(val, artist)) || (val2 && !strcmp(val2, artist)))
 				{
-					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
-				}
-				if(val)
-				{
-					if(!strcmp(val, artist))
+					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
+					if(val)
 					{
-						val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
-						if(val)
-						{
-							omo_add_album_to_library(lp, val);
-						}
+						omo_add_album_to_library(lp, val);
 					}
 				}
 			}
