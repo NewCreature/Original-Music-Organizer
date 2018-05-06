@@ -191,6 +191,7 @@ void omo_logic(void * data)
 				{
 					app->ui->ui_artist_list_element->id2 = app->ui->ui_artist_list_element->d1;
 					app->ui->ui_album_list_element->id2 = app->ui->ui_album_list_element->d1;
+					app->ui->ui_song_list_element->id2 = app->ui->ui_song_list_element->d1;
 				}
 			}
 			omo_player_logic(app->player, app->library, app->archive_handler_registry, app->codec_handler_registry, app->player_temp_path);

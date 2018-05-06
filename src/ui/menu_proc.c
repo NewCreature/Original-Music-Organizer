@@ -357,6 +357,20 @@ int omo_menu_playback_split_track(int id, void * data)
 	return 1;
 }
 
+static void fix_scroll_position(T3GUI_ELEMENT * element, int entries)
+{
+	int visible = element->h / al_get_font_line_height(element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0]) - 1;
+
+	if(entries > visible)
+	{
+		element->d2 = element->d1;
+		if(element->d2 + visible > entries)
+		{
+			element->d2 = entries - visible;
+		}
+	}
+}
+
 int omo_menu_playback_find_track(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
@@ -373,6 +387,12 @@ int omo_menu_playback_find_track(int id, void * data)
 		track_id = omo_get_database_value(app->library->file_database, fullfn, "id");
 		if(track_id)
 		{
+			app->ui->ui_artist_list_element->d1 = 0;
+			app->ui->ui_artist_list_element->d2 = 0;
+			app->ui->ui_album_list_element->d1 = 0;
+			app->ui->ui_album_list_element->d2 = 0;
+			app->ui->ui_song_list_element->d1 = 0;
+			app->ui->ui_song_list_element->d2 = 0;
 			artist = omo_get_database_value(app->library->entry_database, track_id, "Artist");
 			if(artist)
 			{
@@ -381,7 +401,7 @@ int omo_menu_playback_find_track(int id, void * data)
 					if(!strcmp(artist, app->library->artist_entry[i]))
 					{
 						app->ui->ui_artist_list_element->d1 = i;
-						app->ui->ui_artist_list_element->d2 = i;
+						fix_scroll_position(app->ui->ui_artist_list_element, app->library->artist_entry_count);
 						break;
 					}
 				}
@@ -395,7 +415,7 @@ int omo_menu_playback_find_track(int id, void * data)
 					if(!strcmp(album, app->library->album_entry[i]))
 					{
 						app->ui->ui_album_list_element->d1 = i;
-						app->ui->ui_album_list_element->d2 = i;
+						fix_scroll_position(app->ui->ui_album_list_element, app->library->album_entry_count);
 						break;
 					}
 				}
@@ -405,8 +425,8 @@ int omo_menu_playback_find_track(int id, void * data)
 			{
 				if(!strcmp(app->library->entry[app->library->song_entry[i]]->id, track_id))
 				{
-					app->ui->ui_song_list_element->d1 = i;
-					app->ui->ui_song_list_element->d2 = i;
+					app->ui->ui_song_list_element->d1 = i + 1;
+					fix_scroll_position(app->ui->ui_song_list_element, app->library->song_entry_count);
 					break;
 				}
 			}
