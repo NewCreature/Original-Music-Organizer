@@ -108,10 +108,10 @@ v0.5
 
 [X]Add option to locate a song in the library.
 
-[ ]Fix song list not working when selecting an artist+album combo. Many times
+[X]Fix song list not working when selecting an artist+album combo. Many times
    it will generate an empty list.
 
-[ ]See if we can show albums that an artist contributed to that contain other
+[X]See if we can show albums that an artist contributed to that contain other
    artists as well. Many albums contain songs from various artists and it would
    be nice to have those albums listed under every artist that contributed to
    it.
