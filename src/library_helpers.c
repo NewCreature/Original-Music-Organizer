@@ -899,17 +899,14 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 				{
 					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album Artist");
 					val2 = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
-					if(val)
+					if((val && !strcmp(val, artist)) || (val2 && !strcmp(val2, artist)))
 					{
-						if((val && !strcmp(val, artist)) || (val2 && !strcmp(val2, artist)))
+						val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
+						if(val)
 						{
-							val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
-							if(val)
+							if(!strcmp(val, album))
 							{
-								if(!strcmp(val, album))
-								{
-									add_song(lp, i, ignore_genre);
-								}
+								add_song(lp, i, ignore_genre);
 							}
 						}
 					}
