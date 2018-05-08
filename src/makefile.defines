@@ -45,7 +45,7 @@ MACOSX_DEPEND_LIBS = -lbz2 -liconv -lxml2 -larchive -lcurl-static
 ###############
 # Linux stuff #
 ###############
-#LINUX_CFLAGS =
+LINUX_CFLAGS = -I/usr/local/include/binio
 LINUX_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/unix/alsa.o
 #LINUX_PLATFORM_LIBS =
 LINUX_DEPEND_LIBS = -larchive -lcurl
@@ -54,7 +54,7 @@ LINUX_DEPEND_LIBS = -larchive -lcurl
 ################################################
 # Linux static stuff (for binary distrubution) #
 ################################################
-LINUX_STATIC_CFLAGS = -I/usr/include/libbinio
+LINUX_STATIC_CFLAGS = -I/usr/local/include/binio
 LINUX_STATIC_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/unix/alsa.o
 #LINUX_STATIC_PLATFORM_LIBS =
 LINUX_STATIC_DEPEND_LIBS = -larchive -lcurl
