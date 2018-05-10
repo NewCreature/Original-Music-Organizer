@@ -76,6 +76,39 @@ static int cloud_strcmp(const char * s1, const char * s2)
 	return 0;
 }
 
+bool omo_get_tagger_key(const char * name)
+{
+	T3NET_ARGUMENTS * key_arguments;
+	T3NET_DATA * key_data;
+	const char * key_val;
+
+	printf("generating tagger key: %s\n", name);
+	key_arguments = t3net_create_arguments();
+	if(key_arguments)
+	{
+		/* copy track info string to entry database first, before breaking up the
+		   track list to put into the file database */
+		t3net_add_argument(key_arguments, "name", name);
+		printf("run\n");
+		key_data = t3net_get_data("http://www.t3-i.com/omo/get_tagger_key.php", key_arguments);
+		if(key_data)
+		{
+			key_val = t3net_get_data_entry_field(key_data, 0, "tagger_key");
+			if(key_val)
+			{
+				printf("got tagger key: %s - %s\n", name, key_val);
+				al_set_config_value(t3f_config, "Settings", "tagger_name", name);
+				al_set_config_value(t3f_config, "Settings", "tagger_id", key_val);
+				t3f_save_config();
+			}
+			t3net_destroy_data(key_data);
+			return true;
+		}
+		t3net_destroy_arguments(key_arguments);
+	}
+	return false;
+}
+
 /* submit user-genrated tags, ignore tags that are retrieved from the file */
 bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry, OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry, ALLEGRO_PATH * temp_path)
 {

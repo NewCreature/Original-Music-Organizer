@@ -11,6 +11,7 @@
 #include "library_cache.h"
 #include "profile.h"
 #include "command_line.h"
+#include "cloud.h"
 
 #include "archive_handlers/libarchive/libarchive.h"
 #include "archive_handlers/unrar/unrar.h"
@@ -295,6 +296,13 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 				app->spawn_queue_thread = true;
 			}
 		}
+	}
+
+	/* get tagger key if we don't have one */
+	val = al_get_config_value(t3f_config, "Settings", "tagger_id");
+	if(!val)
+	{
+		omo_get_tagger_key("Anonymous");
 	}
 	return true;
 }

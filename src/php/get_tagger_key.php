@@ -31,7 +31,6 @@ if(strlen($_GET['name']) == 0)
 {
 	die("Error: Incorrect syntax.\r\n");
 }
-$tagger_key = md5($_GET['name'] . ':' . time());
 
 /* Connect to database. */
 $mysqli = new mysqli($db_host, $db_user, $db_pass, $db_database);
@@ -41,15 +40,11 @@ if($mysqli->connect_errno)
 }
 $mysqli->set_charset('utf8');
 
-/* see if tagger_key already exists */
+/* generate tagger key */
 $query = "SELECT * FROM " . $db_name;
 $query .= " WHERE dummy = '66'";
-$query .= " AND `tagger_key` = '" . $tagger_key . "'";
-$result = $mysqli->query($query);
-if(mysqli_num_rows($result) > 0)
-{
-	die("Error: Tagger ID already exists.\r\n");
-}
+$result = $mysqli->query($query) or die("Error: Failed to generate tagger key.\r\n");
+$tagger_key = md5($_GET['name'] . ':' . time() . '.' . mysqli_num_rows($result));
 
 /* add new tagger to database */
 $query = "INSERT INTO " . $db_name . " SET dummy = '66'";
