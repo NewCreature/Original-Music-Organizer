@@ -106,8 +106,12 @@ by selecting 'Edit Tags' from the Playback or Library menu.
 When opening the tags editor, OMO will retrieve any tags for the selected song
 from the OMO online tags database. Hitting Okay will accept the tags as
 displayed and store them in your library. Any tags you edit will automatically
-be submitted to the OMO online tags database, provided you have a tagger key.
-To get a tagger key, simply select 'Get Tagger Key' from the File menu.
+be submitted to the OMO online tags database using the current tagger key.
+
+You can get a personalized tagger key using the 'Get Tagger Key' option in the
+File menu. The tagger name you choose will be stored in our database, so keep
+that in mind if you have privacy concerns. Don't put personal information you
+are not comfortable sharing to everyone in your tagger name.
 
 
 Linux MIDI Support
