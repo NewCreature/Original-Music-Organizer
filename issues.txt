@@ -116,7 +116,7 @@ v0.5
    be nice to have those albums listed under every artist that contributed to
    it.
 
-[ ]Automatically generate an anonymous tagger key on startup if there isn't one
+[X]Automatically generate an anonymous tagger key on startup if there isn't one
    configured. We need to look at the PHP tagger key generation code to ensure
    we get unique keys for every user.
 
