@@ -564,16 +564,16 @@ int omo_menu_library_edit_tags(int id, void * data)
 			j = app->ui->ui_song_list_element->d1 - 1;
 			if(j >= 0)
 			{
-				strcpy(fullfn, app->library->entry[app->library->song_entry[j]]->filename);
-				if(app->library->entry[app->library->song_entry[j]]->sub_filename)
+				strcpy(fullfn, app->library->entry[app->library->filtered_song_entry[j]]->filename);
+				if(app->library->entry[app->library->filtered_song_entry[j]]->sub_filename)
 				{
 					strcat(fullfn, "/");
-					strcat(fullfn, app->library->entry[app->library->song_entry[j]]->sub_filename);
+					strcat(fullfn, app->library->entry[app->library->filtered_song_entry[j]]->sub_filename);
 				}
-				if(app->library->entry[app->library->song_entry[j]]->track)
+				if(app->library->entry[app->library->filtered_song_entry[j]]->track)
 				{
 					strcat(fullfn, ":");
-					strcat(fullfn, app->library->entry[app->library->song_entry[j]]->track);
+					strcat(fullfn, app->library->entry[app->library->filtered_song_entry[j]]->track);
 				}
 			}
 			open_tags_dialog(app, fullfn);
@@ -595,19 +595,19 @@ int omo_menu_library_split_track(int id, void * data)
 			j = app->ui->ui_song_list_element->d1 - 1;
 			if(j >= 0)
 			{
-				strcpy(fullfn, app->library->entry[app->library->song_entry[j]]->filename);
-				if(app->library->entry[app->library->song_entry[j]]->sub_filename)
+				strcpy(fullfn, app->library->entry[app->library->filtered_song_entry[j]]->filename);
+				if(app->library->entry[app->library->filtered_song_entry[j]]->sub_filename)
 				{
 					strcat(fullfn, "/");
-					strcat(fullfn, app->library->entry[app->library->song_entry[j]]->sub_filename);
+					strcat(fullfn, app->library->entry[app->library->filtered_song_entry[j]]->sub_filename);
 				}
-				if(app->library->entry[app->library->song_entry[j]]->track)
+				if(app->library->entry[app->library->filtered_song_entry[j]]->track)
 				{
 					strcat(fullfn, ":");
-					strcat(fullfn, app->library->entry[app->library->song_entry[j]]->track);
+					strcat(fullfn, app->library->entry[app->library->filtered_song_entry[j]]->track);
 				}
 			}
-			open_split_track_dialog(app, app->library->entry[app->library->song_entry[j]]->filename, fullfn);
+			open_split_track_dialog(app, app->library->entry[app->library->filtered_song_entry[j]]->filename, fullfn);
 		}
 	}
 	return 1;

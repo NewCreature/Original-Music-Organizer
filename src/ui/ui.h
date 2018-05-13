@@ -26,8 +26,11 @@ typedef struct
 	T3GUI_ELEMENT * ui_queue_info_box_element;
 	T3GUI_ELEMENT * ui_queue_info_element;
 	T3GUI_ELEMENT * ui_button_element[6];
+	T3GUI_ELEMENT * ui_artist_search_element;
 	T3GUI_ELEMENT * ui_artist_list_element;
+	T3GUI_ELEMENT * ui_album_search_element;
 	T3GUI_ELEMENT * ui_album_list_element;
+	T3GUI_ELEMENT * ui_song_search_element;
 	T3GUI_ELEMENT * ui_song_list_element;
 	T3GUI_ELEMENT * ui_song_info_box_element;
 	T3GUI_ELEMENT * ui_song_info_1_element;
@@ -43,6 +46,9 @@ typedef struct
 	char queue_info_text[1024];
 	char current_time_text[32];
 	char song_info_text[2][1024];
+	char artist_search_text[256];
+	char album_search_text[256];
+	char song_search_text[256];
 
 	/* tags dialog */
 	OMO_UI_POPUP_DIALOG * tags_popup_dialog;

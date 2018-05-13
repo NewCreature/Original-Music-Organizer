@@ -32,16 +32,25 @@ typedef struct
 	int artist_entry_size;
 	int artist_entry_count;
 	char last_artist_name[256];
+	const char * artist_filter;
+	char ** filtered_artist_entry;
+	int filtered_artist_entry_count;
 
 	char ** album_entry;
 	int album_entry_size;
 	int album_entry_count;
 	char last_album_name[256];
+	const char * album_filter;
+	char ** filtered_album_entry;
+	int filtered_album_entry_count;
 
 	/* current list of songs for song list pane */
 	unsigned long * song_entry;
 	int song_entry_size;
 	int song_entry_count;
+	const char * song_filter;
+	unsigned long * filtered_song_entry;
+	int filtered_song_entry_count;
 
 	/* store the newest modified time from library folders */
 	time_t modified_time;

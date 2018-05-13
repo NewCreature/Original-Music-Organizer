@@ -37,7 +37,7 @@ char * ui_artist_list_proc(int index, int *list_size, void * data)
 	{
 		if(list_size && app->library && app->library->loaded && app->library->artist_entry)
 		{
-			*list_size = app->library->artist_entry_count;
+			*list_size = app->library->filtered_artist_entry_count;
 		}
 		else
 		{
@@ -47,7 +47,7 @@ char * ui_artist_list_proc(int index, int *list_size, void * data)
 	}
 	if(app->library && app->library->loaded && app->library->artist_entry)
 	{
-		sprintf(ui_artist_text, "%s", app->library->artist_entry[index]);
+		sprintf(ui_artist_text, "%s", app->library->filtered_artist_entry[index]);
 		return ui_artist_text;
 	}
 	return ui_artist_text;
@@ -65,7 +65,7 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
 	{
 		if(list_size && app->library && app->library->loaded && app->library->song_entry)
 		{
-			*list_size = app->library->song_entry_count + 1;
+			*list_size = app->library->filtered_song_entry_count + 1;
 		}
 		return NULL;
 	}
@@ -73,14 +73,14 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
 	{
 		if(index == 0)
 		{
-			sprintf(ui_song_text, "Shuffle All (%d Track%s)", app->library->song_entry_count, app->library->song_entry_count > 1 ? "s" : "");
+			sprintf(ui_song_text, "Shuffle All (%d Track%s)", app->library->filtered_song_entry_count, app->library->filtered_song_entry_count > 1 ? "s" : "");
 		}
 		else
 		{
 			index--;
-			title = omo_get_database_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Title");
-			album = omo_get_database_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Album");
-			track = omo_get_database_value(app->library->entry_database, app->library->entry[app->library->song_entry[index]]->id, "Track");
+			title = omo_get_database_value(app->library->entry_database, app->library->entry[app->library->filtered_song_entry[index]]->id, "Title");
+			album = omo_get_database_value(app->library->entry_database, app->library->entry[app->library->filtered_song_entry[index]]->id, "Album");
+			track = omo_get_database_value(app->library->entry_database, app->library->entry[app->library->filtered_song_entry[index]]->id, "Track");
 			if(title)
 			{
 				strcpy(ui_song_text, strlen(title) ? title : "No Title");
@@ -91,10 +91,10 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
 			}
 			else
 			{
-				strcpy(ui_song_text, app->library->entry[app->library->song_entry[index]]->filename);
+				strcpy(ui_song_text, app->library->entry[app->library->filtered_song_entry[index]]->filename);
 			}
 			strcat(ui_song_text, "\t");
-			strcat(ui_song_text, omo_sec_to_clock(omo_get_library_entry_length(app->library, app->library->entry[app->library->song_entry[index]]->id), buf, 64));
+			strcat(ui_song_text, omo_sec_to_clock(omo_get_library_entry_length(app->library, app->library->entry[app->library->filtered_song_entry[index]]->id), buf, 64));
 		}
 		return ui_song_text;
    }
@@ -109,13 +109,13 @@ char * ui_album_list_proc(int index, int *list_size, void * data)
 	{
 		if(list_size && app->library && app->library->loaded && app->library->album_entry)
 		{
-			*list_size = app->library->album_entry_count;
+			*list_size = app->library->filtered_album_entry_count;
 		}
 		return NULL;
 	}
 	if(app->library && app->library->loaded && app->library->album_entry)
 	{
-		sprintf(ui_album_text, "%s", app->library->album_entry[index]);
+		sprintf(ui_album_text, "%s", app->library->filtered_album_entry[index]);
 		return ui_album_text;
    }
    return NULL;

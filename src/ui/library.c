@@ -89,11 +89,11 @@ static void queue_song_list(void * data, OMO_LIBRARY * lp)
 
 	al_stop_timer(t3f_timer);
 	maybe_stop_player(app);
-	if(prepare_queue(app, lp->song_entry_count))
+	if(prepare_queue(app, lp->filtered_song_entry_count))
 	{
-		for(i = 0; i < lp->song_entry_count; i++)
+		for(i = 0; i < lp->filtered_song_entry_count; i++)
 		{
-			omo_add_file_to_queue(app->player->queue, lp->entry[lp->song_entry[i]]->filename, lp->entry[lp->song_entry[i]]->sub_filename, lp->entry[lp->song_entry[i]]->track, true);
+			omo_add_file_to_queue(app->player->queue, lp->entry[lp->filtered_song_entry[i]]->filename, lp->entry[lp->filtered_song_entry[i]]->sub_filename, lp->entry[lp->filtered_song_entry[i]]->track, true);
 		}
 		maybe_start_player(app);
 		app->spawn_queue_thread = true;
@@ -144,19 +144,19 @@ void omo_library_logic(void * data)
 	{
 		al_stop_timer(t3f_timer);
 		maybe_stop_player(app);
-		if(prepare_queue(app, app->ui->selected_song < 0 ? app->library->song_entry_count : 1))
+		if(prepare_queue(app, app->ui->selected_song < 0 ? app->library->filtered_song_entry_count : 1))
 		{
 			if(app->ui->selected_song < 0)
 			{
-				for(i = 0; i < app->library->song_entry_count; i++)
+				for(i = 0; i < app->library->filtered_song_entry_count; i++)
 				{
-					omo_add_file_to_queue(app->player->queue, app->library->entry[app->library->song_entry[i]]->filename, app->library->entry[app->library->song_entry[i]]->sub_filename, app->library->entry[app->library->song_entry[i]]->track, true);
+					omo_add_file_to_queue(app->player->queue, app->library->entry[app->library->filtered_song_entry[i]]->filename, app->library->entry[app->library->filtered_song_entry[i]]->sub_filename, app->library->entry[app->library->filtered_song_entry[i]]->track, true);
 				}
 				omo_menu_playback_shuffle(0, app);
 			}
 			else
 			{
-				omo_add_file_to_queue(app->player->queue, app->library->entry[app->library->song_entry[app->ui->selected_song]]->filename, app->library->entry[app->library->song_entry[app->ui->selected_song]]->sub_filename, app->library->entry[app->library->song_entry[app->ui->selected_song]]->track, true);
+				omo_add_file_to_queue(app->player->queue, app->library->entry[app->library->filtered_song_entry[app->ui->selected_song]]->filename, app->library->entry[app->library->filtered_song_entry[app->ui->selected_song]]->sub_filename, app->library->entry[app->library->filtered_song_entry[app->ui->selected_song]]->track, true);
 			}
 			app->spawn_queue_thread = true;
 			maybe_start_player(app);

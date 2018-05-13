@@ -70,6 +70,11 @@ bool omo_allocate_library(OMO_LIBRARY * lp, int total_files)
 	{
 		goto fail;
 	}
+	lp->filtered_artist_entry = malloc(sizeof(char *) * total_files + 2);
+	if(!lp->filtered_artist_entry)
+	{
+		goto fail;
+	}
 	lp->artist_entry_size = total_files + 2;
 	lp->artist_entry_count = 0;
 	strcpy(lp->last_artist_name, "");
@@ -125,6 +130,8 @@ void omo_free_album_list(OMO_LIBRARY * lp)
 		lp->album_entry_count = 0;
 		free(lp->album_entry);
 		lp->album_entry = NULL;
+		free(lp->filtered_album_entry);
+		lp->filtered_album_entry = NULL;
 	}
 }
 
@@ -151,11 +158,13 @@ void omo_destroy_library(OMO_LIBRARY * lp)
 			free(lp->artist_entry[i]);
 		}
 		free(lp->artist_entry);
+		free(lp->filtered_artist_entry);
 	}
 	omo_free_album_list(lp);
 	if(lp->song_entry)
 	{
 		free(lp->song_entry);
+		free(lp->filtered_song_entry);
 	}
 	omo_destroy_database(lp->file_database);
 	omo_destroy_database(lp->entry_database);
