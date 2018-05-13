@@ -687,6 +687,8 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 	{
 		free(lp->song_entry);
 		lp->song_entry = NULL;
+		free(lp->filtered_song_entry);
+		lp->filtered_song_entry = NULL;
 	}
 	ignore_genre = al_get_config_value(t3f_config, "Settings", "Ignore Genre");
 	fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.songs", buffer, 1024);
@@ -694,31 +696,39 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 	{
 		return false;
 	}
-	lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
-	lp->song_entry_count = 0;
-	if(lp->song_entry)
+	if(!strcmp(artist, "All Artists") && !strcmp(album, "All Albums") && !lp->modified)
 	{
-		lp->filtered_song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
-		if(!lp->filtered_song_entry)
+		omo_load_library_songs_cache(lp, fn);
+		omo_filter_library_song_list(lp, NULL);
+		omo_get_library_album_list(lp, artist);
+		return true;
+	}
+	else
+	{
+		lp->song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
+		lp->song_entry_count = 0;
+		if(lp->song_entry)
 		{
-			free(lp->song_entry);
-			return false;
+			lp->filtered_song_entry = malloc(sizeof(unsigned long) * lp->entry_count);
+			if(!lp->filtered_song_entry)
+			{
+				free(lp->song_entry);
+				return false;
+			}
 		}
 	}
 	if(!strcmp(artist, "All Artists"))
 	{
 		if(!strcmp(album, "All Albums"))
 		{
-			if(lp->modified || !omo_load_library_songs_cache(lp, fn))
+			for(i = 0; i < lp->entry_count; i++)
 			{
-				for(i = 0; i < lp->entry_count; i++)
-				{
-					add_song(lp, i, ignore_genre);
-				}
-				omo_start_library_sort();
-				library_sort_by_title(lp);
-				omo_save_library_songs_cache(lp, fn);
+				add_song(lp, i, ignore_genre);
 			}
+			omo_start_library_sort();
+			library_sort_by_title(lp);
+			omo_save_library_songs_cache(lp, fn);
+			omo_filter_library_song_list(lp, NULL);
 		}
 		else if(!strcmp(album, "Unknown Album"))
 		{
@@ -921,6 +931,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 		}
 		omo_get_library_album_list(lp, artist);
 	}
+	omo_filter_library_song_list(lp, NULL);
 
 	return true;
 }
@@ -1083,7 +1094,6 @@ static bool omo_setup_library_lists_helper(APP_INSTANCE * app)
 	}
 	sprintf(app->status_bar_text, "Creating song list...");
 	omo_get_library_song_list(app->library, "All Artists", "All Albums");
-	omo_filter_library_song_list(app->library, NULL);
 
 	app->loading_library_file_helper_data.scan_done = true;
 	if(app->loading_library_file_helper_data.cancel_scan)

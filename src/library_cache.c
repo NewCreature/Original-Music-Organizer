@@ -373,6 +373,11 @@ bool omo_load_library_songs_cache(OMO_LIBRARY * lp, const char * fn)
 		{
 			goto fail;
 		}
+		lp->filtered_song_entry = malloc(sizeof(unsigned long) * lp->song_entry_size);
+		if(!lp->filtered_song_entry)
+		{
+			goto fail;
+		}
 		for(i = 0; i < lp->song_entry_size; i++)
 		{
 			lp->song_entry[i] = al_fread32le(fp);
@@ -392,6 +397,11 @@ bool omo_load_library_songs_cache(OMO_LIBRARY * lp, const char * fn)
 		{
 			free(lp->song_entry);
 			lp->song_entry = NULL;
+		}
+		if(lp->filtered_song_entry)
+		{
+			free(lp->filtered_song_entry);
+			lp->filtered_song_entry = NULL;
 		}
 		if(fp)
 		{
