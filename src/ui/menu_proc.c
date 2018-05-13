@@ -15,6 +15,11 @@
 #include "../cloud.h"
 #include "../profile.h"
 #include "menu_init.h"
+#include "tags_dialog.h"
+#include "tagger_key_dialog.h"
+#include "filter_dialog.h"
+#include "new_profile_dialog.h"
+#include "split_track_dialog.h"
 #include "about_dialog.h"
 
 static char type_buf[1024] = {0};
