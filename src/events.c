@@ -3,6 +3,11 @@
 #include "instance.h"
 #include "constants.h"
 #include "library_helpers.h"
+#include "ui/tags_dialog.h"
+#include "ui/tagger_key_dialog.h"
+#include "ui/filter_dialog.h"
+#include "ui/new_profile_dialog.h"
+#include "ui/split_track_dialog.h"
 #include "ui/about_dialog.h"
 
 void omo_event_handler(ALLEGRO_EVENT * event, void * data)
