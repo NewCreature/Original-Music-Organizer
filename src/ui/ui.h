@@ -81,7 +81,7 @@ typedef struct
 
 	/* about dialog */
 	OMO_UI_POPUP_DIALOG * about_popup_dialog;
-	
+
 	/* theme data */
 	OMO_THEME * main_theme;
 	char ui_button_text[6][8];
@@ -95,20 +95,5 @@ bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void 
 
 OMO_UI_POPUP_DIALOG * omo_create_popup_dialog(const char * theme_file, int w, int h, void * data);
 void omo_close_popup_dialog(OMO_UI_POPUP_DIALOG * dp);
-
-bool omo_open_tags_dialog(OMO_UI * uip, void * data);
-void omo_close_tags_dialog(OMO_UI * uip, void * data);
-
-bool omo_open_split_track_dialog(OMO_UI * uip, void * data);
-void omo_close_split_track_dialog(OMO_UI * uip, void * data);
-
-bool omo_open_tagger_key_dialog(OMO_UI * uip, void * data);
-void omo_close_tagger_key_dialog(OMO_UI * uip, void * data);
-
-bool omo_open_new_profile_dialog(OMO_UI * uip, void * data);
-void omo_close_new_profile_dialog(OMO_UI * uip, void * data);
-
-bool omo_open_filter_dialog(OMO_UI * uip, void * data);
-void omo_close_filter_dialog(OMO_UI * uip, void * data);
 
 #endif

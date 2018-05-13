@@ -7,6 +7,75 @@
 #include "dialog_proc.h"
 #include "menu_proc.h"
 
+bool omo_open_tags_dialog(OMO_UI * uip, void * data)
+{
+	const char * val;
+	int y = 8;
+	int h = 8;
+	int row = 0;
+	int rows = 0;
+	int column = 0;
+	int i;
+	int edit_flags = D_SETFOCUS;
+
+	for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+	{
+		if(omo_tag_type[i])
+		{
+			rows++;
+		}
+	}
+	if(rows % 2)
+	{
+		rows++;
+	}
+	h = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) * 3 + 4;
+	h *= rows / 2;
+	h += 8;
+
+	val = al_get_config_value(t3f_config, "Settings", "theme");
+	if(!val)
+	{
+		val = "data/themes/basic/omo_theme.ini";
+	}
+	uip->tags_popup_dialog = omo_create_popup_dialog(val, 640, h, data);
+	if(uip->tags_popup_dialog)
+	{
+		t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, 640, h, 0, 0, 0, 0, NULL, NULL, NULL);
+		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+		{
+			if(omo_tag_type[i])
+			{
+				row++;
+				if(row > rows / 2)
+				{
+					row = 0;
+					column = 1;
+					y = 8;
+				}
+				t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, 8 + 320 * column, y, 320 - 16, al_get_font_line_height(uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]), 0, 0, 0, 0, (void *)omo_tag_type[i], NULL, NULL);
+				y += al_get_font_line_height(uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 2;
+				strcpy(uip->original_tags_text[i], uip->tags_text[i]);
+				t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_edit_proc, 8 + 320 * column, y, 320 - 16, al_get_font_line_height(uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 4, 0, edit_flags, 256, 0, uip->tags_text[i], NULL, NULL);
+				edit_flags = 0;
+				y += al_get_font_line_height(uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) * 2 + 2;
+			}
+		}
+		y += 12;
+		uip->tags_ok_button_element = t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8 + 320 * column, y, 320 / 2 - 8 - 4, 32, '\r', 0, 0, 0, "Okay", ui_tags_button_proc, NULL);
+		t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 320 * column + 320 / 2 + 4, y, 320 / 2 - 8 - 4, 32, 0, 0, 0, 1, "Cancel", ui_tags_button_proc, NULL);
+		t3gui_show_dialog(uip->tags_popup_dialog->dialog, t3f_queue, T3GUI_PLAYER_CLEAR, data);
+		return true;
+	}
+	return false;
+}
+
+void omo_close_tags_dialog(OMO_UI * uip, void * data)
+{
+	omo_close_popup_dialog(uip->tags_popup_dialog);
+	uip->tags_popup_dialog = NULL;
+}
+
 void omo_tags_dialog_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
