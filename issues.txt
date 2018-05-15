@@ -124,6 +124,10 @@ v0.5
    but it will make maintaining the database easier. If any users abuse the
    tagging function, we'll be able to wipe the bad tags out with less effort.
 
+[ ]Fix text for 0 items in library.
+
+[ ]Don't show queue position and current song length if playback is stopped.
+
 [ ]Finalize default theme.
 
    [ ]Remove rounded border around outer edge of program window.
