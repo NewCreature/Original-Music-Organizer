@@ -124,6 +124,13 @@ v0.5
    but it will make maintaining the database easier. If any users abuse the
    tagging function, we'll be able to wipe the bad tags out with less effort.
 
+[ ]Finalize default theme.
+
+   [ ]Remove rounded border around outer edge of program window.
+
+   [ ]Make edit boxes have outlines. We might do this by doing two render
+      passes like we do with list boxes.
+
 [ ]Add search field above each library section.
 
    [ ]We'll probably need to make 'real' lists which contain pointers to the
