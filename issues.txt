@@ -131,6 +131,8 @@ v0.5
    [ ]Make edit boxes have outlines. We might do this by doing two render
       passes like we do with list boxes.
 
+   [ ]Consider making the default font size larger.
+
 [ ]Add search field above each library section.
 
    [ ]We'll probably need to make 'real' lists which contain pointers to the
