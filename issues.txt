@@ -164,6 +164,9 @@ v0.5
    selected. We also need a way to check whether the list box is single-select
    or multi-select.
 
+[ ]Add support for loading and saving playlists. We should try to support M3U
+   and PLS.
+
 
 v0.4
 ----
