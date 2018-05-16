@@ -2129,6 +2129,10 @@ int t3gui_edit_proc(int msg, T3GUI_ELEMENT *d, int c)
             al_draw_text(font, tc, d->x+x+4, d->y+1, 0, buf);
             x += w;
          }
+         if(d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[1])
+         {
+             draw_nine_patch_bitmap(d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[1], d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG], d->x, d->y, d->w, d->h);
+         }
          break;
 
       case MSG_MOUSEDOWN:
