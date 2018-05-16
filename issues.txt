@@ -132,7 +132,7 @@ v0.5
 
    [ ]Remove rounded border around outer edge of program window.
 
-   [ ]Make edit boxes have outlines. We might do this by doing two render
+   [X]Make edit boxes have outlines. We might do this by doing two render
       passes like we do with list boxes.
 
    [ ]Consider making the default font size larger.
