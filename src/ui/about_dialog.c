@@ -29,7 +29,7 @@ bool omo_open_about_dialog(OMO_UI * uip, void * data)
 	{
 		font = uip->about_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0];
 		y = 8;
-		t3gui_dialog_add_element(uip->about_popup_dialog->dialog, uip->about_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, 320, 240, 0, 0, 0, 0, NULL, NULL, NULL);
+		t3gui_dialog_add_element(uip->about_popup_dialog->dialog, uip->about_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_WINDOW_BOX], t3gui_box_proc, 0, 0, 320, 240, 0, 0, 0, 0, NULL, NULL, NULL);
 		x = 160 - al_get_text_width(font, text_line_1) / 2;
 		t3gui_dialog_add_element(uip->about_popup_dialog->dialog, uip->about_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, x, y, 320, font_height, 0, 0, 0, 0, text_line_1, NULL, NULL);
 		y += font_height;

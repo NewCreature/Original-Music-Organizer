@@ -138,7 +138,7 @@ bool omo_open_filter_dialog(OMO_UI * uip, void * data)
 	if(uip->filter_popup_dialog)
 	{
 		uip->filter_types = 0;
-		t3gui_dialog_add_element(uip->filter_popup_dialog->dialog, uip->filter_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, w * columns, h, 0, 0, 0, 0, NULL, NULL, NULL);
+		t3gui_dialog_add_element(uip->filter_popup_dialog->dialog, uip->filter_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_WINDOW_BOX], t3gui_box_proc, 0, 0, w * columns, h, 0, 0, 0, 0, NULL, NULL, NULL);
 		for(i = 0; i < types.types; i++)
 		{
 			old_column = column;

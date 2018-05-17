@@ -25,7 +25,7 @@ bool omo_open_new_profile_dialog(OMO_UI * uip, void * data)
 	if(uip->new_profile_popup_dialog)
 	{
 		strcpy(uip->new_profile_text, "");
-		t3gui_dialog_add_element(uip->new_profile_popup_dialog->dialog, uip->new_profile_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, 320, h, 0, 0, 0, 0, NULL, NULL, NULL);
+		t3gui_dialog_add_element(uip->new_profile_popup_dialog->dialog, uip->new_profile_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_WINDOW_BOX], t3gui_box_proc, 0, 0, 320, h, 0, 0, 0, 0, NULL, NULL, NULL);
 		t3gui_dialog_add_element(uip->new_profile_popup_dialog->dialog, uip->new_profile_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, 8, pos_y, 320 - 16, al_get_font_line_height(uip->new_profile_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]), 0, 0, 0, 0, (void *)"Name", NULL, NULL);
 		pos_y += al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 8;
 		t3gui_dialog_add_element(uip->new_profile_popup_dialog->dialog, uip->new_profile_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_edit_proc, 8, pos_y, 320 - 16, al_get_font_line_height(uip->new_profile_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 4, 0, D_SETFOCUS, 256, 0, uip->new_profile_text, NULL, NULL);

@@ -41,7 +41,7 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
 	uip->tags_popup_dialog = omo_create_popup_dialog(val, 640, h, data);
 	if(uip->tags_popup_dialog)
 	{
-		t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, 640, h, 0, 0, 0, 0, NULL, NULL, NULL);
+		t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_WINDOW_BOX], t3gui_box_proc, 0, 0, 640, h, 0, 0, 0, 0, NULL, NULL, NULL);
 		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 		{
 			if(omo_tag_type[i])

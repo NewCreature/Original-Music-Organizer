@@ -22,7 +22,7 @@ bool omo_open_split_track_dialog(OMO_UI * uip, void * data)
 	uip->split_track_popup_dialog = omo_create_popup_dialog(val, 320, h, data);
 	if(uip->split_track_popup_dialog)
 	{
-		t3gui_dialog_add_element(uip->split_track_popup_dialog->dialog, uip->split_track_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, 320, h, 0, 0, 0, 0, NULL, NULL, NULL);
+		t3gui_dialog_add_element(uip->split_track_popup_dialog->dialog, uip->split_track_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_WINDOW_BOX], t3gui_box_proc, 0, 0, 320, h, 0, 0, 0, 0, NULL, NULL, NULL);
 		t3gui_dialog_add_element(uip->split_track_popup_dialog->dialog, uip->split_track_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, 8, pos_y, 320 - 16, al_get_font_line_height(uip->split_track_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]), 0, 0, 0, 0, (void *)"Track List (e.g. 0,20,40)", NULL, NULL);
 		pos_y += al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 8;
 		strcpy(uip->original_split_track_text, uip->split_track_text);

@@ -32,7 +32,7 @@ bool omo_open_tagger_key_dialog(OMO_UI * uip, void * data)
 		{
 			strcpy(uip->tagger_key_text, "");
 		}
-		t3gui_dialog_add_element(uip->tagger_key_popup_dialog->dialog, uip->tagger_key_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, 320, h, 0, 0, 0, 0, NULL, NULL, NULL);
+		t3gui_dialog_add_element(uip->tagger_key_popup_dialog->dialog, uip->tagger_key_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_WINDOW_BOX], t3gui_box_proc, 0, 0, 320, h, 0, 0, 0, 0, NULL, NULL, NULL);
 		t3gui_dialog_add_element(uip->tagger_key_popup_dialog->dialog, uip->tagger_key_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, 8, pos_y, 320 - 16, al_get_font_line_height(uip->tagger_key_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]), 0, 0, 0, 0, (void *)"Name", NULL, NULL);
 		pos_y += al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 8;
 		strcpy(uip->original_tagger_key_text, uip->tagger_key_text);
