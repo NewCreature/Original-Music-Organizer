@@ -130,7 +130,7 @@ v0.5
 
 [ ]Finalize default theme.
 
-   [ ]Remove rounded border around outer edge of program window.
+   [X]Remove rounded border around outer edge of program window.
 
    [X]Make edit boxes have outlines. We might do this by doing two render
       passes like we do with list boxes.
