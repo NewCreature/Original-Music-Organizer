@@ -73,7 +73,7 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
 	{
 		if(index == 0)
 		{
-			sprintf(ui_song_text, "Shuffle All (%d Track%s)", app->library->filtered_song_entry_count, app->library->filtered_song_entry_count > 1 ? "s" : "");
+			sprintf(ui_song_text, "Shuffle All (%d Track%s)", app->library->filtered_song_entry_count, app->library->filtered_song_entry_count != 1 ? "s" : "");
 		}
 		else
 		{
