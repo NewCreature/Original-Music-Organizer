@@ -6,6 +6,9 @@
 
 static int old_artist_d1 = -1;
 static int old_album_d1 = -1;
+static int old_artist_filter_length = -1;
+static int old_album_filter_length = -1;
+static int old_song_filter_length = -1;
 
 void omo_library_pre_gui_logic(void * data)
 {
@@ -15,6 +18,9 @@ void omo_library_pre_gui_logic(void * data)
 	{
 		old_artist_d1 = app->ui->ui_artist_list_element->d1;
 		old_album_d1 = app->ui->ui_album_list_element->d1;
+		old_artist_filter_length = strlen(app->ui->ui_artist_search_element->dp);
+		old_album_filter_length = strlen(app->ui->ui_album_search_element->dp);
+		old_song_filter_length = strlen(app->ui->ui_song_search_element->dp);
 	}
 }
 
@@ -107,6 +113,20 @@ void omo_library_logic(void * data)
 	const char * val;
 	const char * val2;
 	int i;
+
+	/* update library filter if user has typed into the search field */
+	if(strlen(app->ui->ui_artist_search_element->dp) != old_artist_filter_length)
+	{
+		omo_filter_library_artist_list(app->library, app->ui->ui_artist_search_element->dp);
+	}
+	if(strlen(app->ui->ui_album_search_element->dp) != old_album_filter_length)
+	{
+		omo_filter_library_album_list(app->library, app->ui->ui_album_search_element->dp);
+	}
+	if(strlen(app->ui->ui_song_search_element->dp) != old_song_filter_length)
+	{
+		omo_filter_library_song_list(app->library, app->ui->ui_song_search_element->dp);
+	}
 
 	app->ui->selected_song = app->ui->ui_song_list_element->d1 - 1;
 	if(app->ui->ui_artist_list_element->d1 != old_artist_d1)

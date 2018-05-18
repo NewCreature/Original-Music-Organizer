@@ -66,6 +66,26 @@ static const char * skip_articles(const char * s)
 	return final_s;
 }
 
+static bool strmatch(const char * s1, const char * s2)
+{
+	int l1 = strlen(s1);
+	int l2 = strlen(s2);
+	int i;
+
+	if(l2 < l1)
+	{
+		return false;
+	}
+	for(i = 0; i < l1 && i < l2; i++)
+	{
+		if(tolower(s1[i]) != tolower(s2[i]))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 /* when all else fails, sort by path */
 static int sort_by_path(const void *e1, const void *e2)
 {
@@ -528,10 +548,20 @@ bool omo_build_library_artists_list(APP_INSTANCE * app, OMO_LIBRARY * lp)
 
 void omo_filter_library_artist_list(OMO_LIBRARY * lp, const char * filter)
 {
+	int count = 2;
 	int i;
 
-	if(filter)
+	if(filter && strlen(filter))
 	{
+		for(i = 0; i < lp->artist_entry_count; i++)
+		{
+			if(strmatch(filter, lp->artist_entry[i]))
+			{
+				lp->filtered_artist_entry[count] = lp->artist_entry[i];
+				count++;
+			}
+		}
+		lp->filtered_artist_entry_count = count;
 	}
 	else
 	{
@@ -645,10 +675,20 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 
 void omo_filter_library_album_list(OMO_LIBRARY * lp, const char * filter)
 {
+	int count = 2;
 	int i;
 
-	if(filter)
+	if(filter && strlen(filter))
 	{
+		for(i = 0; i < lp->album_entry_count; i++)
+		{
+			if(strmatch(filter, lp->album_entry[i]))
+			{
+				lp->filtered_album_entry[count] = lp->album_entry[i];
+				count++;
+			}
+		}
+		lp->filtered_album_entry_count = count;
 	}
 	else
 	{
@@ -938,10 +978,25 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 
 void omo_filter_library_song_list(OMO_LIBRARY * lp, const char * filter)
 {
+	const char * val;
+	int count = 0;
 	int i;
 
-	if(filter)
+	if(filter && strlen(filter))
 	{
+		for(i = count; i < lp->song_entry_count; i++)
+		{
+			val = omo_get_database_value(lp->entry_database, lp->entry[lp->song_entry[i]]->id, "Title");
+			if(val)
+			{
+				if(strmatch(filter, val))
+				{
+					lp->filtered_song_entry[count] = lp->song_entry[i];
+					count++;
+				}
+			}
+		}
+		lp->filtered_song_entry_count = count;
 	}
 	else
 	{
