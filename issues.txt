@@ -133,6 +133,8 @@ v0.5
 
    [X]Consider making the default font size larger.
 
+[X]Fix text for 0 items in library.
+
 [ ]Look into Linux crash when song ends or changes while library is loaded.
 
 [ ]Fix GUI issues.
@@ -140,8 +142,6 @@ v0.5
    [ ]Right-click should not be interchangeable with left-click.
 
 [ ]Implement context menus.
-
-[ ]Fix text for 0 items in library.
 
 [ ]Don't show queue position and current song length if playback is stopped.
 
