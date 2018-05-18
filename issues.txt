@@ -133,6 +133,8 @@ v0.5
 
    [X]Consider making the default font size larger.
 
+[ ]Look into Linux crash when song ends or changes while library is loaded.
+
 [ ]Fix GUI issues.
 
    [ ]Right-click should not be interchangeable with left-click.
