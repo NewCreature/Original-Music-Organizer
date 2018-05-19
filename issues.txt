@@ -135,7 +135,11 @@ v0.5
 
 [X]Fix text for 0 items in library.
 
-[ ]Look into Linux crash when song ends or changes while library is loaded.
+[X]Look into Linux crash when song ends or changes while library is loaded.
+
+[ ]Reset scroll position when editing search filter.
+
+[ ]Clicking Shuffle All doesn't reset the queue list scroll position.
 
 [ ]Fix GUI issues.
 
