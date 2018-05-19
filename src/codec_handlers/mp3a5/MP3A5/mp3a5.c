@@ -73,8 +73,6 @@ static void get_lines(mpg123_string *inlines, char * buffer)
 	}
 }
 
-static char mp3a5_tag_buffer[1024] = {0};
-
 static void mp3a5_get_length(MP3A5_MP3 * mp3)
 {
 	unsigned long length;
@@ -91,6 +89,7 @@ static void mp3a5_get_length(MP3A5_MP3 * mp3)
 
 static MP3A5_MP3_TAGS * mp3a5_get_tags(const char * filename, MP3A5_MP3 * mp3)
 {
+	char mp3a5_tag_buffer[1024] = {0};
 	mpg123_id3v1 * id3_v1 = NULL;
 	mpg123_id3v2 * id3_v2 = NULL;
 	int meta;
