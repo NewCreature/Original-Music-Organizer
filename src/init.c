@@ -4,6 +4,11 @@
 #include "main.h"
 #include "events.h"
 #include "ui/menu_init.h"
+#include "ui/tags_dialog.h"
+#include "ui/split_track_dialog.h"
+#include "ui/tagger_key_dialog.h"
+#include "ui/new_profile_dialog.h"
+#include "ui/filter_dialog.h"
 #include "file_helpers.h"
 #include "test.h"
 #include "library_helpers.h"
@@ -187,7 +192,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		return false;
 	}
 	#ifdef ALLEGRO_MACOSX
-		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avplayer_get_codec_handler());
+//		omo_register_codec_handler(app->codec_handler_registry, omo_codec_avplayer_get_codec_handler());
 	#endif
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_dumba5_get_codec_handler());
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_allegro_acodec_get_codec_handler());
