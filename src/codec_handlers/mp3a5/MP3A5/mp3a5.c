@@ -445,7 +445,7 @@ static void * mp3a5_thread_proc(ALLEGRO_THREAD * tp, void * data)
 							{
 								for(i = pos; i < word_size * mp3->buffer_size * mp3->channels; i++)
 								{
-									((unsigned short *)fragment)[i] = 0;
+									fragment[i] = 0;
 								}
 								end_of_mp3 = true;
 								break;
