@@ -238,6 +238,10 @@ static bool codec_seek(void * data, double pos)
 		}
 		codec_data->loop_count = loop_count;
 	}
+	if(pos >= al_get_audio_stream_length_secs(codec_data->player_stream))
+	{
+		pos -= 0.001;
+	}
 
 	return al_seek_audio_stream_secs(codec_data->player_stream, pos);
 }
