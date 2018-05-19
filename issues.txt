@@ -137,7 +137,7 @@ v0.5
 
 [X]Look into Linux crash when song ends or changes while library is loaded.
 
-[ ]Look into MPG123 crash when song ends.
+[X]Look into MPG123 crash when song ends.
 
 [ ]Reset scroll position when editing search filter.
 
