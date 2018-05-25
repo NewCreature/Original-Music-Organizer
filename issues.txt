@@ -152,7 +152,7 @@ v0.5
 
 [X]Clicking Shuffle All doesn't reset the queue list scroll position.
 
-[ ]Reset scroll position when editing search filter.
+[X]Reset scroll position when editing search filter.
 
 [ ]Fix GUI issues.
 
@@ -162,16 +162,25 @@ v0.5
 
 [ ]Add search field above each library section.
 
-   [ ]We'll probably need to make 'real' lists which contain pointers to the
+   [X]We'll probably need to make 'real' lists which contain pointers to the
       main lists. The real lists will be generated as the user types in the
       search box. I think we'll be able to make it work like Live Studio
       Sessions without too much trouble.
 
-   [ ]The filtered lists should still show All and Unknown entries at the top.
+   [X]The filtered lists should still show All and Unknown entries at the top.
 
-   [ ]Typing in the search field should probably reset the state of the list
+   [X]Typing in the search field should probably reset the state of the list
       box. The filter might eliminate the selected item from the list, which
       would just lead to confusion for the user.
+
+   [ ]Pressing Enter or Tab in the search field should fully select the first
+      matching item in the list that is being searched.
+
+   [ ]Figure out why we are regenerating the album list when an album is
+      selected. The regenerated list includes all albums from the currently
+      selected artist, not just the ones that match the current search filter.
+      Not sure if the album list is being regenerated for a reason or if it is
+      just some bad or left over logic that can safely be removed.
 
 [ ]Add manual.
 
