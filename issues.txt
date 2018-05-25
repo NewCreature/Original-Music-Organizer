@@ -150,9 +150,9 @@ v0.5
 
 [X]Look into MPG123 crash when song ends.
 
-[ ]Reset scroll position when editing search filter.
+[X]Clicking Shuffle All doesn't reset the queue list scroll position.
 
-[ ]Clicking Shuffle All doesn't reset the queue list scroll position.
+[ ]Reset scroll position when editing search filter.
 
 [ ]Fix GUI issues.
 
