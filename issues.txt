@@ -50,8 +50,19 @@ Long Term Goals
 [ ]Implement a system for a user to rate or otherwise mark tracks they like or
    dislike.
 
-[X]Look into file selector that can select folders and files. Maybe we should
+[ ]Look into file selector that can select folders and files. Maybe we should
    provide our own file browser as an option.
+
+[ ]Implement context menus.
+
+[ ]Implement shortcut engine and map as many useful features as possible.
+
+   [ ]Shortcuts should be user-definable with sensible defaults for the most
+      used functions.
+
+   [ ]Look into how to detect shortcuts when OMO's window is not in focus. We
+      will probably need to use OS-specific functions for various platforms to
+      make this work.
 
 
 v0.5
@@ -147,8 +158,6 @@ v0.5
 
    [ ]Right-click should not be interchangeable with left-click.
 
-[ ]Implement context menus.
-
 [ ]Don't show queue position and current song length if playback is stopped.
 
 [ ]Add search field above each library section.
@@ -165,10 +174,6 @@ v0.5
       would just lead to confusion for the user.
 
 [ ]Add manual.
-
-[ ]Implement keyboard shortcuts for all features.
-
-[ ]Look into global hot keys.
 
 [ ]Figure out why the song list updates don't work when okaying edited tags
    while the library lists are regenerating.
