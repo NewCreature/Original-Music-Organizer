@@ -182,6 +182,10 @@ v0.5
       Not sure if the album list is being regenerated for a reason or if it is
       just some bad or left over logic that can safely be removed.
 
+   [ ]Disable search filter edit boxes when library is not loaded.
+
+[ ]Don't put duplicate songs in the song list.
+
 [ ]Add manual.
 
 [ ]Figure out why the song list updates don't work when okaying edited tags
