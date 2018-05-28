@@ -94,7 +94,7 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
 				strcpy(ui_song_text, app->library->entry[app->library->filtered_song_entry[index]]->filename);
 			}
 			strcat(ui_song_text, "\t");
-			strcat(ui_song_text, omo_sec_to_clock(omo_get_library_entry_length(app->library, app->library->entry[app->library->filtered_song_entry[index]]->id), buf, 64));
+			strcat(ui_song_text, omo_sec_to_clock(omo_get_library_entry_length(app->library, app->library->entry[app->library->filtered_song_entry[index]]->id) + 0.5, buf, 64));
 		}
 		return ui_song_text;
    }
