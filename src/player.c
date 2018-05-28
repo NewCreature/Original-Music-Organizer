@@ -236,7 +236,8 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 							}
 						}
 					}
-					if(omo_player_play_file(pp, loop_start, loop_end, fade_time, 1, force_length))
+					val = al_get_config_value(t3f_config, "Settings", "loop_count");
+					if(omo_player_play_file(pp, loop_start, loop_end, fade_time, val ? atoi(val) : 1, force_length))
 					{
 						break;
 					}

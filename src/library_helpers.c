@@ -1435,10 +1435,12 @@ double omo_get_library_entry_length(OMO_LIBRARY * lp, const char * id)
 	const char * loop_end = NULL;
 	const char * fade_time = NULL;
 	const char * loop_length = NULL;
+	const char * loop_count = NULL;
 	double d_loop_start = 0.0;
 	double d_loop_end = 0.0;
 	double d_fade_time = 0.0;
 	double d_loop_length = 0.0;
+	double d_loop_count = 1.0;
 	double entry_length = 0.0;
 
 	/* retrieve relevant tags from the database */
@@ -1465,6 +1467,11 @@ double omo_get_library_entry_length(OMO_LIBRARY * lp, const char * id)
 	{
 		if(loop_start && loop_end)
 		{
+			loop_count = al_get_config_value(t3f_config, "Settings", "loop_count");
+			if(loop_count)
+			{
+				d_loop_count = atof(loop_count);
+			}
 			d_loop_start = atof(loop_start);
 			d_loop_end = atof(loop_end);
 			if(fade_time)
@@ -1486,7 +1493,7 @@ double omo_get_library_entry_length(OMO_LIBRARY * lp, const char * id)
 			}
 			else
 			{
-				entry_length = d_loop_start + (d_loop_end - d_loop_start) * 2.0;
+				entry_length = d_loop_start + (d_loop_end - d_loop_start) * d_loop_count;
 				if(fade_time)
 				{
 					entry_length += d_fade_time;
