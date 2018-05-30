@@ -154,7 +154,7 @@ v0.5
 
 [X]Reset scroll position when editing search filter.
 
-[ ]DUMBA5 codec handler allows music to play past the end if you seek to the
+[X]DUMBA5 codec handler allows music to play past the end if you seek to the
    very end of the track.
 
 [ ]Fix GUI issues.
