@@ -259,8 +259,13 @@ static bool codec_done_playing(void * data)
 			}
 			return false;
 		}
+		else if(dumba5_get_player_time(codec_data->codec_player) >= codec_data->codec_length)
+		{
+			return true;
+		}
+		return dumba5_player_playback_finished(codec_data->codec_player);
 	}
-	return dumba5_player_playback_finished(codec_data->codec_player);
+	return true;
 }
 
 static const char * codec_get_info(void * data)
