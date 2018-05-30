@@ -1078,12 +1078,18 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
          break;
 
       case MSG_MOUSEUP:
-         d->flags &= ~D_TRACKMOUSE;
+         if(c == 1)
+         {
+             d->flags &= ~D_TRACKMOUSE;
+         }
          break;
 
 
       case MSG_MOUSEDOWN:
-         d->flags |= D_TRACKMOUSE;
+         if(c == 1)
+         {
+             d->flags |= D_TRACKMOUSE;
+         }
          break;
 
       case MSG_MOUSEMOVE:
