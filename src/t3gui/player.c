@@ -424,7 +424,8 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
 
                 if(player->click_obj >= 0)
                 {
-                    MESSAGE(player, player->click_obj, player->click_count > 1 ? MSG_DCLICK : MSG_CLICK, 1);
+                    MESSAGE(player, player->click_obj, player->click_count > 1 ? MSG_DCLICK : MSG_CLICK, player->click_button);
+                    player->click_button = -1;
                 }
 
                 player->click_count = 0;
@@ -690,7 +691,11 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
             if (player->click_obj == player->mouse_obj)
             {
                 al_start_timer(player->dclick_timer);
-                player->click_count++;
+                if(player->click_button != event->mouse.button)
+                {
+                    player->click_button = event->mouse.button;
+                    player->click_count++;
+                }
             }
             else
             {

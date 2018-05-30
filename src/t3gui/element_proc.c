@@ -1955,7 +1955,10 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
 
         case MSG_DCLICK:
         {
-            d->id1 = d->d1;
+            if(c == 1)
+            {
+                d->id1 = d->d1;
+            }
             break;
         }
 

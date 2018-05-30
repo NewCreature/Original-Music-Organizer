@@ -9,6 +9,7 @@ typedef struct T3GUI_PLAYER
     int mouse_obj;
 //    int focus_obj;
     int click_obj;
+    int click_button;
     int keyboard_obj;
     int stick, x_axis, y_axis;
     int joy_x, joy_y, joy_b;
