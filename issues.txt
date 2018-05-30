@@ -157,9 +157,9 @@ v0.5
 [X]DUMBA5 codec handler allows music to play past the end if you seek to the
    very end of the track.
 
-[ ]Fix GUI issues.
+[X]Fix GUI issues.
 
-   [ ]Right-click should not be interchangeable with left-click.
+   [X]Right-click should not be interchangeable with left-click.
 
 [ ]Don't show queue position and current song length if playback is stopped.
 
