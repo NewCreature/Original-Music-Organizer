@@ -161,6 +161,8 @@ v0.5
 
    [X]Right-click should not be interchangeable with left-click.
 
+[ ]Fix crash when library setup completes while library is not being shown.
+
 [ ]Don't show queue position and current song length if playback is stopped.
 
 [ ]Add search field above each library section.
