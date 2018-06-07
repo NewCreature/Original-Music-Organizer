@@ -35,7 +35,7 @@ void omo_shortcut_logic(void * data)
 		{
 			omo_menu_playback_edit_tags(0, app);
 		}
-		else if(app->ui->ui_song_list_element->flags & D_GOTFOCUS)
+		else if(app->library_view && app->ui->ui_song_list_element->flags & D_GOTFOCUS)
 		{
 			omo_menu_library_edit_tags(0, app);
 		}
