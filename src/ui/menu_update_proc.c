@@ -77,7 +77,7 @@ int omo_menu_library_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * d
 	{
 		return 0;
 	}
-	if(app->library && app->ui->ui_song_list_element->flags & D_GOTFOCUS)
+	if(app->library && app->library_view && app->ui->ui_song_list_element->flags & D_GOTFOCUS)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
 	}
