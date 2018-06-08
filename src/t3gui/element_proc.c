@@ -353,48 +353,54 @@ int t3gui_button_proc(int msg, T3GUI_ELEMENT *d, int c)
 
         case MSG_MOUSEDOWN:
         {
-            d->flags |= D_INTERACT;
-            ret |= D_REDRAWME;
+            if(c == 1)
+            {
+                d->flags |= D_INTERACT;
+                ret |= D_REDRAWME;
+            }
             break;
         }
 
         case MSG_MOUSEUP:
         {
-            if (d->flags & D_TRACKMOUSE)
+            if(c == 1)
             {
-                ret |= D_REDRAWME;
-            }
-            d->flags &= ~D_INTERACT;
+                if (d->flags & D_TRACKMOUSE)
+                {
+                    ret |= D_REDRAWME;
+                }
+                d->flags &= ~D_INTERACT;
 
-            ALLEGRO_MOUSE_STATE mouse_state;
-            al_get_mouse_state(&mouse_state);
-            int state1, state2;
-            int swap;
+                ALLEGRO_MOUSE_STATE mouse_state;
+                al_get_mouse_state(&mouse_state);
+                int state1, state2;
+                int swap;
 
-            /* what state was the button originally in? */
-            state1 = d->flags & D_SELECTED;
-            if (d->flags & D_EXIT)
-            {
-                swap = false;
-            }
-            else
-            {
-                swap = state1;
-            }
-            state2 = ((mouse_state.x >= d->x) && (mouse_state.y >= d->y) && (mouse_state.x < d->x + d->w) && (mouse_state.y < d->y + d->h));
-            if (swap)
-            {
-                state2 = !state2;
-            }
-            if (((state1) && (!state2)) || ((state2) && (!state1)))
-            {
-                d->flags ^= D_SELECTED;
-            }
+                /* what state was the button originally in? */
+                state1 = d->flags & D_SELECTED;
+                if (d->flags & D_EXIT)
+                {
+                    swap = false;
+                }
+                else
+                {
+                    swap = state1;
+                }
+                state2 = ((mouse_state.x >= d->x) && (mouse_state.y >= d->y) && (mouse_state.x < d->x + d->w) && (mouse_state.y < d->y + d->h));
+                if (swap)
+                {
+                    state2 = !state2;
+                }
+                if (((state1) && (!state2)) || ((state2) && (!state1)))
+                {
+                    d->flags ^= D_SELECTED;
+                }
 
-            if ((d->flags & D_SELECTED) && (d->flags & D_EXIT))
-            {
-                d->flags ^= D_SELECTED;
-                return D_CLOSE;
+                if ((d->flags & D_SELECTED) && (d->flags & D_EXIT))
+                {
+                    d->flags ^= D_SELECTED;
+                    return D_CLOSE;
+                }
             }
             break;
         }
@@ -490,13 +496,34 @@ int t3gui_push_button_proc(int msg, T3GUI_ELEMENT *d, int c)
         {
             ALLEGRO_MOUSE_STATE mouse_state;
             al_get_mouse_state(&mouse_state);
-            if(mouse_state.buttons)
+            if(mouse_state.buttons & 1)
             {
                 d->flags |= D_INTERACT;
             }
             break;
         }
         case MSG_MOUSEUP:
+        {
+            if(c == 1)
+            {
+                if(d->flags & D_INTERACT)
+                {
+                    d->flags &= ~D_INTERACT;
+                }
+
+                if(d->dp2)
+                {
+                    getbuttonfuncptr *func = d->dp2;
+                    func(d, d->user_data);
+                }
+                if(d->flags & D_EXIT)
+                {
+                    d->flags ^= D_SELECTED;
+                    return D_CLOSE;
+                }
+            }
+            break;
+        }
         case MSG_KEY:
         {
             if(d->flags & D_INTERACT)
