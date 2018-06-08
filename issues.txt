@@ -163,7 +163,7 @@ v0.5
 
 [X]Fix crash when library setup completes while library is not being shown.
 
-[ ]Look into accessing GUI elements in omo_tags_dialog_logic() to ensure we
+[X]Look into accessing GUI elements in omo_tags_dialog_logic() to ensure we
    aren't attempting to access them when they might not be valid pointers. We
    need to see what the logic there is supposed to do and possibly store some
    extra data when opening the dialog.
