@@ -83,7 +83,6 @@ void omo_tags_dialog_logic(void * data)
 	bool update_albums = false;
 	bool update_songs = false;
 	bool update_tags = false;
-	char title[256] = {0};
 	const char * val;
 	int i;
 
@@ -105,20 +104,18 @@ void omo_tags_dialog_logic(void * data)
 
 	if(app->button_pressed == 0)
 	{
-		val = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, app);
-		if(val)
+		if(app->library_view)
 		{
-			strcpy(app->edit_artist, val);
-		}
-		val = ui_album_list_proc(app->ui->ui_album_list_element->d1, NULL, app);
-		if(val)
-		{
-			strcpy(app->edit_album, val);
-		}
-		val = ui_song_list_proc(app->ui->ui_song_list_element->d1, NULL, app);
-		if(val)
-		{
-			strcpy(title, val);
+			val = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, app);
+			if(val)
+			{
+				strcpy(app->edit_artist, val);
+			}
+			val = ui_album_list_proc(app->ui->ui_album_list_element->d1, NULL, app);
+			if(val)
+			{
+				strcpy(app->edit_album, val);
+			}
 		}
 		strcpy(app->edit_song_id, app->ui->tags_entry);
 		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
