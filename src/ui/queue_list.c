@@ -92,6 +92,7 @@ void omo_queue_list_logic(void * data)
 	char current_length[16];
 	char total_length[16];
 	char buf[64];
+	int queue_pos = -1;
 
 	if((!app->player || !app->player->queue) || app->player->queue->entry_count < 1)
 	{
@@ -99,16 +100,31 @@ void omo_queue_list_logic(void * data)
 	}
 	else
 	{
-		if(app->player->queue_pos < app->player->queue->entry_count)
+		if(app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
 		{
-			strcpy(current_length, omo_sec_to_clock(app->player->queue->entry[app->player->queue_pos]->tags.length + 0.5, buf, 64));
+			queue_pos = app->ui->ui_queue_list_element->d1;
+		}
+		else if(app->player->queue_pos < app->player->queue->entry_count)
+		{
+			queue_pos = app->player->queue_pos;
+		}
+		if(queue_pos >= 0)
+		{
+			strcpy(current_length, omo_sec_to_clock(app->player->queue->entry[queue_pos]->tags.length + 0.5, buf, 64));
 		}
 		else
 		{
 			strcpy(current_length, "");
 		}
 		strcpy(total_length, omo_sec_to_clock(app->player->queue->length + 0.5, buf, 64));
-		sprintf(app->ui->queue_info_text, "%d/%d\t%s/%s%s", app->player->queue_pos + 1, app->player->queue->entry_count, current_length, total_length, app->player->queue->untallied_length ? "+" : "");
+		if(queue_pos >= 0)
+		{
+			sprintf(app->ui->queue_info_text, "%d/%d\t%s/%s%s", queue_pos + 1, app->player->queue->entry_count, current_length, total_length, app->player->queue->untallied_length ? "+" : "");
+		}
+		else
+		{
+			sprintf(app->ui->queue_info_text, "%d Track%s\t%s%s", app->player->queue->entry_count, app->player->queue->entry_count == 1 ? "" : "s", total_length, app->player->queue->untallied_length ? "+" : "");
+		}
 	}
 	if(app->player->queue && app->ui->ui_queue_list_element->id1 >= 0)
 	{
