@@ -168,7 +168,7 @@ v0.5
    need to see what the logic there is supposed to do and possibly store some
    extra data when opening the dialog.
 
-[ ]Don't show queue position and current song length if playback is stopped.
+[X]Don't show queue position and current song length if playback is stopped.
 
 [ ]Add search field above each library section.
 
