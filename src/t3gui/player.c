@@ -961,7 +961,6 @@ T3GUI_PLAYER *t3gui_init_dialog(T3GUI_ELEMENT *dialog, int focus_obj, int flags,
     /* If no focus object has been specified it defaults to the mouse object */
     if (focus_obj < 0) focus_obj = player->mouse_obj;
     player->keyboard_obj = focus_obj;
-    player->keyboard_obj = focus_obj;
 
     /* Offer focus to the focus object */
     if ((focus_obj >= 0) && ((t3gui_object_message(dialog+focus_obj, MSG_WANTFOCUS, 0)) & D_WANTKEYBOARD))
