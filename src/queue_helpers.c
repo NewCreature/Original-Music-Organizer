@@ -179,6 +179,7 @@ static int sort_by_title(const void *e1, const void *e2)
 bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 {
 	char section[1024];
+	const char * id;
 	const char * val;
 	const char * artist = NULL;
 	const char * album = NULL;
@@ -200,35 +201,39 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 			strcat(section, ":");
 			strcat(section, qp->entry[i]->track);
 		}
-		val = omo_get_database_value(lp->file_database, section, "id");
-		if(val)
+		id = omo_get_database_value(lp->file_database, section, "id");
+		if(id)
 		{
-			artist = omo_get_database_value(lp->entry_database, val, "Artist");
-			album = omo_get_database_value(lp->entry_database, val, "Album");
-			title = omo_get_database_value(lp->entry_database, val, "Title");
-			track = omo_get_database_value(lp->entry_database, val, "Track");
+			/* keep copy of tags in queue entry tags */
+			artist = omo_get_database_value(lp->entry_database, id, "Artist");
 			if(artist)
 			{
 				strcpy(qp->entry[i]->tags.artist, artist);
 			}
+			album = omo_get_database_value(lp->entry_database, id, "Album");
 			if(album)
 			{
 				strcpy(qp->entry[i]->tags.album, album);
 			}
+			title = omo_get_database_value(lp->entry_database, id, "Title");
 			if(title)
 			{
 				strcpy(qp->entry[i]->tags.title, title);
 			}
+			track = omo_get_database_value(lp->entry_database, id, "Track");
 			if(track)
 			{
 				strcpy(qp->entry[i]->tags.track, track);
 			}
-			if(artist && album && title && track)
+			qp->entry[i]->tags.length = omo_get_library_entry_length(lp, id);
+			qp->length += qp->entry[i]->tags.length;
+
+			/* signify that we don't need to scan the file because we already have all the tags we're going to get */
+			val = omo_get_database_value(lp->entry_database, id, "scanned");
+			if(val)
 			{
 				ret = true;
 			}
-			qp->entry[i]->tags.length = omo_get_library_entry_length(lp, val);
-			qp->length += qp->entry[i]->tags.length;
 		}
 	}
 	if(qp->entry[i]->skip_scan)
@@ -368,7 +373,15 @@ void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp, void * data)
 			return;
 		}
 
+		/* get already tallied length */
 		qp->length = 0.0;
+		for(i = 0; i < qp->entry_count; i++)
+		{
+			if(qp->entry[i]->tags_retrieved)
+			{
+				qp->length += qp->entry[i]->tags.length;
+			}
+		}
 		qp->untallied_length = true;
 		for(i = 0; i < qp->entry_count; i++)
 		{
