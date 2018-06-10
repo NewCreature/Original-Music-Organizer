@@ -227,48 +227,62 @@ static int cmp_up(const T3GUI_ELEMENT *d1, const T3GUI_ELEMENT *d2)
  */
 static int offer_focus(T3GUI_ELEMENT *dialog, int obj, int *focus_obj, int force)
 {
-   int res = D_O_K;
-   assert(dialog);
-   assert(focus_obj);
+    int res = D_O_K;
+    assert(dialog);
+    assert(focus_obj);
 
-   if ((obj == *focus_obj) ||
-         ((obj >= 0) && (dialog[obj].flags & (D_HIDDEN | D_DISABLED))))
-      return D_O_K;
+    if((obj == *focus_obj) || ((obj >= 0) && (dialog[obj].flags & (D_HIDDEN | D_DISABLED))))
+    {
+        return D_O_K;
+    }
 
-   /* check if object wants the focus */
-   if (obj >= 0) {
-      res = t3gui_object_message(dialog+obj, MSG_WANTFOCUS, 0);
-      if (res & D_WANTKEYBOARD)
-         res ^= D_WANTKEYBOARD;
-      else
-         obj = -1;
-   }
+    /* check if object wants the focus */
+    if(obj >= 0)
+    {
+        res = t3gui_object_message(dialog+obj, MSG_WANTFOCUS, 0);
+        if(res & D_WANTKEYBOARD)
+        {
+            res ^= D_WANTKEYBOARD;
+        }
+        else
+        {
+            obj = -1;
+        }
+    }
 
-   if ((obj >= 0) || (force)) {
-      /* take focus away from old object */
-      if (*focus_obj >= 0) {
-         res |= t3gui_object_message(dialog+*focus_obj, MSG_LOSTFOCUS, 0);
-         if (res & D_WANTKEYBOARD) {
-            if (obj < 0)
-               return D_O_K;
-            else
-               res &= ~D_WANTKEYBOARD;
-         }
-         dialog[*focus_obj].flags &= ~D_GOTFOCUS;
-         res |= D_REDRAW_ALL;
-      }
+    if((obj >= 0) || (force))
+    {
+        /* take focus away from old object */
+        if(*focus_obj >= 0)
+        {
+            res |= t3gui_object_message(dialog+*focus_obj, MSG_LOSTFOCUS, 0);
+            if(res & D_WANTKEYBOARD)
+            {
+                if(obj < 0)
+                {
+                    return D_O_K;
+                }
+                else
+                {
+                    res &= ~D_WANTKEYBOARD;
+                }
+            }
+            dialog[*focus_obj].flags &= ~D_GOTFOCUS;
+            res |= D_REDRAW_ALL;
+        }
 
-      *focus_obj = obj;
+        *focus_obj = obj;
 
-      /* give focus to new object */
-      if (obj >= 0) {
-         dialog[obj].flags |= D_GOTFOCUS;
-         res |= t3gui_object_message(dialog+obj, MSG_GOTFOCUS, 0);
-         res |= D_REDRAW_ALL;
-      }
-   }
+        /* give focus to new object */
+        if(obj >= 0)
+        {
+            dialog[obj].flags |= D_GOTFOCUS;
+            res |= t3gui_object_message(dialog+obj, MSG_GOTFOCUS, 0);
+            res |= D_REDRAW_ALL;
+        }
+    }
 
-   return res;
+    return res;
 }
 
 /* move_focus:
@@ -666,12 +680,14 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
                 MESSAGE(player, player->mouse_obj, MSG_MOUSEDOWN, event->mouse.button);
                 if(player->res &= D_WANTKEYBOARD)
                 {
-                    if(player->keyboard_obj >= 0)
+                    if(offer_focus(player->dialog, player->obj, &player->keyboard_obj, false) & D_WANTKEYBOARD)
                     {
-                        player->dialog[player->keyboard_obj].flags &= ~D_GOTFOCUS;
+                        if(player->keyboard_obj >= 0)
+                        {
+                            player->dialog[player->keyboard_obj].flags &= ~D_GOTFOCUS;
+                        }
+                        player->dialog[player->obj].flags |= D_GOTFOCUS;
                     }
-                    player->keyboard_obj = player->obj;
-                    player->dialog[player->obj].flags |= D_GOTFOCUS;
                 }
             }
             break;

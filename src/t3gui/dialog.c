@@ -128,8 +128,11 @@ int t3gui_dialog_message(T3GUI_ELEMENT *dialog, int msg, int c, int *obj)
 
             if (r != D_O_K) {
                res |= r;
-               if (obj)
+               if (msg != MSG_DRAW && msg != MSG_IDLE && msg != MSG_TIMER && obj)
+               {
+                   printf("new object: %d\n", count);
                   *obj = count;
+              }
             }
 
             if ((msg == MSG_IDLE) && (dialog[count].flags & (D_DIRTY | D_HIDDEN)) == D_DIRTY) {
