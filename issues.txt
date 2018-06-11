@@ -173,7 +173,7 @@ v0.5
 [X]See if we can stop the queue thread from tallying up time when the time is
    already figured out from the library.
 
-[ ]See if we can prevent keyboard focus from going to any element unless we
+[X]See if we can prevent keyboard focus from going to any element unless we
    specifically click on it or use Tab to select it.
 
 [ ]Add search field above each library section.
