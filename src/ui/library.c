@@ -21,6 +21,18 @@ void omo_library_pre_gui_logic(void * data)
 		old_artist_filter_length = strlen(app->ui->ui_artist_search_element->dp);
 		old_album_filter_length = strlen(app->ui->ui_album_search_element->dp);
 		old_song_filter_length = strlen(app->ui->ui_song_search_element->dp);
+		if(app->library && app->library->loaded)
+		{
+			app->ui->ui_artist_search_element->flags &= ~D_DISABLED;
+			app->ui->ui_album_search_element->flags &= ~D_DISABLED;
+			app->ui->ui_song_search_element->flags &= ~D_DISABLED;
+		}
+		else
+		{
+			app->ui->ui_artist_search_element->flags |= D_DISABLED;
+			app->ui->ui_album_search_element->flags |= D_DISABLED;
+			app->ui->ui_song_search_element->flags |= D_DISABLED;
+		}
 	}
 }
 

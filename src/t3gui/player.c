@@ -824,6 +824,7 @@ static void update_dialog(T3GUI_PLAYER * player)
 {
     ALLEGRO_EVENT my_event;
     int n;
+    int c = 0;
     my_event.user.data4 = (intptr_t)player;
 
     /* Check for objects that need to be redrawn */
@@ -834,6 +835,26 @@ static void update_dialog(T3GUI_PLAYER * player)
             player->dialog[n].flags &= ~D_DIRTY;
             player->res |= D_REDRAW_ALL;
         }
+    }
+
+    /* remove focus from disabled items */
+    for(n = 0; player->dialog[n].proc; n++)
+    {
+        if(player->dialog[n].flags & D_GOTFOCUS)
+        {
+            if(player->dialog[n].flags & D_DISABLED)
+            {
+                player->dialog[n].flags &= ~D_GOTFOCUS;
+            }
+            else
+            {
+                c++;
+            }
+        }
+    }
+    if(c <= 0)
+    {
+        player->keyboard_obj = -1;
     }
 
     if(player->res & D_REDRAW_ANY)
