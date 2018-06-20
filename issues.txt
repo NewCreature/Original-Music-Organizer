@@ -64,6 +64,13 @@ Long Term Goals
       will probably need to use OS-specific functions for various platforms to
       make this work.
 
+[ ]Add manual.
+
+[ ]Allow multiple items to be selected in the list boxes. We need to add
+   another argument to the list box callbacks to check whether an item is
+   selected. We also need a way to check whether the list box is single-select
+   or multi-select.
+
 
 v0.5
 ----
@@ -202,15 +209,8 @@ v0.5
 
 [ ]Don't put duplicate songs in the song list.
 
-[ ]Add manual.
-
 [ ]Figure out why the song list updates don't work when okaying edited tags
    while the library lists are regenerating.
-
-[ ]Allow multiple items to be selected in the list boxes. We need to add
-   another argument to the list box callbacks to check whether an item is
-   selected. We also need a way to check whether the list box is single-select
-   or multi-select.
 
 [ ]Add support for loading and saving playlists. We should try to support M3U
    and PLS.
