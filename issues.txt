@@ -215,6 +215,11 @@ v0.5
 [ ]Add support for loading and saving playlists. We should try to support M3U
    and PLS.
 
+[ ]Fix View menu on Mac. Currently, clicking an item in the View menu doesn't
+   generate a MENU_CLICK event. This might be something that needs to be fixed
+   in Allegro. If so, we can fix it there or work around the issue by naming
+   our view menu something else.
+
 
 v0.4
 ----
