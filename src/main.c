@@ -118,6 +118,7 @@ void omo_logic(void * data)
 	int visible = 0;
 	int seek_flags;
 	int volume_pos;
+	bool disable_shortcuts = false;
 
 	t3f_refresh_menus();
 	if(app->test_mode >= 0)
@@ -183,9 +184,24 @@ void omo_logic(void * data)
 				if(app->library_view)
 				{
 					omo_library_logic(data);
+					if(app->ui->ui_artist_search_element->flags & D_GOTFOCUS)
+					{
+						disable_shortcuts = true;
+					}
+					else if(app->ui->ui_album_search_element->flags & D_GOTFOCUS)
+					{
+						disable_shortcuts = true;
+					}
+					else if(app->ui->ui_song_search_element->flags & D_GOTFOCUS)
+					{
+						disable_shortcuts = true;
+					}
 				}
 				omo_queue_list_logic(app);
-				omo_shortcut_logic(app);
+				if(!disable_shortcuts)
+				{
+					omo_shortcut_logic(app);
+				}
 				omo_player_ui_logic(app);
 				if(app->library_view)
 				{
