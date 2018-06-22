@@ -196,6 +196,11 @@ v0.5
       box. The filter might eliminate the selected item from the list, which
       would just lead to confusion for the user.
 
+   [ ]When typing in the search box, don't regenerate any lists. Currently, the
+      first matching item in the list is selected and the proceeding lists are
+      generated based on that selection. The matching item should not really be
+      selected until the user hits Enter or Tab.
+
    [ ]Pressing Enter or Tab in the search field should fully select the first
       matching item in the list that is being searched.
 
