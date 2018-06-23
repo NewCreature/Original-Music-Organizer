@@ -714,6 +714,20 @@ static bool add_song(OMO_LIBRARY * lp, unsigned long entry, const char * ignore_
 	return false;
 }
 
+static bool song_already_listed(OMO_LIBRARY * lp, const char * id)
+{
+	int i;
+
+	for(i = 0; i < lp->song_entry_count; i++)
+	{
+		if(!strcmp(lp->entry[lp->song_entry[i]]->id, id))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char * album)
 {
 	char buffer[1024];
@@ -797,7 +811,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 				val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
 				if(val)
 				{
-					if(!strcmp(val, album))
+					if(!strcmp(val, album) && !song_already_listed(lp, lp->entry[i]->id))
 					{
 						add_song(lp, i, ignore_genre);
 					}
@@ -885,7 +899,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
 					if(val)
 					{
-						if(!strcmp(val, album))
+						if(!strcmp(val, album) && !song_already_listed(lp, lp->entry[i]->id))
 						{
 							add_song(lp, i, ignore_genre);
 						}
@@ -959,7 +973,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
 					if(val)
 					{
-						if(!strcmp(val, album))
+						if(!strcmp(val, album) && !song_already_listed(lp, lp->entry[i]->id))
 						{
 							add_song(lp, i, ignore_genre);
 						}
