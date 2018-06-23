@@ -25,6 +25,7 @@ typedef struct
 	OMO_QUEUE_TAGS tags;
 	bool tags_retrieved;
 	bool skip_scan; // flag to skip scanning if we got song from library
+	int sort_order;
 
 } OMO_QUEUE_ENTRY;
 
@@ -36,6 +37,7 @@ typedef struct
 	int entry_count;
 	double length;
 	bool untallied_length;
+	int presorted_entries;
 
 	ALLEGRO_THREAD * thread; // tags scanner thread
 	bool thread_done;

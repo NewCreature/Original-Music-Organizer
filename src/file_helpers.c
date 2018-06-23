@@ -476,7 +476,11 @@ static bool queue_playlist(const char * fn, OMO_FILE_HELPER_DATA * file_helper_d
 							codec_handler = omo_get_codec_handler(file_helper_data->codec_handler_registry, al_path_cstr(file_path, '/'), file_helper_data->filter);
 							if(codec_handler)
 							{
-								omo_add_file_to_queue(file_helper_data->queue, al_path_cstr(file_path, '/'), NULL, NULL, false);
+								if(omo_add_file_to_queue(file_helper_data->queue, al_path_cstr(file_path, '/'), NULL, NULL, false))
+								{
+									file_helper_data->queue->presorted_entries++;
+									file_helper_data->queue->entry[file_helper_data->queue->entry_count - 1]->sort_order = file_helper_data->queue->presorted_entries;
+								}
 							}
 						}
 						al_destroy_path(file_path);

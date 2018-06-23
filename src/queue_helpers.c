@@ -12,6 +12,10 @@ static int sort_by_path(const void *e1, const void *e2)
 	int c;
 	int id1, id2;
 
+	if((*entry1)->sort_order && (*entry2)->sort_order)
+	{
+		return (*entry1)->sort_order - (*entry2)->sort_order;
+	}
 	c = strcmp((*entry1)->file, (*entry2)->file);
 	if(c != 0)
 	{
@@ -58,6 +62,11 @@ static int sort_by_track(const void *e1, const void *e2)
 	{
 		return sort_by_path(e1, e2);
 	}
+	if((*entry1)->sort_order && (*entry2)->sort_order)
+	{
+		return (*entry1)->sort_order - (*entry2)->sort_order;
+	}
+
 	sprintf(buf, "%s%s%s", (*entry1)->file, (*entry1)->sub_file ? "/" : "", (*entry1)->sub_file ? (*entry1)->sub_file : "");
 	id1 = omo_get_database_value(library->file_database, buf, "id");
 	sprintf(buf, "%s%s%s", (*entry2)->file, (*entry2)->sub_file ? "/" : "", (*entry2)->sub_file ? (*entry2)->sub_file : "");
@@ -110,6 +119,11 @@ static int sort_by_artist_and_title(const void *e1, const void *e2)
 	{
 		return sort_by_path(e1, e2);
 	}
+	if((*entry1)->sort_order && (*entry2)->sort_order)
+	{
+		return (*entry1)->sort_order - (*entry2)->sort_order;
+	}
+
 	sprintf(buf, "%s%s%s", (*entry1)->file, (*entry1)->sub_file ? "/" : "", (*entry1)->sub_file ? (*entry1)->sub_file : "");
 	id1 = omo_get_database_value(library->file_database, buf, "id");
 	sprintf(buf, "%s%s%s", (*entry2)->file, (*entry2)->sub_file ? "/" : "", (*entry2)->sub_file ? (*entry2)->sub_file : "");
@@ -151,6 +165,11 @@ static int sort_by_title(const void *e1, const void *e2)
 	{
 		return sort_by_path(e1, e2);
 	}
+	if((*entry1)->sort_order && (*entry2)->sort_order)
+	{
+		return (*entry1)->sort_order - (*entry2)->sort_order;
+	}
+
 	sprintf(buf, "%s%s%s", (*entry1)->file, (*entry1)->sub_file ? "/" : "", (*entry1)->sub_file ? (*entry1)->sub_file : "");
 	id1 = omo_get_database_value(library->file_database, buf, "id");
 	sprintf(buf, "%s%s%s", (*entry2)->file, (*entry2)->sub_file ? "/" : "", (*entry2)->sub_file ? (*entry2)->sub_file : "");
