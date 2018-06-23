@@ -220,6 +220,17 @@ v0.5
 [ ]Add support for loading and saving playlists. We should try to support M3U
    and PLS.
 
+   [ ]Allow saving the current queue as a playlist.
+
+   [ ]Don't add unsupported file types to queue.
+
+   [ ]Don't change sorting of queue items added from playlist. They should
+      appear in the same order as they are in the playlist.
+
+   [ ]We need a way to store OMO-style filenames in a playlist file. When
+      loading a playlist, we need to decode the filename into a base filename,
+      sub filename, and track.
+
 [ ]Fix View menu on Mac. Currently, clicking an item in the View menu doesn't
    generate a MENU_CLICK event. This might be something that needs to be fixed
    in Allegro. If so, we can fix it there or work around the issue by naming
