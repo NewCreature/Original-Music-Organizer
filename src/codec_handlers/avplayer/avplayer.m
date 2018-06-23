@@ -35,6 +35,11 @@ static void * codec_load_file(const char * fn, const char * subfn)
 		{
 			strcpy(data->player_filename, fn);
 		}
+		else
+		{
+			free(data);
+			data = NULL;
+		}
 	}
 	return data;
 }
