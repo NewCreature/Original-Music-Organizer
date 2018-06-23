@@ -232,6 +232,9 @@ v0.5
 [ ]See about fixing scroll bar rendering. Currently we usually get a small gap
    at the bottom when we are scrolled all the way down.
 
+[ ]Fix button rendering when it has focus. It should look the same as when it
+   has mouse focus.
+
 
 v0.4
 ----
