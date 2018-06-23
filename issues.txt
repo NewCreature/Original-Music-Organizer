@@ -183,6 +183,8 @@ v0.5
 [X]See if we can prevent keyboard focus from going to any element unless we
    specifically click on it or use Tab to select it.
 
+[X]Don't put duplicate songs in the song list.
+
 [ ]Add search field above each library section.
 
    [X]We'll probably need to make 'real' lists which contain pointers to the
@@ -212,8 +214,6 @@ v0.5
 
    [ ]Disable search filter edit boxes when library is not loaded.
 
-[ ]Don't put duplicate songs in the song list.
-
 [ ]Figure out why the song list updates don't work when okaying edited tags
    while the library lists are regenerating.
 
@@ -224,6 +224,13 @@ v0.5
    generate a MENU_CLICK event. This might be something that needs to be fixed
    in Allegro. If so, we can fix it there or work around the issue by naming
    our view menu something else.
+
+[ ]Check Artist->Unknown Album code path. When I selected an artist and
+   Unknown Album, no songs were listed even though there were several songs
+   with no album specified.
+
+[ ]See about fixing scroll bar rendering. Currently we usually get a small gap
+   at the bottom when we are scrolled all the way down.
 
 
 v0.4
