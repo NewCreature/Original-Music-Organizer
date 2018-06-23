@@ -222,9 +222,9 @@ v0.5
 
    [ ]Allow saving the current queue as a playlist.
 
-   [ ]Don't add unsupported file types to queue.
+   [X]Don't add unsupported file types to queue.
 
-   [ ]Don't change sorting of queue items added from playlist. They should
+   [X]Don't change sorting of queue items added from playlist. They should
       appear in the same order as they are in the playlist.
 
    [ ]We need a way to store OMO-style filenames in a playlist file. When
