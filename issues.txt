@@ -235,6 +235,8 @@ v0.5
 [ ]Fix button rendering when it has focus. It should look the same as when it
    has mouse focus.
 
+[ ]Update plist for new format support.
+
 
 v0.4
 ----
