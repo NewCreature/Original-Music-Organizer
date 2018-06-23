@@ -98,6 +98,7 @@ void omo_file_chooser_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	OMO_FILE_HELPER_DATA file_helper_data;
+	ALLEGRO_PATH * path;
 	int total_files = 0;
 	int old_queue_size = 0;
 	const char * val;
@@ -289,6 +290,18 @@ void omo_file_chooser_logic(void * data)
 						}
 						t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
 					}
+					break;
+				}
+				case 6:
+				{
+					al_set_config_value(t3f_config, "Settings", "last_playlist_filename", al_get_native_file_dialog_path(app->file_chooser, 0));
+					path = al_create_path(al_get_native_file_dialog_path(app->file_chooser, 0));
+					if(path)
+					{
+						al_set_path_extension(path, ".pls");
+					}
+					omo_export_queue_to_playlist(app->player->queue, al_path_cstr(path, '/'));
+					al_destroy_path(path);
 					break;
 				}
 			}

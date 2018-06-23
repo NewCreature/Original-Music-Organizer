@@ -31,6 +31,26 @@ int omo_menu_base_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 	return 1;
 }
 
+int omo_menu_playlist_update_proc(ALLEGRO_MENU * mp, int item, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	if(!omo_menu_base_update_disable_proc(mp, item, data))
+	{
+		return 0;
+	}
+	else if(app->player->queue && app->player->queue->entry_count > 0)
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
+		return 0;
+	}
+	else
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
+	}
+	return 1;
+}
+
 int omo_menu_playback_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;

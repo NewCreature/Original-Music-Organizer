@@ -2,6 +2,7 @@
 #define OMO_MENU_UPDATE_PROC_H
 
 int omo_menu_base_update_proc(ALLEGRO_MENU * mp, int item, void * data);
+int omo_menu_playlist_update_proc(ALLEGRO_MENU * mp, int item, void * data);
 
 int omo_menu_playback_update_proc(ALLEGRO_MENU * mp, int item, void * data);
 int omo_menu_playback_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * data);

@@ -63,6 +63,8 @@ bool omo_setup_menus(void * data)
 	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Play Folder", 0, NULL, omo_menu_file_play_folder, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Queue Folder", 0, NULL, omo_menu_file_queue_folder, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Save Playlist", 0, NULL, omo_menu_file_save_playlist, omo_menu_playlist_update_proc);
+	t3f_add_menu_item(app->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Get Tagger Key", 0, NULL, omo_menu_file_get_tagger_key, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_FILE], "Load Theme", 0, NULL, omo_menu_file_load_theme, omo_menu_base_update_proc);

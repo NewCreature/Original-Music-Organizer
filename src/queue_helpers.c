@@ -448,3 +448,39 @@ void omo_sort_queue(OMO_QUEUE * qp, OMO_LIBRARY * lp, int mode, int start_index,
 		}
 	}
 }
+
+bool omo_export_queue_to_playlist(OMO_QUEUE * qp, const char * fn)
+{
+	ALLEGRO_CONFIG * cp;
+	char buf[256];
+	char filebuf[1024];
+	int i;
+
+	if(qp && qp->entry_count > 0)
+	{
+		cp = al_create_config();
+		if(cp)
+		{
+			for(i = 0; i < qp->entry_count; i++)
+			{
+				sprintf(buf, "File%d", i + 1);
+				strcpy(filebuf, qp->entry[i]->file);
+				if(qp->entry[i]->sub_file)
+				{
+					strcat(filebuf, "/");
+					strcat(filebuf, qp->entry[i]->sub_file);
+				}
+				if(qp->entry[i]->track)
+				{
+					strcat(filebuf, ":");
+					strcat(filebuf, qp->entry[i]->track);
+				}
+				al_set_config_value(cp, "playlist", buf, filebuf);
+			}
+			al_save_config_file(fn, cp);
+			al_destroy_config(cp);
+			return true;
+		}
+	}
+	return false;
+}

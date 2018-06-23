@@ -154,6 +154,16 @@ int omo_menu_file_queue_folder(int id, void * data)
 	return 1;
 }
 
+int omo_menu_file_save_playlist(int id, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	app->file_chooser_mode = 6;
+	app->file_chooser_done = false;
+	omo_start_file_chooser(data, al_get_config_value(t3f_config, "Settings", "last_playlist_filename"), "Enter playlist file name.", NULL, ALLEGRO_FILECHOOSER_SAVE, true);
+	return 1;
+}
+
 int omo_menu_file_get_tagger_key(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;

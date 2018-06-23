@@ -7,6 +7,7 @@ int omo_menu_file_play_files(int id, void * data);
 int omo_menu_file_queue_files(int id, void * data);
 int omo_menu_file_play_folder(int id, void * data);
 int omo_menu_file_queue_folder(int id, void * data);
+int omo_menu_file_save_playlist(int id, void * data);
 int omo_menu_file_get_tagger_key(int id, void * data);
 int omo_menu_file_load_theme(int id, void * data);
 int omo_menu_file_exit(int id, void * data);
