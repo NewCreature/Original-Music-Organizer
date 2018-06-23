@@ -445,6 +445,7 @@ static bool queue_playlist(const char * fn, OMO_FILE_HELPER_DATA * file_helper_d
 	int i, c = 0;
 	ALLEGRO_PATH * path;
 	ALLEGRO_PATH * file_path;
+	OMO_CODEC_HANDLER * codec_handler;
 
 	path = al_create_path(fn);
 	if(!path)
@@ -472,7 +473,11 @@ static bool queue_playlist(const char * fn, OMO_FILE_HELPER_DATA * file_helper_d
 					{
 						if(al_rebase_path(path, file_path))
 						{
-							omo_add_file_to_queue(file_helper_data->queue, al_path_cstr(file_path, '/'), NULL, NULL, false);
+							codec_handler = omo_get_codec_handler(file_helper_data->codec_handler_registry, al_path_cstr(file_path, '/'), file_helper_data->filter);
+							if(codec_handler)
+							{
+								omo_add_file_to_queue(file_helper_data->queue, al_path_cstr(file_path, '/'), NULL, NULL, false);
+							}
 						}
 						al_destroy_path(file_path);
 					}
