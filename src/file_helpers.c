@@ -4,6 +4,48 @@
 #include "file_helpers.h"
 #include "profile.h"
 
+static bool is_playlist(const char * fn)
+{
+	ALLEGRO_PATH * pp;
+	const char * ext;
+	bool ret = false;
+
+	pp = al_create_path(fn);
+	if(pp)
+	{
+		ext = al_get_path_extension(pp);
+		if(ext)
+		{
+			if(!strcasecmp(ext, ".pls"))
+			{
+				ret = true;
+			}
+		}
+		al_destroy_path(pp);
+	}
+	return ret;
+}
+
+static int get_playlist_entries(const char * fn)
+{
+	ALLEGRO_CONFIG * cp;
+	const char * val;
+	int c = 0;
+
+	cp = al_load_config_file(fn);
+	if(cp)
+	{
+		val = al_get_config_value(cp, "playlist", "NumberOfEntries");
+		if(val)
+		{
+			c = atoi(val);
+		}
+		al_destroy_config(cp);
+	}
+
+	return c;
+}
+
 static bool omo_process_file_mtime(const char * fn, bool isfolder, void * data)
 {
 	ALLEGRO_FS_ENTRY * fs_entry;
@@ -239,6 +281,11 @@ bool omo_count_file(const char * fn, bool isfolder, void * data)
 	{
 		return false;
 	}
+	if(is_playlist(fn))
+	{
+		file_helper_data->file_count += get_playlist_entries(fn);
+		return true;
+	}
 	archive_handler = omo_get_archive_handler(file_helper_data->archive_handler_registry, fn);
 	if(archive_handler)
 	{
@@ -389,6 +436,56 @@ bool omo_add_file(const char * fn, bool isfolder, void * data)
 	return true;
 }
 
+static bool queue_playlist(const char * fn, OMO_FILE_HELPER_DATA * file_helper_data)
+{
+	ALLEGRO_CONFIG * cp;
+	const char * val;
+	char buf[256];
+	bool ret = false;
+	int i, c = 0;
+	ALLEGRO_PATH * path;
+	ALLEGRO_PATH * file_path;
+
+	path = al_create_path(fn);
+	if(!path)
+	{
+		return false;
+	}
+	cp = al_load_config_file(fn);
+	if(cp)
+	{
+		val = al_get_config_value(cp, "playlist", "NumberOfEntries");
+		if(val)
+		{
+			c = atoi(val);
+		}
+		if(c > 0)
+		{
+			for(i = 0; i < c; i++)
+			{
+				sprintf(buf, "File%d", i + 1);
+				val = al_get_config_value(cp, "playlist", buf);
+				if(val)
+				{
+					file_path = al_create_path(val);
+					if(file_path)
+					{
+						if(al_rebase_path(path, file_path))
+						{
+							omo_add_file_to_queue(file_helper_data->queue, al_path_cstr(file_path, '/'), NULL, NULL, false);
+						}
+						al_destroy_path(file_path);
+					}
+				}
+			}
+			ret = true;
+		}
+		al_destroy_config(cp);
+	}
+	al_destroy_path(path);
+	return ret;
+}
+
 bool omo_queue_file(const char * fn, bool isfolder, void * data)
 {
 	OMO_FILE_HELPER_DATA * file_helper_data = (OMO_FILE_HELPER_DATA *)data;
@@ -410,6 +507,14 @@ bool omo_queue_file(const char * fn, bool isfolder, void * data)
 	}
 	if(file_helper_data->cancel_scan)
 	{
+		return false;
+	}
+	if(is_playlist(fn))
+	{
+		if(queue_playlist(fn, file_helper_data))
+		{
+			return true;
+		}
 		return false;
 	}
 	archive_handler = omo_get_archive_handler(file_helper_data->archive_handler_registry, fn);
