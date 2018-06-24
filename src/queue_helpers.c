@@ -477,6 +477,8 @@ bool omo_export_queue_to_playlist(OMO_QUEUE * qp, const char * fn)
 				}
 				al_set_config_value(cp, "playlist", buf, filebuf);
 			}
+			sprintf(buf, "%d", qp->entry_count);
+			al_set_config_value(cp, "playlist", "NumberOfEntries", buf);
 			al_save_config_file(fn, cp);
 			al_destroy_config(cp);
 			return true;
