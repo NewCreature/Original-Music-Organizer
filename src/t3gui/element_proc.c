@@ -270,7 +270,7 @@ int t3gui_button_proc(int msg, T3GUI_ELEMENT *d, int c)
     if (text == NULL) text = "";
 
     int select = D_INTERACT;
-    int hover = D_GOTMOUSE;
+    int hover = D_GOTMOUSE | D_GOTFOCUS;
 
     switch(msg)
     {
