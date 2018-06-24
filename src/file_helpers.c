@@ -436,6 +436,61 @@ bool omo_add_file(const char * fn, bool isfolder, void * data)
 	return true;
 }
 
+static void unpack_filename(const char * fn, char * file, char * sub_file, char * track)
+{
+	int i, c, p;
+
+	/* look for filename extension */
+	for(i = strlen(fn); i >= 0; i--)
+	{
+		if(fn[i] == '.')
+		{
+			break;
+		}
+	}
+
+	/* look for end of filename */
+	for(; i < strlen(fn); i++)
+	{
+		if(fn[i] == '/' || fn[i] == ':')
+		{
+			break;
+		}
+	}
+
+	/* copy filename to buffer */
+	memcpy(file, fn, i);
+	file[i] = 0;
+
+	/* look for sub filename */
+	if(fn[i] == '/')
+	{
+		i++;
+		p = i;
+		c = 0;
+		for(; i < strlen(fn); i++)
+		{
+			if(fn[i] == ':')
+			{
+				break;
+			}
+			else
+			{
+				c++;
+			}
+		}
+		memcpy(sub_file, &fn[p], c);
+		sub_file[c] = 0;
+	}
+
+	/* look for track */
+	if(fn[i] == ':')
+	{
+		i++;
+		strcpy(track, &fn[i]);
+	}
+}
+
 static bool queue_playlist(const char * fn, OMO_FILE_HELPER_DATA * file_helper_data)
 {
 	ALLEGRO_CONFIG * cp;
@@ -446,6 +501,9 @@ static bool queue_playlist(const char * fn, OMO_FILE_HELPER_DATA * file_helper_d
 	ALLEGRO_PATH * path;
 	ALLEGRO_PATH * file_path;
 	OMO_CODEC_HANDLER * codec_handler;
+	char file[1024] = {0};
+	char sub_file[16] = {0};
+	char track[16] = {0};
 
 	path = al_create_path(fn);
 	if(!path)
@@ -471,16 +529,15 @@ static bool queue_playlist(const char * fn, OMO_FILE_HELPER_DATA * file_helper_d
 					file_path = al_create_path(val);
 					if(file_path)
 					{
-						if(al_rebase_path(path, file_path))
+						al_rebase_path(path, file_path);
+						unpack_filename(al_path_cstr(file_path, '/'), file, sub_file, track);
+						codec_handler = omo_get_codec_handler(file_helper_data->codec_handler_registry, file, file_helper_data->filter);
+						if(codec_handler)
 						{
-							codec_handler = omo_get_codec_handler(file_helper_data->codec_handler_registry, al_path_cstr(file_path, '/'), file_helper_data->filter);
-							if(codec_handler)
+							if(omo_add_file_to_queue(file_helper_data->queue, file, strlen(sub_file) ? sub_file : NULL, strlen(track) ? track : NULL, false))
 							{
-								if(omo_add_file_to_queue(file_helper_data->queue, al_path_cstr(file_path, '/'), NULL, NULL, false))
-								{
-									file_helper_data->queue->presorted_entries++;
-									file_helper_data->queue->entry[file_helper_data->queue->entry_count - 1]->sort_order = file_helper_data->queue->presorted_entries;
-								}
+								file_helper_data->queue->presorted_entries++;
+								file_helper_data->queue->entry[file_helper_data->queue->entry_count - 1]->sort_order = file_helper_data->queue->presorted_entries;
 							}
 						}
 						al_destroy_path(file_path);
