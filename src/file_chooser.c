@@ -294,12 +294,12 @@ void omo_file_chooser_logic(void * data)
 				}
 				case 6:
 				{
-					al_set_config_value(t3f_config, "Settings", "last_playlist_filename", al_get_native_file_dialog_path(app->file_chooser, 0));
 					path = al_create_path(al_get_native_file_dialog_path(app->file_chooser, 0));
 					if(path)
 					{
 						al_set_path_extension(path, ".pls");
 					}
+					al_set_config_value(t3f_config, "Settings", "last_playlist_filename", al_path_cstr(path, '/'));
 					omo_export_queue_to_playlist(app->player->queue, al_path_cstr(path, '/'));
 					al_destroy_path(path);
 					break;
