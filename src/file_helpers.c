@@ -4,11 +4,11 @@
 #include "file_helpers.h"
 #include "profile.h"
 
-static bool is_playlist(const char * fn)
+static int is_playlist(const char * fn)
 {
 	ALLEGRO_PATH * pp;
 	const char * ext;
-	bool ret = false;
+	int ret = 0;
 
 	pp = al_create_path(fn);
 	if(pp)
@@ -18,7 +18,11 @@ static bool is_playlist(const char * fn)
 		{
 			if(!strcasecmp(ext, ".pls"))
 			{
-				ret = true;
+				ret = 1;
+			}
+			else if(!strcasecmp(ext, ".m3u"))
+			{
+				ret = 2;
 			}
 		}
 		al_destroy_path(pp);
@@ -26,21 +30,53 @@ static bool is_playlist(const char * fn)
 	return ret;
 }
 
-static int get_playlist_entries(const char * fn)
+static int get_playlist_entries(const char * fn, int type)
 {
 	ALLEGRO_CONFIG * cp;
 	const char * val;
 	int c = 0;
+	ALLEGRO_FILE * fp;
+	char buf[1024];
+	char * fline;
 
-	cp = al_load_config_file(fn);
-	if(cp)
+	if(type == 1)
 	{
-		val = al_get_config_value(cp, "playlist", "NumberOfEntries");
-		if(val)
+		cp = al_load_config_file(fn);
+		if(cp)
 		{
-			c = atoi(val);
+			val = al_get_config_value(cp, "playlist", "NumberOfEntries");
+			if(val)
+			{
+				c = atoi(val);
+			}
+			al_destroy_config(cp);
 		}
-		al_destroy_config(cp);
+	}
+	else if(type == 2)
+	{
+		fp = al_fopen(fn, "r");
+		if(fp)
+		{
+			while(1)
+			{
+				fline = al_fgets(fp, buf, 1024);
+				if(fline)
+				{
+					if(strlen(fline))
+					{
+						if(fline[0] != '\r' && fline[0] != '\n' && fline[0] != '#')
+						{
+							c++;
+						}
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+			al_fclose(fp);
+		}
 	}
 
 	return c;
@@ -272,6 +308,7 @@ bool omo_count_file(const char * fn, bool isfolder, void * data)
 	int c2 = 0;
 	const char * val;
 	char buf2[32] = {0};
+	int playlist_type;
 
 	if(isfolder)
 	{
@@ -281,9 +318,10 @@ bool omo_count_file(const char * fn, bool isfolder, void * data)
 	{
 		return false;
 	}
-	if(is_playlist(fn))
+	playlist_type = is_playlist(fn);
+	if(playlist_type)
 	{
-		file_helper_data->file_count += get_playlist_entries(fn);
+		file_helper_data->file_count += get_playlist_entries(fn, playlist_type);
 		return true;
 	}
 	archive_handler = omo_get_archive_handler(file_helper_data->archive_handler_registry, fn);
@@ -491,7 +529,36 @@ static void unpack_filename(const char * fn, char * file, char * sub_file, char 
 	}
 }
 
-static bool queue_playlist(const char * fn, OMO_FILE_HELPER_DATA * file_helper_data)
+static bool queue_playlist_file(ALLEGRO_PATH * path, const char * fn, OMO_FILE_HELPER_DATA * file_helper_data)
+{
+	ALLEGRO_PATH * file_path;
+	OMO_CODEC_HANDLER * codec_handler;
+	char file[1024] = {0};
+	char sub_file[16] = {0};
+	char track[16] = {0};
+	bool ret = false;
+
+	file_path = al_create_path(fn);
+	if(file_path)
+	{
+		al_rebase_path(path, file_path);
+		unpack_filename(al_path_cstr(file_path, '/'), file, sub_file, track);
+		codec_handler = omo_get_codec_handler(file_helper_data->codec_handler_registry, file, file_helper_data->filter);
+		if(codec_handler)
+		{
+			if(omo_add_file_to_queue(file_helper_data->queue, file, strlen(sub_file) ? sub_file : NULL, strlen(track) ? track : NULL, false))
+			{
+				file_helper_data->queue->presorted_entries++;
+				file_helper_data->queue->entry[file_helper_data->queue->entry_count - 1]->sort_order = file_helper_data->queue->presorted_entries;
+				ret = true;
+			}
+		}
+		al_destroy_path(file_path);
+	}
+	return ret;
+}
+
+static bool queue_pls(const char * fn, OMO_FILE_HELPER_DATA * file_helper_data)
 {
 	ALLEGRO_CONFIG * cp;
 	const char * val;
@@ -499,11 +566,6 @@ static bool queue_playlist(const char * fn, OMO_FILE_HELPER_DATA * file_helper_d
 	bool ret = false;
 	int i, c = 0;
 	ALLEGRO_PATH * path;
-	ALLEGRO_PATH * file_path;
-	OMO_CODEC_HANDLER * codec_handler;
-	char file[1024] = {0};
-	char sub_file[16] = {0};
-	char track[16] = {0};
 
 	path = al_create_path(fn);
 	if(!path)
@@ -526,22 +588,7 @@ static bool queue_playlist(const char * fn, OMO_FILE_HELPER_DATA * file_helper_d
 				val = al_get_config_value(cp, "playlist", buf);
 				if(val)
 				{
-					file_path = al_create_path(val);
-					if(file_path)
-					{
-						al_rebase_path(path, file_path);
-						unpack_filename(al_path_cstr(file_path, '/'), file, sub_file, track);
-						codec_handler = omo_get_codec_handler(file_helper_data->codec_handler_registry, file, file_helper_data->filter);
-						if(codec_handler)
-						{
-							if(omo_add_file_to_queue(file_helper_data->queue, file, strlen(sub_file) ? sub_file : NULL, strlen(track) ? track : NULL, false))
-							{
-								file_helper_data->queue->presorted_entries++;
-								file_helper_data->queue->entry[file_helper_data->queue->entry_count - 1]->sort_order = file_helper_data->queue->presorted_entries;
-							}
-						}
-						al_destroy_path(file_path);
-					}
+					queue_playlist_file(path, val, file_helper_data);
 				}
 			}
 			ret = true;
@@ -550,6 +597,52 @@ static bool queue_playlist(const char * fn, OMO_FILE_HELPER_DATA * file_helper_d
 	}
 	al_destroy_path(path);
 	return ret;
+}
+
+static bool queue_m3u(const char * fn, OMO_FILE_HELPER_DATA * file_helper_data)
+{
+	ALLEGRO_FILE * fp;
+	ALLEGRO_PATH * path;
+	char buf[1024];
+	char * fline;
+	int i;
+
+	path = al_create_path(fn);
+	if(!path)
+	{
+		return false;
+	}
+	fp = al_fopen(fn, "r");
+	if(fp)
+	{
+		while(1)
+		{
+			fline = al_fgets(fp, buf, 1024);
+			if(fline)
+			{
+				if(strlen(fline))
+				{
+					if(fline[0] != '\r' && fline[0] != '\n' && fline[0] != '#')
+					{
+						for(i = 0; i < strlen(fline); i++)
+						{
+							if(fline[i] == '\r' || fline[i] == '\n')
+							{
+								fline[i] = 0;
+								queue_playlist_file(path, fline, file_helper_data);
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+		al_fclose(fp);
+	}
+	return false;
 }
 
 bool omo_queue_file(const char * fn, bool isfolder, void * data)
@@ -566,6 +659,7 @@ bool omo_queue_file(const char * fn, bool isfolder, void * data)
 	const char * target_fn = NULL;
 	const char * extracted_fn;
 	char fn_buffer[1024] = {0};
+	int playlist_type;
 
 	if(isfolder)
 	{
@@ -575,9 +669,18 @@ bool omo_queue_file(const char * fn, bool isfolder, void * data)
 	{
 		return false;
 	}
-	if(is_playlist(fn))
+	playlist_type = is_playlist(fn);
+	if(playlist_type == 1)
 	{
-		if(queue_playlist(fn, file_helper_data))
+		if(queue_pls(fn, file_helper_data))
+		{
+			return true;
+		}
+		return false;
+	}
+	else if(playlist_type == 2)
+	{
+		if(queue_m3u(fn, file_helper_data))
 		{
 			return true;
 		}
