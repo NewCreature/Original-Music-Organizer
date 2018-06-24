@@ -38,6 +38,9 @@
 			<string>psm</string>
 			<string>ptm</string>
 			<string>stm</string>
+			<string>dsm</string>
+			<string>umx</string>
+			<string>j2b</string>
 	      </array>
 	      <key>CFBundleTypeMIMETypes</key>
 	      <array>
@@ -60,6 +63,7 @@
 			<string>sap</string>
 			<string>spc</string>
 			<string>vgm</string>
+			<string>vg</string>
 			<string>vgz</string>
 			<string>rsn</string>
 	      </array>
@@ -76,6 +80,7 @@
 	      <key>CFBundleTypeExtensions</key>
 	      <array>
 	        <string>mid</string>
+			<string>rmi</string>
 	      </array>
 	      <key>CFBundleTypeMIMETypes</key>
 	      <array>
@@ -161,6 +166,52 @@
 	      </array>
 	      <key>CFBundleTypeName</key>
 	      <string>FLAC Audio File</string>
+	      <key>CFBundleTypeRole</key>
+	      <string>Viewer</string>
+	    </dict>
+		<dict>
+	      <key>CFBundleTypeExtensions</key>
+	      <array>
+	        <string>adl</string>
+			<string>amd</string>
+			<string>bam</string>
+			<string>cff</string>
+			<string>cmf</string>
+			<string>d00</string>
+			<string>dfm</string>
+			<string>dmo</string>
+			<string>dro</string>
+			<string>dtm</string>
+			<string>hsc</string>
+			<string>hsp</string>
+			<string>imf</string>
+			<string>ksm</string>
+			<string>laa</string>
+			<string>lds</string>
+			<string>m</string>
+			<string>mad</string>
+			<string>mid</string>
+			<string>mkj</string>
+			<string>msc</string>
+			<string>mtk</string>
+			<string>rad</string>
+			<string>rix</string>
+			<string>rol</string>
+			<string>s3m</string>
+			<string>sa2</string>
+			<string>sat</string>
+			<string>sci</string>
+			<string>sng</string>
+			<string>xad</string>
+			<string>xms</string>
+			<string>xsm</string>
+	      </array>
+	      <key>CFBundleTypeMIMETypes</key>
+	      <array>
+	        <string>audio/adlib</string>
+	      </array>
+	      <key>CFBundleTypeName</key>
+	      <string>Adlib Music File</string>
 	      <key>CFBundleTypeRole</key>
 	      <string>Viewer</string>
 	    </dict>
