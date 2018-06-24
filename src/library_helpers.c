@@ -936,12 +936,9 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 				artist_match = false;
 				val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album Artist");
 				val2 = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Artist");
-				if(val)
+				if((val && !strcmp(val, artist)) || (val2 && !strcmp(val2, artist)))
 				{
-					if((val && !strcmp(val, artist)) || (val2 && !strcmp(val2, artist)))
-					{
-						artist_match = true;
-					}
+					artist_match = true;
 				}
 				if(artist_match)
 				{
