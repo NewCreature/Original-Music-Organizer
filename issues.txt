@@ -185,6 +185,22 @@ v0.5
 
 [X]Don't put duplicate songs in the song list.
 
+[X]Add support for loading and saving playlists. We should try to support M3U
+   and PLS.
+
+   [X]Allow saving the current queue as a playlist.
+
+   [X]Don't add unsupported file types to queue.
+
+   [X]Don't change sorting of queue items added from playlist. They should
+      appear in the same order as they are in the playlist.
+
+   [X]We need a way to store OMO-style filenames in a playlist file. When
+      loading a playlist, we need to decode the filename into a base filename,
+      sub filename, and track.
+
+   [X]See about adding M3U support.
+
 [ ]Add search field above each library section.
 
    [X]We'll probably need to make 'real' lists which contain pointers to the
@@ -216,22 +232,6 @@ v0.5
 
 [ ]Figure out why the song list updates don't work when okaying edited tags
    while the library lists are regenerating.
-
-[ ]Add support for loading and saving playlists. We should try to support M3U
-   and PLS.
-
-   [X]Allow saving the current queue as a playlist.
-
-   [X]Don't add unsupported file types to queue.
-
-   [X]Don't change sorting of queue items added from playlist. They should
-      appear in the same order as they are in the playlist.
-
-   [X]We need a way to store OMO-style filenames in a playlist file. When
-      loading a playlist, we need to decode the filename into a base filename,
-      sub filename, and track.
-
-   [ ]See about adding M3U support.
 
 [ ]Fix View menu on Mac. Currently, clicking an item in the View menu doesn't
    generate a MENU_CLICK event. This might be something that needs to be fixed
