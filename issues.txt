@@ -206,6 +206,10 @@ v0.5
 
 [X]Update plist for new format support.
 
+[X]Check Artist->Unknown Album code path. When I selected an artist and
+   Unknown Album, no songs were listed even though there were several songs
+   with no album specified.
+
 [ ]Add search field above each library section.
 
    [X]We'll probably need to make 'real' lists which contain pointers to the
@@ -242,10 +246,6 @@ v0.5
    generate a MENU_CLICK event. This might be something that needs to be fixed
    in Allegro. If so, we can fix it there or work around the issue by naming
    our view menu something else.
-
-[ ]Check Artist->Unknown Album code path. When I selected an artist and
-   Unknown Album, no songs were listed even though there were several songs
-   with no album specified.
 
 [ ]See about fixing scroll bar rendering. Currently we usually get a small gap
    at the bottom when we are scrolled all the way down.
