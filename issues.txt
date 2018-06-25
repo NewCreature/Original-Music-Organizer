@@ -210,6 +210,14 @@ v0.5
    Unknown Album, no songs were listed even though there were several songs
    with no album specified.
 
+[X]Fix View menu on Mac. Currently, clicking an item in the View menu doesn't
+   generate a MENU_CLICK event. This might be something that needs to be fixed
+   in Allegro. If so, we can fix it there or work around the issue by naming
+   our view menu something else.
+
+   [X]I've implemented a workaround in Allegro to deal with this issue. The
+      patch has been submitted to the Allegro devs for review.
+
 [ ]Add search field above each library section.
 
    [X]We'll probably need to make 'real' lists which contain pointers to the
@@ -241,11 +249,6 @@ v0.5
 
 [ ]Figure out why the song list updates don't work when okaying edited tags
    while the library lists are regenerating.
-
-[ ]Fix View menu on Mac. Currently, clicking an item in the View menu doesn't
-   generate a MENU_CLICK event. This might be something that needs to be fixed
-   in Allegro. If so, we can fix it there or work around the issue by naming
-   our view menu something else.
 
 [ ]See about fixing scroll bar rendering. Currently we usually get a small gap
    at the bottom when we are scrolled all the way down.
