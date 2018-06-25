@@ -221,6 +221,8 @@ v0.5
 [X]See about fixing scroll bar rendering. Currently we usually get a small gap
    at the bottom when we are scrolled all the way down.
 
+[X]Make bezel size a theme option.
+
 [ ]Add search field above each library section.
 
    [X]We'll probably need to make 'real' lists which contain pointers to the
@@ -252,8 +254,6 @@ v0.5
 
 [ ]Figure out why the song list updates don't work when okaying edited tags
    while the library lists are regenerating.
-
-[ ]Make bezel size a theme option.
 
 
 v0.4
