@@ -12,13 +12,21 @@
 #define OMO_BEZEL_LEFT   4
 #define OMO_BEZEL_RIGHT  8
 
-static const int bezel = 8;
-static const int slider_size = 16;
-static const int button_size = 32;
+static const int default_bezel = 8;
+static const int default_slider_size = 16;
+static const int default_button_size = 32;
 
 /* adjust the passed rectangle for flags */
-static void setup_module_box(int * x, int * y, int * w, int * h, int flags)
+static void setup_module_box(OMO_THEME * tp, int * x, int * y, int * w, int * h, int flags)
 {
+	const char * val;
+	int bezel = default_bezel;
+
+	val = al_get_config_value(tp->config, "Settings", "bezel");
+	if(val)
+	{
+		bezel = atoi(val);
+	}
 	if(x)
 	{
 		*x += bezel;
@@ -83,13 +91,32 @@ static void setup_player_module(OMO_UI * uip, int x, int y, int w, int h, int fl
 	int font_height;
 	int time_width;
 	int time_height;
+	const char * val;
+	int bezel = default_bezel;
+	int slider_size = default_slider_size;
+	int button_size = default_button_size;
 
+	val = al_get_config_value(uip->main_theme->config, "Settings", "bezel");
+	if(val)
+	{
+		bezel = atoi(val);
+	}
+	val = al_get_config_value(uip->main_theme->config, "Settings", "slider_size");
+	if(val)
+	{
+		slider_size = atoi(val);
+	}
+	val = al_get_config_value(uip->main_theme->config, "Settings", "button_size");
+	if(val)
+	{
+		button_size = atoi(val);
+	}
 	font_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]);
 	time_width = al_get_text_width(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_INFO]->state[0].font[0], "00:00:00");
 	time_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_INFO]->state[0].font[0]);
 
 	/* adjust bezels so adjacent items are only 'bezel' pixels away */
-	setup_module_box(&x, &y, &w, &h, flags);
+	setup_module_box(uip->main_theme, &x, &y, &w, &h, flags);
 	pos_y = y;
 
 	uip->ui_song_info_box_element->x = x;
@@ -138,9 +165,16 @@ static void setup_player_module(OMO_UI * uip, int x, int y, int w, int h, int fl
 static void setup_queue_list_module(OMO_UI * uip, int x, int y, int w, int h, int flags)
 {
 	int font_height;
+	const char * val;
+	int bezel = default_bezel;
 
+	val = al_get_config_value(uip->main_theme->config, "Settings", "bezel");
+	if(val)
+	{
+		bezel = atoi(val);
+	}
 	font_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]);
-	setup_module_box(&x, &y, &w, &h, flags);
+	setup_module_box(uip->main_theme, &x, &y, &w, &h, flags);
 	uip->ui_queue_list_element->x = x;
 	uip->ui_queue_list_element->y = y;
 	uip->ui_queue_list_element->w = w;
@@ -159,8 +193,16 @@ static void setup_library_artist_list_module(OMO_UI * uip, int x, int y, int w, 
 {
 	int pos_y;
 	int font_height;
+	const char * val;
+	int bezel = default_bezel;
 
-	setup_module_box(&x, &y, &w, &h, flags);
+	val = al_get_config_value(uip->main_theme->config, "Settings", "bezel");
+	if(val)
+	{
+		bezel = atoi(val);
+	}
+
+	setup_module_box(uip->main_theme, &x, &y, &w, &h, flags);
 	pos_y = y;
 	font_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]);
 	uip->ui_artist_search_element->x = x;
@@ -179,8 +221,16 @@ static void setup_library_album_list_module(OMO_UI * uip, int x, int y, int w, i
 {
 	int pos_y;
 	int font_height;
+	const char * val;
+	int bezel = default_bezel;
 
-	setup_module_box(&x, &y, &w, &h, flags);
+	val = al_get_config_value(uip->main_theme->config, "Settings", "bezel");
+	if(val)
+	{
+		bezel = atoi(val);
+	}
+
+	setup_module_box(uip->main_theme, &x, &y, &w, &h, flags);
 	pos_y = y;
 	font_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]);
 	uip->ui_album_search_element->x = x;
@@ -199,8 +249,16 @@ static void setup_library_song_list_module(OMO_UI * uip, int x, int y, int w, in
 {
 	int pos_y;
 	int font_height;
+	const char * val;
+	int bezel = default_bezel;
 
-	setup_module_box(&x, &y, &w, &h, flags);
+	val = al_get_config_value(uip->main_theme->config, "Settings", "bezel");
+	if(val)
+	{
+		bezel = atoi(val);
+	}
+
+	setup_module_box(uip->main_theme, &x, &y, &w, &h, flags);
 	pos_y = y;
 	font_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]);
 	uip->ui_song_search_element->x = x;
@@ -217,7 +275,7 @@ static void setup_library_song_list_module(OMO_UI * uip, int x, int y, int w, in
 
 static void setup_library_status_module(OMO_UI * uip, int x, int y, int w, int h, int flags)
 {
-	setup_module_box(&x, &y, &w, NULL, flags);
+	setup_module_box(uip->main_theme, &x, &y, &w, NULL, flags);
 	uip->ui_status_bar_element->x = x;
 	uip->ui_status_bar_element->y = y;
 	uip->ui_status_bar_element->w = w;
@@ -234,11 +292,26 @@ static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
 	int status_bar_x, status_bar_y, status_bar_width, status_bar_height;
 	int pane_width;
 	int font_height;
-/*	int queue_width, queue_height;
-	int pane_width;
-	int button_y, button_width, button_height;
-	int bezel;
-	int i; */
+	const char * val;
+	int bezel = default_bezel;
+	int slider_size = default_slider_size;
+	int button_size = default_button_size;
+
+	val = al_get_config_value(uip->main_theme->config, "Settings", "bezel");
+	if(val)
+	{
+		bezel = atoi(val);
+	}
+	val = al_get_config_value(uip->main_theme->config, "Settings", "slider_size");
+	if(val)
+	{
+		slider_size = atoi(val);
+	}
+	val = al_get_config_value(uip->main_theme->config, "Settings", "button_size");
+	if(val)
+	{
+		button_size = atoi(val);
+	}
 
 	font_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]);
 
