@@ -961,7 +961,7 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
          slx = d->x;
          sly = d->y + offset;
          slw = d->w;
-         slh = hh;
+         slh = hh + 1;
       } else {
          slx = d->x + offset;
          sly = d->y;
