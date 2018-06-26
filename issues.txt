@@ -241,12 +241,12 @@ v0.5
 
    [X]Disable search filter edit boxes when library is not loaded.
 
-   [ ]When typing in the search box, don't regenerate any lists. Currently, the
+   [X]When typing in the search box, don't regenerate any lists. Currently, the
       first matching item in the list is selected and the proceeding lists are
       generated based on that selection. The matching item should not really be
       selected until the user hits Enter or Tab.
 
-   [ ]Pressing Enter or Tab in the search field should fully select the first
+   [X]Pressing Enter or Tab in the search field should fully select the first
       matching item in the list that is being searched.
 
    [ ]Figure out why we are regenerating the album list when an album is
@@ -254,6 +254,16 @@ v0.5
       selected artist, not just the ones that match the current search filter.
       Not sure if the album list is being regenerated for a reason or if it is
       just some bad or left over logic that can safely be removed.
+
+      [ ]We are currently generating the album list during song list generation
+         so we can use the user's selected artist to generate the album list.
+         We need to be able to generate the album list separately. We should
+         look at all the places we call omo_get_library_song_list() and see if
+         we need to make a separate call to omo_get_library_album_list(). Then
+         we can eliminate the calls to omo_get_library_album_list() that are
+         within omo_get_library_song_list().
+
+[ ]Fix crash when pressing Tab or Enter while library is loading.
 
 
 v0.4
