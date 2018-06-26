@@ -119,6 +119,16 @@ static void queue_song_list(void * data, OMO_LIBRARY * lp)
 	al_start_timer(t3f_timer);
 }
 
+static void reset_library_list_selections(APP_INSTANCE * app)
+{
+	app->ui->ui_artist_list_element->d1 = 0;
+	app->ui->ui_artist_list_element->d2 = 0;
+	app->ui->ui_album_list_element->d1 = 0;
+	app->ui->ui_album_list_element->d2 = 0;
+	app->ui->ui_song_list_element->d1 = 0;
+	app->ui->ui_song_list_element->d2 = 0;
+}
+
 void omo_library_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
@@ -130,20 +140,55 @@ void omo_library_logic(void * data)
 	if(strlen(app->ui->ui_artist_search_element->dp) != old_artist_filter_length)
 	{
 		omo_filter_library_artist_list(app->library, app->ui->ui_artist_search_element->dp);
-		app->ui->ui_artist_list_element->d1 = 2;
-		app->ui->ui_artist_list_element->d2 = 0;
+		reset_library_list_selections(app);
 	}
 	if(strlen(app->ui->ui_album_search_element->dp) != old_album_filter_length)
 	{
 		omo_filter_library_album_list(app->library, app->ui->ui_album_search_element->dp);
-		app->ui->ui_album_list_element->d1 = 2;
-		app->ui->ui_album_list_element->d2 = 0;
+		reset_library_list_selections(app);
 	}
 	if(strlen(app->ui->ui_song_search_element->dp) != old_song_filter_length)
 	{
 		omo_filter_library_song_list(app->library, app->ui->ui_song_search_element->dp);
-		app->ui->ui_song_list_element->d1 = 1;
-		app->ui->ui_song_list_element->d2 = 0;
+		reset_library_list_selections(app);
+	}
+
+	if(t3f_key[ALLEGRO_KEY_ENTER])
+	{
+		if(app->ui->ui_artist_search_element->flags & D_GOTFOCUS)
+		{
+			app->ui->ui_artist_search_element->flags &= ~D_GOTFOCUS;
+			app->ui->ui_artist_list_element->flags |= D_GOTFOCUS;
+			app->ui->ui_artist_list_element->d1 = 2;
+		}
+		else if(app->ui->ui_album_search_element->flags & D_GOTFOCUS)
+		{
+			app->ui->ui_album_search_element->flags &= ~D_GOTFOCUS;
+			app->ui->ui_album_list_element->flags |= D_GOTFOCUS;
+			app->ui->ui_album_list_element->d1 = 2;
+		}
+		else if(app->ui->ui_song_search_element->flags & D_GOTFOCUS)
+		{
+			app->ui->ui_song_search_element->flags &= ~D_GOTFOCUS;
+			app->ui->ui_song_list_element->flags |= D_GOTFOCUS;
+			app->ui->ui_song_list_element->d1 = 1;
+		}
+		t3f_key[ALLEGRO_KEY_ENTER] = 0;
+	}
+	else if(t3f_key[ALLEGRO_KEY_TAB])
+	{
+		if(app->ui->ui_artist_search_element->flags & D_GOTFOCUS)
+		{
+			app->ui->ui_artist_list_element->d1 = 2;
+		}
+		else if(app->ui->ui_album_search_element->flags & D_GOTFOCUS)
+		{
+			app->ui->ui_album_list_element->d1 = 2;
+		}
+		else if(app->ui->ui_song_search_element->flags & D_GOTFOCUS)
+		{
+			app->ui->ui_song_list_element->d1 = 1;
+		}
 	}
 
 	app->ui->selected_song = app->ui->ui_song_list_element->d1 - 1;
