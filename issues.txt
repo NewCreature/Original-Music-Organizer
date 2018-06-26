@@ -239,6 +239,8 @@ v0.5
       box. The filter might eliminate the selected item from the list, which
       would just lead to confusion for the user.
 
+   [X]Disable search filter edit boxes when library is not loaded.
+
    [ ]When typing in the search box, don't regenerate any lists. Currently, the
       first matching item in the list is selected and the proceeding lists are
       generated based on that selection. The matching item should not really be
@@ -252,8 +254,6 @@ v0.5
       selected artist, not just the ones that match the current search filter.
       Not sure if the album list is being regenerated for a reason or if it is
       just some bad or left over logic that can safely be removed.
-
-   [ ]Disable search filter edit boxes when library is not loaded.
 
 
 v0.4
