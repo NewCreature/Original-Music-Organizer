@@ -590,6 +590,7 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
                     case ALLEGRO_KEY_DOWN:
                     case ALLEGRO_KEY_UP:
                     {
+                        player->keyboard_obj = t3gui_find_dialog_focus(player->dialog);
                         player->res |= move_focus(player->dialog, event->keyboard.keycode, player->shift, &player->keyboard_obj);
                         break;
                     }
