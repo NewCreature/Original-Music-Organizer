@@ -223,6 +223,9 @@ v0.5
 
 [X]Make bezel size a theme option.
 
+[X]Figure out why the song list updates don't work when okaying edited tags
+   while the library lists are regenerating.
+
 [ ]Add search field above each library section.
 
    [X]We'll probably need to make 'real' lists which contain pointers to the
@@ -251,9 +254,6 @@ v0.5
       just some bad or left over logic that can safely be removed.
 
    [ ]Disable search filter edit boxes when library is not loaded.
-
-[ ]Figure out why the song list updates don't work when okaying edited tags
-   while the library lists are regenerating.
 
 
 v0.4
