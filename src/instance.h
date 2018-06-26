@@ -63,6 +63,7 @@ typedef struct
 	bool spawn_library_lists_thread;
 	bool spawn_cloud_thread;
 	bool spawn_queue_thread;
+	bool destroy_library_lists_cache;
 
 	/* test data */
 	int test_mode;

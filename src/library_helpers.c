@@ -750,9 +750,8 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 	{
 		return false;
 	}
-	if(!strcmp(artist, "All Artists") && !strcmp(album, "All Albums") && !lp->modified)
+	if(!strcmp(artist, "All Artists") && !strcmp(album, "All Albums") && !lp->modified && omo_load_library_songs_cache(lp, fn))
 	{
-		omo_load_library_songs_cache(lp, fn);
 		omo_filter_library_song_list(lp, NULL);
 		omo_get_library_album_list(lp, artist);
 		return true;
@@ -1184,6 +1183,11 @@ static void * library_lists_setup_thread_proc(ALLEGRO_THREAD * thread, void * da
 void omo_setup_library_lists(APP_INSTANCE * app)
 {
 	omo_cancel_library_setup(app);
+	if(app->destroy_library_lists_cache)
+	{
+		omo_clear_library_cache();
+		app->destroy_library_lists_cache = false;
+	}
 	app->library->loaded = false;
 	app->loading_library_file_helper_data.scan_done = false;
 	app->loading_library_file_helper_data.cancel_scan = false;

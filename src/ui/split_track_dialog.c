@@ -60,8 +60,8 @@ void omo_split_track_dialog_logic(void * data)
 			omo_set_database_value(app->library->entry_database, app->ui->split_track_entry, "Submitted", "false");
 			app->spawn_cloud_thread = true;
 			omo_save_library(app->library);
-			omo_clear_library_cache();
 			app->spawn_library_thread = true;
+			app->destroy_library_lists_cache = true;
 		}
 		omo_discard_entry_backup(app->library);
 		omo_close_split_track_dialog(app->ui, app);

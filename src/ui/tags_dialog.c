@@ -127,6 +127,11 @@ void omo_tags_dialog_logic(void * data)
 					update_artists = true;
 					update_songs = true;
 				}
+				else if(!strcmp(omo_tag_type[i], "Album Artist"))
+				{
+					update_artists = true;
+					update_songs = true;
+				}
 				else if(!strcmp(omo_tag_type[i], "Album"))
 				{
 					update_albums = true;
@@ -164,8 +169,8 @@ void omo_tags_dialog_logic(void * data)
 		}
 		if(update_artists || update_albums || update_songs)
 		{
-			omo_clear_library_cache();
 			app->spawn_library_lists_thread = true;
+			app->destroy_library_lists_cache = true;
 		}
 		app->button_pressed = -1;
 		t3f_key[ALLEGRO_KEY_ENTER] = 0;
