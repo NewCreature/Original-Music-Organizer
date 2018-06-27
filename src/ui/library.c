@@ -157,21 +157,30 @@ void omo_library_logic(void * data)
 	{
 		if(app->ui->ui_artist_search_element->flags & D_GOTFOCUS)
 		{
-			app->ui->ui_artist_search_element->flags &= ~D_GOTFOCUS;
-			app->ui->ui_artist_list_element->flags |= D_GOTFOCUS;
-			app->ui->ui_artist_list_element->d1 = 2;
+			if(strlen(app->ui->ui_artist_search_element->dp))
+			{
+				app->ui->ui_artist_search_element->flags &= ~D_GOTFOCUS;
+				app->ui->ui_artist_list_element->flags |= D_GOTFOCUS;
+				app->ui->ui_artist_list_element->d1 = 2;
+			}
 		}
 		else if(app->ui->ui_album_search_element->flags & D_GOTFOCUS)
 		{
-			app->ui->ui_album_search_element->flags &= ~D_GOTFOCUS;
-			app->ui->ui_album_list_element->flags |= D_GOTFOCUS;
-			app->ui->ui_album_list_element->d1 = 2;
+			if(strlen(app->ui->ui_album_search_element->dp))
+			{
+				app->ui->ui_album_search_element->flags &= ~D_GOTFOCUS;
+				app->ui->ui_album_list_element->flags |= D_GOTFOCUS;
+				app->ui->ui_album_list_element->d1 = 2;
+			}
 		}
 		else if(app->ui->ui_song_search_element->flags & D_GOTFOCUS)
 		{
-			app->ui->ui_song_search_element->flags &= ~D_GOTFOCUS;
-			app->ui->ui_song_list_element->flags |= D_GOTFOCUS;
-			app->ui->ui_song_list_element->d1 = 1;
+			if(strlen(app->ui->ui_song_search_element->dp))
+			{
+				app->ui->ui_song_search_element->flags &= ~D_GOTFOCUS;
+				app->ui->ui_song_list_element->flags |= D_GOTFOCUS;
+				app->ui->ui_song_list_element->d1 = 1;
+			}
 		}
 		t3f_key[ALLEGRO_KEY_ENTER] = 0;
 	}
@@ -179,15 +188,25 @@ void omo_library_logic(void * data)
 	{
 		if(app->ui->ui_artist_search_element->flags & D_GOTFOCUS)
 		{
-			app->ui->ui_artist_list_element->d1 = 2;
+			if(strlen(app->ui->ui_artist_search_element->dp))
+			{
+				app->ui->ui_artist_list_element->d1 = 2;
+			}
 		}
 		else if(app->ui->ui_album_search_element->flags & D_GOTFOCUS)
 		{
-			app->ui->ui_album_list_element->d1 = 2;
+			if(strlen(app->ui->ui_album_search_element->dp))
+			{
+				app->ui->ui_album_list_element->d1 = 2;
+			}
 		}
 		else if(app->ui->ui_song_search_element->flags & D_GOTFOCUS)
 		{
-			app->ui->ui_song_list_element->d1 = 1;
+			if(strlen(app->ui->ui_song_search_element->dp))
+			{
+				app->ui->ui_song_list_element->d1 = 1;
+
+			}
 		}
 	}
 
