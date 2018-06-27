@@ -226,6 +226,8 @@ v0.5
 [X]Figure out why the song list updates don't work when okaying edited tags
    while the library lists are regenerating.
 
+[X]Fix crash when pressing Tab or Enter while library is loading.
+
 [ ]Add search field above each library section.
 
    [X]We'll probably need to make 'real' lists which contain pointers to the
@@ -263,7 +265,7 @@ v0.5
          we can eliminate the calls to omo_get_library_album_list() that are
          within omo_get_library_song_list().
 
-[ ]Fix crash when pressing Tab or Enter while library is loading.
+[ ]Don't start playing queue if it is stopped and we delete an item.
 
 
 v0.4
