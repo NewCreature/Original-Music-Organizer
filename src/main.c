@@ -183,7 +183,10 @@ void omo_logic(void * data)
 			{
 				if(app->library_view)
 				{
-					omo_library_logic(data);
+					if(app->library && app->library->loaded)
+					{
+						omo_library_logic(data);
+					}
 					if(app->ui->ui_artist_search_element->flags & D_GOTFOCUS)
 					{
 						disable_shortcuts = true;
