@@ -22,6 +22,7 @@ static void omo_toggle_library_view(void * data)
 void omo_shortcut_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	bool restart_player = false;
 
 	if(t3f_key[ALLEGRO_KEY_L])
 	{
@@ -83,6 +84,10 @@ void omo_shortcut_logic(void * data)
 		{
 			if(app->ui->ui_queue_list_element->d1 == app->player->queue_pos)
 			{
+				if(app->player->state == OMO_PLAYER_STATE_PLAYING)
+				{
+					restart_player = true;
+				}
 				omo_stop_player(app->player);
 			}
 			omo_delete_queue_item(app->player->queue, app->ui->ui_queue_list_element->d1);
@@ -93,7 +98,10 @@ void omo_shortcut_logic(void * data)
 			if(app->player->queue->entry_count > 0)
 			{
 				app->spawn_queue_thread = true;
-				omo_start_player(app->player);
+				if(restart_player)
+				{
+					omo_start_player(app->player);
+				}
 			}
 			else
 			{
