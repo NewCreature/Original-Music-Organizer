@@ -228,6 +228,8 @@ v0.5
 
 [X]Fix crash when pressing Tab or Enter while library is loading.
 
+[X]Don't start playing queue if it is stopped and we delete an item.
+
 [ ]Add search field above each library section.
 
    [X]We'll probably need to make 'real' lists which contain pointers to the
@@ -265,8 +267,7 @@ v0.5
          we can eliminate the calls to omo_get_library_album_list() that are
          within omo_get_library_song_list().
 
-[ ]Don't start playing queue if it is stopped and we delete an item.
-
+[ ]Update README.
 
 v0.4
 ----
