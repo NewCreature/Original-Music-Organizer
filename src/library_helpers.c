@@ -753,7 +753,6 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 	if(!strcmp(artist, "All Artists") && !strcmp(album, "All Albums") && !lp->modified && omo_load_library_songs_cache(lp, fn))
 	{
 		omo_filter_library_song_list(lp, NULL);
-		omo_get_library_album_list(lp, artist);
 		return true;
 	}
 	else
@@ -819,7 +818,6 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			omo_start_library_sort();
 			library_sort_by_track(lp);
 		}
-		omo_get_library_album_list(lp, artist);
 	}
 	else if(!strcmp(artist, "Unknown Artist"))
 	{
@@ -908,7 +906,6 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			omo_start_library_sort();
 			library_sort_by_track(lp);
 		}
-		omo_get_library_album_list(lp, artist);
 	}
 	else
 	{
@@ -979,7 +976,6 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 			omo_start_library_sort();
 			library_sort_by_track(lp);
 		}
-		omo_get_library_album_list(lp, artist);
 	}
 	omo_filter_library_song_list(lp, NULL);
 
