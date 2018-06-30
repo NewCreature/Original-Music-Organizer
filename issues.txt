@@ -230,7 +230,7 @@ v0.5
 
 [X]Don't start playing queue if it is stopped and we delete an item.
 
-[ ]Add search field above each library section.
+[X]Add search field above each library section.
 
    [X]We'll probably need to make 'real' lists which contain pointers to the
       main lists. The real lists will be generated as the user types in the
@@ -267,7 +267,7 @@ v0.5
          we can eliminate the calls to omo_get_library_album_list() that are
          within omo_get_library_song_list().
 
-[ ]Update README.
+[X]Update README.
 
 v0.4
 ----
