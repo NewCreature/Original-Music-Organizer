@@ -398,6 +398,12 @@ int omo_menu_playback_find_track(int id, void * data)
 	j = app->ui->ui_queue_list_element->d1;
 	if(get_full_filename(app->player->queue->entry[j]->file, app->player->queue->entry[j]->sub_file, app->player->queue->entry[j]->track, fullfn, 1024))
 	{
+		strcpy(app->ui->ui_artist_search_element->dp, "");
+		strcpy(app->ui->ui_album_search_element->dp, "");
+		strcpy(app->ui->ui_song_search_element->dp, "");
+		omo_filter_library_artist_list(app->library, NULL);
+		omo_filter_library_album_list(app->library, NULL);
+		omo_filter_library_song_list(app->library, NULL);
 		omo_get_library_song_list(app->library, "All Artists", "All Albums");
 		track_id = omo_get_database_value(app->library->file_database, fullfn, "id");
 		if(track_id)

@@ -70,6 +70,25 @@ int omo_menu_playback_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 	return 1;
 }
 
+int omo_menu_playback_find_track_update_proc(ALLEGRO_MENU * mp, int item, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	if(!omo_menu_base_update_disable_proc(mp, item, data))
+	{
+		return 0;
+	}
+	if(app->library && app->library->loaded && app->library_view && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
+	}
+	else
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
+	}
+	return 1;
+}
+
 int omo_menu_playback_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
