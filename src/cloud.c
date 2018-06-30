@@ -82,21 +82,18 @@ bool omo_get_tagger_key(const char * name)
 	T3NET_DATA * key_data;
 	const char * key_val;
 
-	printf("generating tagger key: %s\n", name);
 	key_arguments = t3net_create_arguments();
 	if(key_arguments)
 	{
 		/* copy track info string to entry database first, before breaking up the
 		   track list to put into the file database */
 		t3net_add_argument(key_arguments, "name", name);
-		printf("run\n");
 		key_data = t3net_get_data("http://www.t3-i.com/omo/get_tagger_key.php", key_arguments);
 		if(key_data)
 		{
 			key_val = t3net_get_data_entry_field(key_data, 0, "tagger_key");
 			if(key_val)
 			{
-				printf("got tagger key: %s - %s\n", name, key_val);
 				al_set_config_value(t3f_config, "Settings", "tagger_name", name);
 				al_set_config_value(t3f_config, "Settings", "tagger_id", key_val);
 				t3f_save_config();
