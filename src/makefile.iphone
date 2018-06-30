@@ -13,7 +13,8 @@ DEL_FOLDER_COMMAND = rm -rf
 SED_COMMAND = sed -i ''
 PLATFORM_CLEAN = rm -rf $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 COPY_COMMAND = cp
-PATH_SEPARATOR = /
+PATH_SEHASH = \\\#
+QUOTE = \"
 
 include makefile.common
 

@@ -39,12 +39,12 @@ update_changelog: ../changelog
 
 update_version: makefile.defines
 	@$(DEL_COMMAND) version.h
-	@echo \#ifndef APP_VERSION_H > version.h
-	@echo \#define APP_VERSION_H >> version.h
-	@echo \#define APP_TITLE \"$(APP_TITLE)\" >> version.h
-	@echo \#define APP_VERSION \"$(APP_VERSION)\" >> version.h
-	@echo \#define APP_COPYRIGHT \"$(APP_COPYRIGHT)\" >> version.h
-	@echo \#endif >> version.h
+	@echo $(HASH)ifndef APP_VERSION_H > version.h
+	@echo $(HASH)define APP_VERSION_H >> version.h
+	@echo $(HASH)define APP_TITLE $(QUOTE)$(APP_TITLE)$(QUOTE) >> version.h
+	@echo $(HASH)define APP_VERSION $(QUOTE)$(APP_VERSION)$(QUOTE) >> version.h
+	@echo $(HASH)define APP_COPYRIGHT $(QUOTE)$(APP_COPYRIGHT)$(QUOTE) >> version.h
+	@echo $(HASH)endif >> version.h
 
 clean: app_clean
 	@$(PLATFORM_CLEAN)

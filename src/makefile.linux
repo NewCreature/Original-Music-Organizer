@@ -8,5 +8,7 @@ DEL_FOLDER_COMMAND = rm -rf
 SED_COMMAND = sed -i
 COPY_COMMAND = cp
 PATH_SEPARATOR = /
+HASH = \\\#
+QUOTE = \"
 
 include makefile.common
