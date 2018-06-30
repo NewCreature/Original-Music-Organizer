@@ -14,6 +14,8 @@ DEL_FOLDER_COMMAND = rmdir /q
 COPY_COMMAND = copy /A
 SED_COMMAND = echo
 PATH_SEPARATOR = \\
+HASH = \#
+QUOTE = "
 
 include makefile.common
 
