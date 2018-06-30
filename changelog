@@ -1,5 +1,41 @@
 omo (BUILD_VERSION) maverick; urgency=low
 
+  * Restore previous session's player state at launch.
+  * Don't include articles such as 'the' during sorting.
+  * Allow specifying a codec handler for a particular file if you don't want to
+    use the default.
+  * Display the length of each track in the song and queue lists.
+  * Improve handling of Album Artist tag.
+  * Allow codec handlers to be manually disabled.
+  * Improve icon.
+  * Add 'about' dialog that shows copyright and version information.
+  * Fix Linux desktop category.
+  * Add option to find the currently selected song in the library.
+  * Fix many issues in library view.
+  * Provide an anonymous tagger key by default. This allows all users to submit
+    tags by default.
+  * Improve default theme.
+  * Fix crash bug in MPG123 codec handler.
+  * Properly support all audio formats in MPG123 codec handler.
+  * Add search filters to library view. Typing in the search filter box will
+    limit what displays in the list below it to items that match the search
+    filter.
+  * Prevent playback from going past the end of the song in DUMBA5 codec
+    handler.
+  * Prevent duplicate songs from showing up in the song list for specific
+    albums.
+  * Fix song looping in GME codec handler.
+  * Optimize song list generation.
+  * Add support for loading and saving PLS playlists.
+  * Add support for loading M3U playlists.
+  * Add cross-platform MIDI playback solution.
+  * Add AdPlug codec handler for playing back various AdLib audio formats.
+  * Many UI improvements.
+  * Improve stability.
+  * Other fixes and improvements.
+
+omo (0.4) maverick; urgency=low
+
   * Implement cloud tags submission and retrieval.
   * Improve UI responsiveness.
   * Fix issue where split tracks would not show in library.
@@ -30,7 +66,7 @@ omo (BUILD_VERSION) maverick; urgency=low
   * Updated documentation.
   * Other UI improvements.
 
- -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
+ -- Todd Cope <todd@t3-i.com>  Sat, 17 Feb 2018 00:14:34 +0000
 
 omo (0.3) maverick; urgency=low
 
