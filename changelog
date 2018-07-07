@@ -34,6 +34,8 @@ omo (BUILD_VERSION) maverick; urgency=low
   * Improve stability.
   * Other fixes and improvements.
 
+ -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
+
 omo (0.4) maverick; urgency=low
 
   * Implement cloud tags submission and retrieval.
