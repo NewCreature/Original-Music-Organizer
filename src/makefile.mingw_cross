@@ -14,8 +14,6 @@ SED_COMMAND = sed -i
 EXE_SUFFIX = .exe
 COPY_COMMAND = cp
 PATH_SEPARATOR = /
-HASH = \\\#
-QUOTE = \"
 
 include makefile.common
 

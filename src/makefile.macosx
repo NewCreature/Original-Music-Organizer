@@ -14,8 +14,6 @@ SED_COMMAND = sed -i ''
 PLATFORM_CLEAN = rm -rf $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 COPY_COMMAND = cp
 PATH_SEPARATOR = /
-HASH = \\\#
-QUOTE = \"
 
 include makefile.common
 
