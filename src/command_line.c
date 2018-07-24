@@ -1,7 +1,6 @@
 #include "t3f/t3f.h"
 #include "t3f/file_utils.h"
 #include "instance.h"
-#include "version.h"
 
 static void disable_codec_handler(OMO_CODEC_HANDLER_REGISTRY * rp, const char * name)
 {
@@ -109,7 +108,7 @@ bool omo_process_command_line_arguments(APP_INSTANCE * app, int argc, char * arg
 			}
 			else if(!strcmp(argv[i], "--version"))
 			{
-				printf("%s v%s %s.\n\n", APP_TITLE, APP_VERSION, APP_COPYRIGHT);
+				printf("%s v%s %s.\n\n", T3F_APP_TITLE, T3F_APP_VERSION, T3F_APP_COPYRIGHT);
 				return false;
 			}
 		}

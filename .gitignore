@@ -44,7 +44,6 @@ bin/unrar
 icons/macosx_icon.icns
 icons/windows_icon.ico
 win32/makeicon
-src/version.h
 
 # other files
 src/php/settings.php

@@ -31,7 +31,7 @@ app_clean:
 ################
 # global stuff #
 ################
-GLOBAL_CFLAGS = -O2 -fomit-frame-pointer -funroll-loops -Wall -I. -DT3F_DEVELOPER_NAME="\"$(APP_COMPANY)\"" -DT3F_PACKAGE_NAME="\"$(APP_NAME)\"" -DT3F_APP_VERSION="\"$(APP_VERSION)\"" -DT3F_APP_TITLE=\"$(APP_TITLE)\" -Icodec_handlers/midia5/MIDIA5
+GLOBAL_CFLAGS = -O2 -fomit-frame-pointer -funroll-loops -Wall -I. -DT3F_DEVELOPER_NAME="\"$(APP_COMPANY)\"" -DT3F_PACKAGE_NAME="\"$(APP_NAME)\"" -DT3F_APP_VERSION="\"$(APP_VERSION)\"" -DT3F_APP_TITLE=\"$(APP_TITLE)\" -DT3F_APP_COPYRIGHT=\"$(APP_COPYRIGHT)\" -Icodec_handlers/midia5/MIDIA5
 
 ##################
 # Mac OS X stuff #

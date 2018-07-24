@@ -6,7 +6,6 @@
 #include "../cloud.h"
 #include "dialog_proc.h"
 #include "menu_proc.h"
-#include "../version.h"
 
 bool omo_open_about_dialog(OMO_UI * uip, void * data)
 {
@@ -14,8 +13,8 @@ bool omo_open_about_dialog(OMO_UI * uip, void * data)
 	const char * val;
 	int x, y;
 	int font_height;
-	char * text_line_1 = APP_TITLE " v" APP_VERSION;
-	char * text_line_2 = APP_COPYRIGHT ".";
+	char * text_line_1 = T3F_APP_TITLE " v" T3F_APP_VERSION;
+	char * text_line_2 = T3F_APP_COPYRIGHT ".";
 
 	font_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]);
 
