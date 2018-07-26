@@ -6,7 +6,7 @@ static int min(int x, int y) { return (x<y)?x:y; }
 static int max(int x, int y) { return (x>y)?x:y; }
 static int clamp(int x, int y, int z) {return max(x, min(y, z));}
 
-static void render_split_text(ALLEGRO_FONT * fp, ALLEGRO_COLOR color, float x, float y, int max_width, int min_space, const char * text)
+static void render_split_text(const ALLEGRO_FONT * fp, ALLEGRO_COLOR color, float x, float y, int max_width, int min_space, const char * text)
 {
     const char * right_text = NULL;
     char full_text[1024];
@@ -1961,7 +1961,10 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
 
         case MSG_MOUSEUP:
         {
-            ret |= t3gui_scroll_proc(msg, &dd, c);
+            if(d->d3 > 0 && dd.d1 > 0 && d->mousex > dd.x)
+            {
+                ret |= t3gui_scroll_proc(msg, &dd, c);
+            }
             break;
         }
 
@@ -2037,9 +2040,12 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
                 al_set_clipping_rectangle(d->x, d->y, d->w, d->h);
             }
             NINE_PATCH_BITMAP *p9 = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].bitmap[1];
-            int w = max(d->w, get_nine_patch_bitmap_min_width(p9));
-            int h = max(d->h, get_nine_patch_bitmap_min_height(p9));
-            draw_nine_patch_bitmap(p9, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG], d->x, d->y, w, h);
+            if(p9)
+            {
+                int w = max(d->w, get_nine_patch_bitmap_min_width(p9));
+                int h = max(d->h, get_nine_patch_bitmap_min_height(p9));
+                draw_nine_patch_bitmap(p9, d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_BG], d->x, d->y, w, h);
+            }
             if(d->d3 > 0 && dd.d1 > 0)
             {
                 ret |= t3gui_scroll_proc(msg, &dd, c);

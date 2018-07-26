@@ -1,5 +1,4 @@
 #include <allegro5/allegro5.h>
-#include "../t3f/t3f.h"
 #include "defines.h"
 #include "unicode.h"
 #include "dialog.h"
@@ -1190,7 +1189,6 @@ bool t3gui_draw_dialog(T3GUI_PLAYER *player)
    //printf("Post redraw message\n");
    player->redraw = false;
    al_store_state(&old_state, ALLEGRO_STATE_TARGET_BITMAP | ALLEGRO_STATE_TRANSFORM);
-   al_set_target_bitmap(al_get_backbuffer(t3f_display));
    al_set_target_bitmap(al_get_backbuffer(player->display));
    al_get_clipping_rectangle(&clip_x, &clip_y, &clip_w, &clip_h);
    al_identity_transform(&identity);
