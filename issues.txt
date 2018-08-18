@@ -75,10 +75,7 @@ Long Term Goals
 v0.5.1
 ------
 
-[ ]Look into crash bug when opening invalid Ogg Vorbis audio file.
-
-[ ]Look into not being able to add library folders on a fresh install (system
-   with no prior installation).
+[X]Look into crash bug when opening invalid Ogg Vorbis audio file.
 
 
 v0.5
