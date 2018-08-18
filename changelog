@@ -1,5 +1,13 @@
 omo (BUILD_VERSION) maverick; urgency=low
 
+  * Fix bug in Allegro acodec codec handler which could cause OMO to crash if
+    the user attempted to load a non-existent or malformed file or add such a
+    file to their library. 
+
+ -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
+
+omo (0.5) maverick; urgency=low
+
   * Restore previous session's player state at launch.
   * Don't include articles such as 'the' during sorting.
   * Allow specifying a codec handler for a particular file if you don't want to
@@ -34,7 +42,7 @@ omo (BUILD_VERSION) maverick; urgency=low
   * Improve stability.
   * Other fixes and improvements.
 
- -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
+ -- Todd Cope <todd@t3-i.com>  Sat, 07 Jul 2018 01:32:15 +0000
 
 omo (0.4) maverick; urgency=low
 
