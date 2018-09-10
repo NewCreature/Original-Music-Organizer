@@ -26,18 +26,21 @@ static void my_strcpy(char * dest, const char * src, int max)
 
 char * t3f_windows_text_to_utf8(const char * src, char * dest, int max)
 {
-    ALLEGRO_USTR * ustr;
-    int i;
-
-    ustr = al_ustr_new("");
-    if(ustr)
-    {
-        for(i = 0; i < strlen(src); i++)
+    #ifdef T3F_NO_UTF8
+        ALLEGRO_USTR * ustr;
+        int i;
+        ustr = al_ustr_new("");
+        if(ustr)
         {
-            al_ustr_append_chr(ustr, (unsigned char)src[i]);
+            for(i = 0; i < strlen(src); i++)
+            {
+                al_ustr_append_chr(ustr, (unsigned char)src[i]);
+            }
+            my_strcpy(dest, al_cstr(ustr), max);
+            al_ustr_free(ustr);
         }
-        my_strcpy(dest, al_cstr(ustr), max);
-        al_ustr_free(ustr);
-    }
+    #else
+        my_strcpy(dest, src, max);
+    #endif
     return dest;
 }
