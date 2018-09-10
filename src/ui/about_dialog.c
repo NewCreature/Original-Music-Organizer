@@ -1,4 +1,7 @@
 #include "../t3f/t3f.h"
+#ifdef ALLEGRO_WINDOWS
+	#include "t3f/windows.h"
+#endif
 #include "../instance.h"
 #include "../constants.h"
 #include "../queue_helpers.h"
@@ -7,6 +10,8 @@
 #include "dialog_proc.h"
 #include "menu_proc.h"
 
+static char text_line_2[256] = {0};
+
 bool omo_open_about_dialog(OMO_UI * uip, void * data)
 {
 	ALLEGRO_FONT * font;
@@ -14,7 +19,13 @@ bool omo_open_about_dialog(OMO_UI * uip, void * data)
 	int x, y;
 	int font_height;
 	char * text_line_1 = T3F_APP_TITLE " v" T3F_APP_VERSION;
-	char * text_line_2 = T3F_APP_COPYRIGHT ".";
+
+	#ifdef ALLEGRO_WINDOWS
+		t3f_windows_text_to_utf8(T3F_APP_COPYRIGHT, text_line_2, 256);
+	#else
+		strcpy(text_line_2, T3F_APP_COPYRIGHT);
+	#endif
+	strcat(text_line_2, ".");
 
 	font_height = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]);
 
