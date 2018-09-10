@@ -8,7 +8,7 @@
 #include <string.h>
 #include <math.h>
 #include "t3f.h"
-#include "t3f/file.h"
+#include "file.h"
 #include "collision.h"
 
 static void add_collision_point(T3F_COLLISION_LIST * lp, float x, float y)

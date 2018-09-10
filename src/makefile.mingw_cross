@@ -17,6 +17,9 @@ PATH_SEPARATOR = /
 
 include makefile.common
 
+prepare_platform:
+	@echo Ready to build...
+
 icon.o : ../icons/windows_icon.ico ../win32/icon.rc
 	i586-mingw32msvc-windres --include-dir=../icons -o icon.o ../win32/icon.rc
 

@@ -10,3 +10,6 @@ COPY_COMMAND = cp
 PATH_SEPARATOR = /
 
 include makefile.common
+
+prepare_platform:
+	@echo Ready to build...

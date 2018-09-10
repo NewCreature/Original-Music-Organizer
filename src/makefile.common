@@ -4,6 +4,8 @@ SPACE:=$(NOTHING) $(NOTHING)
 
 T3F_DEPEND_LIBS = -lallegro_image$(LIB_SUFFIX) -lallegro_font$(LIB_SUFFIX) -lallegro_ttf$(LIB_SUFFIX) -lallegro_primitives$(LIB_SUFFIX) -lallegro_audio$(LIB_SUFFIX) -lallegro_acodec$(LIB_SUFFIX) -lallegro_memfile$(LIB_SUFFIX) -lallegro$(LIB_SUFFIX) -lm
 
+GLOBAL_CFLAGS = -DT3F_DEVELOPER_NAME="\"$(subst \ ,$(SPACE),$(APP_COMPANY))\"" -DT3F_PACKAGE_NAME="\"$(subst \ ,$(SPACE),$(APP_NAME))\"" -DT3F_APP_VERSION="\"$(subst \ ,$(SPACE),$(APP_VERSION))\"" -DT3F_APP_TITLE="\"$(subst \ ,$(SPACE),$(APP_TITLE))\"" -DT3F_APP_COPYRIGHT="\"$(subst \ ,$(SPACE),$(APP_COPYRIGHT))\"" -DT3F_APP_PUBLISHER="\"$(subst \ ,$(SPACE),$(APP_PUBLISHER))\""
+
 include makefile.defines
 include makefile.default_config
 include makefile.config
@@ -23,7 +25,7 @@ APP_PACKAGE_FILENAME = $(APP_PACKAGE_NAME)-src.tar.gz
 all : $(APP_EXE_NAME) $(PLATFORM_TARGET) $(APP_EXTRA_TARGET)
 	@echo All targets built!
 
-$(APP_EXE_NAME) : $(PROJECT_OBJECTS) update_changelog
+$(APP_EXE_NAME) : prepare_platform $(PROJECT_OBJECTS) update_changelog
 	$(CC) $(LFLAGS) $(PROJECT_OBJECTS) $(PLATFORM_LIBS) $(APP_LIBS) $(T3F_DEPEND_LIBS) $(DEPEND_LIBS) -o $(APP_EXE_NAME)
 	@echo Executable built!
 
@@ -40,19 +42,20 @@ update_changelog: ../changelog
 clean: app_clean
 	@$(PLATFORM_CLEAN)
 	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(PROJECT_OBJECTS))
+	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(APP_EXE_NAME)$(EXE_SUFFIX))
+ifdef $(APP_EXTRA_TARGET)
+	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(APP_EXTRA_TARGET))
+endif
+	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME))
 	@echo Cleanup complete!
 
-very_clean: clean
-	$(DEL_COMMAND) $(APP_EXE_NAME) $(APP_EXTRA_TARGET)
-
 #create tar.gz package for source code distribution
-package:
-	make -f Makefile clean_all
-	$(shell rm -rf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME); mkdir ../temp; mkdir ../temp/$(APP_PACKAGE_NAME); cp -a "../bin" ../temp/$(APP_PACKAGE_NAME); cp -a "../src" ../temp/$(APP_PACKAGE_NAME); cp -a "../docs" ../temp/$(APP_PACKAGE_NAME); cp -a "../android" ../temp/$(APP_PACKAGE_NAME); cp -a "../debian" ../temp/$(APP_PACKAGE_NAME); cp -a "../macosx" ../temp/$(APP_PACKAGE_NAME); cp -a "../win32" ../temp/$(APP_PACKAGE_NAME); cp -a "../icons" ../temp/$(APP_PACKAGE_NAME); cp -a "../graphics_src" ../temp/$(APP_PACKAGE_NAME); cp -a "../packages" ../temp/$(APP_PACKAGE_NAME); cp "../changelog" ../temp/$(APP_PACKAGE_NAME); cp "../build.txt" ../temp/$(APP_PACKAGE_NAME); cp "../issues.txt" ../temp/$(APP_PACKAGE_NAME); cd ../temp; rm -f $(APP_PACKAGE_FILENAME); export COPY_EXTENDED_ATTRIBUTES_DISABLE=true; export COPYFILE_DISABLE=true; tar --exclude="." --exclude=".DS_Store" --exclude="old" $(PACKAGE_EXCLUSIONS) --dereference -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
+package: clean
+	$(shell rm -rf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME); mkdir ../temp; mkdir ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../bin" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../src" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../docs" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../android" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../debian" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../macosx" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L  "../win32" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../icons" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../graphics_src" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../packages" ../temp/$(APP_PACKAGE_NAME); cp "../changelog" ../temp/$(APP_PACKAGE_NAME); cp "../build.txt" ../temp/$(APP_PACKAGE_NAME); cp "../issues.txt" ../temp/$(APP_PACKAGE_NAME); cd ../temp; rm -f $(APP_PACKAGE_FILENAME); export COPY_EXTENDED_ATTRIBUTES_DISABLE=true; export COPYFILE_DISABLE=true; tar --exclude="." --exclude=".DS_Store" --exclude="old" $(PACKAGE_EXCLUSIONS) --dereference -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
 	@echo Package successfully created!
 
 #make a copy of the source tree with non-demo data deleted
-demo: very_clean
+demo: clean
 	mkdir $(DEMO_DIR)
 	cp -a -R ../* $(DEMO_DIR)
 	rm -rf $(DEMO_DIR)/workspace
@@ -60,12 +63,12 @@ demo: very_clean
 	$(SED_COMMAND) 's|"$(APP_TITLE)"|"$(APP_TITLE) Demo"|' $(DEMO_DIR)/src/init.c
 	$(SED_COMMAND) 's|$(APP_NAME)|$(APP_NAME)-demo|' $(DEMO_DIR)/src/makefile.defines
 	$(SED_COMMAND) 's|$(subst $(SPACE),\$(SPACE),$(APP_TITLE))|$(subst $(SPACE),\$(SPACE),$(APP_TITLE))\\$(SPACE)Demo|' $(DEMO_DIR)/src/makefile.defines
-	$(SED_COMMAND) 's|com.t3i.vgolfdeluxe|com.t3i.vgolfdeluxedemo|' $(DEMO_DIR)/src/makefile.defines
+	$(SED_COMMAND) 's|$(APP_ANDROID_PACKAGE)|$(APP_ANDROID_PACKAGEdemo|' $(DEMO_DIR)/src/makefile.defines
 	$(SED_COMMAND) 's|$(APP_NAME)|$(APP_NAME)-demo|' $(DEMO_DIR)/changelog
 
 demo_gp: demo
 	$(SED_COMMAND) 's|-DT3F_ANDROID|-DT3F_ANDROID -DT3F_ANDROID_GP|' $(DEMO_DIR)/android/template/jni/Android.mk
 	mv $(DEMO_DIR) $(DEMO_DIR)_gp
 
-../win32/makeicon: ../win32/makeicon.o
+../win32/makeicon$(EXE_SUFFIX): ../win32/makeicon.o
 	$(CC) $(LFLAGS) ../win32/makeicon.o $(PLATFORM_LIBS) $(T3F_DEPEND_LIBS) $(DEPEND_LIBS) -o ../win32/makeicon

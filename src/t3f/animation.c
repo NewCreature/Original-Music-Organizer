@@ -7,7 +7,7 @@
 #include "draw.h"
 #include "view.h"
 #include "resource.h"
-#include "t3f/file.h"
+#include "file.h"
 
 static char ani_header[12] = {'O', 'C', 'D', 'A', 'S', 0};
 

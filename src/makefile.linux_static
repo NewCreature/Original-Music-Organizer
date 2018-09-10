@@ -13,6 +13,9 @@ PATH_SEPARATOR = /
 
 include makefile.common
 
+prepare_platform:
+	@echo Ready to build...
+
 ../debian/control_gen: ../debian/control_gen.o
 	$(CC) $(GLOBAL_CFLAGS) ../debian/control_gen.o -o ../debian/control_gen
 

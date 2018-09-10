@@ -1,5 +1,5 @@
 #include "t3f.h"
-#include "t3f/file.h"
+#include "file.h"
 #include "vector.h"
 #include "view.h"
 

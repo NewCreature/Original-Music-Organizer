@@ -16,6 +16,9 @@ COPY_COMMAND = cp
 
 include makefile.common
 
+prepare_platform:
+	@echo Ready to build...
+
 $(APP_PACKAGE_DIR)/$(APP_TITLE).app : $(APP_EXE_NAME)
 	@$(DEL_FOLDER_COMMAND) $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@mkdir $(APP_PACKAGE_DIR)/$(APP_TITLE).app

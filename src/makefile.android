@@ -14,6 +14,9 @@ ANDROID_NATIVE_CALL_PREFIX = $(subst .,_,$(APP_ANDROID_PACKAGE))
 
 include makefile.common
 
+prepare_platform:
+	@echo Ready to build...
+
 #generate Android package, rebuilds Allegro first to update package name
 android_package: build_temp build_allegro build_android $(ANDROID_PLATFORM_TARGET)
 	rm -rf ../temp
