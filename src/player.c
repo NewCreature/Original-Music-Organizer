@@ -192,61 +192,53 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 	}
 	if(next_file)
 	{
-		while(1)
+		while(pp->queue_pos < pp->queue->entry_count)
 		{
-			if(pp->queue_pos < pp->queue->entry_count)
+			al_stop_timer(t3f_timer);
+			if(lp)
 			{
-				al_stop_timer(t3f_timer);
+				id = omo_get_library_file_id(lp, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track);
+				if(id)
+				{
+					codec_handler_id = omo_get_database_value(lp->entry_database, id, "Codec Handler");
+				}
+			}
+			pp->track = omo_load_track(archive_handler_registry, codec_handler_registry, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track, temp_path, codec_handler_id);
+			al_start_timer(t3f_timer);
+			if(pp->track)
+			{
 				if(lp)
 				{
 					id = omo_get_library_file_id(lp, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track);
 					if(id)
 					{
-						codec_handler_id = omo_get_database_value(lp->entry_database, id, "Codec Handler");
-					}
-				}
-				pp->track = omo_load_track(archive_handler_registry, codec_handler_registry, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track, temp_path, codec_handler_id);
-				al_start_timer(t3f_timer);
-				if(pp->track)
-				{
-					if(lp)
-					{
-						id = omo_get_library_file_id(lp, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track);
-						if(id)
+						val = omo_get_database_value(lp->entry_database, id, "Detected Length");
+						if(val)
 						{
-							val = omo_get_database_value(lp->entry_database, id, "Detected Length");
-							if(val)
-							{
-								force_length = atof(val);
-							}
-							val = omo_get_database_value(lp->entry_database, id, "Loop Start");
-							if(val)
-							{
-								loop_start = atof(val);
-							}
-							val = omo_get_database_value(lp->entry_database, id, "Loop End");
-							if(val)
-							{
-								loop_end = atof(val);
-							}
-							val = omo_get_database_value(lp->entry_database, id, "Fade Time");
-							if(val)
-							{
-								fade_time = atof(val);
-							}
+							force_length = atof(val);
+						}
+						val = omo_get_database_value(lp->entry_database, id, "Loop Start");
+						if(val)
+						{
+							loop_start = atof(val);
+						}
+						val = omo_get_database_value(lp->entry_database, id, "Loop End");
+						if(val)
+						{
+							loop_end = atof(val);
+						}
+						val = omo_get_database_value(lp->entry_database, id, "Fade Time");
+						if(val)
+						{
+							fade_time = atof(val);
 						}
 					}
-					val = al_get_config_value(t3f_config, "Settings", "loop_count");
-					if(omo_player_play_file(pp, loop_start, loop_end, fade_time, val ? atoi(val) : 1, force_length))
-					{
-						break;
-					}
 				}
-			}
-			else
-			{
-				pp->state = OMO_PLAYER_STATE_STOPPED;
-				break;
+				val = al_get_config_value(t3f_config, "Settings", "loop_count");
+				if(omo_player_play_file(pp, loop_start, loop_end, fade_time, val ? atoi(val) : 1, force_length))
+				{
+					break;
+				}
 			}
 			pp->queue_pos++;
 		}
