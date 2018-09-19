@@ -9,7 +9,7 @@ ALLEGRO_SRC_ROOT = $(HOME)/Development/Libraries/allegro5
 #####################
 # Mac OS X Settings #
 #####################
-MACOSX_ARCHITECURES = -arch i386 -arch x86_64
+MACOSX_ARCHITECTURES = -arch i386 -arch x86_64
 MACOSX_SYS_ROOT = -isysroot  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 MACOSX_MIN_VERSION = -mmacosx-version-min=10.6
 MACOSX_COMPILER_SETTINGS = -I/usr/local/include
