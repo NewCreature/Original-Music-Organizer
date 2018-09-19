@@ -67,8 +67,13 @@ static void * codec_load_file(const char * fn, const char * subfn)
 				#endif
 				data->codec_length = (double)length / 65536.0;
 			}
+			data->volume = 1.0;
 		}
-		data->volume = 1.0;
+		else
+		{
+			free(data);
+			data = NULL;
+		}
 	}
 	return data;
 }
@@ -170,9 +175,9 @@ static bool codec_play(void * data)
 		start = atoi(codec_data->player_sub_filename);
 	}
 	codec_data->codec_player = dumba5_create_player(codec_data->codec_module, start, codec_data->loop, 1024, 44100, true);
-	dumba5_set_player_volume(codec_data->codec_player, codec_data->volume);
 	if(codec_data->codec_player)
 	{
+		dumba5_set_player_volume(codec_data->codec_player, codec_data->volume);
 		dumba5_start_player(codec_data->codec_player);
 		return true;
 	}
