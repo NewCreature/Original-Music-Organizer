@@ -66,7 +66,7 @@ static const char * skip_articles(const char * s)
 	return final_s;
 }
 
-static bool strmatch(const char * s1, const char * s2)
+static bool strmatch_helper(const char * s1, const char * s2)
 {
 	int l1 = strlen(s1);
 	int l2 = strlen(s2);
@@ -84,6 +84,29 @@ static bool strmatch(const char * s1, const char * s2)
 		}
 	}
 	return true;
+}
+
+static bool strmatch(const char * s1, const char * s2)
+{
+	int l1 = strlen(s1);
+	int l2 = strlen(s2);
+	int i;
+
+	if(l2 < l1)
+	{
+		return false;
+	}
+	for(i = 0; i < l2; i++)
+	{
+		if(tolower(s2[i]) == tolower(s1[0]))
+		{
+			if(strmatch_helper(s1, &s2[i]))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 /* when all else fails, sort by path */
