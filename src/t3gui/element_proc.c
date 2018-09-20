@@ -707,7 +707,7 @@ int t3gui_check_proc(int msg, T3GUI_ELEMENT *d, int c)
       return ret;
    }
 
-   return ret | t3gui_button_proc(msg, d, 0);
+   return ret | t3gui_button_proc(msg, d, c);
 }
 
 
