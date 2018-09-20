@@ -3,6 +3,8 @@ omo (BUILD_VERSION) maverick; urgency=low
   * Improve handling of failure to load track in DUMBA5 codec handler.
   * Fix potential infinite loop when the player goes to the next song in the
     queue which could lead to crashing.
+  * Improve search filters by only requiring the filter text to appear
+    somewhere in the artist, album, or song title text.
 
  -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
 
