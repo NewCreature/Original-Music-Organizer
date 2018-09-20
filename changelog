@@ -1,10 +1,18 @@
 omo (BUILD_VERSION) maverick; urgency=low
 
-  * Fix bug in Allegro acodec codec handler which could cause OMO to crash if
-    the user attempted to load a non-existent or malformed file or add such a
-    file to their library. 
+  * Improve handling of failure to load track in DUMBA5 codec handler.
+  * Fix potential infinite loop when the player goes to the next song in the
+    queue which could lead to crashing.
 
  -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
+
+omo (0.5.1) maverick; urgency=low
+
+  * Fix bug in Allegro acodec codec handler which could cause OMO to crash if
+    the user attempted to load a non-existent or malformed file or add such a
+    file to their library.
+
+ -- Todd Cope <todd@t3-i.com>  Sat, 18 Aug 2018 19:54:29 +0000
 
 omo (0.5) maverick; urgency=low
 
