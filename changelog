@@ -5,6 +5,8 @@ omo (BUILD_VERSION) maverick; urgency=low
     queue which could lead to crashing.
   * Improve search filters by only requiring the filter text to appear
     somewhere in the artist, album, or song title text.
+  * Fix bug in GUI check box code which made it impossible to edit the library
+    file type filter.
 
  -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
 
