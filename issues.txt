@@ -72,6 +72,14 @@ Long Term Goals
    or multi-select.
 
 
+v0.5.2
+------
+
+[ ]Track down tags editing crash bug.
+
+[ ]Error out of omo_submit_track_tags() if track fails to load.
+
+
 v0.5.1
 ------
 
