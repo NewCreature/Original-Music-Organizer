@@ -83,7 +83,9 @@ v0.5.2
 
 [ ]Move cursor in edit box on first click.
 
-[ ]
+[ ]Use calculated length for library and queue display if we have it, even if
+   we have a specified length. The player overrides the length with the
+   calculated length so we should display it that way.
 
 
 v0.5.1
