@@ -79,6 +79,12 @@ v0.5.2
 
 [ ]Error out of omo_submit_track_tags() if track fails to load.
 
+[ ]Apply filter text when library lists reloaded.
+
+[ ]Move cursor in edit box on first click.
+
+[ ]
+
 
 v0.5.1
 ------
