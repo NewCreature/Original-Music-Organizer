@@ -1961,6 +1961,8 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
 
         case MSG_MOUSEUP:
         {
+            d->flags &= ~D_TRACKMOUSE;
+            dd.flags &= ~D_TRACKMOUSE;
             if(d->d3 > 0 && dd.d1 > 0 && d->mousex > dd.x)
             {
                 ret |= t3gui_scroll_proc(msg, &dd, c);
