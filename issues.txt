@@ -81,7 +81,7 @@ v0.5.2
 
 [ ]Apply filter text when library lists reloaded.
 
-[ ]Move cursor in edit box on first click.
+[X]Move cursor in edit box on first click.
 
 
 v0.5.1

@@ -209,6 +209,7 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 	qp->entry[i]->tags_retrieved = false;
 	if(lp)
 	{
+		printf("getting tags from database\n");
 		strcpy(section, qp->entry[i]->file);
 		if(qp->entry[i]->sub_file)
 		{
@@ -254,6 +255,7 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 				ret = true;
 			}
 		}
+		printf("finished getting tags from database\n");
 	}
 	if(qp->entry[i]->skip_scan)
 	{
@@ -281,6 +283,7 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 
 	for(i = 0; i < app->player->queue->entry_count && !al_get_thread_should_stop(thread); i++)
 	{
+		printf("getting tags for queue entry %d\n", i);
 		if(!app->player->queue->entry[i]->tags_retrieved)
 		{
 			extracted_fn = NULL;
@@ -288,12 +291,16 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 			archive_handler = omo_get_archive_handler(app->archive_handler_registry, app->player->queue->entry[i]->file);
 			if(archive_handler && app->player->queue->entry[i]->sub_file)
 			{
+				printf("opening archive %s\n", app->player->queue->entry[i]->file);
 				archive_handler_data = archive_handler->open_archive(app->player->queue->entry[i]->file, app->queue_tags_temp_path);
 				if(archive_handler_data)
 				{
+					printf("archive opened, extracting file\n");
 					extracted_fn = archive_handler->extract_file(archive_handler_data, atoi(app->player->queue->entry[i]->sub_file), fn_buffer);
 					target_fn = extracted_fn;
+					printf("closing archive\n");
 					archive_handler->close_archive(archive_handler_data);
+					printf("finished closing archive\n");
 				}
 			}
 			else
@@ -303,7 +310,9 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 			codec_handler = omo_get_codec_handler(app->codec_handler_registry, target_fn, NULL);
 			if(codec_handler && codec_handler->get_tag)
 			{
+				printf("loading track\n");
 				codec_handler_data = codec_handler->load_file(target_fn, app->player->queue->entry[i]->track);
+				printf("getting tags\n");
 				if(codec_handler_data)
 				{
 					if(!strlen(app->player->queue->entry[i]->tags.artist))
@@ -343,13 +352,17 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 						app->player->queue->entry[i]->tags.length = codec_handler->get_length(codec_handler_data);
 						app->player->queue->length += app->player->queue->entry[i]->tags.length;
 					}
+					printf("unloading track\n");
 					codec_handler->unload_file(codec_handler_data);
+					printf("finished unloading track\n");
 					app->player->queue->entry[i]->tags_retrieved = true;
 				}
 			}
 			if(extracted_fn)
 			{
+				printf("deleting extracted file\n");
 				al_remove_filename(extracted_fn);
+				printf("finished deleting extracted file\n");
 			}
 		}
 	}
@@ -370,6 +383,7 @@ void omo_get_queue_tags(OMO_QUEUE * qp, OMO_LIBRARY * lp, void * data)
 	int i;
 	bool rescan = false;
 
+	printf("getting queue tags\n");
 	if(qp)
 	{
 		if(qp->thread)
