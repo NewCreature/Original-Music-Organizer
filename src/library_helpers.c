@@ -1024,6 +1024,14 @@ void omo_filter_library_song_list(OMO_LIBRARY * lp, const char * filter)
 					count++;
 				}
 			}
+			else
+			{
+				if(strmatch(filter, lp->entry[lp->song_entry[i]]->filename))
+				{
+					lp->filtered_song_entry[count] = lp->song_entry[i];
+					count++;
+				}
+			}
 		}
 		lp->filtered_song_entry_count = count;
 	}
