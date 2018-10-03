@@ -81,6 +81,11 @@ v0.5.2
 
 [ ]Apply filter text when library lists reloaded.
 
+   [ ]We probably need to apply any filters when the library thread finishes.
+
+   [ ]We also need to check when the user changes a selection in the library
+      and reapply all the filters.
+
 [ ]Remove debugging information before finalizing release.
 
 [X]Move cursor in edit box on first click.
