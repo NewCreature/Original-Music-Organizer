@@ -113,7 +113,15 @@ void omo_shortcut_logic(void * data)
 	}
 	if(t3f_key[ALLEGRO_KEY_S])
 	{
-		omo_menu_playback_shuffle(0, app);
+		if(app->ui->ui_artist_list_element->flags & D_GOTFOCUS || app->ui->ui_album_list_element->flags & D_GOTFOCUS || app->ui->ui_song_list_element->flags & D_GOTFOCUS)
+		{
+			app->ui->ui_song_list_element->d1 = 0;
+			app->ui->ui_song_list_element->id1 = 0;
+		}
+		else if(app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
+		{
+			omo_menu_playback_shuffle(0, app);
+		}
 		t3f_key[ALLEGRO_KEY_S] = 0;
 	}
 }
