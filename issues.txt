@@ -81,6 +81,8 @@ v0.5.2
 
 [ ]Apply filter text when library lists reloaded.
 
+[ ]Fix pressing Enter from the search filter edit box to play the first match.
+
 [X]Move cursor in edit box on first click.
 
 
