@@ -158,8 +158,7 @@ void omo_library_logic(void * data)
 		{
 			if(strlen(app->ui->ui_artist_search_element->dp))
 			{
-				app->ui->ui_artist_search_element->flags &= ~D_GOTFOCUS;
-				app->ui->ui_artist_list_element->flags |= D_GOTFOCUS;
+				t3gui_set_focus_element(app->ui->ui_artist_list_element);
 				app->ui->ui_artist_list_element->d1 = 2;
 			}
 		}
@@ -167,8 +166,7 @@ void omo_library_logic(void * data)
 		{
 			if(strlen(app->ui->ui_album_search_element->dp))
 			{
-				app->ui->ui_album_search_element->flags &= ~D_GOTFOCUS;
-				app->ui->ui_album_list_element->flags |= D_GOTFOCUS;
+				t3gui_set_focus_element(app->ui->ui_album_list_element);
 				app->ui->ui_album_list_element->d1 = 2;
 			}
 		}
@@ -176,8 +174,7 @@ void omo_library_logic(void * data)
 		{
 			if(strlen(app->ui->ui_song_search_element->dp))
 			{
-				app->ui->ui_song_search_element->flags &= ~D_GOTFOCUS;
-				app->ui->ui_song_list_element->flags |= D_GOTFOCUS;
+				t3gui_set_focus_element(app->ui->ui_song_list_element);
 				app->ui->ui_song_list_element->d1 = 1;
 			}
 		}
