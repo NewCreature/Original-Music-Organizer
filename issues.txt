@@ -83,6 +83,8 @@ v0.5.2
 
 [ ]Fix pressing Enter from the search filter edit box to play the first match.
 
+[ ]Remove debugging information before finalizing release.
+
 [X]Move cursor in edit box on first click.
 
 
