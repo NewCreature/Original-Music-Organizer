@@ -48,11 +48,13 @@ bool t3gui_start_dialog_thread(T3GUI_PLAYER * player);
 bool t3gui_stop_dialog_thread(T3GUI_PLAYER * player);
 void t3gui_shutdown_dialog(T3GUI_PLAYER * player);
 
+void t3gui_set_player_focus(T3GUI_PLAYER * player, int obj);
+
 /* Tell a dialog player to listen for events from a particular source */
 bool t3gui_listen_for_events(T3GUI_PLAYER *player, ALLEGRO_EVENT_SOURCE *src);
 
 /* Get the event source associated with a dialog player */
-ALLEGRO_EVENT_SOURCE *t3gui_get_player_event_source(T3GUI_PLAYER *player);
+ALLEGRO_EVENT_SOURCE * t3gui_get_player_event_source(T3GUI_PLAYER *player);
 
 bool t3gui_pause_dialog(T3GUI_PLAYER * player);
 bool t3gui_resume_dialog(T3GUI_PLAYER * player);

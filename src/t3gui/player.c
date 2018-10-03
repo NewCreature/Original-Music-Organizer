@@ -335,6 +335,11 @@ static int move_focus(T3GUI_ELEMENT *d, int keycode, bool shift, int *focus_obj)
    return res;
 }
 
+void t3gui_set_player_focus(T3GUI_PLAYER * player, int obj)
+{
+    offer_focus(player->dialog, obj, &player->keyboard_obj, 1);
+}
+
 static void pass_through_event(T3GUI_PLAYER *player, ALLEGRO_EVENT *event)
 {
     if(player->pass_events)
