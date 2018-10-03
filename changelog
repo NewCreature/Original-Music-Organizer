@@ -7,6 +7,7 @@ omo (BUILD_VERSION) maverick; urgency=low
     somewhere in the artist, album, or song title text.
   * Fix bug in GUI check box code which made it impossible to edit the library
     file type filter.
+  * Properly handle pressing Enter key in the search filter edit boxes.
 
  -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
 
