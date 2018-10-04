@@ -49,6 +49,9 @@ typedef struct
 	char artist_search_text[256];
 	char album_search_text[256];
 	char song_search_text[256];
+	bool apply_artist_search_filter;
+	bool apply_album_search_filter;
+	bool apply_song_search_filter;
 
 	/* tags dialog */
 	OMO_UI_POPUP_DIALOG * tags_popup_dialog;

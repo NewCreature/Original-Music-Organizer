@@ -40,6 +40,9 @@ void omo_threads_logic(APP_INSTANCE * app)
 		{
 			if(app->library->loaded)
 			{
+				app->ui->apply_artist_search_filter = true;
+				app->ui->apply_album_search_filter = true;
+				app->ui->apply_song_search_filter = true;
 				for(i = 0; i < app->library->artist_entry_count; i++)
 				{
 					if(!strcmp(app->library->artist_entry[i], app->edit_artist))
