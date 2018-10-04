@@ -86,7 +86,7 @@ v0.5.2
    [X]We also need to check when the user changes a selection in the library
       and reapply all the filters.
 
-[ ]Fix size of search filter edit boxes.
+[X]Fix size of search filter edit boxes.
 
 [ ]Remove debugging information before finalizing release.
 
