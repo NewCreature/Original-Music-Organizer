@@ -10,6 +10,8 @@ omo (BUILD_VERSION) maverick; urgency=low
   * Properly handle pressing Enter key in the search filter edit boxes.
   * Make 'S' key perform a Shuffle All when navigating within the artist,
     album, or song list.
+  * Fix possible crash when submitting tags if the track fails to load during
+    the submission process.
 
  -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
 
