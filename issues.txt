@@ -77,13 +77,13 @@ v0.5.2
 
 [ ]Track down tags editing crash bug.
 
-[ ]Error out of omo_submit_track_tags() if track fails to load.
+[X]Error out of omo_submit_track_tags() if track fails to load.
 
-[ ]Apply filter text when library lists reloaded.
+[X]Apply filter text when library lists reloaded.
 
-   [ ]We probably need to apply any filters when the library thread finishes.
+   [X]We probably need to apply any filters when the library thread finishes.
 
-   [ ]We also need to check when the user changes a selection in the library
+   [X]We also need to check when the user changes a selection in the library
       and reapply all the filters.
 
 [ ]Remove debugging information before finalizing release.
