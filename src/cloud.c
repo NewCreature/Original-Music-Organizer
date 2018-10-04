@@ -141,11 +141,12 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 				al_stop_timer(t3f_timer);
 				printf("loading track: %s/%s:%s\n", lp->entry[entry]->filename, lp->entry[entry]->sub_filename, lp->entry[entry]->track);
 				track = omo_load_track(archive_handler_registry, codec_handler_registry, lp->entry[entry]->filename, lp->entry[entry]->sub_filename, lp->entry[entry]->track, temp_path, NULL);
+				al_start_timer(t3f_timer);
 				if(!track)
 				{
 					printf("failed to load track!\n");
+					return false;
 				}
-				al_start_timer(t3f_timer);
 
 				printf("creating T3Net arguments list\n");
 				t3net_add_argument(arguments, "tagger", tagger_key);
@@ -176,12 +177,9 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 					t3net_add_argument(arguments, convert_tag_name("Detected Length"), val);
 				}
 				printf("finished creating T3Net arguments list\n");
-				if(track)
-				{
-					printf("unloading track\n");
-					omo_unload_track(track);
-					printf("finished unloading track\n");
-				}
+				printf("unloading track\n");
+				omo_unload_track(track);
+				printf("finished unloading track\n");
 				printf("submitting data\n");
 				submit_data = t3net_get_data(url, arguments);
 				if(submit_data)
