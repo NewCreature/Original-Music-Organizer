@@ -29,7 +29,7 @@ Long Term Goals
 
 [ ]Add album art view. I'm not sure what the best way to handle this is yet. We
    might want to add a separate view type that has 3 panes. Alternately, we
-   could just add an option to show album art in the album list in the 3rd
+   could just add an option to show album art in the album list in the 2nd
    pane.
 
    We will probably want to make the album art icons the size of two lines of
