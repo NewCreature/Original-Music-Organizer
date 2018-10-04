@@ -208,8 +208,8 @@ static void setup_library_artist_list_module(OMO_UI * uip, int x, int y, int w, 
 	uip->ui_artist_search_element->x = x;
 	uip->ui_artist_search_element->y = pos_y;
 	uip->ui_artist_search_element->w = w;
-	uip->ui_artist_search_element->h = font_height;
-	pos_y += font_height + bezel;
+	uip->ui_artist_search_element->h = font_height + 4;
+	pos_y += font_height + 4 + bezel;
 
 	uip->ui_artist_list_element->x = x;
 	uip->ui_artist_list_element->y = pos_y;
@@ -236,8 +236,8 @@ static void setup_library_album_list_module(OMO_UI * uip, int x, int y, int w, i
 	uip->ui_album_search_element->x = x;
 	uip->ui_album_search_element->y = pos_y;
 	uip->ui_album_search_element->w = w;
-	uip->ui_album_search_element->h = font_height;
-	pos_y += font_height + bezel;
+	uip->ui_album_search_element->h = font_height + 4;
+	pos_y += font_height + 4 + bezel;
 
 	uip->ui_album_list_element->x = x;
 	uip->ui_album_list_element->y = pos_y;
@@ -264,8 +264,8 @@ static void setup_library_song_list_module(OMO_UI * uip, int x, int y, int w, in
 	uip->ui_song_search_element->x = x;
 	uip->ui_song_search_element->y = pos_y;
 	uip->ui_song_search_element->w = w;
-	uip->ui_song_search_element->h = font_height;
-	pos_y += font_height + bezel;
+	uip->ui_song_search_element->h = font_height + 4;
+	pos_y += font_height + 4 + bezel;
 
 	uip->ui_song_list_element->x = x;
 	uip->ui_song_list_element->y = pos_y;
