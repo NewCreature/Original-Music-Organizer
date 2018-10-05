@@ -28,14 +28,12 @@ void omo_threads_logic(APP_INSTANCE * app)
 	/* destroy thread when library scan finished */
 	if(app->library_thread && app->loading_library_file_helper_data.scan_done)
 	{
-		printf("destroying library thread\n");
 		al_destroy_thread(app->library_thread);
 		app->library_thread = NULL;
 		if(app->library && app->player->queue)
 		{
 			app->spawn_queue_thread = true;
 		}
-		printf("fixing library selections\n");
 		if(app->library)
 		{
 			if(app->library->loaded)
@@ -79,47 +77,37 @@ void omo_threads_logic(APP_INSTANCE * app)
 	}
 	if(app->cloud_thread_done)
 	{
-		printf("destroying cloud thread\n");
 		al_destroy_thread(app->cloud_thread);
 		app->cloud_thread = NULL;
 		app->cloud_thread_done = false;
-		printf("finished destroying cloud thread\n");
 	}
 
 	if(app->spawn_library_thread)
 	{
-		printf("spawning library thread\n");
 		kill_all_threads(app);
 		strcpy(file_database_fn, t3f_get_filename(t3f_data_path, "files.ini", buffer, 1024));
 		strcpy(entry_database_fn, t3f_get_filename(t3f_data_path, "database.ini", buffer, 1024));
 		if(app->library)
 		{
-			printf("destroying library\n");
 			omo_destroy_library(app->library);
 			app->library = NULL;
-			printf("finished destroying library\n");
 		}
-		printf("setting up library\n");
 		omo_setup_library(app, file_database_fn, entry_database_fn, NULL);
 		app->spawn_library_thread = false;
 	}
 	if(app->spawn_library_lists_thread && app->library)
 	{
-		printf("spawning library lists thread\n");
 		omo_setup_library_lists(app);
 		app->spawn_library_lists_thread = false;
 	}
 	if(app->spawn_cloud_thread && app->library)
 	{
-		printf("spawning cloud thread\n");
 		app->cloud_thread_done = false;
-		printf("submitting tags\n");
 		omo_submit_library_tags(app, "http://www.t3-i.com/omo/tag_track.php");
 		app->spawn_cloud_thread = false;
 	}
 	if(app->spawn_queue_thread)
 	{
-		printf("spawning queue thread\n");
 		omo_get_queue_tags(app->player->queue, app->library, app);
 		app->spawn_queue_thread = false;
 	}

@@ -18,7 +18,6 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
 	int i;
 	int edit_flags = D_SETFOCUS;
 
-	printf("opening tags dialog\n");
 	for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 	{
 		if(omo_tag_type[i])
@@ -66,19 +65,15 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
 		uip->tags_ok_button_element = t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8 + 320 * column, y, 320 / 2 - 8 - 4, 32, '\r', 0, 0, 0, "Okay", ui_tags_button_proc, NULL);
 		t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 320 * column + 320 / 2 + 4, y, 320 / 2 - 8 - 4, 32, 0, 0, 0, 1, "Cancel", ui_tags_button_proc, NULL);
 		t3gui_show_dialog(uip->tags_popup_dialog->dialog, t3f_queue, T3GUI_PLAYER_CLEAR, data);
-		printf("finished opening tags dialog\n");
 		return true;
 	}
-	printf("failed to open tags dialog\n");
 	return false;
 }
 
 void omo_close_tags_dialog(OMO_UI * uip, void * data)
 {
-	printf("closing tags dialog\n");
 	omo_close_popup_dialog(uip->tags_popup_dialog);
 	uip->tags_popup_dialog = NULL;
-	printf("finished closing tags dialog\n");
 }
 
 void omo_tags_dialog_logic(void * data)

@@ -1107,7 +1107,6 @@ static void * library_setup_thread_proc(ALLEGRO_THREAD * thread, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	printf("setting up library\n");
 	if(omo_setup_library_helper(app))
 	{
 		if(app->prune_library)
@@ -1116,26 +1115,19 @@ static void * library_setup_thread_proc(ALLEGRO_THREAD * thread, void * data)
 		}
 		app->library = app->loading_library;
 	}
-	printf("finished setting up library\n");
 	return NULL;
 }
 
 void omo_cancel_library_setup(APP_INSTANCE * app)
 {
-	printf("cancelling library setup\n");
 	if(app->library_thread)
 	{
-		printf("l 1\n");
 		omo_cancel_library_sort();
-		printf("l 2\n");
 		app->loading_library_file_helper_data.cancel_scan = true;
 		al_join_thread(app->library_thread, NULL);
-		printf("l 3\n");
 		al_destroy_thread(app->library_thread);
-		printf("l 4\n");
 		app->library_thread = NULL;
 	}
-	printf("finished cancelling library setup\n");
 }
 
 void omo_setup_library(APP_INSTANCE * app, const char * file_database_fn, const char * entry_database_fn, ALLEGRO_CONFIG * config)
@@ -1163,19 +1155,16 @@ static bool omo_setup_library_lists_helper(APP_INSTANCE * app)
 	omo_setup_file_helper_data(&app->loading_library_file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, NULL, app->player->queue, NULL, app->status_bar_text);
 
 	/* tally up artists */
-	printf("getting artist list\n");
 	if(app->library->modified || !omo_load_library_artists_cache(app->library, t3f_get_filename(t3f_data_path, "omo.artists", buffer, 1024)))
 	{
 		sprintf(app->status_bar_text, "Creating artist list...");
 		if(!omo_build_library_artists_list(app, app->library))
 		{
-			printf("failed to get artist list\n");
 			return false;
 		}
 	}
 
 	/* tally up albums */
-	printf("getting album list\n");
 	if(app->loading_library_file_helper_data.cancel_scan)
 	{
 		app->loading_library_file_helper_data.scan_done = true;
@@ -1186,12 +1175,10 @@ static bool omo_setup_library_lists_helper(APP_INSTANCE * app)
 	if(app->loading_library_file_helper_data.cancel_scan)
 	{
 		app->loading_library_file_helper_data.scan_done = true;
-		printf("failed to get album list\n");
 		return false;
 	}
 
 	/* make song list */
-	printf("getting song list\n");
 	if(app->loading_library_file_helper_data.cancel_scan)
 	{
 		app->loading_library_file_helper_data.scan_done = true;
@@ -1199,7 +1186,6 @@ static bool omo_setup_library_lists_helper(APP_INSTANCE * app)
 	}
 	sprintf(app->status_bar_text, "Creating song list...");
 	omo_get_library_song_list(app->library, "All Artists", "All Albums");
-	printf("finished getting song list\n");
 
 	app->loading_library_file_helper_data.scan_done = true;
 	if(app->loading_library_file_helper_data.cancel_scan)
@@ -1214,12 +1200,10 @@ static void * library_lists_setup_thread_proc(ALLEGRO_THREAD * thread, void * da
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	printf("setting up library lists\n");
 	if(omo_setup_library_lists_helper(app))
 	{
 		app->library->loaded = true;
 	}
-	printf("finished setting up library lists\n");
 	return NULL;
 }
 
