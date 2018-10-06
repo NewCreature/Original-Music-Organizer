@@ -627,7 +627,8 @@ int t3gui_text_proc(int msg, T3GUI_ELEMENT *d, int c)
 
         if(flags == ALLEGRO_ALIGN_CENTRE)
         {
-            x += d->w/2;
+            x += d->w / 2;
+            x -= al_get_text_width(font, d->dp) / 2;
         }
         if(flags == ALLEGRO_ALIGN_RIGHT)
         {
