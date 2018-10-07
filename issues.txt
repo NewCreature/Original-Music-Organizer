@@ -72,6 +72,15 @@ Long Term Goals
    or multi-select.
 
 
+v0.5.3
+------
+
+[ ]Fix search filter adding "special" entries such as "Unknown Artist" as
+   matches for search text.
+
+[ ]Fix T3Net buffer overrun issue with tags larger than 256 bytes.
+
+
 v0.5.2
 ------
 
