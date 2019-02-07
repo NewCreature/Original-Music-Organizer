@@ -75,15 +75,18 @@ Long Term Goals
 v0.5.3
 ------
 
+[ ]Fix double-clicking on song while the player is paused not setting the
+   proper state. We should play the double-clicked song.
+
 [ ]Fix search filter adding "special" entries such as "Unknown Artist" as
    matches for search text.
-
-[ ]Fix T3Net buffer overrun issue with tags larger than 256 bytes.
 
 [ ]Look into crash when creating a small queue while scrolled down far in a
    larger queue. I tried loading up a queue of about 50 songs while a 52000+
    queue was open and it crashed two different times. Once, it waited until I
    clicked the scroll bar to crash.
+
+[X]Fix T3Net buffer overrun issue with tags larger than 256 bytes.
 
 
 v0.5.2
