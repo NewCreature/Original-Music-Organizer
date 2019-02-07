@@ -2,7 +2,7 @@ CC = $(MACOSX_CC)
 CFLAGS = $(T3F_CFLAGS) $(GLOBAL_CFLAGS) $(MACOSX_ARCHITECTURES) $(MACOSX_COMPILER_SETTINGS) $(MACOSX_SYS_ROOT) $(MACOSX_MIN_VERSION) $(APP_CFLAGS) $(MACOSX_CFLAGS)
 CXX = $(MACOSX_CXX)
 CXXFLAGS = $(CFLAGS)
-LFLAGS = $(MACOSX_LINKER_SETTINGS) $(MACOSX_ARCHITECTURES) $(MACOSX_SYS_ROOT)
+LFLAGS = $(MACOSX_LINKER_SETTINGS) $(MACOSX_ARCHITECTURES) $(MACOSX_SYS_ROOT) $(MACOSX_MIN_VERSION)
 PLATFORM_OBJECTS = t3f/menu.o $(MACOSX_PLATFORM_OBJECTS)
 PLATFORM_LIBS = -framework IOKit -framework AudioToolbox -framework OpenGL -framework OpenAL -framework Cocoa -lallegro_dialog$(LIB_SUFFIX) -lallegro_main-static $(MACOSX_PLATFORM_LIBS)
 PLATFORM_TARGET = $(APP_PACKAGE_DIR)/$(APP_TITLE).app
@@ -46,7 +46,7 @@ $(APP_PACKAGE_DIR)/$(APP_TITLE).app : $(APP_EXE_NAME) ../icons/macosx_icon.icns
 	@mkdir $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Resources/$(APP_TITLE)
 	@cp $(APP_EXE_NAME) $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/MacOS/$(APP_TITLE)
 	@cp ../macosx/blobs/* $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/MacOS
-	@cp ../icons/macosx_icon.icns $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Resources/$(APP_TITLE).icns
+	@mv ../icons/macosx_icon.icns $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Resources/$(APP_TITLE).icns
 	@cp -a ../bin/data $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Resources/$(APP_TITLE)
 	@cp -a ../docs $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Resources/$(APP_TITLE)
 	@cp ../macosx/Info.plist $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents
@@ -60,4 +60,4 @@ $(APP_PACKAGE_DIR)/$(APP_TITLE).app : $(APP_EXE_NAME) ../icons/macosx_icon.icns
 
 mac_package: $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	rm -rf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME)-macosx.dmg
-	../macosx/create-dmg --volname $(APP_TITLE) --volicon ../icons/macosx_icon.icns --window-size 400 232 --icon-size 96 --icon "$(APP_TITLE)" 110 100 --app-drop-link 280 100 $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME)-macosx.dmg $(APP_PACKAGE_DIR)/$(APP_TITLE).app
+	../macosx/create-dmg --volname $(APP_TITLE) --volicon $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Resources/$(APP_TITLE).icns --window-size 400 232 --icon-size 96 --icon "$(APP_TITLE)" 110 100 --app-drop-link 280 100 $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME)-macosx.dmg $(APP_PACKAGE_DIR)/$(APP_TITLE).app

@@ -50,6 +50,11 @@ T3F_ANIMATION * t3f_clone_animation(T3F_ANIMATION * ap)
 			for(i = 0; i < ap->bitmaps->count; i++)
 			{
 				t3f_clone_resource((void **)&(clone->bitmaps->bitmap[i]), ap->bitmaps->bitmap[i]);
+				if(!clone->bitmaps->bitmap[i])
+				{
+					printf("failed to clone bitmap\n");
+					return NULL;
+				}
 			}
 			clone->bitmaps->count = ap->bitmaps->count;
 		}
@@ -59,7 +64,6 @@ T3F_ANIMATION * t3f_clone_animation(T3F_ANIMATION * ap)
 			{
 				return NULL;
 			}
-			clone->frame[i]->flags = ap->frame[i]->flags;
 		}
 		clone->flags = ap->flags;
 	}

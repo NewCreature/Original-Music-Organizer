@@ -43,7 +43,7 @@ clean: app_clean
 	@$(PLATFORM_CLEAN)
 	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(PROJECT_OBJECTS))
 	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(APP_EXE_NAME)$(EXE_SUFFIX))
-ifdef $(APP_EXTRA_TARGET)
+ifdef APP_EXTRA_TARGET
 	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(APP_EXTRA_TARGET))
 endif
 	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME))
@@ -55,20 +55,27 @@ package: clean
 	@echo Package successfully created!
 
 #make a copy of the source tree with non-demo data deleted
-demo: clean
+demo_copy:
 	mkdir $(DEMO_DIR)
-	cp -a -R ../* $(DEMO_DIR)
+	cp -a -R -L ../* $(DEMO_DIR)
+
+demo_clean:
 	rm -rf $(DEMO_DIR)/workspace
 	rm -rf $(DEMO_DELETE)
-	$(SED_COMMAND) 's|"$(APP_TITLE)"|"$(APP_TITLE) Demo"|' $(DEMO_DIR)/src/init.c
-	$(SED_COMMAND) 's|$(APP_NAME)|$(APP_NAME)-demo|' $(DEMO_DIR)/src/makefile.defines
+
+demo_edit:
+	$(SED_COMMAND) 's|= $(APP_NAME)|= $(APP_NAME)-demo|' $(DEMO_DIR)/src/makefile.defines
 	$(SED_COMMAND) 's|$(subst $(SPACE),\$(SPACE),$(APP_TITLE))|$(subst $(SPACE),\$(SPACE),$(APP_TITLE))\\$(SPACE)Demo|' $(DEMO_DIR)/src/makefile.defines
-	$(SED_COMMAND) 's|$(APP_ANDROID_PACKAGE)|$(APP_ANDROID_PACKAGEdemo|' $(DEMO_DIR)/src/makefile.defines
+	$(SED_COMMAND) 's|$(APP_ANDROID_PACKAGE)|$(APP_ANDROID_PACKAGE)demo|' $(DEMO_DIR)/src/makefile.defines
 	$(SED_COMMAND) 's|$(APP_NAME)|$(APP_NAME)-demo|' $(DEMO_DIR)/changelog
 
-demo_gp: demo
-	$(SED_COMMAND) 's|-DT3F_ANDROID|-DT3F_ANDROID -DT3F_ANDROID_GP|' $(DEMO_DIR)/android/template/jni/Android.mk
+demo_edit_gp:
+	$(SED_COMMAND) 's|CFLAGS = |CFLAGS = -DT3F_ANDROID_GP |' $(DEMO_DIR)/src/makefile.android
 	mv $(DEMO_DIR) $(DEMO_DIR)_gp
+
+demo: clean demo_copy demo_clean demo_edit
+
+demo_gp: demo demo_edit_gp
 
 ../win32/makeicon$(EXE_SUFFIX): ../win32/makeicon.o
 	$(CC) $(LFLAGS) ../win32/makeicon.o $(PLATFORM_LIBS) $(T3F_DEPEND_LIBS) $(DEPEND_LIBS) -o ../win32/makeicon

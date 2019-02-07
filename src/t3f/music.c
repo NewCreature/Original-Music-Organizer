@@ -4,6 +4,7 @@
 ALLEGRO_AUDIO_STREAM * t3f_stream = NULL;
 ALLEGRO_MUTEX * t3f_music_mutex = NULL;
 ALLEGRO_MUTEX * t3f_music_state_mutex = NULL;
+ALLEGRO_THREAD * t3f_music_thread = NULL;
 int t3f_music_state = T3F_MUSIC_STATE_OFF;
 static float t3f_music_volume = 1.0;
 static float t3f_new_music_volume = 1.0;
@@ -50,7 +51,7 @@ static const char * t3f_get_music_extension(const char * fn)
 	return NULL;
 }
 
-static void * t3f_play_music_thread(void * arg)
+static void * t3f_play_music_thread(ALLEGRO_THREAD * thread, void * arg)
 {
 	const char * ext = NULL;
 	ALLEGRO_PATH * path = NULL;
@@ -206,6 +207,11 @@ bool t3f_play_music(const char * fn)
 	{
 		return false;
 	}
+	if(t3f_music_thread)
+	{
+		al_destroy_thread(t3f_music_thread);
+		t3f_music_thread = NULL;
+	}
 	if(!t3f_music_mutex)
 	{
 		t3f_music_mutex = al_create_mutex();
@@ -215,21 +221,25 @@ bool t3f_play_music(const char * fn)
 		strcpy(t3f_music_thread_fn, fn);
 		t3f_music_thread_file_interface = al_get_new_file_interface(); // copy current file interface so we can use it in the music thread
 		t3f_set_music_state(T3F_MUSIC_STATE_TRACK_CHANGE);
-		al_run_detached_thread(t3f_play_music_thread, NULL);
+		t3f_music_thread = al_create_thread(t3f_play_music_thread, NULL);
+		if(t3f_music_thread)
+		{
+			al_start_thread(t3f_music_thread);
+		}
+//		al_run_detached_thread(t3f_play_music_thread, NULL);
 		return true;
 	}
 	else
 	{
 		t3f_set_music_state(T3F_MUSIC_STATE_OFF);
-		return false;
 	}
+	return false;
 }
 
 void t3f_stop_music(void)
 {
 	if(t3f_stream)
 	{
-		al_drain_audio_stream(t3f_stream);
 		al_destroy_audio_stream(t3f_stream);
 		t3f_stream = NULL;
 		t3f_set_music_state(T3F_MUSIC_STATE_OFF);

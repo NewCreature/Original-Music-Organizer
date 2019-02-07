@@ -1,10 +1,11 @@
 ####################
 # Android Settings #
 ####################
-ANDROID_SDK_ROOT = $(HOME)/Development/Tools/android-sdk-macosx
-ANDROID_NDK_ROOT = $(HOME)/Development/Tools/android-ndk-r9d
-ANDROID_TOOLCHAIN_ROOT = $(HOME)/Development/Tools/android-toolchain
-ALLEGRO_SRC_ROOT = $(HOME)/Development/Libraries/allegro5
+ANDROID_SDK_ROOT = $(HOME)/Development/Android/Tools/android-sdk
+ANDROID_NDK_ROOT = $(HOME)/Development/Android/Tools/android-ndk
+ANDROID_TOOLCHAIN_ROOT = $(HOME)/Development/Android/Tools/android-toolchain-arm
+ANDROID_VERSION_TARGET = android-26
+ALLEGRO_SRC_ROOT = $(HOME)/T3/Projects/Dev/allegro5
 
 #####################
 # Mac OS X Settings #

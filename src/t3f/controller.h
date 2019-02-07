@@ -58,7 +58,7 @@ typedef struct
 	T3F_CONTROLLER_BINDING binding[T3F_MAX_CONTROLLER_BINDINGS];
 	T3F_CONTROLLER_STATE state[T3F_MAX_CONTROLLER_BINDINGS];
 	int bindings;
-    const char * device_name; // remap all bindings to controller that matches this
+  const char * device_name; // remap all bindings to controller that matches this
 
 } T3F_CONTROLLER;
 

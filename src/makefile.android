@@ -1,85 +1,77 @@
-#CC = gcc
-#CFLAGS = $(GLOBAL_CFLAGS) $(APP_CFLAGS) $(ANDROID_CFLAGS)
-PLATFORM_CFLAGS = $(GLOBAL_CFLAGS) $(ANDROID_CFLAGS) $(APP_CFLAGS)
+LIB_SUFFIX =
+ANDROID_NATIVE_CALL_PREFIX = $(subst .,_,$(APP_ANDROID_PACKAGE))
+CC = $(ANDROID_TOOLCHAIN_ROOT)/bin/arm-linux-androideabi-gcc
+CFLAGS = $(GLOBAL_CFLAGS) $(APP_CFLAGS) $(ANDROID_CFLAGS) -DT3F_ANDROID -DT3F_ANDROID_NATIVE_CALL_PREFIX=$(ANDROID_NATIVE_CALL_PREFIX) --sysroot=$(ANDROID_TOOLCHAIN_ROOT)/sysroot -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=softfp -fPIC
 PLATFORM_OBJECTS = $(ANDROID_PLATFORM_OBJECTS)
 PLATFORM_LIBS = $(ANDROID_PLATFORM_LIBS)
-DEPEND_LIBS = $(ANDROID_DEPEND_LIBS)
-#LIB_SUFFIX = -static
+DEPEND_LIBS = $(ANDROID_DEPEND_LIBS) -lallegro_physfs$(LIB_SUFFIX) -lphysfs
 #DEL_COMMAND = rm -f
 #DEL_FOLDER_COMMAND = rm -rf
 
 #default to ARM since that is the most common
 ANDROID_ARCHITECTURE = armeabi-v7a
-ANDROID_NATIVE_CALL_PREFIX = $(subst .,_,$(APP_ANDROID_PACKAGE))
+ANDROID_NATIVE_SHARED_OBJECT = ../android_temp/app.project/app/src/main/jniLibs/$(ANDROID_ARCHITECTURE)/libapp.so
 
 include makefile.common
 
 prepare_platform:
 	@echo Ready to build...
 
-#generate Android package, rebuilds Allegro first to update package name
-android_package: build_temp build_allegro build_android $(ANDROID_PLATFORM_TARGET)
-	rm -rf ../temp
+#generate Android package
+android_package: clean_packages build_android $(ANDROID_PLATFORM_TARGET) android_sign
+	@echo Built and signed Android package!
 
-#generate Android package, doesn't rebuild Allegro
-android_repackage: clean_packages build_temp build_android $(ANDROID_PLATFORM_TARGET)
-	rm -rf ../temp
+android_sign: ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk
+	@sign ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE).apk
+	@rm ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk
 
-android_sign: ../$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk
-	@sign ../$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk ../$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE).apk
-	@rm ../$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk
+../android_temp:
+	@echo Copying template to temporary folder...
+	cp -a -R -L ../android ../android_temp
+
+edit_project:
+	@echo Editing project data to match our project definitions...
+	sed -i '' "s|org.liballeg.app|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/src/main/AndroidManifest.xml
+	sed -i '' "s|APP_ORIENTATION|$(APP_ORIENTATION)|" ../android_temp/app.project/app/src/main/AndroidManifest.xml
+	sed -i '' "s|AllegroActivity|$(APP_TITLE)|" ../android_temp/app.project/app/src/main/res/values/strings.xml
+	sed -i '' "s|APP_PACKAGE|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/build.gradle
+	sed -i '' "s|APP_VERSION|$(APP_VERSION)|" ../android_temp/app.project/app/build.gradle
+	sed -i '' "s|APP_RELEASE|$(APP_RELEASE)|" ../android_temp/app.project/app/build.gradle
+	sed -i '' "s|org.liballeg.app|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/src/main/java/org/liballeg/app/MainActivity.java
+	sed -i '' "s|org.liballeg.app|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/src/main/java/org/liballeg/app/EditBoxActivity.java
+
+copy_libs:
+	@echo Copying Allegro libs to Android project...
+	cp -a $(ANDROID_TOOLCHAIN_ROOT)/sysroot/usr/lib/liballegro*.so ../android_temp/app.project/app/src/main/jniLibs/$(ANDROID_ARCHITECTURE)
+	cp -a ../allegro-release.aar ../android_temp/app.project/app/libs/allegro.aar
+
+copy_resources:
+	@echo Copying data to Android project...
+	cp -a ../bin/data ../android_temp/app.project/app/src/main/assets
+	mkdir -p ../android_temp/app.project/app/src/main/res/drawable
+	cp ../icons/48.png ../android_temp/app.project/app/src/main/res/drawable/icon.png
+	mkdir -p ../android_temp/app.project/app/src/main/res/drawable-hdpi
+	cp ../icons/72.png ../android_temp/app.project/app/src/main/res/drawable-hdpi/icon.png
+	mkdir -p ../android_temp/app.project/app/src/main/res/drawable-ldpi
+	cp ../icons/36.png ../android_temp/app.project/app/src/main/res/drawable-ldpi/icon.png
+	mkdir -p ../android_temp/app.project/app/src/main/res/drawable-mdpi
+	cp ../icons/48.png ../android_temp/app.project/app/src/main/res/drawable-mdpi/icon.png
+	mkdir -p ../android_temp/app.project/app/src/main/res/drawable-xhdpi
+	cp ../icons/96.png ../android_temp/app.project/app/src/main/res/drawable-xhdpi/icon.png
+
+$(ANDROID_NATIVE_SHARED_OBJECT): $(T3F_OBJECTS) $(APP_OBJECTS)
+	$(CC) -Wl,--fix-cortex-a8 -shared -o $(ANDROID_NATIVE_SHARED_OBJECT) $(T3F_OBJECTS) $(APP_OBJECTS) $(PLATFORM_LIBS) $(APP_LIBS) $(T3F_DEPEND_LIBS) $(DEPEND_LIBS)
 
 #sed info: sed -i requires backup extension argument on OS X, should work fine this
 #          way on other Unix platforms, we should do "sed -i '' -original-new- filename"
-build_android:
-	@echo Copying sources to Android project...
-	cp -a ../android ../temp
-	cp -a ../src ../temp
-	cp ../temp/android/template/jni/*.mk ../temp/src
-	rm -rf ../temp/android/template/jni
-	mv ../temp/src ../temp/android/template/jni
-	@echo Copying Allegro libs to Android project...
-	mkdir -p ../temp/android/template/jni/$(ANDROID_ARCHITECTURE)
-	mkdir -p ../temp/android/template/jni/include
-	mkdir -p ../temp/android/template/libs
-	cp -a $(ANDROID_TOOLCHAIN_ROOT)/user/$(ANDROID_ARCHITECTURE)/lib/liballegro*.so ../temp/android/template/jni/$(ANDROID_ARCHITECTURE)
-	cp ../Allegro5.jar ../temp/android/template/libs
-	@echo Copying data to Android project...
-	cp -a ../bin/data ../temp/android/template/assets
-	mkdir -p ../temp/android/template/res/drawable
-	cp ../icons/48.png ../temp/android/template/res/drawable/icon.png
-	mkdir -p ../temp/android/template/res/drawable-hdpi
-	cp ../icons/72.png ../temp/android/template/res/drawable-hdpi/icon.png
-	mkdir -p ../temp/android/template/res/drawable-ldpi
-	cp ../icons/36.png ../temp/android/template/res/drawable-ldpi/icon.png
-	mkdir -p ../temp/android/template/res/drawable-mdpi
-	cp ../icons/48.png ../temp/android/template/res/drawable-mdpi/icon.png
-	mkdir -p ../temp/android/template/res/drawable-xhdpi
-	cp ../icons/96.png ../temp/android/template/res/drawable-xhdpi/icon.png
-	@echo Editing project data to match our project definitions...
-	sed -i '' "s|org.liballeg.example|$(APP_ANDROID_PACKAGE)|" ../temp/android/template/AndroidManifest.xml
-	sed -i '' "s|allegro-example|$(APP_NAME)|" ../temp/android/template/AndroidManifest.xml
-	sed -i '' "s|allegro-example|$(APP_NAME)|" ../temp/android/template/jni/Android.mk
-	sed -i '' "s|allegro-example|$(APP_NAME)|" ../temp/android/template/jni/Application.mk
-	sed -i '' "s|AllegroActivity|$(APP_TITLE)|" ../temp/android/template/res/values/strings.xml
-	sed -i '' "s|org.liballeg.example|$(APP_ANDROID_PACKAGE)|" ../temp/android/template/src/org/liballeg/example/ExampleActivity.java
-	sed -i '' "s|org.liballeg.example|$(APP_ANDROID_PACKAGE)|" ../temp/android/template/src/org/liballeg/example/EditBoxActivity.java
-	sed -i '' "s|APP_NAME|$(APP_NAME)|" ../temp/android/template/src/org/liballeg/example/ExampleActivity.java
-	sed -i '' "s|main.c|$(APP_SOURCE_FILES)|" ../temp/android/template/jni/Android.mk
-	sed -i '' "s|armeabi-v7a|$(ANDROID_ARCHITECTURE)|" ../temp/android/template/jni/Android.mk
-	sed -i '' "s|armeabi-v7a|$(ANDROID_ARCHITECTURE)|" ../temp/android/template/jni/Application.mk
-	sed -i '' "s|APP_VERSION_STRING|$(APP_VERSION)|" ../temp/android/template/AndroidManifest.xml
-	sed -i '' "s|APP_RELEASE_NUMBER|$(APP_RELEASE)|" ../temp/android/template/AndroidManifest.xml
+build_android: ../android_temp edit_project copy_libs copy_resources $(ANDROID_NATIVE_SHARED_OBJECT)
 	@echo Building Android project
-	cd ../temp/android/template; export T3F_APP_LIBS='$(APP_LIBS)'; export ANDROID_NDK_TOOLCHAIN_ROOT=$(ANDROID_TOOLCHAIN_ROOT); export APP_LIBS='$(APP_LIBS)'; export PLATFORM_LIBS='$(PLATFORM_LIBS)'; export PLATFORM_CFLAGS='$(PLATFORM_CFLAGS)'; export NATIVE_CALL_PREFIX='$(ANDROID_NATIVE_CALL_PREFIX)'; $(ANDROID_NDK_ROOT)/ndk-build; $(ANDROID_SDK_ROOT)/tools/android update project -p .; ant release; cp bin/alandroid-project-release-unsigned.apk ../../../$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk
-
-build_allegro:
-	@echo Building Allegro...
-	export ANDROID_NDK_TOOLCHAIN_ROOT=$(ANDROID_TOOLCHAIN_ROOT); cd ../temp; mkdir build-android; cd build-android; cmake $(ALLEGRO_SRC_ROOT) -DCMAKE_TOOLCHAIN_FILE=$(ALLEGRO_SRC_ROOT)/cmake/Toolchain-android.cmake -DWANT_RELEASE_LOGGING=on -DWANT_EXAMPLES=OFF -DWANT_DEMO=OFF -DWANT_TESTS=OFF -DCMAKE_BUILD_TYPE=$(ANDROID_BUILD_TYPE) -DCMAKE_INSTALL_NAME_TOOL=/usr/bin/install_name_tool -DWANT_TREMOR=ON -DWANT_OPENSL=ON -DWANT_VIDEO=OFF -DWANT_TTF=ON -DFREETYPE_INCLUDE_DIR_freetype2=$(ANDROID_TOOLCHAIN_ROOT)/user/armeabi-v7a/include/freetype2; make install; cp lib/Allegro5.jar ../../
-#	cd ../temp; mkdir build-android; cd build-android; cmake $(ALLEGRO_SRC_ROOT) -DANDROID_NDK_TOOLCHAIN_ROOT=$(ANDROID_NDK_ROOT) -DWANT_ANDROID=on -DWANT_EXAMPLES=OFF -DWANT_DEMO=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_NAME_TOOL=/usr/bin/install_name_tool -DWANT_TREMOR=ON -DWANT_OPENSL=ON -DWANT_FFMPEG=ON; make install; cp lib/Allegro5.jar ../../
+	cd ../android_temp/app.project; ./gradlew build
+	cp ../android_temp/app.project/app/build/outputs/apk/release/app-release-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk
+	rm -rf ../android_temp
 
 build_temp:
-	mkdir -p ../temp
+	mkdir -p ../android_temp
 
 clean_packages:
-	rm -rf ../$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk ../$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE).apk
+	rm -rf ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE).apk

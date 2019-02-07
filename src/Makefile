@@ -3,7 +3,12 @@
 # or cross-compile makefiles)
 
 ifeq ($(OS),Windows_NT)
- SYSTEM=mingw
+ UNAME=$(shell uname)
+ ifneq (,$(findstring MINGW,$(UNAME)))
+  SYSTEM=msys
+ else
+  SYSTEM=mingw
+ endif
 else
  UNAME=$(shell uname)
  ifneq (,$(findstring Linux,$(UNAME)))
@@ -45,14 +50,11 @@ debian_package:
 android_package:
 	$(MAKE) -f makefile.android android_package
 
-android_repackage:
-	$(MAKE) -f makefile.android android_repackage
-
 android_sign:
 	$(MAKE) -f makefile.android android_sign
 
 windows_package:
-	$(MAKE) -f makefile.mingw windows_zip
+	$(MAKE) -f makefile.$(SYSTEM) windows_zip
 
 mac_package:
 	$(MAKE) -f makefile.macosx mac_package

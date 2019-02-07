@@ -1,13 +1,13 @@
 CC = i586-mingw32msvc-gcc
-CFLAGS = $(GLOBAL_CFLAGS) $(APP_CFLAGS) $(MINGW_CROSS_CFLAGS)
+CFLAGS = $(GLOBAL_CFLAGS) $(APP_CFLAGS) $(MSYS_CFLAGS)
 LFLAGS = -mwindows
 LIB_SUFFIX = -static
-PLATFORM_OBJECTS = t3f/menu.o t3f/windows.o icon.o $(MINGW_CROSS_PLATFORM_OBJECTS)
-PLATFORM_LIBS = -lallegro_dialog$(LIB_SUFFIX) $(MINGW_CROSS_PLATFORM_LIBS)
-DEPEND_LIBS = $(MINGW_CROSS_DEPEND_LIBS) -luuid -lkernel32 -lwinmm -lpsapi\
+PLATFORM_OBJECTS = t3f/menu.o t3f/windows.o icon.o $(MSYS_PLATFORM_OBJECTS)
+PLATFORM_LIBS = -lallegro_dialog$(LIB_SUFFIX) $(MSYS_PLATFORM_LIBS)
+DEPEND_LIBS = $(MSYS_DEPEND_LIBS) -luuid -lkernel32 -lwinmm -lpsapi\
               -lopengl32 -lglu32 -luser32 -lcomdlg32 -lgdi32 -lshell32 -lole32\
               -ladvapi32 -lws2_32 -lshlwapi -lvorbisfile -lvorbis -logg -ldumb\
-              -lfreetype -lpng -lz -ld3d9 -ldsound -lstdc++
+              -lfreetype -lpng -lz -ljpeg -ld3d9 -ldsound -lstdc++
 DEL_COMMAND = rm -f
 DEL_FOLDER_COMMAND = rm -rf
 SED_COMMAND = sed -i

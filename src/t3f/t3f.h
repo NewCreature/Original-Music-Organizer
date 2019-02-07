@@ -53,7 +53,8 @@ typedef struct
 
 	bool active; // is this touch active?
 	bool released;
-	float x, y;
+    float real_x, real_y; // the actual screen coordinates
+	float x, y; // coordinates transformed to for a view
 	bool primary;
 
 } T3F_TOUCH;
@@ -70,7 +71,9 @@ typedef struct
 #include "font.h"
 #include "gui.h"
 #include "memory.h"
-#include "menu.h"
+#ifndef ALLEGRO_ANDROID
+    #include "menu.h"
+#endif
 #include "music.h"
 #include "primitives.h"
 #include "resource.h"
@@ -82,12 +85,6 @@ typedef struct
 
 extern int t3f_virtual_display_width;
 extern int t3f_virtual_display_height;
-extern int t3f_display_offset_x;
-extern int t3f_display_offset_y;
-extern float t3f_display_scale_x;
-extern float t3f_display_scale_y;
-extern int t3f_display_width;
-extern int t3f_display_height;
 
 extern bool t3f_key[ALLEGRO_KEY_MAX];
 extern bool t3f_quit;
@@ -96,8 +93,8 @@ extern int t3f_option[T3F_MAX_OPTIONS];
 
 extern int t3f_real_mouse_x;
 extern int t3f_real_mouse_y;
-extern int t3f_mouse_x;
-extern int t3f_mouse_y;
+extern float t3f_mouse_x;
+extern float t3f_mouse_y;
 extern int t3f_mouse_z;
 extern int t3f_mouse_dx;
 extern int t3f_mouse_dy;
@@ -130,9 +127,10 @@ void t3f_set_event_handler(void (*proc)(ALLEGRO_EVENT * event, void * data));
 void t3f_exit(void);
 bool t3f_save_config(void);
 void t3f_event_handler(ALLEGRO_EVENT * event);
-void t3f_process_events(void);
+void t3f_process_events(bool ignore);
 void t3f_render(bool flip);
 void t3f_run(void);
+void t3f_finish(void);
 
 float t3f_distance(float x1, float y1, float x2, float y2);
 
@@ -143,7 +141,7 @@ int t3f_read_key(int flags);
 bool t3f_key_pressed(void);
 
 /* mouse */
-void t3f_get_mouse_mickeys(int * x, int * y, int * z);
+bool t3f_get_mouse_mickeys(int * x, int * y, int * z);
 void t3f_set_mouse_xy(float x, float y);
 
 /* touch */

@@ -30,7 +30,7 @@ typedef struct
 
 	int type;
 	void * data;
-	void * aux_data;
+	void ** resource; // for bitmaps, fonts, etc.
 	ALLEGRO_COLOR color;
 	int flags;
 	int (*proc)(void *, int, void *);
@@ -52,6 +52,10 @@ typedef struct
 	int ox, oy;
 
 	int hover_element;
+    int font_margin_top;
+    int font_margin_bottom;
+    int font_margin_left;
+    int font_margin_right;
 
 } T3F_GUI;
 
@@ -68,8 +72,8 @@ void t3f_set_gui_driver(T3F_GUI_DRIVER * dp);
 T3F_GUI * t3f_create_gui(int ox, int oy);
 void t3f_destroy_gui(T3F_GUI * pp);
 
-int t3f_add_gui_image_element(T3F_GUI * pp, int (*proc)(void *, int, void *), void * bp, int ox, int oy, int flags);
-int t3f_add_gui_text_element(T3F_GUI * pp, int (*proc)(void *, int, void *), char * text, void * fp, int ox, int oy, ALLEGRO_COLOR color, int flags);
+int t3f_add_gui_image_element(T3F_GUI * pp, int (*proc)(void *, int, void *), void ** bp, int ox, int oy, int flags);
+int t3f_add_gui_text_element(T3F_GUI * pp, int (*proc)(void *, int, void *), char * text, void ** fp, int ox, int oy, ALLEGRO_COLOR color, int flags);
 int t3f_describe_last_gui_element(T3F_GUI * pp, char * text);
 void t3f_center_gui(T3F_GUI * pp, float oy, float my);
 void t3f_set_gui_shadow(T3F_GUI * pp, float x, float y);

@@ -2,7 +2,7 @@
 
 /* The code below is from a supposedly working implementation. We should derive
    our implementation from it and see if we can actually find our
-   ExampleActivity class. */
+   MainActivity class. */
 
 #ifdef ALLEGRO_ANDROID
 
@@ -97,7 +97,7 @@
 	static void(*t3f_edit_box_staged_callback)(void * data) = NULL;
 	static void * t3f_edit_box_data = NULL;
 
-JNI_FUNC(void, ExampleActivity, nativeOnEditComplete, (JNIEnv *env, jobject obj, jstring returnedS))
+JNI_FUNC(void, MainActivity, nativeOnEditComplete, (JNIEnv *env, jobject obj, jstring returnedS))
 	{
 		(void)obj;
 

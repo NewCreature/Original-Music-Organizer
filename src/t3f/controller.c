@@ -34,6 +34,11 @@ const char * t3f_get_controller_name(T3F_CONTROLLER * cp, int binding)
 			sprintf(t3f_controller_return_name, "Keyboard");
 			return t3f_controller_return_name;
 		}
+		case T3F_CONTROLLER_BINDING_MOUSE_BUTTON:
+		{
+			sprintf(t3f_controller_return_name, "Mouse");
+			return t3f_controller_return_name;
+		}
 		case T3F_CONTROLLER_BINDING_JOYSTICK_BUTTON:
 		case T3F_CONTROLLER_BINDING_JOYSTICK_AXIS:
 		{
@@ -52,6 +57,25 @@ const char * t3f_get_controller_name(T3F_CONTROLLER * cp, int binding)
 	return t3f_controller_return_name;
 }
 
+static const char * unknown_binding_string = "Unknown";
+
+static bool string_is_empty(const char * s)
+{
+	int i;
+
+	if(s)
+	{
+		for(i = 0; i < strlen(s); i++)
+		{
+			if(s[i] != ' ')
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 const char * t3f_get_controller_binding_name(T3F_CONTROLLER * cp, int binding)
 {
 	const char * stick_name;
@@ -61,7 +85,26 @@ const char * t3f_get_controller_binding_name(T3F_CONTROLLER * cp, int binding)
 		case T3F_CONTROLLER_BINDING_KEY:
 		{
 			sprintf(t3f_binding_return_name, "%s", al_keycode_to_name(cp->binding[binding].button));
-			return t3f_binding_return_name;
+			if(string_is_empty(t3f_binding_return_name))
+			{
+				return unknown_binding_string;
+			}
+			else
+			{
+				return t3f_binding_return_name;
+			}
+		}
+		case T3F_CONTROLLER_BINDING_MOUSE_BUTTON:
+		{
+			sprintf(t3f_binding_return_name, "Button %d", cp->binding[binding].button);
+			if(string_is_empty(t3f_binding_return_name))
+			{
+				return unknown_binding_string;
+			}
+			else
+			{
+				return t3f_binding_return_name;
+			}
 		}
 		case T3F_CONTROLLER_BINDING_JOYSTICK_BUTTON:
 		{
@@ -74,7 +117,14 @@ const char * t3f_get_controller_binding_name(T3F_CONTROLLER * cp, int binding)
 			{
 				sprintf(t3f_binding_return_name, "N/A");
 			}
-			return t3f_binding_return_name;
+			if(string_is_empty(t3f_binding_return_name))
+			{
+				return unknown_binding_string;
+			}
+			else
+			{
+				return t3f_binding_return_name;
+			}
 		}
 		case T3F_CONTROLLER_BINDING_JOYSTICK_AXIS:
 		{
@@ -88,11 +138,17 @@ const char * t3f_get_controller_binding_name(T3F_CONTROLLER * cp, int binding)
 			{
 				sprintf(t3f_binding_return_name, "N/A");
 			}
-			return t3f_binding_return_name;
+			if(string_is_empty(t3f_binding_return_name))
+			{
+				return unknown_binding_string;
+			}
+			else
+			{
+				return t3f_binding_return_name;
+			}
 		}
 	}
-	t3f_binding_return_name[0] = 0;
-	return t3f_binding_return_name;
+	return unknown_binding_string;
 }
 
 void t3f_write_controller_config(ALLEGRO_CONFIG * acp, const char * section, T3F_CONTROLLER * cp)
@@ -300,11 +356,9 @@ static bool binding_is_joystick(T3F_CONTROLLER * cp, int i)
 static void t3f_find_controller_device_name(T3F_CONTROLLER * cp)
 {
 	int i;
-	int type;
 	int source;
 
 	/* only get device name for joysticks */
-	type = cp->binding[0].type;
 	if(binding_is_joystick(cp, 0))
 	{
 		source = cp->binding[0].joystick;

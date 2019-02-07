@@ -6,6 +6,8 @@ T3F_GUI_DRIVER t3f_gui_allegro_driver;
 static T3F_GUI_DRIVER * t3f_gui_current_driver = NULL;
 static bool t3f_gui_check_hover_y(T3F_GUI * pp, int i, float y);
 static float t3f_gui_hover_y;
+static float t3f_gui_mouse_x = 0.0;
+static float t3f_gui_mouse_y = 0.0;
 
 static float allegro_get_element_width(T3F_GUI_ELEMENT * ep)
 {
@@ -13,11 +15,11 @@ static float allegro_get_element_width(T3F_GUI_ELEMENT * ep)
 	{
 		case T3F_GUI_ELEMENT_TEXT:
 		{
-			return al_get_text_width((ALLEGRO_FONT *)ep->aux_data, ep->data);
+			return al_get_text_width(*((ALLEGRO_FONT **)ep->resource), ep->data);
 		}
 		case T3F_GUI_ELEMENT_IMAGE:
 		{
-			return al_get_bitmap_width(((ALLEGRO_BITMAP *)(ep->data)));
+			return al_get_bitmap_width(*((ALLEGRO_BITMAP **)ep->resource));
 		}
 	}
 	return 0.0;
@@ -29,11 +31,11 @@ static float allegro_get_element_height(T3F_GUI_ELEMENT * ep)
 	{
 		case T3F_GUI_ELEMENT_TEXT:
 		{
-			return al_get_font_line_height((ALLEGRO_FONT *)ep->aux_data);
+			return al_get_font_line_height(*((ALLEGRO_FONT **)ep->resource));
 		}
 		case T3F_GUI_ELEMENT_IMAGE:
 		{
-			return al_get_bitmap_height(((ALLEGRO_BITMAP *)(ep->data)));
+			return al_get_bitmap_height(*((ALLEGRO_BITMAP **)ep->resource));
 		}
 	}
 	return 0.0;
@@ -41,6 +43,8 @@ static float allegro_get_element_height(T3F_GUI_ELEMENT * ep)
 
 static void allegro_render_element(T3F_GUI * pp, int i, bool hover)
 {
+	ALLEGRO_BITMAP * bitmap = NULL;
+	ALLEGRO_FONT * font = NULL;
 	int sx, sy;
 
 	if(hover)
@@ -58,19 +62,20 @@ static void allegro_render_element(T3F_GUI * pp, int i, bool hover)
 	{
 		case T3F_GUI_ELEMENT_TEXT:
 		{
+			font = *((ALLEGRO_FONT **)pp->element[i].resource);
 			if(pp->element[i].flags & T3F_GUI_ELEMENT_SHADOW)
 			{
 				if(!(pp->element[i].flags & T3F_GUI_ELEMENT_AUTOHIDE) || t3f_gui_check_hover_y(pp, i, t3f_gui_hover_y))
 				{
 					if(pp->element[i].flags & T3F_GUI_ELEMENT_CENTRE)
 					{
-						al_draw_text((ALLEGRO_FONT *)pp->element[i].aux_data, al_map_rgba_f(0.0, 0.0, 0.0, 0.5), pp->ox + pp->element[i].ox, pp->oy + pp->element[i].oy, ALLEGRO_ALIGN_CENTRE, (char *)pp->element[i].data);
-						al_draw_text((ALLEGRO_FONT *)pp->element[i].aux_data, pp->element[i].color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, ALLEGRO_ALIGN_CENTRE, (char *)pp->element[i].data);
+						al_draw_text(font, al_map_rgba_f(0.0, 0.0, 0.0, 0.5), pp->ox + pp->element[i].ox, pp->oy + pp->element[i].oy, ALLEGRO_ALIGN_CENTRE, (char *)pp->element[i].data);
+						al_draw_text(font, pp->element[i].color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, ALLEGRO_ALIGN_CENTRE, (char *)pp->element[i].data);
 					}
 					else
 					{
-						al_draw_text((ALLEGRO_FONT *)pp->element[i].aux_data, al_map_rgba_f(0.0, 0.0, 0.0, 0.5), pp->ox + pp->element[i].ox, pp->oy + pp->element[i].oy, 0, (char *)pp->element[i].data);
-						al_draw_text((ALLEGRO_FONT *)pp->element[i].aux_data, pp->element[i].color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, 0, (char *)pp->element[i].data);
+						al_draw_text(font, al_map_rgba_f(0.0, 0.0, 0.0, 0.5), pp->ox + pp->element[i].ox, pp->oy + pp->element[i].oy, 0, (char *)pp->element[i].data);
+						al_draw_text(font, pp->element[i].color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, 0, (char *)pp->element[i].data);
 					}
 				}
 			}
@@ -80,11 +85,11 @@ static void allegro_render_element(T3F_GUI * pp, int i, bool hover)
 				{
 					if(pp->element[i].flags & T3F_GUI_ELEMENT_CENTRE)
 					{
-						al_draw_text((ALLEGRO_FONT *)pp->element[i].aux_data, pp->element[i].color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, ALLEGRO_ALIGN_CENTRE, (char *)pp->element[i].data);
+						al_draw_text(font, pp->element[i].color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, ALLEGRO_ALIGN_CENTRE, (char *)pp->element[i].data);
 					}
 					else
 					{
-						al_draw_text((ALLEGRO_FONT *)pp->element[i].aux_data, pp->element[i].color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, 0, (char *)pp->element[i].data);
+						al_draw_text(font, pp->element[i].color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, 0, (char *)pp->element[i].data);
 					}
 				}
 			}
@@ -92,22 +97,23 @@ static void allegro_render_element(T3F_GUI * pp, int i, bool hover)
 		}
 		case T3F_GUI_ELEMENT_IMAGE:
 		{
+			bitmap = *((ALLEGRO_BITMAP **)pp->element[i].resource);
 			if(pp->element[i].flags & T3F_GUI_ELEMENT_SHADOW)
 			{
 				if(pp->element[i].flags & T3F_GUI_ELEMENT_CENTRE)
 				{
-					if(pp->element[i].data)
+					if(bitmap)
 					{
-						al_draw_tinted_bitmap((ALLEGRO_BITMAP *)(pp->element[i].data), al_map_rgba_f(0.0, 0.0, 0.0, 0.5), pp->ox + pp->element[i].ox - al_get_bitmap_width(((ALLEGRO_BITMAP *)(pp->element[i].data))) / 2, pp->oy + pp->element[i].oy - al_get_bitmap_width(((ALLEGRO_BITMAP *)(pp->element[i].data))) / 2, 0);
-						al_draw_bitmap((ALLEGRO_BITMAP *)(pp->element[i].data), pp->ox + pp->element[i].ox - al_get_bitmap_width(((ALLEGRO_BITMAP *)(pp->element[i].data))) / 2 + sx, pp->oy + pp->element[i].oy - al_get_bitmap_width(((ALLEGRO_BITMAP *)(pp->element[i].data))) / 2 + sy, 0);
+						al_draw_tinted_bitmap(bitmap, al_map_rgba_f(0.0, 0.0, 0.0, 0.5), pp->ox + pp->element[i].ox - al_get_bitmap_width(bitmap) / 2, pp->oy + pp->element[i].oy - al_get_bitmap_width(bitmap) / 2, 0);
+						al_draw_bitmap(bitmap, pp->ox + pp->element[i].ox - al_get_bitmap_width(bitmap) / 2 + sx, pp->oy + pp->element[i].oy - al_get_bitmap_width(bitmap) / 2 + sy, 0);
 					}
 				}
 				else
 				{
-					if(pp->element[i].data)
+					if(bitmap)
 					{
-						al_draw_tinted_bitmap((ALLEGRO_BITMAP *)(pp->element[i].data), al_map_rgba_f(0.0, 0.0, 0.0, 0.5), pp->ox + pp->element[i].ox, pp->oy + pp->element[i].oy, 0);
-						al_draw_bitmap((ALLEGRO_BITMAP *)(pp->element[i].data), pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, 0);
+						al_draw_tinted_bitmap(bitmap, al_map_rgba_f(0.0, 0.0, 0.0, 0.5), pp->ox + pp->element[i].ox, pp->oy + pp->element[i].oy, 0);
+						al_draw_bitmap(bitmap, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, 0);
 					}
 				}
 			}
@@ -115,16 +121,16 @@ static void allegro_render_element(T3F_GUI * pp, int i, bool hover)
 			{
 				if(pp->element[i].flags & T3F_GUI_ELEMENT_CENTRE)
 				{
-					if(pp->element[i].data)
+					if(bitmap)
 					{
-						al_draw_bitmap((ALLEGRO_BITMAP *)(pp->element[i].data), pp->ox + pp->element[i].ox - al_get_bitmap_width(((ALLEGRO_BITMAP *)(pp->element[i].data))) / 2 + sx, pp->oy + pp->element[i].oy - al_get_bitmap_width(((ALLEGRO_BITMAP *)(pp->element[i].data))) / 2 + sy, 0);
+						al_draw_bitmap(bitmap, pp->ox + pp->element[i].ox - al_get_bitmap_width(bitmap) / 2 + sx, pp->oy + pp->element[i].oy - al_get_bitmap_width(bitmap) / 2 + sy, 0);
 					}
 				}
 				else
 				{
-					if(pp->element[i].data)
+					if(bitmap)
 					{
-						al_draw_bitmap((ALLEGRO_BITMAP *)(pp->element[i].data), pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, 0);
+						al_draw_bitmap(bitmap, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, 0);
 					}
 				}
 			}
@@ -164,6 +170,10 @@ T3F_GUI * t3f_create_gui(int ox, int oy)
 	lp->ox = ox;
 	lp->oy = oy;
 	lp->hover_element = -1;
+	lp->font_margin_top = 0;
+	lp->font_margin_bottom = 0;
+	lp->font_margin_left = 0;
+	lp->font_margin_right = 0;
 	return lp;
 }
 
@@ -184,7 +194,7 @@ void t3f_destroy_gui(T3F_GUI * pp)
 				}
 				case T3F_GUI_ELEMENT_IMAGE:
 				{
-					al_destroy_bitmap((ALLEGRO_BITMAP *)(pp->element[i].data));
+					t3f_destroy_resource(pp->element[i].resource);
 					break;
 				}
 			}
@@ -197,11 +207,18 @@ void t3f_destroy_gui(T3F_GUI * pp)
 	al_free(pp);
 }
 
-int t3f_add_gui_image_element(T3F_GUI * pp, int (*proc)(void *, int, void *), void * bp, int ox, int oy, int flags)
+int t3f_add_gui_image_element(T3F_GUI * pp, int (*proc)(void *, int, void *), void ** bp, int ox, int oy, int flags)
 {
 	pp->element[pp->elements].type = T3F_GUI_ELEMENT_IMAGE;
 	pp->element[pp->elements].proc = proc;
-	pp->element[pp->elements].data = bp;
+	if(flags & T3F_GUI_ELEMENT_COPY)
+	{
+		t3f_clone_resource(pp->element[pp->elements].resource, *bp);
+	}
+	else
+	{
+		pp->element[pp->elements].resource = bp;
+	}
 	pp->element[pp->elements].ox = ox;
 	pp->element[pp->elements].oy = oy;
 	pp->element[pp->elements].flags = flags;
@@ -210,7 +227,7 @@ int t3f_add_gui_image_element(T3F_GUI * pp, int (*proc)(void *, int, void *), vo
 	return 1;
 }
 
-int t3f_add_gui_text_element(T3F_GUI * pp, int (*proc)(void *, int, void *), char * text, void * fp, int ox, int oy, ALLEGRO_COLOR color, int flags)
+int t3f_add_gui_text_element(T3F_GUI * pp, int (*proc)(void *, int, void *), char * text, void ** fp, int ox, int oy, ALLEGRO_COLOR color, int flags)
 {
 	pp->element[pp->elements].type = T3F_GUI_ELEMENT_TEXT;
 	pp->element[pp->elements].proc = proc;
@@ -223,7 +240,7 @@ int t3f_add_gui_text_element(T3F_GUI * pp, int (*proc)(void *, int, void *), cha
 	{
 		pp->element[pp->elements].data = text;
 	}
-	pp->element[pp->elements].aux_data = fp;
+	pp->element[pp->elements].resource = fp;
 	pp->element[pp->elements].ox = ox;
 	pp->element[pp->elements].oy = oy;
 	pp->element[pp->elements].color = color;
@@ -304,7 +321,7 @@ static bool t3f_gui_check_hover_x(T3F_GUI * pp, int i, float x)
 	}
 	else
 	{
-		if(x >= pp->ox + pp->element[i].ox && x < pp->ox + pp->element[i].ox + t3f_gui_current_driver->get_element_width(&pp->element[i]))
+		if(x >= pp->ox + pp->element[i].ox + pp->font_margin_left && x < pp->ox + pp->element[i].ox + t3f_gui_current_driver->get_element_width(&pp->element[i]) - pp->font_margin_right)
 		{
 			return true;
 		}
@@ -318,7 +335,7 @@ static bool t3f_gui_check_hover_y(T3F_GUI * pp, int i, float y)
 	{
 		return false;
 	}
-	if(y >= pp->oy + pp->element[i].oy && y < pp->oy + pp->element[i].oy + t3f_gui_current_driver->get_element_height(&pp->element[i]))
+	if(y >= pp->oy + pp->element[i].oy + pp->font_margin_top && y < pp->oy + pp->element[i].oy + t3f_gui_current_driver->get_element_height(&pp->element[i]) - pp->font_margin_bottom)
 	{
 		return true;
 	}
@@ -373,6 +390,15 @@ void t3f_activate_selected_gui_element(T3F_GUI * pp, void * data)
 	}
 }
 
+static bool check_mouse_moved(void)
+{
+	if(fabs(t3f_gui_mouse_x - t3f_mouse_x) < 0.5 && fabs(t3f_gui_mouse_y - t3f_mouse_y) < 0.5)
+	{
+		return false;
+	}
+	return true;
+}
+
 void t3f_process_gui(T3F_GUI * pp, void * data)
 {
 	int i;
@@ -380,17 +406,17 @@ void t3f_process_gui(T3F_GUI * pp, void * data)
 	bool touched = false;
 	bool touching = false;
 	int touch_id = 0;
-	int x, y;
 	float mouse_x = 0.0, mouse_y = 0.0;
 
 	/* check if the mouse has been moved */
-	t3f_get_mouse_mickeys(&x, &y, NULL);
-	if(x != 0 || y != 0 || t3f_mouse_button[0])
+	if(check_mouse_moved() || t3f_mouse_button[0])
 	{
 		mouse_x = t3f_mouse_x;
 		mouse_y = t3f_mouse_y;
 		mouse_moved = true;
 	}
+	t3f_gui_mouse_x = t3f_mouse_x;
+	t3f_gui_mouse_y = t3f_mouse_y;
 
 	if(t3f_mouse_button[0])
 	{
