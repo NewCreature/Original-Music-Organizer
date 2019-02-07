@@ -576,7 +576,7 @@ void omo_filter_library_artist_list(OMO_LIBRARY * lp, const char * filter)
 
 	if(filter && strlen(filter))
 	{
-		for(i = 0; i < lp->artist_entry_count; i++)
+		for(i = 2; i < lp->artist_entry_count; i++)
 		{
 			if(strmatch(filter, lp->artist_entry[i]))
 			{
@@ -703,7 +703,7 @@ void omo_filter_library_album_list(OMO_LIBRARY * lp, const char * filter)
 
 	if(filter && strlen(filter))
 	{
-		for(i = 0; i < lp->album_entry_count; i++)
+		for(i = 2; i < lp->album_entry_count; i++)
 		{
 			if(strmatch(filter, lp->album_entry[i]))
 			{
