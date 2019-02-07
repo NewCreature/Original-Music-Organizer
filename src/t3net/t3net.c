@@ -551,30 +551,32 @@ T3NET_DATA * t3net_get_data_from_string(const char * raw_data)
 			else
 			{
 				size = l + 1;
-				t3net_get_element(current_line, &element, size);
-
-				/* copy field name */
-				size = strlen(element.name) + 1;
-				if(size > 0)
+				if(t3net_get_element(current_line, &element, size))
 				{
-					data->entry[ecount]->field[field]->name = malloc(size);
-					if(data->entry[ecount]->field[field]->name)
-					{
-						t3net_strcpy(data->entry[ecount]->field[field]->name, element.name, size);
-					}
-				}
 
-				/* copy field data */
-				size = strlen(element.data) + 1;
-				if(size > 0)
-				{
-					data->entry[ecount]->field[field]->data = malloc(size);
-					if(data->entry[ecount]->field[field]->data)
+					/* copy field name */
+					size = strlen(element.name) + 1;
+					if(size > 0)
 					{
-						t3net_strcpy(data->entry[ecount]->field[field]->data, element.data, size);
+						data->entry[ecount]->field[field]->name = malloc(size);
+						if(data->entry[ecount]->field[field]->name)
+						{
+							t3net_strcpy(data->entry[ecount]->field[field]->name, element.name, size);
+						}
 					}
+
+					/* copy field data */
+					size = strlen(element.data) + 1;
+					if(size > 0)
+					{
+						data->entry[ecount]->field[field]->data = malloc(size);
+						if(data->entry[ecount]->field[field]->data)
+						{
+							t3net_strcpy(data->entry[ecount]->field[field]->data, element.data, size);
+						}
+					}
+					field++;
 				}
-				field++;
 			}
 		}
 		else
