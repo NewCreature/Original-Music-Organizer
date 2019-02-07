@@ -75,9 +75,6 @@ Long Term Goals
 v0.5.3
 ------
 
-[ ]Fix double-clicking on song while the player is paused not setting the
-   proper state. We should play the double-clicked song.
-
 [ ]Fix search filter adding "special" entries such as "Unknown Artist" as
    matches for search text.
 
@@ -87,6 +84,9 @@ v0.5.3
    clicked the scroll bar to crash.
 
 [X]Fix T3Net buffer overrun issue with tags larger than 256 bytes.
+
+[X]Fix double-clicking on song while the player is paused not setting the
+   proper state. We should play the double-clicked song.
 
 
 v0.5.2
