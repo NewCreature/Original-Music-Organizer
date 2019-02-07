@@ -133,6 +133,12 @@ void omo_queue_list_logic(void * data)
 			app->player->queue_pos = app->ui->ui_queue_list_element->id1 - 1;
 			omo_play_next_song(app->player);
 		}
+		else if(app->player->state == OMO_PLAYER_STATE_PAUSED)
+		{
+			app->player->queue_pos = app->ui->ui_queue_list_element->id1 - 1;
+			omo_play_next_song(app->player);
+			omo_start_player(app->player);
+		}
 		else
 		{
 			app->player->queue_pos = app->ui->ui_queue_list_element->id1;
