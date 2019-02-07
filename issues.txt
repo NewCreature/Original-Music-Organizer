@@ -75,9 +75,6 @@ Long Term Goals
 v0.5.3
 ------
 
-[ ]Fix search filter adding "special" entries such as "Unknown Artist" as
-   matches for search text.
-
 [ ]Look into crash when creating a small queue while scrolled down far in a
    larger queue. I tried loading up a queue of about 50 songs while a 52000+
    queue was open and it crashed two different times. Once, it waited until I
@@ -87,6 +84,9 @@ v0.5.3
 
 [X]Fix double-clicking on song while the player is paused not setting the
    proper state. We should play the double-clicked song.
+
+[X]Fix search filter adding "special" entries such as "Unknown Artist" as
+   matches for search text.
 
 
 v0.5.2
