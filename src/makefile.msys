@@ -1,5 +1,6 @@
 CC = gcc
 CFLAGS = $(GLOBAL_CFLAGS) $(APP_CFLAGS) $(MSYS_CFLAGS)
+CXXFLAGS = $(CFLAGS)
 LFLAGS = -static -static-libgcc -static-libstdc++ -mwindows
 LIB_SUFFIX = -static
 PLATFORM_OBJECTS = t3f/menu.o t3f/windows.o icon.o $(MSYS_PLATFORM_OBJECTS)

@@ -1,5 +1,6 @@
 CC = i586-mingw32msvc-gcc
 CFLAGS = $(GLOBAL_CFLAGS) $(APP_CFLAGS) $(MINGW_CROSS_CFLAGS)
+CXXFLAGS = $(CFLAGS)
 LFLAGS = -mwindows
 LIB_SUFFIX = -static
 PLATFORM_OBJECTS = t3f/menu.o t3f/windows.o icon.o $(MINGW_CROSS_PLATFORM_OBJECTS)
