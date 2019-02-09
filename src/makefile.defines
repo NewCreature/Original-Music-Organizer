@@ -79,7 +79,7 @@ MINGW_DEPEND_LIBS = -larchive_static -lcurl -lwldap32
 MSYS_CFLAGS = -DCURL_STATICLIB -IC:\\msys32\\mingw32\\include\\\binio
 MSYS_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/windows/midiout.o
 #MSYS_PLATFORM_LIBS =
-MSYS_DEPEND_LIBS = -larchive_static -lcurl -lwldap32
+MSYS_DEPEND_LIBS = -larchive -lcurl
 #MSYS_PLATFORM_TARGET =
 
 #################
