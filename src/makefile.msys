@@ -1,4 +1,4 @@
-CC = i586-mingw32msvc-gcc
+CC = gcc
 CFLAGS = $(GLOBAL_CFLAGS) $(APP_CFLAGS) $(MSYS_CFLAGS)
 LFLAGS = -static -static-libgcc -static-libstdc++ -mwindows
 LIB_SUFFIX = -static
@@ -21,7 +21,7 @@ prepare_platform:
 	@echo Ready to build...
 
 icon.o : ../icons/windows_icon.ico ../win32/icon.rc
-	i586-mingw32msvc-windres --include-dir=../icons -o icon.o ../win32/icon.rc
+	windres --include-dir=../icons -o icon.o ../win32/icon.rc
 
 ../win32/info_fixer: ../win32/info_fixer.o
 	$(CC) $(GLOBAL_CFLAGS) ../win32/info_fixer.o -o ../win32/info_fixer
