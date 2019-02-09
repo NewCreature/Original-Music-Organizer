@@ -28,5 +28,5 @@ icon.o : ../icons/windows_icon.ico ../win32/icon.rc
 	$(CC) $(GLOBAL_CFLAGS) ../win32/info_fixer.o -o ../win32/info_fixer
 
 windows_zip: $(APP_EXE_NAME)
-	@cd ../bin; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../win32/blobs && zip -9 ../$(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../../; cp -a docs win32; cd win32/docs; mv changelog history.txt; mv README readme.txt; mv copyright license.txt; cd ..; zip -9 -r $(APP_PACKAGE_DIR)$(APP_NAME)-$(APP_VERSION)-windows.zip docs; rm -rf docs
+	@cd ../bin; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../win32/blobs && zip -9 ../$(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../../; cp -a docs win32; cd win32/docs; mv changelog history.txt; mv README readme.txt; mv copyright license.txt; cd ..; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip docs; rm -rf docs
 	@echo Windows package created!
