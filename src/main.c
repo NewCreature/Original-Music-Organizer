@@ -347,6 +347,7 @@ int main(int argc, char * argv[])
 		}
 		omo_exit(&app);
 		t3gui_exit();
+		t3f_finish();
 	}
 	return 0;
 }
