@@ -40,6 +40,9 @@ clean:
 clean_all:
 	$(MAKE) -f makefile.$(SYSTEM) clean
 
+release:
+	$(MAKE) -f makefile.$(SYSTEM) release
+
 package:
 	$(MAKE) -f makefile.$(SYSTEM) clean
 	$(MAKE) -f makefile.$(SYSTEM) package

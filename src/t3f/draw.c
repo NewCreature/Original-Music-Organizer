@@ -5,7 +5,7 @@ void t3f_draw_bitmap(ALLEGRO_BITMAP * bp, ALLEGRO_COLOR color, float x, float y,
 {
 	/* upper left and bottom right points in 3d */
 	float obj_x[2], obj_y[2], obj_z[2];
-	
+
 	/* upper left and bottom right points in 2d */
 	float screen_w, screen_h;
 
@@ -13,9 +13,9 @@ void t3f_draw_bitmap(ALLEGRO_BITMAP * bp, ALLEGRO_COLOR color, float x, float y,
 	obj_x[1] = t3f_project_x(x + al_get_bitmap_width(bp), z);
 	obj_y[0] = t3f_project_y(y, z);
 	obj_y[1] = t3f_project_y(y + al_get_bitmap_height(bp), z);
-	obj_z[0] = z + t3f_current_view->width;
-	obj_z[1] = z + t3f_virtual_display_width;
-	
+	obj_z[0] = z + t3f_current_view->virtual_width;
+//	obj_z[1] = z + t3f_virtual_display_width;
+
 	/* clip sprites at z = 0 */
 	if(obj_z[0] > 0)
 	{
@@ -30,7 +30,7 @@ void t3f_draw_rotated_bitmap(ALLEGRO_BITMAP * bp, ALLEGRO_COLOR color, float cx,
 	/* upper left and bottom right points in 3d */
 	float obj_x[2], obj_y[2], obj_z[2], obj_cx, obj_cy;
 	float rx, ry;
-	
+
 	/* upper left and bottom right points in 2d */
 	float screen_w, screen_h;
 
@@ -38,11 +38,11 @@ void t3f_draw_rotated_bitmap(ALLEGRO_BITMAP * bp, ALLEGRO_COLOR color, float cx,
 	obj_x[1] = t3f_project_x(x - cx + al_get_bitmap_width(bp), z);
 	obj_y[0] = t3f_project_y(y - cy, z);
 	obj_y[1] = t3f_project_y(y - cy + al_get_bitmap_height(bp), z);
-	obj_z[0] = z + t3f_current_view->width;
-	obj_z[1] = z + t3f_virtual_display_width;
+	obj_z[0] = z + t3f_current_view->virtual_width;
+//	obj_z[1] = z + t3f_virtual_display_width;
 	obj_cx = t3f_project_x(x, z);
 	obj_cy = t3f_project_y(y, z);
-	
+
 	/* clip sprites at z = 0 */
 	if(obj_z[0] > 0)
 	{
@@ -59,7 +59,7 @@ void t3f_draw_scaled_rotated_bitmap(ALLEGRO_BITMAP * bp, ALLEGRO_COLOR color, fl
 	/* upper left and bottom right points in 3d */
 	float obj_x[2], obj_y[2], obj_z[2], obj_cx, obj_cy;
 	float rx, ry;
-	
+
 	/* upper left and bottom right points in 2d */
 	float screen_w, screen_h;
 
@@ -67,11 +67,11 @@ void t3f_draw_scaled_rotated_bitmap(ALLEGRO_BITMAP * bp, ALLEGRO_COLOR color, fl
 	obj_x[1] = t3f_project_x((float)al_get_bitmap_width(bp) * scale_x, z);
 	obj_y[0] = t3f_project_y(0, z);
 	obj_y[1] = t3f_project_y((float)al_get_bitmap_height(bp) * scale_y, z);
-	obj_z[0] = z + t3f_current_view->width;
-	obj_z[1] = z + t3f_virtual_display_width;
+	obj_z[0] = z + t3f_current_view->virtual_width;
+//	obj_z[1] = z + t3f_virtual_display_width;
 	obj_cx = t3f_project_x(x, z);
 	obj_cy = t3f_project_y(y, z);
-	
+
 	/* clip sprites at z = 0 */
 	if(obj_z[0] > 0)
 	{
@@ -87,7 +87,7 @@ void t3f_draw_scaled_bitmap(ALLEGRO_BITMAP * bp, ALLEGRO_COLOR color, float x, f
 {
 	/* upper left and bottom right points in 3d */
 	float obj_x[2], obj_y[2], obj_z[2];
-	
+
 	/* upper left and bottom right points in 2d */
 	float screen_w, screen_h;
 
@@ -95,9 +95,9 @@ void t3f_draw_scaled_bitmap(ALLEGRO_BITMAP * bp, ALLEGRO_COLOR color, float x, f
 	obj_x[1] = t3f_project_x(x + w, z);
 	obj_y[0] = t3f_project_y(y, z);
 	obj_y[1] = t3f_project_y(y + h, z);
-	obj_z[0] = z + t3f_current_view->width;
-	obj_z[1] = z + t3f_virtual_display_width;
-	
+	obj_z[0] = z + t3f_current_view->virtual_width;
+//	obj_z[1] = z + t3f_virtual_display_width;
+
 	/* clip sprites at z = 0 */
 	if(obj_z[0] > 0)
 	{

@@ -25,7 +25,7 @@ APP_PACKAGE_FILENAME = $(APP_PACKAGE_NAME)-src.tar.gz
 all : $(APP_EXE_NAME) $(PLATFORM_TARGET) $(APP_EXTRA_TARGET)
 	@echo All targets built!
 
-$(APP_EXE_NAME) : prepare_platform $(PROJECT_OBJECTS) update_changelog
+$(APP_EXE_NAME) : prepare_platform $(PROJECT_OBJECTS)
 	$(CC) $(LFLAGS) $(PROJECT_OBJECTS) $(PLATFORM_LIBS) $(APP_LIBS) $(T3F_DEPEND_LIBS) $(DEPEND_LIBS) -o $(APP_EXE_NAME)
 	@echo Executable built!
 
@@ -33,11 +33,22 @@ makefile.config:
 	touch makefile.config
 	@echo Generated empty 'makefile.config'.
 
-#Unix way of updating the changelog, will be overwritten by MinGW build script under Windows
-update_changelog: ../changelog
-	$(COPY_COMMAND) $(subst /,$(PATH_SEPARATOR),../changelog ../docs)
+../changes.txt:
+	cp ../misc/blank_changes ../changes.txt
+
+../docs/changelog:
+	touch ../docs/changelog
+
+release: ../changes.txt ../docs/changelog
+	mv ../docs/changelog ../changelog
+	cat ../changes.txt ../misc/spacer ../changelog > ../docs/changelog
+	rm ../changelog
+	cp ../misc/blank_changes ../changes.txt
+	$(SED_COMMAND) "s|APP_TITLE|$(APP_TITLE)|" ../docs/changelog
+	$(SED_COMMAND) "s|APP_VERSION|$(APP_VERSION)|" ../docs/changelog
+	$(SED_COMMAND) "s|APP_MAINTAINER|$(DEBIAN_MAINTAINER)|" ../docs/changelog
 	$(SED_COMMAND) "s|BUILD_DATE|`date -u +"%a, %d %b %Y %T"`|" ../docs/changelog
-	$(SED_COMMAND) "s|BUILD_VERSION|$(APP_VERSION)|" ../docs/changelog
+	$(SED_COMMAND) "s|REMOVE_THIS_EMPTY_LINE||" ../docs/changelog
 
 clean: app_clean
 	@$(PLATFORM_CLEAN)
