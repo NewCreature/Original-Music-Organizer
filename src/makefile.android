@@ -1,16 +1,9 @@
 LIB_SUFFIX =
-ANDROID_NATIVE_CALL_PREFIX = $(subst .,_,$(APP_ANDROID_PACKAGE))
-CC = $(ANDROID_TOOLCHAIN_ROOT)/bin/arm-linux-androideabi-gcc
-CFLAGS = $(GLOBAL_CFLAGS) $(APP_CFLAGS) $(ANDROID_CFLAGS) -DT3F_ANDROID -DT3F_ANDROID_NATIVE_CALL_PREFIX=$(ANDROID_NATIVE_CALL_PREFIX) --sysroot=$(ANDROID_TOOLCHAIN_ROOT)/sysroot -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=softfp -fPIC
 PLATFORM_OBJECTS = $(ANDROID_PLATFORM_OBJECTS)
 PLATFORM_LIBS = $(ANDROID_PLATFORM_LIBS)
 DEPEND_LIBS = $(ANDROID_DEPEND_LIBS) -lallegro_physfs$(LIB_SUFFIX) -lphysfs
 #DEL_COMMAND = rm -f
 #DEL_FOLDER_COMMAND = rm -rf
-
-#default to ARM since that is the most common
-ANDROID_ARCHITECTURE = armeabi-v7a
-ANDROID_NATIVE_SHARED_OBJECT = ../android_temp/app.project/app/src/main/jniLibs/$(ANDROID_ARCHITECTURE)/libapp.so
 
 include makefile.common
 
@@ -19,6 +12,9 @@ prepare_platform:
 
 #generate Android package
 android_package: clean_packages build_android $(ANDROID_PLATFORM_TARGET) android_sign
+	@echo Built and signed Android package!
+
+android_package_unsigned: clean_packages build_android $(ANDROID_PLATFORM_TARGET)
 	@echo Built and signed Android package!
 
 android_sign: ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk
@@ -40,11 +36,6 @@ edit_project:
 	sed -i '' "s|org.liballeg.app|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/src/main/java/org/liballeg/app/MainActivity.java
 	sed -i '' "s|org.liballeg.app|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/src/main/java/org/liballeg/app/EditBoxActivity.java
 
-copy_libs:
-	@echo Copying Allegro libs to Android project...
-	cp -a $(ANDROID_TOOLCHAIN_ROOT)/sysroot/usr/lib/liballegro*.so ../android_temp/app.project/app/src/main/jniLibs/$(ANDROID_ARCHITECTURE)
-	cp -a ../allegro-release.aar ../android_temp/app.project/app/libs/allegro.aar
-
 copy_resources:
 	@echo Copying data to Android project...
 	cp -a ../bin/data ../android_temp/app.project/app/src/main/assets
@@ -59,12 +50,18 @@ copy_resources:
 	mkdir -p ../android_temp/app.project/app/src/main/res/drawable-xhdpi
 	cp ../icons/96.png ../android_temp/app.project/app/src/main/res/drawable-xhdpi/icon.png
 
-$(ANDROID_NATIVE_SHARED_OBJECT): $(T3F_OBJECTS) $(APP_OBJECTS)
-	$(CC) -Wl,--fix-cortex-a8 -shared -o $(ANDROID_NATIVE_SHARED_OBJECT) $(T3F_OBJECTS) $(APP_OBJECTS) $(PLATFORM_LIBS) $(APP_LIBS) $(T3F_DEPEND_LIBS) $(DEPEND_LIBS)
+copy_libs:
+	make -f makefile.android_helper ANDROID_ARCHITECTURE=armeabi-v7a copy_libs
+#	make -f makefile.android_helper ANDROID_ARCHITECTURE=arm64-v8a copy_libs
+
+create_native_libs:
+	make -f makefile.android_helper ANDROID_ARCHITECTURE=armeabi-v7a ANDROID_C_ARCH="-march=armv7-a" ANDROID_HOST=arm-linux-androideabi CFLAGS_ARCH="-mfpu=vfpv3-d16 -mfloat-abi=softfp" LFLAGS_ARCH=-"Wl,--fix-cortex-a8" create_native_lib
+#	make clean
+#	make -f makefile.android_helper ANDROID_ARCHITECTURE=arm64-v8a ANDROID_C_ARCH="" ANDROID_HOST=aarch64-linux-android CFLAGS_ARCH="" LFLAGS_ARCH="" create_native_lib
 
 #sed info: sed -i requires backup extension argument on OS X, should work fine this
 #          way on other Unix platforms, we should do "sed -i '' -original-new- filename"
-build_android: ../android_temp edit_project copy_libs copy_resources $(ANDROID_NATIVE_SHARED_OBJECT)
+build_android: ../android_temp edit_project copy_resources copy_libs create_native_libs
 	@echo Building Android project
 	cd ../android_temp/app.project; ./gradlew build
 	cp ../android_temp/app.project/app/build/outputs/apk/release/app-release-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk

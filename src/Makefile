@@ -53,8 +53,8 @@ debian_package:
 android_package:
 	$(MAKE) -f makefile.android android_package
 
-android_sign:
-	$(MAKE) -f makefile.android android_sign
+android_package_unsigned:
+	$(MAKE) -f makefile.android android_package_unsigned
 
 windows_package:
 	$(MAKE) -f makefile.$(SYSTEM) windows_zip

@@ -3,7 +3,7 @@
 ####################
 ANDROID_SDK_ROOT = $(HOME)/Development/Android/Tools/android-sdk
 ANDROID_NDK_ROOT = $(HOME)/Development/Android/Tools/android-ndk
-ANDROID_TOOLCHAIN_ROOT = $(HOME)/Development/Android/Tools/android-toolchain-arm
+ANDROID_TOOLCHAIN_ROOT = $(HOME)/Development/Android/Tools/android-toolchain
 ANDROID_VERSION_TARGET = android-26
 ALLEGRO_SRC_ROOT = $(HOME)/T3/Projects/Dev/allegro5
 

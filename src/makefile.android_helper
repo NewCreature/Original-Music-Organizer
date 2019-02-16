@@ -1,0 +1,23 @@
+#LIB_SUFFIX =
+ANDROID_NATIVE_CALL_PREFIX = $(subst .,_,$(APP_ANDROID_PACKAGE))
+CC = $(ANDROID_TOOLCHAIN_ROOT)-$(ANDROID_ARCHITECTURE)/bin/$(ANDROID_HOST)-gcc
+CFLAGS = $(GLOBAL_CFLAGS) $(APP_CFLAGS) $(ANDROID_CFLAGS) -DT3F_ANDROID -DT3F_ANDROID_NATIVE_CALL_PREFIX=$(ANDROID_NATIVE_CALL_PREFIX) --sysroot=$(ANDROID_TOOLCHAIN_ROOT)-$(ANDROID_ARCHITECTURE)/sysroot $(ANDROID_C_ARCH) $(CFLAGS_ARCH) -fPIC
+PLATFORM_OBJECTS = $(ANDROID_PLATFORM_OBJECTS)
+PLATFORM_LIBS = $(ANDROID_PLATFORM_LIBS)
+DEPEND_LIBS = $(ANDROID_DEPEND_LIBS) -lallegro_physfs$(LIB_SUFFIX) -lphysfs
+#DEL_COMMAND = rm -f
+#DEL_FOLDER_COMMAND = rm -rf
+
+#default to ARM since that is the most common
+ANDROID_ARCHITECTURE = armeabi-v7a
+ANDROID_NATIVE_SHARED_OBJECT = ../android_temp/app.project/app/src/main/jniLibs/$(ANDROID_ARCHITECTURE)/libapp.so
+
+include makefile.common
+
+copy_libs:
+	@echo Copying Allegro libs to Android project...
+	cp -a $(ANDROID_TOOLCHAIN_ROOT)-$(ANDROID_ARCHITECTURE)/sysroot/usr/lib/liballegro*.so ../android_temp/app.project/app/src/main/jniLibs/$(ANDROID_ARCHITECTURE)
+	cp -a ../allegro-release.aar ../android_temp/app.project/app/libs/allegro.aar
+
+create_native_lib: $(T3F_OBJECTS) $(APP_OBJECTS)
+	$(CC) $(LFLAGS_ARCH) -shared -o $(ANDROID_NATIVE_SHARED_OBJECT) $(T3F_OBJECTS) $(APP_OBJECTS) $(PLATFORM_LIBS) $(APP_LIBS) $(T3F_DEPEND_LIBS) $(DEPEND_LIBS)
