@@ -1,13 +1,3 @@
-omo (BUILD_VERSION) maverick; urgency=low
-
-  * Fix potential crash when interacting with the cloud.
-  * Fix issue where a track wouldn't play if the user double-clicked it in the
-    queue list while the player was paused.
-  * Fix issue where special entries such as Unknown Artist would appear in
-    search results.
-
- -- Todd Cope <todd@t3-i.com>  BUILD_DATE +0000
-
 omo (0.5.2) maverick; urgency=low
 
   * Improve handling of failure to load track in DUMBA5 codec handler.
