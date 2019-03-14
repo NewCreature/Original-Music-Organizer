@@ -72,13 +72,18 @@ Long Term Goals
    or multi-select.
 
 
-v0.5.3
+v0.5.4
 ------
+
+[ ]Look into crash when trying to open the file browser under Ubuntu 18.
 
 [ ]Look into crash when creating a small queue while scrolled down far in a
    larger queue. I tried loading up a queue of about 50 songs while a 52000+
    queue was open and it crashed two different times. Once, it waited until I
    clicked the scroll bar to crash.
+
+[ ]See if we can start FluidSynth automatically when we need it instead of
+   requiring the user to start it manually.
 
 [X]Fix T3Net buffer overrun issue with tags larger than 256 bytes.
 
