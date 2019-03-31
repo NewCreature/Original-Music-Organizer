@@ -51,19 +51,26 @@ char * omo_get_queue_item_text(OMO_QUEUE * qp, int index, char * buffer)
 			sprintf(buffer, "%sUnknown (%s - %s)", prefix, qp->entry[index]->tags.artist, qp->entry[index]->tags.album);
 		}
 	}
-	else if(strlen(qp->entry[index]->tags.album) && strlen(qp->entry[index]->tags.track))
-	{
-		sprintf(buffer, "%sUnknown (Unknown - %s)", prefix, qp->entry[index]->tags.album);
-	}
 	else if(strlen(qp->entry[index]->tags.title))
 	{
 		if(strlen(qp->entry[index]->tags.album))
 		{
-			sprintf(buffer, "%s%s (Unknown - %s)", prefix, qp->entry[index]->tags.title, qp->entry[index]->tags.album);
+			sprintf(buffer, "%s%s (%s)", prefix, qp->entry[index]->tags.title, qp->entry[index]->tags.album);
 		}
 		else
 		{
 			sprintf(buffer, "%s%s", prefix, qp->entry[index]->tags.title);
+		}
+	}
+	else if(strlen(qp->entry[index]->tags.album))
+	{
+		if(strlen(qp->entry[index]->tags.track))
+		{
+			sprintf(buffer, "%s%s Track %s", prefix, qp->entry[index]->tags.album, qp->entry[index]->tags.track);
+		}
+		else
+		{
+			sprintf(buffer, "%sUnknown (%s)", prefix, qp->entry[index]->tags.album);
 		}
 	}
 	else
