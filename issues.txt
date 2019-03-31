@@ -90,7 +90,7 @@ v0.5.4
 [ ]See if we can start FluidSynth automatically when we need it instead of
    requiring the user to start it manually.
 
-[ ]Look into queue list showing "Unknown" for title when the artist is unknown.
+[X]Look into queue list showing "Unknown" for title when the artist is unknown.
    We should be able to show the correct title whether or not we know who the
    artist is.
 
