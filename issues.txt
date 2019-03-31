@@ -77,6 +77,11 @@ v0.5.4
 
 [ ]Look into crash when trying to open the file browser under Ubuntu 18.
 
+   [ ]This crash happens on a GTK call. It happens on any Allegro 5 program that
+      was compiled under Ubuntu 12. I'm going to see if the issue is resolved by
+      compiling under Ubuntu 16. If so, I'll just migrate the development
+      environments to Ubuntu 16 and use that from now on.
+
 [ ]Look into crash when creating a small queue while scrolled down far in a
    larger queue. I tried loading up a queue of about 50 songs while a 52000+
    queue was open and it crashed two different times. Once, it waited until I
@@ -84,6 +89,14 @@ v0.5.4
 
 [ ]See if we can start FluidSynth automatically when we need it instead of
    requiring the user to start it manually.
+
+[ ]Look into queue list showing "Unknown" for title when the artist is unknown.
+   We should be able to show the correct title whether or not we know who the
+   artist is.
+
+
+v0.5.3
+------
 
 [X]Fix T3Net buffer overrun issue with tags larger than 256 bytes.
 
