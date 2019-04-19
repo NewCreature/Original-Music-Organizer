@@ -75,12 +75,22 @@ Long Term Goals
 v0.5.4
 ------
 
+[ ]Look into missing button graphics on Windows.
+
 [ ]Look into crash when trying to open the file browser under Ubuntu 18.
 
    [ ]This crash happens on a GTK call. It happens on any Allegro 5 program that
       was compiled under Ubuntu 12. I'm going to see if the issue is resolved by
       compiling under Ubuntu 16. If so, I'll just migrate the development
       environments to Ubuntu 16 and use that from now on.
+
+      [ ]All Allegro 5 programs that use the native dialog add-on's file chooser
+         crash when run under Ubuntu 18. This happens no matter which version
+         of Ubuntu it is compiled under. I'm going to try to see if it might be
+         a static linking issue.
+
+[ ]Look into crash when music is playing. It seems to happen with the DUMBA5
+   codec handler.
 
 [ ]Look into crash when creating a small queue while scrolled down far in a
    larger queue. I tried loading up a queue of about 50 songs while a 52000+
