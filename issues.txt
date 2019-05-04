@@ -71,6 +71,8 @@ Long Term Goals
    selected. We also need a way to check whether the list box is single-select
    or multi-select.
 
+[ ]Add support for Amiga XPK compressed files.
+
 
 v0.5.4
 ------
