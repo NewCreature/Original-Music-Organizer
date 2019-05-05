@@ -35,13 +35,14 @@ struct DUMBA5_PLAYER
 	int freq;
 	int channels;
 	bool loop;
-	ALLEGRO_AUDIO_STREAM *stream;
+	ALLEGRO_AUDIO_STREAM * stream;
 	DUH * duh;
 	DUH_SIGRENDERER *sigrenderer; /* If this is NULL, stream is invalid. */
 	float volume;
 	int silentcount;
 	bool done_playing;
 	double played_time;
+	int position;
 
 	ALLEGRO_THREAD * thread;
 	ALLEGRO_MUTEX * mutex;
@@ -111,6 +112,7 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 								al_destroy_audio_stream(dp->stream);
 								dp->sigrenderer = NULL;
 								al_unlock_mutex(dp->mutex);
+								dp->position = -1;
 								return NULL;
 							}
 						}
@@ -119,6 +121,7 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 					if(!al_set_audio_stream_fragment(dp->stream, fragment))
 					{
 					}
+					dp->position = duh_sigrenderer_get_position(dp->sigrenderer);
 					al_unlock_mutex(dp->mutex);
 				}
 			}
@@ -190,7 +193,7 @@ float dumba5_get_player_volume(DUMBA5_PLAYER * pp)
 
 double dumba5_get_player_position(DUMBA5_PLAYER * pp)
 {
-	return pp ? duh_sigrenderer_get_position(pp->sigrenderer) / 65535.0 : -1;
+	return pp ? pp->position / 65535.0 : -1;
 }
 
 double dumba5_get_player_time(DUMBA5_PLAYER * pp)
@@ -206,12 +209,6 @@ bool dumba5_player_playback_finished(DUMBA5_PLAYER * pp)
 	}
 	return false;
 }
-
-DUH_SIGRENDERER * dumba5_get_module_sigrenderer(DUMBA5_PLAYER * dp)
-{
-	return dp ? dp->sigrenderer : NULL;
-}
-
 
 
 /* IMPORTANT: This function will return NULL if the music has ended. */
