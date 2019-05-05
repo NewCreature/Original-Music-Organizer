@@ -302,6 +302,7 @@ static const char * codec_get_info(void * data)
 	{
 		sprintf(codec_data->info, "DUMBA5\n");
 	}
+	dumba5_release_player_sigrenderer(codec_data->codec_player);
 	return codec_data->info;
 }
 

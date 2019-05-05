@@ -431,9 +431,14 @@ void dumba5_resume_player(DUMBA5_PLAYER * pp)
 
 DUH_SIGRENDERER * dumba5_get_player_sigrenderer(DUMBA5_PLAYER * pp)
 {
+	al_lock_mutex(pp->mutex);
 	return pp->sigrenderer;
 }
 
+void dumba5_release_player_sigrenderer(DUMBA5_PLAYER * pp)
+{
+	al_unlock_mutex(pp->mutex);
+}
 
 /* easy access functions */
 
