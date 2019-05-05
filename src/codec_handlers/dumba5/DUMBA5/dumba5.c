@@ -44,6 +44,12 @@ struct DUMBA5_PLAYER
 	double played_time;
 	int position;
 
+	/* DUMB 2.0 rendering stuff */
+	#if (DUMB_MAJOR_VERSION) >= 2
+		sample_t ** sig_samples;
+		long sig_samples_size;
+	#endif
+
 	ALLEGRO_THREAD * thread;
 	ALLEGRO_MUTEX * mutex;
 };
@@ -93,7 +99,11 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 					al_lock_mutex(dp->mutex);
 					while(samples_left > 0)
 					{
-						n = duh_render(dp->sigrenderer, 16, 0, dp->volume, 65536.0 / dp->freq, samples_left / dp->channels, &fragment[total_samples - samples_left]);
+						#if (DUMB_MAJOR_VERSION) < 2
+							n = duh_render(dp->sigrenderer, 16, 0, dp->volume, 65536.0 / dp->freq, samples_left / dp->channels, &fragment[total_samples - samples_left]);
+						#else
+							n = duh_render_int(dp->sigrenderer, &dp->sig_samples, &dp->sig_samples_size, 16, 0, dp->volume, 65536.0f / dp->freq, samples_left / dp->channels, &fragment[total_samples - samples_left]);
+						#endif
 
 						dp->played_time += (double)n / (double)dp->freq;
 
@@ -108,6 +118,12 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 								if(!al_set_audio_stream_fragment(dp->stream, fragment))
 								{
 								}
+								#if (DUMB_MAJOR_VERSION) >= 2
+									if(dp->sig_samples)
+									{
+										destroy_sample_buffer(dp->sig_samples);
+									}
+								#endif
 								duh_end_sigrenderer(dp->sigrenderer);
 								al_destroy_audio_stream(dp->stream);
 								dp->sigrenderer = NULL;
@@ -144,6 +160,12 @@ void dumba5_stop_duh(DUMBA5_PLAYER * dp)
 		al_destroy_thread(dp->thread);
 		if(dp->sigrenderer)
 		{
+			#if (DUMB_MAJOR_VERSION) >= 2
+				if(dp->sig_samples)
+				{
+					destroy_sample_buffer(dp->sig_samples);
+				}
+			#endif
 			duh_end_sigrenderer(dp->sigrenderer);
 			al_destroy_audio_stream(dp->stream);
 		}
@@ -366,6 +388,12 @@ void dumba5_destroy_player(DUMBA5_PLAYER * pp)
 		al_destroy_mutex(pp->mutex);
 		if(pp->sigrenderer)
 		{
+			#if (DUMB_MAJOR_VERSION) >= 2
+				if(pp->sig_samples)
+				{
+					destroy_sample_buffer(pp->sig_samples);
+				}
+			#endif
 			duh_end_sigrenderer(pp->sigrenderer);
 //			al_drain_stream(dp->stream);
 			al_destroy_audio_stream(pp->stream);
@@ -385,6 +413,12 @@ void dumba5_start_player(DUMBA5_PLAYER * pp)
 bool dumba5_set_player_pattern(DUMBA5_PLAYER * pp, int pattern)
 {
 	al_lock_mutex(pp->mutex);
+	#if (DUMB_MAJOR_VERSION) >= 2
+		if(pp->sig_samples)
+		{
+			destroy_sample_buffer(pp->sig_samples);
+		}
+	#endif
 	duh_end_sigrenderer(pp->sigrenderer);
 	pp->sigrenderer = dumb_it_start_at_order(pp->duh, pp->channels, pattern);
 	if(!pp->loop)
@@ -399,6 +433,12 @@ bool dumba5_set_player_pattern(DUMBA5_PLAYER * pp, int pattern)
 bool dumba5_set_player_position(DUMBA5_PLAYER * pp, double pos)
 {
 	al_lock_mutex(pp->mutex);
+	#if (DUMB_MAJOR_VERSION) >= 2
+		if(pp->sig_samples)
+		{
+			destroy_sample_buffer(pp->sig_samples);
+		}
+	#endif
 	duh_end_sigrenderer(pp->sigrenderer);
 	pp->sigrenderer = duh_start_sigrenderer(pp->duh, 0, pp->channels, pos * 65536.0);
 	if(!pp->loop)
