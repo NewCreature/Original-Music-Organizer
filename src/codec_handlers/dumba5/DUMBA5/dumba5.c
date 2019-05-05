@@ -102,12 +102,12 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 		{
 			if(event.type == ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT)
 			{
+				al_lock_mutex(dp->mutex);
 				fragment = (unsigned short *)al_get_audio_stream_fragment(dp->stream);
 				if(fragment)
 				{
 					total_samples = dp->bufsize * dp->channels;
 					samples_left = total_samples;
-					al_lock_mutex(dp->mutex);
 					while(samples_left > 0)
 					{
 						#if (DUMB_MAJOR_VERSION) < 2
@@ -144,8 +144,8 @@ void * dumba5_update_thread(ALLEGRO_THREAD * thread, void * arg)
 					{
 					}
 					dp->position = duh_sigrenderer_get_position(dp->sigrenderer);
-					al_unlock_mutex(dp->mutex);
 				}
+				al_unlock_mutex(dp->mutex);
 			}
 		}
 		if(al_get_thread_should_stop(thread))
@@ -186,8 +186,10 @@ void dumba5_pause_duh(DUMBA5_PLAYER * dp)
 {
 	if (dp && dp->sigrenderer && (dp->flags & ADP_PLAYING))
 	{
+		al_lock_mutex(dp->mutex);
 		al_set_audio_stream_playing(dp->stream, false);
 		dp->flags &= ~ADP_PLAYING;
+		al_unlock_mutex(dp->mutex);
 	}
 }
 
@@ -195,9 +197,10 @@ void dumba5_resume_duh(DUMBA5_PLAYER * dp)
 {
 	if (dp && dp->sigrenderer && !(dp->flags & ADP_PLAYING))
 	{
+		al_lock_mutex(dp->mutex);
 		al_set_audio_stream_playing(dp->stream, true);
-//		voice_start(dp->stream->voice);
 		dp->flags |= ADP_PLAYING;
+		al_unlock_mutex(dp->mutex);
 	}
 }
 
