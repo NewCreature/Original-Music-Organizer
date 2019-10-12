@@ -29,47 +29,50 @@ else
 endif
 
 top:
-	$(MAKE) -f makefile.$(SYSTEM) all
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts all
 
 static:
-	$(MAKE) -f makefile.$(SYSTEM)_static all
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM)_static -I ../scripts all
 
 clean:
-	$(MAKE) -f makefile.$(SYSTEM) clean
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts clean
 
 clean_all:
-	$(MAKE) -f makefile.$(SYSTEM) clean
+	$(MAKE) -f ../makefile.$(SYSTEM) -I ../scripts clean
 
 release:
-	$(MAKE) -f makefile.$(SYSTEM) release
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts release
 
 package:
-	$(MAKE) -f makefile.$(SYSTEM) clean
-	$(MAKE) -f makefile.$(SYSTEM) package
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts clean
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts package
+
+binary_package:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts binary_package
 
 debian_package:
-	$(MAKE) -f makefile.$(SYSTEM)_static debian_package
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM)_static -I ../scripts debian_package
 
 android_package:
-	$(MAKE) -f makefile.android android_package
+	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_package
 
 android_package_unsigned:
-	$(MAKE) -f makefile.android android_package_unsigned
+	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_package_unsigned
 
 windows_package:
-	$(MAKE) -f makefile.$(SYSTEM) windows_zip
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts windows_zip
 
 mac_package:
-	$(MAKE) -f makefile.macosx mac_package
+	$(MAKE) -f ../scripts/makefile.macosx -I ../scripts mac_package
 
 iphone_package:
-	$(MAKE) -f makefile.iphone iphone_package
+	$(MAKE) -f ../scripts/makefile.iphone -I ../scripts iphone_package
 
 demo:
-	$(MAKE) -f makefile.$(SYSTEM) demo
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts demo
 
 demo_gp:
-	$(MAKE) -f makefile.$(SYSTEM) demo_gp
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts demo_gp
 
 makeicon:
-	$(MAKE) -f makefile.$(SYSTEM) ../win32/makeicon
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts ../win32/makeicon

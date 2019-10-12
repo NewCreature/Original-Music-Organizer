@@ -13,13 +13,39 @@ ALLEGRO_SRC_ROOT = $(HOME)/T3/Projects/Dev/allegro5
 MACOSX_ARCHITECTURES = -arch i386 -arch x86_64
 MACOSX_SYS_ROOT = -isysroot  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 MACOSX_MIN_VERSION = -mmacosx-version-min=10.6
-MACOSX_COMPILER_SETTINGS = -I/usr/local/include
-MACOSX_LINKER_SETTINGS = -L/usr/local/lib
 MACOSX_CC = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc
 MACOSX_CXX = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++
+MACOSX_CONFIG_CFLAGS = -I/usr/local/include
+MACOSX_CONFIG_LFLAGS = -L/usr/local/lib
+MACOSX_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
+MACOSX_CONFIG_ALLEGRO_SUFFIX = -static
 
 ####################
 # Windows Settings #
 ####################
 INNO_SETUP_COMPILER = ~/.wine/drive_c/Program\ Files/Inno\ Setup\ 5/Compil32.exe
 #DLLS_DIR =
+
+#################
+# MSYS Settings #
+#################
+MSYS_CONFIG_CFLAGS =
+MSYS_CONFIG_LFLAGS = -mwindows
+MSYS_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
+MSYS_CONFIG_ALLEGRO_SUFFIX = -static
+
+##################
+# Linux Settings #
+##################
+LINUX_CONFIG_CFLAGS =
+LINUX_CONFIG_LFLAGS =
+LINUX_CONFIG_PKG_CONFIG_OPTIONS = --libs
+LINUX_CONFIG_ALLEGRO_SUFFIX =
+
+#########################
+# Linux Static Settings #
+#########################
+LINUX_STATIC_CONFIG_CFLAGS =
+LINUX_STATIC_CONFIG_LFLAGS =
+LINUX_STATIC_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
+LINUX_STATIC_CONFIG_ALLEGRO_SUFFIX = -static

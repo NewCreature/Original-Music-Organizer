@@ -1143,6 +1143,12 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 		case ALLEGRO_EVENT_KEY_DOWN:
 		{
 			t3f_key[event->keyboard.keycode] = 1;
+			#ifdef ALLEGRO_MACOSX
+				if(event->keyboard.keycode == ALLEGRO_KEY_LSHIFT)
+				{
+					t3f_key[ALLEGRO_KEY_RSHIFT] = 1;
+				}
+			#endif
 			break;
 		}
 
@@ -1150,6 +1156,12 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 		case ALLEGRO_EVENT_KEY_UP:
 		{
 			t3f_key[event->keyboard.keycode] = 0;
+			#ifdef ALLEGRO_MACOSX
+				if(event->keyboard.keycode == ALLEGRO_KEY_LSHIFT)
+				{
+					t3f_key[ALLEGRO_KEY_RSHIFT] = 0;
+				}
+			#endif
 			break;
 		}
 
@@ -1311,7 +1323,10 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 			#ifndef ALLEGRO_ANDROID
 				t3f_update_menus(t3f_user_data);
 			#endif
-			t3f_select_input_view(t3f_default_view);
+			if(!(t3f_flags & T3F_NO_DISPLAY))
+			{
+				t3f_select_input_view(t3f_default_view);
+			}
 			t3f_logic_proc(t3f_user_data);
 			t3f_need_redraw = true;
 			break;
@@ -1322,23 +1337,24 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 /* called when it's time to render */
 void t3f_render(bool flip)
 {
-	/* some video drivers and compositors may leave junk in the buffers, this
-	 * config file setting will work around the issue by clearing the entire
-	 * buffer before drawing anything */
-	if(t3f_option[T3F_OPTION_RENDER_MODE] == T3F_RENDER_MODE_ALWAYS_CLEAR)
-	{
-		al_set_clipping_rectangle(0, 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display));
-		al_clear_to_color(al_map_rgb_f(0.0, 0.0, 0.0));
-		t3f_select_view(t3f_current_view);
-	}
-//	al_copy_transform(&t3f_current_transform, &t3f_base_transform);
-	al_use_transform(&t3f_current_transform); // <-- apply additional transformations to t3f_current_transform
 	if(t3f_display && t3f_render_proc && !t3f_halted)
-	t3f_render_proc(t3f_user_data);
-	if(flip)
-	{
-		al_flip_display();
-		t3f_need_redraw = false;
+ 	{
+		/* some video drivers and compositors may leave junk in the buffers,
+		   this config file setting will work around the issue by clearing the
+		   entire buffer before drawing anything */
+		if(t3f_option[T3F_OPTION_RENDER_MODE] == T3F_RENDER_MODE_ALWAYS_CLEAR)
+		{
+			al_set_clipping_rectangle(0, 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display));
+			al_clear_to_color(al_map_rgb_f(0.0, 0.0, 0.0));
+			t3f_select_view(t3f_current_view);
+		}
+		al_use_transform(&t3f_current_transform);
+		t3f_render_proc(t3f_user_data);
+		if(flip)
+		{
+			al_flip_display();
+			t3f_need_redraw = false;
+		}
 	}
 }
 

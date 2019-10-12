@@ -271,12 +271,14 @@ void t3f_select_input_view(T3F_VIEW * vp)
 	{
 		t3f_mouse_x = (t3f_real_mouse_x - translate_x) / scale_x;
 		t3f_mouse_y = (t3f_real_mouse_y - translate_y) / scale_y;
+		t3f_touch[0].x = (t3f_touch[0].real_x - translate_x) / scale_x;
+		t3f_touch[0].y = (t3f_touch[0].real_y - translate_y) / scale_y;
 	}
 
 	/* get new touch coordinates */
 	if(t3f_flags & T3F_USE_TOUCH)
 	{
-		for(i = 0; i < T3F_MAX_TOUCHES; i++)
+		for(i = 1; i < T3F_MAX_TOUCHES; i++)
 		{
 			t3f_touch[i].x = (t3f_touch[i].real_x - translate_x) / scale_x;
 			t3f_touch[i].y = (t3f_touch[i].real_y - translate_y) / scale_y;

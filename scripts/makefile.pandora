@@ -1,5 +1,6 @@
 CC = arm-angstrom-linux-gnueabi-gcc
 CFLAGS = -DPANDORA -DHAVE_GLES -O3 -pipe -march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=softfp -ftree-vectorize -ffast-math -fsingle-precision-constant -fsigned-char -I/mnt/utmp/vgolf/include
+CXXFLAGS = $(CFLAGS)
 
 AGUP_OFILES = modules/agup/aalg.o modules/agup/aase.o modules/agup/abeos.o  modules/agup/abitmap.o  modules/agup/agtk.o  modules/agup/agup.o  modules/agup/ans.o  modules/agup/aphoton.o  modules/agup/awin95.o
 

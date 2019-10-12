@@ -17,9 +17,9 @@ android_package: clean_packages build_android $(ANDROID_PLATFORM_TARGET) android
 android_package_unsigned: clean_packages build_android $(ANDROID_PLATFORM_TARGET)
 	@echo Built and signed Android package!
 
-android_sign: ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk
-	@sign ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE).apk
-	@rm ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk
+android_sign: ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk
+	@sign ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-android.apk
+	@rm ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk
 
 ../android_temp:
 	@echo Copying template to temporary folder...
@@ -51,11 +51,11 @@ copy_resources:
 	cp ../icons/96.png ../android_temp/app.project/app/src/main/res/drawable-xhdpi/icon.png
 
 copy_libs:
-	make -f makefile.android_helper ANDROID_ARCHITECTURE=armeabi-v7a copy_libs
-#	make -f makefile.android_helper ANDROID_ARCHITECTURE=arm64-v8a copy_libs
+	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=armeabi-v7a copy_libs
+#	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=arm64-v8a copy_libs
 
 create_native_libs:
-	make -f makefile.android_helper ANDROID_ARCHITECTURE=armeabi-v7a ANDROID_C_ARCH="-march=armv7-a" ANDROID_HOST=arm-linux-androideabi CFLAGS_ARCH="-mfpu=vfpv3-d16 -mfloat-abi=softfp" LFLAGS_ARCH=-"Wl,--fix-cortex-a8" create_native_lib
+	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=armeabi-v7a ANDROID_C_ARCH="-march=armv7-a" ANDROID_HOST=arm-linux-androideabi CFLAGS_ARCH="-mfpu=vfpv3-d16 -mfloat-abi=softfp" LFLAGS_ARCH=-"Wl,--fix-cortex-a8" create_native_lib
 #	make clean
 #	make -f makefile.android_helper ANDROID_ARCHITECTURE=arm64-v8a ANDROID_C_ARCH="" ANDROID_HOST=aarch64-linux-android CFLAGS_ARCH="" LFLAGS_ARCH="" create_native_lib
 
@@ -64,7 +64,7 @@ create_native_libs:
 build_android: ../android_temp edit_project copy_resources copy_libs create_native_libs
 	@echo Building Android project
 	cd ../android_temp/app.project; ./gradlew build
-	cp ../android_temp/app.project/app/build/outputs/apk/release/app-release-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk
+	cp ../android_temp/app.project/app/build/outputs/apk/release/app-release-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk
 	rm -rf ../android_temp
 
 build_temp:

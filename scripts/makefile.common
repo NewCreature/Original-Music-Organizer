@@ -2,7 +2,7 @@
 NOTHING:=
 SPACE:=$(NOTHING) $(NOTHING)
 
-T3F_DEPEND_LIBS = -lallegro_image$(LIB_SUFFIX) -lallegro_font$(LIB_SUFFIX) -lallegro_ttf$(LIB_SUFFIX) -lallegro_primitives$(LIB_SUFFIX) -lallegro_audio$(LIB_SUFFIX) -lallegro_acodec$(LIB_SUFFIX) -lallegro_memfile$(LIB_SUFFIX) -lallegro$(LIB_SUFFIX) -lm
+T3F_DEPEND_LIBS = -lallegro_image$(ALLEGRO_SUFFIX) -lallegro_font$(ALLEGRO_SUFFIX) -lallegro_ttf$(ALLEGRO_SUFFIX) -lallegro_primitives$(ALLEGRO_SUFFIX) -lallegro_audio$(ALLEGRO_SUFFIX) -lallegro_acodec$(ALLEGRO_SUFFIX) -lallegro_memfile$(ALLEGRO_SUFFIX) -lallegro$(ALLEGRO_SUFFIX) -lm
 
 GLOBAL_CFLAGS = -DT3F_DEVELOPER_NAME="\"$(subst \ ,$(SPACE),$(APP_COMPANY))\"" -DT3F_PACKAGE_NAME="\"$(subst \ ,$(SPACE),$(APP_NAME))\"" -DT3F_APP_VERSION="\"$(subst \ ,$(SPACE),$(APP_VERSION))\"" -DT3F_APP_TITLE="\"$(subst \ ,$(SPACE),$(APP_TITLE))\"" -DT3F_APP_COPYRIGHT="\"$(subst \ ,$(SPACE),$(APP_COPYRIGHT))\"" -DT3F_APP_PUBLISHER="\"$(subst \ ,$(SPACE),$(APP_PUBLISHER))\""
 
@@ -26,7 +26,7 @@ all : $(APP_EXE_NAME) $(PLATFORM_TARGET) $(APP_EXTRA_TARGET)
 	@echo All targets built!
 
 $(APP_EXE_NAME) : prepare_platform $(PROJECT_OBJECTS)
-	$(CC) $(LFLAGS) $(PROJECT_OBJECTS) $(PLATFORM_LIBS) $(APP_LIBS) $(T3F_DEPEND_LIBS) $(DEPEND_LIBS) -o $(APP_EXE_NAME)
+	$(CC) $(LFLAGS) $(CONFIG_LFLAGS) $(PROJECT_OBJECTS) $(PLATFORM_LIBS) $(APP_LIBS) $(T3F_DEPEND_LIBS) $(DEPEND_LIBS) -o $(APP_EXE_NAME)
 	@echo Executable built!
 
 makefile.config:
@@ -44,7 +44,7 @@ release: ../changes.txt ../docs/changelog
 	cat ../changes.txt ../misc/spacer ../changelog > ../docs/changelog
 	rm ../changelog
 	cp ../misc/blank_changes ../changes.txt
-	$(SED_COMMAND) "s|APP_TITLE|$(APP_TITLE)|" ../docs/changelog
+	$(SED_COMMAND) "s|APP_TITLE|$(APP_NAME)|" ../docs/changelog
 	$(SED_COMMAND) "s|APP_VERSION|$(APP_VERSION)|" ../docs/changelog
 	$(SED_COMMAND) "s|APP_MAINTAINER|$(DEBIAN_MAINTAINER)|" ../docs/changelog
 	$(SED_COMMAND) "s|BUILD_DATE|`date -u +"%a, %d %b %Y %T"`|" ../docs/changelog
@@ -62,8 +62,11 @@ endif
 
 #create tar.gz package for source code distribution
 package: clean
-	$(shell rm -rf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME); mkdir ../temp; mkdir ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../bin" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../src" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../docs" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../android" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../debian" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../macosx" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L  "../win32" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../icons" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../graphics_src" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../packages" ../temp/$(APP_PACKAGE_NAME); cp "../changelog" ../temp/$(APP_PACKAGE_NAME); cp "../build.txt" ../temp/$(APP_PACKAGE_NAME); cp "../issues.txt" ../temp/$(APP_PACKAGE_NAME); cd ../temp; rm -f $(APP_PACKAGE_FILENAME); export COPY_EXTENDED_ATTRIBUTES_DISABLE=true; export COPYFILE_DISABLE=true; tar --exclude="." --exclude=".DS_Store" --exclude="old" $(PACKAGE_EXCLUSIONS) --dereference -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
+	$(shell rm -rf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME); mkdir ../temp; mkdir ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../bin" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../src" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../scripts" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../docs" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../android" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../debian" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../macosx" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L  "../win32" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../icons" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../iphone" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../graphics_src" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../packages" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../misc" ../temp/$(APP_PACKAGE_NAME); cp "../changes.txt" ../temp/$(APP_PACKAGE_NAME); cp "../build.txt" ../temp/$(APP_PACKAGE_NAME); cp "../issues.txt" ../temp/$(APP_PACKAGE_NAME); cd ../temp; rm -f $(APP_PACKAGE_FILENAME); export COPY_EXTENDED_ATTRIBUTES_DISABLE=true; export COPYFILE_DISABLE=true; tar --exclude="." --exclude=".DS_Store" --exclude="old" $(PACKAGE_EXCLUSIONS) --dereference -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
 	@echo Package successfully created!
+
+binary_package: $(APP_EXE_NAME)
+	$(shell rm -rf $(APP_PACKAGE_DIR)/APP_PACKAGE_NAME; mkdir ../temp; cp -a -R -L "../bin" ../temp/$(APP_PACKAGE_NAME); cd ../temp; tar -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME)-bin.tar.gz $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
 
 #make a copy of the source tree with non-demo data deleted
 demo_copy:
@@ -78,10 +81,10 @@ demo_edit:
 	$(SED_COMMAND) 's|= $(APP_NAME)|= $(APP_NAME)-demo|' $(DEMO_DIR)/src/makefile.defines
 	$(SED_COMMAND) 's|$(subst $(SPACE),\$(SPACE),$(APP_TITLE))|$(subst $(SPACE),\$(SPACE),$(APP_TITLE))\\$(SPACE)Demo|' $(DEMO_DIR)/src/makefile.defines
 	$(SED_COMMAND) 's|$(APP_ANDROID_PACKAGE)|$(APP_ANDROID_PACKAGE)demo|' $(DEMO_DIR)/src/makefile.defines
-	$(SED_COMMAND) 's|$(APP_NAME)|$(APP_NAME)-demo|' $(DEMO_DIR)/changelog
+	$(SED_COMMAND) 's|$(APP_NAME)|$(APP_NAME)-demo|' $(DEMO_DIR)/docs/changelog
 
 demo_edit_gp:
-	$(SED_COMMAND) 's|CFLAGS = |CFLAGS = -DT3F_ANDROID_GP |' $(DEMO_DIR)/src/makefile.android
+	$(SED_COMMAND) 's|CFLAGS = |CFLAGS = -DT3F_ANDROID_GP |' $(DEMO_DIR)/src/makefile.android_helper
 	mv $(DEMO_DIR) $(DEMO_DIR)_gp
 
 demo: clean demo_copy demo_clean demo_edit
