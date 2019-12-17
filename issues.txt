@@ -107,6 +107,15 @@ v0.5.4
    artist is.
 
 
+v0.5.4
+------
+
+[ ]After tagging a song while Unknown Artist/Album is selected, the song list
+   shows all songs, but the selection still shows Unknown. We should probably
+   revert to All Artists/Albums any time we regenerate the lists to prevent this
+   from happening.
+
+
 v0.5.3
 ------
 
