@@ -4,6 +4,13 @@ OMO Issues
 Long Term Goals
 ---------------
 
+[ ]Consider adding a codec handler method for retrieving audio data. This method
+   should be able to fill a buffer and express how many samples it generated and
+   whether the end of the stream has been reached. This method could be used
+   internally where we utilize engines that are connected to the audio device
+   through Allegro to simplify the code base. As a bonus, we could add an option
+   to convert supported codecs to WAV for burning to CD with another program.
+
 [ ]We need to modularize the UI so we can enable developing multiple UI
    systems. The current Allegro-based UI is the main UI, but I'd also like
    provide a curses UI. Other UIs could also be developed, such as native
@@ -76,6 +83,19 @@ Long Term Goals
 
 v0.5.4
 ------
+
+[ ]Add per-codec handler gain settings. The main player should multiply the gain
+   by the per-codec handler value.
+
+   [ ]Not sure if there is a way to identify codec handlers. If there is not, we
+      should add an ID to the codec handler data structure and a way to get that
+      ID programatically.
+
+   [ ]We should provide suitable default values for each codec handler.
+
+   [ ]We should consider other per-codec handler settings.
+
+[ ]Crash when artist name is too long.
 
 [ ]Look into missing button graphics on Windows.
 
