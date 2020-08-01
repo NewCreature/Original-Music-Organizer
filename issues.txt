@@ -84,6 +84,8 @@ Long Term Goals
 v0.5.4
 ------
 
+[ ]Consider setting the track length if the entered fade time is 0.
+
 [ ]Add per-codec handler gain settings. The main player should multiply the gain
    by the per-codec handler value.
 
