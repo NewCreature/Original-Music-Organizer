@@ -4,6 +4,13 @@ OMO Issues
 Long Term Goals
 ---------------
 
+[ ]Add a favorites system. We should be able to set favorite artists, albums,
+   and songs and have a way to present those to the user.
+
+[ ]Allow editing album tags. This will automatically apply the edited tags to
+   each track in the album. Track-specific tags should not be shown in the
+   dialog.
+
 [ ]Consider adding a codec handler method for retrieving audio data. This method
    should be able to fill a buffer and express how many samples it generated and
    whether the end of the stream has been reached. This method could be used
