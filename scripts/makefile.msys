@@ -1,15 +1,27 @@
+T3F_PLATFORM_NAME = windows
 CC = gcc
-CFLAGS = $(GLOBAL_CFLAGS) $(APP_CFLAGS) $(MSYS_CFLAGS) $(MSYS_CONFIG_CFLAGS) -DT3F_NO_UTF8
+CFLAGS = $(T3F_CFLAGS) $(APP_CFLAGS) $(MSYS_CFLAGS) $(MSYS_CONFIG_CFLAGS) -DT3F_NO_UTF8
 CXXFLAGS = $(CFLAGS)
 LFLAGS = -static -static-libgcc -static-libstdc++
 CONFIG_LFLAGS = $(MSYS_CONFIG_LFLAGS)
 ALLEGRO_SUFFIX = $(MSYS_CONFIG_ALLEGRO_SUFFIX)
-PLATFORM_OBJECTS = t3f/menu.o t3f/windows.o icon.o $(MSYS_PLATFORM_OBJECTS)
-PLATFORM_LIBS = -lallegro_dialog$(ALLEGRO_SUFFIX) $(MSYS_PLATFORM_LIBS)
-DEPEND_LIBS = $(MSYS_DEPEND_LIBS) -luuid -lkernel32 -lwinmm -lpsapi\
-              -lopengl32 -lglu32 -luser32 -lcomdlg32 -lgdi32 -lshell32 -lole32\
-              -ladvapi32 -lws2_32 -lshlwapi -lvorbisfile -lvorbis -lFLAC -logg\
-              -ldumb -lfreetype -lpng -lz -ljpeg -ld3d9 -ldsound -lstdc++
+T3F_PLATFORM_OBJECTS = t3f/menu.o t3f/windows.o icon.o $(MSYS_PLATFORM_OBJECTS)
+T3F_PLATFORM_LIBRARIES =\
+  -lallegro_audio$(ALLEGRO_SUFFIX)\
+  -lallegro_image$(ALLEGRO_SUFFIX)\
+  -lallegro_acodec$(ALLEGRO_SUFFIX)\
+  -lallegro_ttf$(ALLEGRO_SUFFIX)\
+  -lallegro_font$(ALLEGRO_SUFFIX)\
+  -lallegro_primitives$(ALLEGRO_SUFFIX)\
+  -lallegro_memfile$(ALLEGRO_SUFFIX)\
+  -lallegro_physfs$(ALLEGRO_SUFFIX)\
+  -lallegro_dialog$(ALLEGRO_SUFFIX)\
+  -lallegro$(ALLEGRO_SUFFIX)\
+  $(MSYS_PLATFORM_LIBS)\
+  $(MSYS_CONFIG_PLATFORM_LIBS)\
+  $(MSYS_CONFIG_DEPEND_LIBS)\
+  $(MSYS_PLATFORM_LIBS)\
+  $(MSYS_DEPEND_LIBS)
 DEL_COMMAND = rm -f
 DEL_FOLDER_COMMAND = rm -rf
 SED_COMMAND = sed -i
@@ -29,7 +41,7 @@ icon.o : ../icons/windows_icon.ico ../win32/icon.rc
 	windres --include-dir=../icons -o icon.o ../win32/icon.rc
 
 ../win32/info_fixer: ../win32/info_fixer.o
-	$(CC) $(GLOBAL_CFLAGS) ../win32/info_fixer.o -o ../win32/info_fixer
+	$(CC) $(T3F_CFLAGS) ../win32/info_fixer.o -o ../win32/info_fixer
 
 windows_zip: $(APP_EXE_NAME)
 	@cd ../bin; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../win32/blobs && zip -9 ../$(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../../; cp -a docs win32; cd win32/docs; mv changelog history.txt; mv README readme.txt; mv copyright license.txt; cd ..; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip docs; rm -rf docs

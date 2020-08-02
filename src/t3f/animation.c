@@ -540,7 +540,7 @@ void t3f_draw_rotated_scaled_animation(T3F_ANIMATION * ap, ALLEGRO_COLOR color, 
 		handle_vh_flip(ap->frame[0], fp, flags, &fox, &foy, &dflags);
 		scale_x = fp->width / al_get_bitmap_width(ap->bitmaps->bitmap[fp->bitmap]);
 		scale_y = fp->height / al_get_bitmap_height(ap->bitmaps->bitmap[fp->bitmap]);
-		t3f_draw_scaled_rotated_bitmap(ap->bitmaps->bitmap[fp->bitmap], color, cx / scale_x - fp->x, cy / scale_y - fp->y, x + fox, y + foy, z + fp->z, angle, scale, scale, dflags);
+		t3f_draw_scaled_rotated_bitmap(ap->bitmaps->bitmap[fp->bitmap], color, cx / scale_x - fp->x, cy / scale_y - fp->y, x + fox, y + foy, z + fp->z, angle, scale * scale_x, scale * scale_y, dflags);
 	}
 }
 

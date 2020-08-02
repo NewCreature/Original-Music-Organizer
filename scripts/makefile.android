@@ -1,7 +1,15 @@
-LIB_SUFFIX =
-PLATFORM_OBJECTS = $(ANDROID_PLATFORM_OBJECTS)
-PLATFORM_LIBS = $(ANDROID_PLATFORM_LIBS)
-DEPEND_LIBS = $(ANDROID_DEPEND_LIBS) -lallegro_physfs$(LIB_SUFFIX) -lphysfs
+T3F_PLATFORM_NAME = android
+T3F_PLATFORM_OBJECTS = $(ANDROID_PLATFORM_OBJECTS)
+T3F_PLATFORM_LIBS =\
+	-lallegro\
+	-lallegro_audio\
+	-lallegro_image\
+	-lallegro_acodec\
+	-lallegro_font\
+	-lallegro_ttf\
+	-lallegro_primitives\
+	-lallegro_memfile\
+	-lallegro_physfs
 #DEL_COMMAND = rm -f
 #DEL_FOLDER_COMMAND = rm -rf
 

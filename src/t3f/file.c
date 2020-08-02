@@ -14,6 +14,20 @@ size_t t3f_file_size(const char * fn)
 	return size;
 }
 
+time_t t3f_get_file_mtime(const char * fn)
+{
+	ALLEGRO_FS_ENTRY * fp;
+	time_t mtime = 0;
+
+	fp = al_create_fs_entry(fn);
+	if(fp)
+	{
+		mtime = al_get_fs_entry_mtime(fp);
+		al_destroy_fs_entry(fp);
+	}
+	return mtime;
+}
+
 float t3f_fread_float(ALLEGRO_FILE * fp)
 {
 	char buffer[256] = {0};

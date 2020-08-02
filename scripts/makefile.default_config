@@ -10,15 +10,21 @@ ALLEGRO_SRC_ROOT = $(HOME)/T3/Projects/Dev/allegro5
 #####################
 # Mac OS X Settings #
 #####################
-MACOSX_ARCHITECTURES = -arch i386 -arch x86_64
-MACOSX_SYS_ROOT = -isysroot  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
-MACOSX_MIN_VERSION = -mmacosx-version-min=10.6
-MACOSX_CC = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc
-MACOSX_CXX = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++
-MACOSX_CONFIG_CFLAGS = -I/usr/local/include
-MACOSX_CONFIG_LFLAGS = -L/usr/local/lib
-MACOSX_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
-MACOSX_CONFIG_ALLEGRO_SUFFIX = -static
+MACOS_ARCHITECTURES = -arch i386 -arch x86_64
+MACOS_SYS_ROOT = -isysroot  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+MACOS_MIN_VERSION = -mmacos-version-min=10.6
+MACOS_CC = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc
+MACOS_CXX = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++
+MACOS_CONFIG_CFLAGS = -I/usr/local/include
+MACOS_CONFIG_LFLAGS = -L/usr/local/lib
+MACOS_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
+MACOS_CONFIG_ALLEGRO_SUFFIX = -static
+#MACOS_CONFIG_DEPEND_LIBS =
+
+###################
+# iPhone Settings #
+###################
+IPHONE_CONFIG_DEPEND_LIBS = -lz -lpng -lvorbisidec -ldumb -lfreetype
 
 ####################
 # Windows Settings #
@@ -33,6 +39,10 @@ MSYS_CONFIG_CFLAGS =
 MSYS_CONFIG_LFLAGS = -mwindows
 MSYS_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
 MSYS_CONFIG_ALLEGRO_SUFFIX = -static
+MSYS_CONFIG_DEPEND_LIBS = -luuid -lkernel32 -lwinmm -lpsapi\
+              -lopengl32 -lglu32 -luser32 -lcomdlg32 -lgdi32 -lshell32 -lole32\
+              -ladvapi32 -lws2_32 -lshlwapi -lvorbisfile -lvorbis -lFLAC -logg\
+              -ldumb -lfreetype -lpng -lz -ljpeg -ld3d9 -ldsound -lstdc++
 
 ##################
 # Linux Settings #
@@ -41,11 +51,11 @@ LINUX_CONFIG_CFLAGS =
 LINUX_CONFIG_LFLAGS =
 LINUX_CONFIG_PKG_CONFIG_OPTIONS = --libs
 LINUX_CONFIG_ALLEGRO_SUFFIX =
+#LINUX_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
+#LINUX_CONFIG_ALLEGRO_SUFFIX = -static
+LINUX_CONFIG_DEPEND_LIBS = -lm -lstdc++
 
-#########################
-# Linux Static Settings #
-#########################
-LINUX_STATIC_CONFIG_CFLAGS =
-LINUX_STATIC_CONFIG_LFLAGS =
-LINUX_STATIC_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
-LINUX_STATIC_CONFIG_ALLEGRO_SUFFIX = -static
+#############################
+# Debian Packaging Settings #
+#############################
+DEBIAN_CONFIG_DEPENDS = liballegro-acodec5.2,\ liballegro-audio5.2,\ liballegro-image5.2,\ liballegro-physfs5.2,\ liballegro-ttf5.2,\ liballegro-dialog5.2,\ liballegro5.2,\ libc6

@@ -1,13 +1,28 @@
+T3F_PLATFORM_NAME = iOS
 CC = gcc
-CFLAGS = $(T3F_CFLAGS) $(GLOBAL_CFLAGS) $(IPHONE_ARCHITECTURES) $(IPHONE_COMPILER_SETTINGS) $(IPHONE_SYS_ROOT) $(IPHONE_MIN_VERSION) $(APP_CFLAGS) $(IPHONE_CFLAGS)
+CFLAGS = $(APP_CFLAGS) $(T3F_CFLAGS) $(IPHONE_ARCHITECTURES) $(IPHONE_COMPILER_SETTINGS) $(IPHONE_SYS_ROOT) $(IPHONE_MIN_VERSION) $(APP_CFLAGS) $(IPHONE_CFLAGS)
 CXX = g++
 CXXFLAGS = $(CFLAGS)
 LFLAGS = $(IPHONE_LINKER_SETTINGS) $(IPHONE_ARCHITECTURES) $(IPHONE_SYS_ROOT) $(IPHONE_MIN_VERSION)
-PLATFORM_OBJECTS = t3f/menu.o $(IPHONE_PLATFORM_OBJECTS)
-PLATFORM_LIBS = -framework IOKit -framework AudioToolbox -framework OpenGLES -framework OpenAL -framework CoreGraphics -framework Foundation -framework QuartzCore -framework UIKit -framework MobileCoreServices -lallegro_dialog$(LIB_SUFFIX) -lallegro_main-static $(IPHONE_PLATFORM_LIBS)
+ALLEGRO_SUFFIX = $(IPHONE_CONFIG_ALLEGRO_SUFFIX)
+T3F_PLATFORM_OBJECTS = t3f/menu.o $(IPHONE_PLATFORM_OBJECTS)
+T3F_PLATFORM_LIBS =\
+	-framework IOKit\
+	-framework AudioToolbox\
+	-framework OpenGLES\
+	-framework OpenAL\
+	-framework CoreGraphics\
+	-framework Foundation\
+	-framework QuartzCore\
+	-framework UIKit\
+	-framework MobileCoreServices\
+	-lallegro_dialog$(ALLEGRO_SUFFIX)\
+	-lallegro_main$(ALLEGRO_SUFFIX)\
+	$(IPHONE_CONFIG_PLATFORM_LIBS)\
+	$(IPHONE_CONFIG_DEPEND_LIBS)\
+	$(IPHONE_PLATFORM_LIBS)\
+	$(IPHONE_DEPEND_LIBS)
 PLATFORM_TARGET = $(APP_PACKAGE_DIR)/$(APP_TITLE).app
-LIB_SUFFIX = -static
-DEPEND_LIBS = -lz -lpng -lvorbisidec -ldumb -lfreetype $(IPHONE_DEPEND_LIBS)
 DEL_COMMAND = rm -f
 DEL_FOLDER_COMMAND = rm -rf
 SED_COMMAND = sed -i ''
@@ -23,7 +38,7 @@ $(APP_PACKAGE_DIR)/$(APP_TITLE).app : $(APP_EXE_NAME)
 	@$(DEL_FOLDER_COMMAND) $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@mkdir $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@cp $(APP_EXE_NAME) $(APP_PACKAGE_DIR)/$(APP_TITLE).app/$(APP_TITLE)
-	@cp ../icons/macosx_icon.icns $(APP_PACKAGE_DIR)/$(APP_TITLE).app/$(APP_TITLE).icns
+	@cp ../icons/macos_icon.icns $(APP_PACKAGE_DIR)/$(APP_TITLE).app/$(APP_TITLE).icns
 	@cp -a ../bin/data $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@cp -a ../docs $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@cp ../iphone/Info.plist $(APP_PACKAGE_DIR)/$(APP_TITLE).app

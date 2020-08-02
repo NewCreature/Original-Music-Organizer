@@ -96,12 +96,12 @@ T3F_FONT * t3f_generate_font(const char * fn, int size, int flags)
 	char buf[2] = {0};
 	int i, j;
 	int space;
-	int cx, cy, cw, ch, cox;
+	int cx, cy, cw, ch;
 	int page_size = 256;
 
 	if(flags & T3F_FONT_OUTLINE)
 	{
-		space = 4;
+		space = 3;
 	}
 	else
 	{
@@ -145,17 +145,15 @@ T3F_FONT * t3f_generate_font(const char * fn, int size, int flags)
 					w += space;
 					h = al_get_font_line_height(font) + space;
 					al_get_text_dimensions(font, buf, &cx, &cy, &cw, &ch);
-					cox = 0;
 					if(cx < 0)
 					{
 						ox -= cx;
 						w -= cx;
-						cox = -cx;
 					}
 					if(ox + w > al_get_bitmap_width(fp->character_sheet))
 					{
 						ox = 1;
-						oy += h;
+						oy += h + 1;
 
 						/* start over with larger page size if font doesn't fit */
 						if(oy + h >= page_size)
@@ -186,17 +184,17 @@ T3F_FONT * t3f_generate_font(const char * fn, int size, int flags)
 							al_draw_text(font, al_map_rgba_f(0.0, 0.0, 0.0, 1.0), ox + 2, oy + 1, 0, buf);
 						}
 						al_draw_text(font, al_map_rgba_f(1.0, 1.0, 1.0, 1.0), ox + 1, oy + 1, 0, buf);
-						fp->character[i].x = ox - cox;
+						fp->character[i].x = ox + 1;
 						fp->character[i].y = oy;
-						fp->character[i].width = w - 2;
-						fp->character[i].height = h - 2;
+						fp->character[i].width = w - 1;
+						fp->character[i].height = h - 1;
 						fp->character[i].bitmap = al_create_sub_bitmap(fp->character_sheet, fp->character[i].x, fp->character[i].y, fp->character[i].width, fp->character[i].height);
 						if(!fp->character[i].bitmap)
 						{
 							printf("could not create sub-bitmap\n");
 							return NULL;
 						}
-						ox += w;
+						ox += w + 1;
 					}
 				}
 				al_restore_state(&old_state);

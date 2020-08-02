@@ -6,13 +6,13 @@ void fix_description(char * description)
 {
 	char original_description[1024] = {0};
 	int i, j = 0, w = 0, last_space = 0, last_jspace = 0;
-	
+
 	strcpy(original_description, description);
 	for(i = 0; i < strlen(original_description); i++)
 	{
 		/* copy current letter to destination */
 		description[j] = original_description[i];
-		
+
 		/* if we find a space, store it so we can go back if we go past 80 characters */
 		if(original_description[i] == ' ')
 		{
@@ -33,9 +33,9 @@ void fix_description(char * description)
 		{
 			j++;
 		}
-		
+
 		w++;
-		
+
 		/* if the width of the current line is more than 80 characters, make a new line */
 		if(w > 80)
 		{
@@ -79,6 +79,7 @@ void generate_control_file(int argc, char * argv[])
 	fputs(line, fp);
 	sprintf(line, "Maintainer: %s\n", argv[9]);
 	fputs(line, fp);
+	memset(line, 0, 1024);
 	sprintf(line, "Description: %s\n%s\n", argv[10], argv[11]);
 	fix_description(line);
 	fputs(line, fp);

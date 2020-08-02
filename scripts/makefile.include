@@ -1,5 +1,22 @@
-T3F_OBJECTS = t3f/t3f.o t3f/music.o t3f/sound.o t3f/font.o t3f/animation.o\
-             t3f/bitmap.o t3f/draw.o t3f/view.o t3f/android.o t3f/atlas.o\
-             t3f/resource.o t3f/debug.o t3f/collision.o t3f/controller.o\
-             t3f/gui.o t3f/tilemap.o t3f/vector.o t3f/rng.o t3f/primitives.o\
-             t3f/file_utils.o t3f/file.o
+T3F_CORE_OBJECTS =\
+    t3f/t3f.o\
+    t3f/music.o\
+    t3f/sound.o\
+    t3f/font.o\
+    t3f/animation.o\
+    t3f/bitmap.o\
+    t3f/draw.o\
+    t3f/view.o\
+    t3f/android.o\
+    t3f/atlas.o\
+    t3f/resource.o\
+    t3f/debug.o\
+    t3f/collision.o\
+    t3f/controller.o\
+    t3f/gui.o\
+    t3f/tilemap.o\
+    t3f/vector.o\
+    t3f/rng.o\
+    t3f/primitives.o\
+    t3f/file_utils.o\
+    t3f/file.o

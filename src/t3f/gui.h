@@ -77,6 +77,8 @@ int t3f_add_gui_text_element(T3F_GUI * pp, int (*proc)(void *, int, void *), cha
 int t3f_describe_last_gui_element(T3F_GUI * pp, char * text);
 void t3f_center_gui(T3F_GUI * pp, float oy, float my);
 void t3f_set_gui_shadow(T3F_GUI * pp, float x, float y);
+int t3f_get_gui_width(T3F_GUI * pp);
+int t3f_get_gui_height(T3F_GUI * pp, float * top);
 
 void t3f_select_previous_gui_element(T3F_GUI * pp);
 void t3f_select_next_gui_element(T3F_GUI * pp);

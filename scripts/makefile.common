@@ -2,9 +2,9 @@
 NOTHING:=
 SPACE:=$(NOTHING) $(NOTHING)
 
-T3F_DEPEND_LIBS = -lallegro_image$(ALLEGRO_SUFFIX) -lallegro_font$(ALLEGRO_SUFFIX) -lallegro_ttf$(ALLEGRO_SUFFIX) -lallegro_primitives$(ALLEGRO_SUFFIX) -lallegro_audio$(ALLEGRO_SUFFIX) -lallegro_acodec$(ALLEGRO_SUFFIX) -lallegro_memfile$(ALLEGRO_SUFFIX) -lallegro$(ALLEGRO_SUFFIX) -lm
+T3F_LIBRARIES = $(T3F_PLATFORM_LIBRARIES)
 
-GLOBAL_CFLAGS = -DT3F_DEVELOPER_NAME="\"$(subst \ ,$(SPACE),$(APP_COMPANY))\"" -DT3F_PACKAGE_NAME="\"$(subst \ ,$(SPACE),$(APP_NAME))\"" -DT3F_APP_VERSION="\"$(subst \ ,$(SPACE),$(APP_VERSION))\"" -DT3F_APP_TITLE="\"$(subst \ ,$(SPACE),$(APP_TITLE))\"" -DT3F_APP_COPYRIGHT="\"$(subst \ ,$(SPACE),$(APP_COPYRIGHT))\"" -DT3F_APP_PUBLISHER="\"$(subst \ ,$(SPACE),$(APP_PUBLISHER))\""
+T3F_CFLAGS = -DT3F_DEVELOPER_NAME="\"$(subst \ ,$(SPACE),$(APP_COMPANY))\"" -DT3F_PACKAGE_NAME="\"$(subst \ ,$(SPACE),$(APP_NAME))\"" -DT3F_APP_VERSION="\"$(subst \ ,$(SPACE),$(APP_VERSION))\"" -DT3F_APP_TITLE="\"$(subst \ ,$(SPACE),$(APP_TITLE))\"" -DT3F_APP_COPYRIGHT="\"$(subst \ ,$(SPACE),$(APP_COPYRIGHT))\"" -DT3F_APP_PUBLISHER="\"$(subst \ ,$(SPACE),$(APP_PUBLISHER))\""
 
 include makefile.defines
 include makefile.default_config
@@ -14,19 +14,20 @@ DEMO_DIR = ../../$(APP_NAME)_demo
 DEMO_DATA = $(DEMO_DIR)/bin/data
 #DEMO_DELETE =
 
-PROJECT_OBJECTS = $(T3F_OBJECTS) $(APP_OBJECTS) $(PLATFORM_OBJECTS)
+T3F_OBJECTS = $(T3F_CORE_OBJECTS) $(T3F_PLATFORM_OBJECTS)
 
-APP_SOURCE_FILES = $(PROJECT_OBJECTS:.o=.c)
+APP_SOURCE_FILES = $(T3F_OBJECTS:.o=.c)
 
 APP_EXE_NAME = ../bin/$(APP_NAME)$(EXE_SUFFIX)
 APP_PACKAGE_NAME = $(APP_NAME)-$(APP_VERSION)
 APP_PACKAGE_FILENAME = $(APP_PACKAGE_NAME)-src.tar.gz
+APP_BINARY_PACKAGE_FILENAME = $(APP_PACKAGE_NAME)-$(T3F_PLATFORM_NAME).tar.gz
 
-all : $(APP_EXE_NAME) $(PLATFORM_TARGET) $(APP_EXTRA_TARGET)
+all : $(APP_EXE_NAME) $(T3F_PLATFORM_TARGET) $(APP_EXTRA_TARGET)
 	@echo All targets built!
 
-$(APP_EXE_NAME) : prepare_platform $(PROJECT_OBJECTS)
-	$(CC) $(LFLAGS) $(CONFIG_LFLAGS) $(PROJECT_OBJECTS) $(PLATFORM_LIBS) $(APP_LIBS) $(T3F_DEPEND_LIBS) $(DEPEND_LIBS) -o $(APP_EXE_NAME)
+$(APP_EXE_NAME) : prepare_platform $(T3F_OBJECTS) $(APP_OBJECTS)
+	$(CC) $(LFLAGS) $(CONFIG_LFLAGS) $(T3F_OBJECTS) $(APP_OBJECTS) $(APP_LIBS) $(T3F_LIBRARIES) $(DEPEND_LIBS) -o $(APP_EXE_NAME)
 	@echo Executable built!
 
 makefile.config:
@@ -52,7 +53,8 @@ release: ../changes.txt ../docs/changelog
 
 clean: app_clean
 	@$(PLATFORM_CLEAN)
-	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(PROJECT_OBJECTS))
+	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(T3F_OBJECTS))
+	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(APP_OBJECTS))
 	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(APP_EXE_NAME)$(EXE_SUFFIX))
 ifdef APP_EXTRA_TARGET
 	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(APP_EXTRA_TARGET))
@@ -62,11 +64,11 @@ endif
 
 #create tar.gz package for source code distribution
 package: clean
-	$(shell rm -rf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME); mkdir ../temp; mkdir ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../bin" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../src" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../scripts" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../docs" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../android" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../debian" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../macosx" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L  "../win32" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../icons" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../iphone" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../graphics_src" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../packages" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../misc" ../temp/$(APP_PACKAGE_NAME); cp "../changes.txt" ../temp/$(APP_PACKAGE_NAME); cp "../build.txt" ../temp/$(APP_PACKAGE_NAME); cp "../issues.txt" ../temp/$(APP_PACKAGE_NAME); cd ../temp; rm -f $(APP_PACKAGE_FILENAME); export COPY_EXTENDED_ATTRIBUTES_DISABLE=true; export COPYFILE_DISABLE=true; tar --exclude="." --exclude=".DS_Store" --exclude="old" $(PACKAGE_EXCLUSIONS) --dereference -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
+	$(shell rm -rf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME); mkdir ../temp; mkdir ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../bin" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../src" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../scripts" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../docs" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../android" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../debian" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../macos" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L  "../win32" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../icons" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../iphone" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../graphics_src" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../packages" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../misc" ../temp/$(APP_PACKAGE_NAME); cp "../changes.txt" ../temp/$(APP_PACKAGE_NAME); cp "../build.txt" ../temp/$(APP_PACKAGE_NAME); cp "../issues.txt" ../temp/$(APP_PACKAGE_NAME); cd ../temp; rm -f $(APP_PACKAGE_FILENAME); export COPY_EXTENDED_ATTRIBUTES_DISABLE=true; export COPYFILE_DISABLE=true; tar --exclude="." --exclude=".DS_Store" --exclude="old" $(PACKAGE_EXCLUSIONS) --dereference -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
 	@echo Package successfully created!
 
 binary_package: $(APP_EXE_NAME)
-	$(shell rm -rf $(APP_PACKAGE_DIR)/APP_PACKAGE_NAME; mkdir ../temp; cp -a -R -L "../bin" ../temp/$(APP_PACKAGE_NAME); cd ../temp; tar -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME)-bin.tar.gz $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
+	$(shell rm -rf $(APP_PACKAGE_DIR)/$(APP_BINARY_PACKAGE_FILENAME); mkdir ../temp; cp -a -R -L "../bin" ../temp/$(APP_PACKAGE_NAME); cd ../temp; tar -czf $(APP_PACKAGE_DIR)/$(APP_BINARY_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
 
 #make a copy of the source tree with non-demo data deleted
 demo_copy:
@@ -92,4 +94,4 @@ demo: clean demo_copy demo_clean demo_edit
 demo_gp: demo demo_edit_gp
 
 ../win32/makeicon$(EXE_SUFFIX): ../win32/makeicon.o
-	$(CC) $(LFLAGS) ../win32/makeicon.o $(PLATFORM_LIBS) $(T3F_DEPEND_LIBS) $(DEPEND_LIBS) -o ../win32/makeicon
+	$(CC) $(LFLAGS) ../win32/makeicon.o $(T3F_LIBRARIES) -o ../win32/makeicon

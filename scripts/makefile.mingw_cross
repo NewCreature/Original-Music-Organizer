@@ -1,5 +1,5 @@
 CC = i586-mingw32msvc-gcc
-CFLAGS = $(GLOBAL_CFLAGS) $(APP_CFLAGS) $(MINGW_CROSS_CFLAGS)
+CFLAGS = $(T3F_CFLAGS) $(APP_CFLAGS) $(MINGW_CROSS_CFLAGS)
 CXXFLAGS = $(CFLAGS)
 LFLAGS = -mwindows
 LIB_SUFFIX = -static
@@ -25,7 +25,7 @@ icon.o : ../icons/windows_icon.ico ../win32/icon.rc
 	i586-mingw32msvc-windres --include-dir=../icons -o icon.o ../win32/icon.rc
 
 ../win32/info_fixer: ../win32/info_fixer.o
-	$(CC) $(GLOBAL_CFLAGS) ../win32/info_fixer.o -o ../win32/info_fixer
+	$(CC) $(T3F_CFLAGS) ../win32/info_fixer.o -o ../win32/info_fixer
 
 windows_zip: $(APP_EXE_NAME)
 	@cd ../bin; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../win32/blobs && zip -9 ../$(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../../; cp -a docs win32; cd win32/docs; mv changelog history.txt; mv README readme.txt; mv copyright license.txt; cd ..; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip docs; rm -rf docs

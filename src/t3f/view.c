@@ -100,6 +100,17 @@ static void t3f_get_view_transformation(T3F_VIEW * view)
 			view->right = view->virtual_width;
 		}
 	}
+	else if(view->flags & T3F_NO_SCALE)
+	{
+		view->translate_x = view->offset_x;
+		view->translate_y = view->offset_y;
+		view->scale_x = 1.0;
+		view->scale_y = 1.0;
+		view->left = 0;
+		view->top = 0;
+		view->bottom = view->height;
+		view->right = view->width;
+	}
 	else
 	{
 		view->translate_x = 0.0;

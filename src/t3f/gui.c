@@ -104,8 +104,8 @@ static void allegro_render_element(T3F_GUI * pp, int i, bool hover)
 				{
 					if(bitmap)
 					{
-						al_draw_tinted_bitmap(bitmap, al_map_rgba_f(0.0, 0.0, 0.0, 0.5), pp->ox + pp->element[i].ox - al_get_bitmap_width(bitmap) / 2, pp->oy + pp->element[i].oy - al_get_bitmap_width(bitmap) / 2, 0);
-						al_draw_bitmap(bitmap, pp->ox + pp->element[i].ox - al_get_bitmap_width(bitmap) / 2 + sx, pp->oy + pp->element[i].oy - al_get_bitmap_width(bitmap) / 2 + sy, 0);
+						al_draw_tinted_bitmap(bitmap, al_map_rgba_f(0.0, 0.0, 0.0, 0.5), pp->ox + pp->element[i].ox - al_get_bitmap_width(bitmap) / 2, pp->oy + pp->element[i].oy - al_get_bitmap_height(bitmap) / 2, 0);
+						al_draw_bitmap(bitmap, pp->ox + pp->element[i].ox - al_get_bitmap_width(bitmap) / 2 + sx, pp->oy + pp->element[i].oy - al_get_bitmap_height(bitmap) / 2 + sy, 0);
 					}
 				}
 				else
@@ -123,7 +123,7 @@ static void allegro_render_element(T3F_GUI * pp, int i, bool hover)
 				{
 					if(bitmap)
 					{
-						al_draw_bitmap(bitmap, pp->ox + pp->element[i].ox - al_get_bitmap_width(bitmap) / 2 + sx, pp->oy + pp->element[i].oy - al_get_bitmap_width(bitmap) / 2 + sy, 0);
+						al_draw_bitmap(bitmap, pp->ox + pp->element[i].ox - al_get_bitmap_width(bitmap) / 2 + sx, pp->oy + pp->element[i].oy - al_get_bitmap_height(bitmap) / 2 + sy, 0);
 					}
 				}
 				else
@@ -223,6 +223,8 @@ int t3f_add_gui_image_element(T3F_GUI * pp, int (*proc)(void *, int, void *), vo
 	pp->element[pp->elements].oy = oy;
 	pp->element[pp->elements].flags = flags;
 	pp->element[pp->elements].description = NULL;
+	pp->element[pp->elements].sx = 2;
+	pp->element[pp->elements].sy = 2;
 	pp->elements++;
 	return 1;
 }
@@ -270,27 +272,56 @@ int t3f_describe_last_gui_element(T3F_GUI * pp, char * text)
 	return 0;
 }
 
-void t3f_center_gui(T3F_GUI * pp, float oy, float my)
+int t3f_get_gui_width(T3F_GUI * pp)
 {
 	int i;
-	float top = 1000.0;
-	float bottom = 0.0;
-	float dheight = my - oy;
-	float height;
-	float offset;
+	int max_width = 0;
+	int width;
 
 	for(i = 0; i < pp->elements; i++)
 	{
-		if(pp->element[i].oy < top)
+		width = t3f_gui_current_driver->get_element_width(&pp->element[i]);
+		if(width > max_width)
 		{
-			top = pp->element[i].oy;
+			max_width = width;
+		}
+	}
+	return max_width;
+}
+
+int t3f_get_gui_height(T3F_GUI * pp, float * top)
+{
+	int i;
+	float itop = 1000.0;
+	float bottom = 0.0;
+
+	for(i = 0; i < pp->elements; i++)
+	{
+		if(pp->element[i].oy < itop)
+		{
+			itop = pp->element[i].oy;
 		}
 		if(pp->element[i].oy + t3f_gui_current_driver->get_element_height(&pp->element[i]) > bottom)
 		{
 			bottom = pp->element[i].oy + t3f_gui_current_driver->get_element_height(&pp->element[i]);
 		}
 	}
-	height = bottom - top;
+	if(top)
+	{
+		*top = itop;
+	}
+
+	return bottom - itop;
+}
+
+void t3f_center_gui(T3F_GUI * pp, float oy, float my)
+{
+	float dheight = my - oy;
+	float top;
+	float height;
+	float offset;
+
+	height = t3f_get_gui_height(pp, &top);
 	offset = oy + dheight / 2.0 - height / 2.0;
 	pp->oy = offset - top;
 }
