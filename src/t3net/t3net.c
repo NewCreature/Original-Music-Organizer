@@ -686,9 +686,14 @@ const char * t3net_get_data_entry_field(T3NET_DATA * data, int entry, const char
 	{
 		for(i = 0; i < data->entry[entry]->fields; i++)
 		{
-			if(!strcmp(data->entry[entry]->field[i]->name, field_name))
+			/* need to check if we have a field name since the data parser makes space for the
+			   largest number of fields in the data set (some entries might not have all fields) */
+			if(data->entry[entry]->field[i]->name)
 			{
-				return data->entry[entry]->field[i]->data;
+				if(!strcmp(data->entry[entry]->field[i]->name, field_name))
+				{
+					return data->entry[entry]->field[i]->data;
+				}
 			}
 		}
 	}
