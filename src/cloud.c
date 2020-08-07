@@ -200,7 +200,7 @@ bool omo_retrieve_track_tags(OMO_LIBRARY * lp, const char * id, const char * url
 	char buffer[256];
 	int entry;
 	bool ret = false;
-	int i;
+	int i, j;
 
 	arguments = t3net_create_arguments();
 	if(arguments)
@@ -214,10 +214,13 @@ bool omo_retrieve_track_tags(OMO_LIBRARY * lp, const char * id, const char * url
 			{
 				if(omo_tag_type[i])
 				{
-					track_val = t3net_get_data_entry_field(track_data, 0, convert_tag_name(omo_tag_type[i]));
-					if(track_val)
+					for(j = 0; j < track_data->entries; j++)
 					{
-						omo_set_database_value(lp->entry_database, id, omo_tag_type[i], track_val);
+						track_val = t3net_get_data_entry_field(track_data, j, convert_tag_name(omo_tag_type[i]));
+						if(track_val)
+						{
+							omo_set_database_value(lp->entry_database, id, omo_tag_type[i], track_val);
+						}
 					}
 				}
 			}
