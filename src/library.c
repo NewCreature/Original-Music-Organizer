@@ -456,7 +456,14 @@ bool omo_add_artist_to_library(OMO_LIBRARY * lp, const char * name)
 			if(lp->artist_entry[lp->artist_entry_count])
 			{
 				strcpy(lp->artist_entry[lp->artist_entry_count], name);
-				strcpy(lp->last_artist_name, name);
+				if(strlen(name) < 256)
+				{
+					strcpy(lp->last_artist_name, name);
+				}
+				else
+				{
+					strcpy(lp->last_artist_name, "");
+				}
 				lp->artist_entry_count++;
 				return true;
 			}
@@ -495,7 +502,14 @@ bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name)
 			if(lp->album_entry[lp->album_entry_count])
 			{
 				strcpy(lp->album_entry[lp->album_entry_count], name);
-				strcpy(lp->last_album_name, name);
+				if(strlen(name) < 256)
+				{
+					strcpy(lp->last_album_name, name);
+				}
+				else
+				{
+					strcpy(lp->last_album_name, "");
+				}
 				lp->album_entry_count++;
 				return true;
 			}
