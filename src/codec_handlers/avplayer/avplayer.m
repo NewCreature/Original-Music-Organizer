@@ -97,18 +97,21 @@ static const char * codec_get_tag(void * data, const char * name)
 		}
 		if(i < OMO_MAX_TAG_TYPES)
 		{
-			NSArray *metadata = [asset metadata];
-			for(AVMetadataItem* item in metadata)
+			if(tag_name[i])
 			{
-				NSString *key = [item identifier];
-				NSString *value = [item stringValue];
-				utf8_key = [key UTF8String];
-				utf8_val = [value UTF8String];
-				if(!strcasecmp(utf8_key, avplayer_tag_name[i]))
+				NSArray *metadata = [asset metadata];
+				for(AVMetadataItem* item in metadata)
 				{
-					codec_strcpy(codec_data->tag_buffer, utf8_val, 1024);
-					[pool release];
-					return codec_data->tag_buffer;
+					NSString *key = [item identifier];
+					NSString *value = [item stringValue];
+					utf8_key = [key UTF8String];
+					utf8_val = [value UTF8String];
+					if(utf8_key && !strcasecmp(utf8_key, avplayer_tag_name[i]))
+					{
+						codec_strcpy(codec_data->tag_buffer, utf8_val, 1024);
+						[pool release];
+						return codec_data->tag_buffer;
+					}
 				}
 			}
 		}
