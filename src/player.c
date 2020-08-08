@@ -242,5 +242,9 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 			}
 			pp->queue_pos++;
 		}
+		if(pp->queue_pos >= pp->queue->entry_count)
+		{
+			pp->state = OMO_PLAYER_STATE_STOPPED;
+		}
 	}
 }
