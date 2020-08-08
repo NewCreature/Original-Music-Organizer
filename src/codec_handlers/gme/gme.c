@@ -109,10 +109,15 @@ static void * codec_load_file(const char * fn, const char * subfn)
 			{
 				data->loop = true;
 			}
+			data->volume = 1.0;
+			return data;
 		}
-		data->volume = 1.0;
+		else
+		{
+			free(data);
+		}
 	}
-	return data;
+	return NULL;
 }
 
 static void codec_unload_file(void * data)
