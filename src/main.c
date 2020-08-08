@@ -331,7 +331,7 @@ int main(int argc, char * argv[])
 		{
 			if(app.player->state == OMO_PLAYER_STATE_PLAYING || app.player->state == OMO_PLAYER_STATE_PAUSED)
 			{
-				if(app.player->track->codec_handler->get_position)
+				if(app.player->track && app.player->track->codec_handler->get_position)
 				{
 					sprintf(buf, "%f", app.player->track->codec_handler->get_position(app.player->track->codec_data));
 					al_set_config_value(t3f_config, "Settings", "queue_track_position", buf);
