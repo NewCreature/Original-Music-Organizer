@@ -91,34 +91,25 @@ Long Term Goals
 v0.5.4
 ------
 
+[ ]Look into crash that happens when doing Shuffle All on entire library.
+
+[ ]Investigate random crash inside omo_retrieve_track_tags().
+
+   [ ]Likely a bug in T3NET. Need to ensure T3NET can handle bad data for when
+      the http request doesn't get the expected result.
+
 [ ]Consider setting the track length if the entered fade time is 0.
 
 [ ]Add per-codec handler gain settings. The main player should multiply the gain
    by the per-codec handler value.
 
-   [ ]Not sure if there is a way to identify codec handlers. If there is not, we
-      should add an ID to the codec handler data structure and a way to get that
-      ID programatically.
-
    [ ]We should provide suitable default values for each codec handler.
 
    [ ]We should consider other per-codec handler settings.
 
-[ ]Crash when artist name is too long.
+[X]Crash when artist name is too long.
 
 [ ]Look into missing button graphics on Windows.
-
-[ ]Look into crash when trying to open the file browser under Ubuntu 18.
-
-   [ ]This crash happens on a GTK call. It happens on any Allegro 5 program that
-      was compiled under Ubuntu 12. I'm going to see if the issue is resolved by
-      compiling under Ubuntu 16. If so, I'll just migrate the development
-      environments to Ubuntu 16 and use that from now on.
-
-      [ ]All Allegro 5 programs that use the native dialog add-on's file chooser
-         crash when run under Ubuntu 18. This happens no matter which version
-         of Ubuntu it is compiled under. I'm going to try to see if it might be
-         a static linking issue.
 
 [ ]Look into crash when music is playing. It seems to happen with the DUMBA5
    codec handler.
@@ -131,13 +122,12 @@ v0.5.4
 [ ]See if we can start FluidSynth automatically when we need it instead of
    requiring the user to start it manually.
 
+   [ ]This method worked successfully in Instant Instruments. We'll use that
+      implementation or a variation of it.
+
 [X]Look into queue list showing "Unknown" for title when the artist is unknown.
    We should be able to show the correct title whether or not we know who the
    artist is.
-
-
-v0.5.4
-------
 
 [ ]After tagging a song while Unknown Artist/Album is selected, the song list
    shows all songs, but the selection still shows Unknown. We should probably
