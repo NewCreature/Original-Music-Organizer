@@ -91,7 +91,11 @@ Long Term Goals
 v0.5.4
 ------
 
-[ ]Look into crash that happens when doing Shuffle All on entire library.
+[X]Look into crash that happens when doing Shuffle All on entire library.
+
+[ ]If OMO is closed while a track is playing, that track should resume playing
+   the next time OMO is opened. Currently, the player seems to be in a playing
+   state, but the track is not actually playing.
 
 [ ]Investigate random crash inside omo_retrieve_track_tags().
 
