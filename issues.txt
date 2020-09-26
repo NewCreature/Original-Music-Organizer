@@ -93,6 +93,10 @@ v0.5.4
 
 [X]Look into crash that happens when doing Shuffle All on entire library.
 
+[ ]Fix missing support for dark mode on MacOS.
+
+[ ]Album Artist tags should be in Artist list when available.
+
 [ ]If OMO is closed while a track is playing, that track should resume playing
    the next time OMO is opened. Currently, the player seems to be in a playing
    state, but the track is not actually playing.
