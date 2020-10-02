@@ -33,5 +33,7 @@
 	</array>
 	<key>CFBundleIconFile</key>
 	<string>T3F_APP_ICON</string>
+	<key>NSRequiresAquaSystemAppearance</key>
+	<string>False</string>
 </dict>
 </plist>
