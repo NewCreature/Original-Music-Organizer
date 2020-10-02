@@ -34,7 +34,7 @@ app_clean:
 MACOS_CFLAGS = -I/usr/local/include/binio
 MACOS_PLATFORM_OBJECTS = codec_handlers/avmidiplayer/avmidiplayer.o codec_handlers/avplayer/avplayer.o codec_handlers/midia5/MIDIA5/macos/coremidi.o
 MACOS_PLATFORM_LIBS = -framework AVFoundation -framework AudioUnit -stdlib=libstdc++
-MACOS_DEPEND_LIBS = -larchive -lcurl-static
+MACOS_DEPEND_LIBS = -larchive -lcurl
 #MACOSX_PLATFORM_TARGET =
 
 ###############
