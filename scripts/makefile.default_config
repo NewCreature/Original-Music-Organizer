@@ -9,14 +9,19 @@ ALLEGRO_SRC_ROOT = $(HOME)/T3/Projects/Dev/allegro5
 
 #####################
 # Mac OS X Settings #
-#####################
+###############################################################################
+# Use 'xcode-select -s /Library/Developer/CommandLineTools' or                #
+# 'xcode-select -s /Applications/Xcode.app' to select toolchain. This allows  #
+# us to just use 'gcc' and 'g++' like we would on other Unix systems to build #
+# things. 'MacOSX10.13.sdk' is the last SDK we can use to target i386.        #
+###############################################################################
 MACOS_ARCHITECTURES = -arch i386 -arch x86_64
-MACOS_SYS_ROOT = -isysroot  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+#MACOS_SYS_ROOT =
 MACOS_MIN_VERSION = -mmacos-version-min=10.6
-MACOS_CC = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc
-MACOS_CXX = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++
-MACOS_CONFIG_CFLAGS = -I/usr/local/include
-MACOS_CONFIG_LFLAGS = -L/usr/local/lib
+MACOS_CC = gcc
+MACOS_CXX = g++
+#MACOS_CONFIG_CFLAGS =
+#MACOS_CONFIG_LFLAGS =
 MACOS_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
 MACOS_CONFIG_ALLEGRO_SUFFIX = -static
 #MACOS_CONFIG_DEPEND_LIBS =
