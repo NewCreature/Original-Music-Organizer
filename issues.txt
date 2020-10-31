@@ -4,6 +4,10 @@ OMO Issues
 Long Term Goals
 ---------------
 
+[ ]Investigate crash when track is finished playing and we move to the next
+   track. OMO consistently crashes when a track finishes while
+   listening to the '[ Movements ]' album.
+
 [ ]Add a favorites system. We should be able to set favorite artists, albums,
    and songs and have a way to present those to the user.
 
