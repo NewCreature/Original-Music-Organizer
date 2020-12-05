@@ -106,7 +106,7 @@ static const char * codec_get_tag(void * data, const char * name)
 					NSString *value = [item stringValue];
 					utf8_key = [key UTF8String];
 					utf8_val = [value UTF8String];
-					if(utf8_key && !strcasecmp(utf8_key, avplayer_tag_name[i]))
+					if(utf8_key && utf8_val && !strcasecmp(utf8_key, avplayer_tag_name[i]))
 					{
 						codec_strcpy(codec_data->tag_buffer, utf8_val, 1024);
 						[pool release];
