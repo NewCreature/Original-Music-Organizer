@@ -2,6 +2,7 @@
 #include "instance.h"
 #include "library.h"
 #include "library_helpers.h"
+#include "text_helpers.h"
 
 static OMO_LIBRARY * library = NULL;
 
@@ -227,22 +228,22 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 			artist = omo_get_database_value(lp->entry_database, id, "Artist");
 			if(artist)
 			{
-				strcpy(qp->entry[i]->tags.artist, artist);
+				omo_strcpy(qp->entry[i]->tags.artist, artist, 256);
 			}
 			album = omo_get_database_value(lp->entry_database, id, "Album");
 			if(album)
 			{
-				strcpy(qp->entry[i]->tags.album, album);
+				omo_strcpy(qp->entry[i]->tags.album, album, 256);
 			}
 			title = omo_get_database_value(lp->entry_database, id, "Title");
 			if(title)
 			{
-				strcpy(qp->entry[i]->tags.title, title);
+				omo_strcpy(qp->entry[i]->tags.title, title, 256);
 			}
 			track = omo_get_database_value(lp->entry_database, id, "Track");
 			if(track)
 			{
-				strcpy(qp->entry[i]->tags.track, track);
+				omo_strcpy(qp->entry[i]->tags.track, track, 8);
 			}
 			qp->entry[i]->tags.length = omo_get_library_entry_length(lp, id);
 			qp->length += qp->entry[i]->tags.length;
@@ -311,7 +312,7 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 						tag = codec_handler->get_tag(codec_handler_data, "Artist");
 						if(tag)
 						{
-							strcpy(app->player->queue->entry[i]->tags.artist, tag);
+							omo_strcpy(app->player->queue->entry[i]->tags.artist, tag, 256);
 						}
 					}
 					if(!strlen(app->player->queue->entry[i]->tags.album))
@@ -319,7 +320,7 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 						tag = codec_handler->get_tag(codec_handler_data, "Album");
 						if(tag)
 						{
-							strcpy(app->player->queue->entry[i]->tags.album, tag);
+							omo_strcpy(app->player->queue->entry[i]->tags.album, tag, 256);
 						}
 					}
 					if(!strlen(app->player->queue->entry[i]->tags.title))
@@ -327,7 +328,7 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 						tag = codec_handler->get_tag(codec_handler_data, "Title");
 						if(tag)
 						{
-							strcpy(app->player->queue->entry[i]->tags.title, tag);
+							omo_strcpy(app->player->queue->entry[i]->tags.title, tag, 256);
 						}
 					}
 					if(!strlen(app->player->queue->entry[i]->tags.track))
@@ -335,7 +336,7 @@ static void * get_queue_tags_thread_proc(ALLEGRO_THREAD * thread, void * data)
 						tag = codec_handler->get_tag(codec_handler_data, "Track");
 						if(tag)
 						{
-							strcpy(app->player->queue->entry[i]->tags.track, tag);
+							omo_strcpy(app->player->queue->entry[i]->tags.track, tag, 8);
 						}
 					}
 					if(codec_handler->get_length)

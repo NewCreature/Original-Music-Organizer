@@ -6,6 +6,7 @@
 
 #include "../../defines.h"
 #include "../../constants.h"
+#include "../../text_helpers.h"
 #include "../codec_handler.h"
 
 typedef struct
@@ -53,25 +54,6 @@ static void codec_unload_file(void * data)
 	free(data);
 }
 
-static void codec_strcpy(char * dest, const char * src, int limit)
-{
-	int i;
-
-	for(i = 0; i < strlen(src) && i < limit - 1; i++)
-	{
-		if(src[i] == '\r' || src[i] == '\n')
-		{
-			dest[i] = ' ';
-		}
-		else
-		{
-			dest[i] = src[i];
-		}
-	}
-	dest[i] = 0;
-	dest[limit - 1] = 0;
-}
-
 static const char * codec_get_tag(void * data, const char * name)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -108,7 +90,7 @@ static const char * codec_get_tag(void * data, const char * name)
 					utf8_val = [value UTF8String];
 					if(utf8_key && utf8_val && !strcasecmp(utf8_key, avplayer_tag_name[i]))
 					{
-						codec_strcpy(codec_data->tag_buffer, utf8_val, 1024);
+						omo_strcpy(codec_data->tag_buffer, utf8_val, 1024);
 						[pool release];
 						return codec_data->tag_buffer;
 					}
