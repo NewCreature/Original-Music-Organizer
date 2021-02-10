@@ -1,9 +1,9 @@
 T3F_PLATFORM_NAME = macos
 CC = $(MACOS_CC)
-CFLAGS = $(APP_CFLAGS) $(T3F_CFLAGS) $(MACOS_ARCHITECTURES) $(MACOS_CONFIG_CFLAGS) $(MACOS_SYS_ROOT) $(MACOS_MIN_VERSION) $(APP_CFLAGS) $(MACOS_CFLAGS)
+CFLAGS = $(APP_CFLAGS) $(T3F_CFLAGS) $(MACOS_ARCHITECTURES) $(MACOS_CONFIG_CFLAGS) $(MACOS_SYS_ROOT) $(MACOS_MIN_VERSION) $(APP_CFLAGS) $(MACOS_CFLAGS) -I/usr/local/include
 CXX = $(MACOS_CXX)
 CXXFLAGS = $(CFLAGS)
-LFLAGS = $(MACOS_CONFIG_LFLAGS) $(MACOS_ARCHITECTURES) $(MACOS_SYS_ROOT) $(MACOS_MIN_VERSION)
+LFLAGS = $(MACOS_CONFIG_LFLAGS) $(MACOS_ARCHITECTURES) $(MACOS_SYS_ROOT) $(MACOS_MIN_VERSION) -L/usr/local/lib
 ALLEGRO_SUFFIX = $(MACOS_CONFIG_ALLEGRO_SUFFIX)
 PKG_CONFIG_OPTIONS = $(MACOS_CONFIG_PKG_CONFIG_OPTIONS)
 T3F_PLATFORM_OBJECTS = t3f/menu.o $(MACOS_PLATFORM_OBJECTS)
@@ -28,7 +28,6 @@ T3F_PLATFORM_LIBRARIES =\
 	$(MACOS_CONFIG_DEPEND_LIBS)\
 	$(MACOS_PLATFORM_LIBS)\
 	$(MACOS_DEPEND_LIBS)
-T3F_PLATFORM_TARGET = $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 DEL_COMMAND = rm -f
 DEL_FOLDER_COMMAND = rm -rf
 SED_COMMAND = sed -i ''
@@ -58,7 +57,7 @@ prepare_platform:
 	@iconutil --convert icns temp.iconset -o ../icons/macos_icon.icns
 	@rm -rf temp.iconset
 
-$(APP_PACKAGE_DIR)/$(APP_TITLE).app : $(APP_EXE_NAME) ../icons/macos_icon.icns
+mac_build_bundle : ../icons/macos_icon.icns
 	@$(DEL_FOLDER_COMMAND) $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@mkdir $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@mkdir $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents
@@ -79,6 +78,17 @@ $(APP_PACKAGE_DIR)/$(APP_TITLE).app : $(APP_EXE_NAME) ../icons/macos_icon.icns
 	@sed -i '' "s|T3F_APP_PACKAGE|$(APP_ANDROID_PACKAGE)|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Info.plist
 	@echo Application bundle created!
 
-mac_package: $(APP_PACKAGE_DIR)/$(APP_TITLE).app
+mac_bundle:
+	make clean
+	make MACOS_ARCHITECTURES="-arch i386" APP_EXE_SUFFIX=-i386 MACOS_SDK=MacOSX10.13.sdk
+	make clean
+	make MACOS_ARCHITECTURES="-arch x86_64" APP_EXE_SUFFIX=-x86_64 MACOS_SDK=MacOSX.sdk
+	make clean
+	make MACOS_ARCHITECTURES="-arch arm64" APP_EXE_SUFFIX=-arm64 MACOS_SDK=MacOSX.sdk
+	lipo -create $(APP_EXE_NAME)-i386 $(APP_EXE_NAME)-x86_64 $(APP_EXE_NAME)-arm64 -output $(APP_EXE_NAME)
+	rm $(APP_EXE_NAME)-i386 $(APP_EXE_NAME)-x86_64 $(APP_EXE_NAME)-arm64
+	make mac_build_bundle
+
+mac_package: mac_bundle
 	rm -rf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME)-macos.dmg
 	../macos/create-dmg --volname $(APP_TITLE) --volicon $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Resources/$(APP_TITLE).icns --window-size 400 232 --icon-size 96 --icon "$(APP_TITLE)" 110 100 --app-drop-link 280 100 $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME)-macos.dmg $(APP_PACKAGE_DIR)/$(APP_TITLE).app

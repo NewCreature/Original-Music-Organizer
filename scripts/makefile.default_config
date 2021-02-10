@@ -15,8 +15,13 @@ ALLEGRO_SRC_ROOT = $(HOME)/T3/Projects/Dev/allegro5
 # us to just use 'gcc' and 'g++' like we would on other Unix systems to build #
 # things. 'MacOSX10.13.sdk' is the last SDK we can use to target i386.        #
 ###############################################################################
-MACOS_ARCHITECTURES = -arch i386 -arch x86_64
-#MACOS_SYS_ROOT =
+ifndef MACOS_TOOLCHAIN_ROOT
+  MACOS_TOOLCHAIN_ROOT = /Library/Developer/CommandLineTools/SDKs
+endif
+ifndef MACOS_SDK
+  MACOS_SDK = MacOSX.sdk
+endif
+MACOS_SYS_ROOT = -isysroot $(MACOS_TOOLCHAIN_ROOT)/$(MACOS_SDK)
 MACOS_MIN_VERSION = -mmacos-version-min=10.6
 MACOS_CC = gcc
 MACOS_CXX = g++
