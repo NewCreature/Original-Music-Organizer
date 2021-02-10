@@ -22,9 +22,12 @@ ifndef MACOS_SDK
   MACOS_SDK = MacOSX.sdk
 endif
 MACOS_SYS_ROOT = -isysroot $(MACOS_TOOLCHAIN_ROOT)/$(MACOS_SDK)
-MACOS_MIN_VERSION = -mmacos-version-min=10.6
+#MACOS_MIN_VERSION = -mmacos-version-min=10.6
 MACOS_CC = gcc
 MACOS_CXX = g++
+ifndef MACOS_CXX_STDLIB
+  MACOS_CXX_STDLIB = c++
+endif
 #MACOS_CONFIG_CFLAGS =
 #MACOS_CONFIG_LFLAGS =
 MACOS_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
