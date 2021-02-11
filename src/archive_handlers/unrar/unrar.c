@@ -40,7 +40,7 @@ static int my_system(char * command, const char * log_file)
 		strcpy(final_command, command);
 		if(log_file)
 		{
-			strcat(final_command, "> \"");
+			strcat(final_command, " > \"");
 			strcat(final_command, log_file);
 			strcat(final_command, "\"");
 		}
@@ -226,6 +226,10 @@ static const char * get_file(void * data, int index, char * buffer)
 						{
 							fn_offset = 41;
 						}
+					}
+					else if(version == '6')
+					{
+						fn_offset = 41;
 					}
 				}
 				if(version && line_count - skip_lines == index)
