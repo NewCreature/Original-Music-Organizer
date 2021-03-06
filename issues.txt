@@ -4,6 +4,11 @@ OMO Issues
 Long Term Goals
 ---------------
 
+[ ]GME codec handler position slider is longer than song length when resuming
+   previous state on program load.
+
+[ ]GME fade doesn't work sometimes after seek.
+
 [ ]Investigate crash when track is finished playing and we move to the next
    track. OMO consistently crashes when a track finishes while
    listening to the '[ Movements ]' album.
