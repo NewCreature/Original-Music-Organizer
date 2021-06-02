@@ -103,7 +103,7 @@ void omo_threads_logic(APP_INSTANCE * app)
 	if(app->spawn_cloud_thread && app->library)
 	{
 		app->cloud_thread_done = false;
-		omo_submit_library_tags(app, "http://www.t3-i.com/omo/tag_track.php");
+		omo_submit_library_tags(app, "https://www.t3-i.com/omo/tag_track.php");
 		app->spawn_cloud_thread = false;
 	}
 	if(app->spawn_queue_thread)

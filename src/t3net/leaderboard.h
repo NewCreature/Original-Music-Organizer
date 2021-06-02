@@ -15,6 +15,7 @@ typedef struct
 typedef struct
 {
 
+	int curl_mode;
 	char url[1024];
 	char game[64];
 	char version[64];
@@ -28,12 +29,12 @@ typedef struct
 } T3NET_LEADERBOARD;
 
 /* leaderboard download functions */
-T3NET_LEADERBOARD * t3net_get_leaderboard(char * url, char * game, char * version, char * mode, char * option, int entries, int ascend);
+T3NET_LEADERBOARD * t3net_get_leaderboard(int curl_mode, char * url, char * game, char * version, char * mode, char * option, int entries, int ascend);
 int t3net_update_leaderboard(T3NET_LEADERBOARD * lp);
 void t3net_clear_leaderboard(T3NET_LEADERBOARD * lp);
 void t3net_destroy_leaderboard(T3NET_LEADERBOARD * lp);
 
 /* leaderboard upload functions */
-int t3net_upload_score(char * url, char * game, char * version, char * mode, char * option, char * name, unsigned long score, char * extra);
+int t3net_upload_score(int curl_mode, char * url, char * game, char * version, char * mode, char * option, char * name, unsigned long score, char * extra);
 
 #endif

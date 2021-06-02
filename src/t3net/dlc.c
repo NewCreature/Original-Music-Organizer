@@ -4,7 +4,7 @@
 #include "t3net.h"
 #include "dlc.h"
 
-T3NET_DLC_LIST * t3net_get_dlc_list(const char * url, const char * game, int type)
+T3NET_DLC_LIST * t3net_get_dlc_list(int curl_mode, const char * url, const char * game, int type)
 {
 	T3NET_DLC_LIST * lp = NULL;
 	T3NET_ARGUMENTS * args = NULL;
@@ -35,7 +35,7 @@ T3NET_DLC_LIST * t3net_get_dlc_list(const char * url, const char * game, int typ
 	{
 		goto fail_out;
 	}
-	data = t3net_get_data(url, args);
+	data = t3net_get_data(curl_mode, url, args);
 	if(!data)
 	{
 		goto fail_out;
@@ -146,42 +146,72 @@ void t3net_set_download_callback(void (*callback)())
 	t3net_download_callback = callback;
 }
 
-static size_t t3net_file_write_data(void *ptr, size_t size, size_t nmemb, FILE *stream)
-{
-	size_t written;
-	written = fwrite(ptr, size, nmemb, stream);
-	if(t3net_download_callback)
+#ifndef T3NET_NO_LIBCURL
+	static size_t t3net_file_write_data(void *ptr, size_t size, size_t nmemb, FILE *stream)
 	{
-		t3net_download_callback();
-	}
-	return written;
-}
-
-int t3net_download_file(const char * url, const char * fn)
-{
-	CURL *curl;
-	FILE * fp;
-	CURLcode res;
-	curl = curl_easy_init();
-    if(curl)
-    {
-		fp = fopen(fn, "wb");
-		if(fp)
+		size_t written;
+		written = fwrite(ptr, size, nmemb, stream);
+		if(t3net_download_callback)
 		{
-			curl_easy_setopt(curl, CURLOPT_URL, url);
-			curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION,   1); // follow redirects
-			curl_easy_setopt(curl, CURLOPT_AUTOREFERER,      1); // set the Referer: field in requests where it follows a Location: redirect.
-			curl_easy_setopt(curl, CURLOPT_MAXREDIRS,        20);
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, t3net_file_write_data);
-			curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-			res = curl_easy_perform(curl);
-			curl_easy_cleanup(curl);
-			fclose(fp);
-			if(res == 0)
+			t3net_download_callback();
+		}
+		return written;
+	}
+
+	int t3net_download_file_libcurl(const char * url, const char * fn)
+	{
+		CURL *curl;
+		FILE * fp;
+		CURLcode res;
+		curl = curl_easy_init();
+		if(curl)
+		{
+			fp = fopen(fn, "wb");
+			if(fp)
 			{
-				return 1;
+				curl_easy_setopt(curl, CURLOPT_URL, url);
+				curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION,   1); // follow redirects
+				curl_easy_setopt(curl, CURLOPT_AUTOREFERER,      1); // set the Referer: field in requests where it follows a Location: redirect.
+				curl_easy_setopt(curl, CURLOPT_MAXREDIRS,        20);
+				curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, t3net_file_write_data);
+				curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+				res = curl_easy_perform(curl);
+				curl_easy_cleanup(curl);
+				fclose(fp);
+				if(res == 0)
+				{
+					return 1;
+				}
 			}
 		}
-    }
+		return 0;
+	}
+#endif
+
+int t3net_download_file(int curl_mode, const char * url, const char * fn)
+{
+	char curl_command[1024] = {0};
+	char * final_url = NULL;
+
+	if(curl_mode == T3NET_CURL_LIBCURL)
+	{
+		#ifndef T3NET_NO_LIBCURL
+			return t3net_download_file_libcurl(url, fn);
+		#endif
+		return 0;
+	}
+	else
+	{
+		final_url = t3net_escape(url);
+		if(!final_url)
+		{
+			return 0;
+		}
+		sprintf(curl_command, "%s --connect-timeout %d \"%s\" --output \"%s\"", t3net_get_curl_command(), T3NET_TIMEOUT_TIME, final_url, fn);
+		printf("command: %s\n", curl_command);
+		system(curl_command);
+		free(final_url);
+		return 1;
+	}
 	return 0;
 }

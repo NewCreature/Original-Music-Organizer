@@ -63,7 +63,7 @@ static void open_tags_dialog(void * data, const char * fullfn)
 	{
 		if(omo_backup_entry_tags(app->library, app->ui->tags_entry))
 		{
-			omo_retrieve_track_tags(app->library, app->ui->tags_entry, "http://www.t3-i.com/omo/get_track_tags.php");
+			omo_retrieve_track_tags(app->library, app->ui->tags_entry, "https://www.t3-i.com/omo/get_track_tags.php");
 		}
 		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 		{
@@ -97,7 +97,7 @@ static void open_split_track_dialog(void * data, const char * basefn, const char
 		{
 			if(omo_backup_entry_tags(app->library, base_id))
 			{
-				omo_retrieve_track_tags(app->library, base_id, "http://www.t3-i.com/omo/get_track_tags.php");
+				omo_retrieve_track_tags(app->library, base_id, "https://www.t3-i.com/omo/get_track_tags.php");
 			}
 			app->ui->split_track_fn = basefn;
 			val2 = omo_get_database_value(app->library->entry_database, base_id, "Split Track Info");
@@ -647,7 +647,7 @@ int omo_menu_library_retrieve_tags(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	omo_retrieve_library_tags(app, "http://www.t3-i.com/omo/get_track_tags.php");
+	omo_retrieve_library_tags(app, "https://www.t3-i.com/omo/get_track_tags.php");
 
 	return 1;
 }

@@ -88,7 +88,7 @@ bool omo_get_tagger_key(const char * name)
 		/* copy track info string to entry database first, before breaking up the
 		   track list to put into the file database */
 		t3net_add_argument(key_arguments, "name", name);
-		key_data = t3net_get_data("http://www.t3-i.com/omo/get_tagger_key.php", key_arguments);
+		key_data = t3net_get_data(T3NET_CURL_DEFAULT, "https://www.t3-i.com/omo/get_tagger_key.php", key_arguments);
 		if(key_data)
 		{
 			key_val = t3net_get_data_entry_field(key_data, 0, "tagger_key");
@@ -168,7 +168,7 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 					t3net_add_argument(arguments, convert_tag_name("Detected Length"), val);
 				}
 				omo_unload_track(track);
-				submit_data = t3net_get_data(url, arguments);
+				submit_data = t3net_get_data(T3NET_CURL_DEFAULT, url, arguments);
 				if(submit_data)
 				{
 					submit_error = t3net_get_error(submit_data);
@@ -206,7 +206,7 @@ bool omo_retrieve_track_tags(OMO_LIBRARY * lp, const char * id, const char * url
 	if(arguments)
 	{
 		t3net_add_argument(arguments, "track_id", id);
-		track_data = t3net_get_data(url, arguments);
+		track_data = t3net_get_data(T3NET_CURL_DEFAULT, url, arguments);
 		t3net_destroy_arguments(arguments);
 		if(track_data)
 		{

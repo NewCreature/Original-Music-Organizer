@@ -1,5 +1,6 @@
 #include "t3f/t3f.h"
 #include "t3f/file_utils.h"
+#include "t3net/t3net.h"
 #include "instance.h"
 #include "main.h"
 #include "events.h"
@@ -160,6 +161,8 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		return false;
 	}
 	t3f_set_event_handler(omo_event_handler);
+
+	t3net_setup(NULL, al_path_cstr(t3f_temp_path, '/'));
 
 	if(!t3gui_init())
 	{
