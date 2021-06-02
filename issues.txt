@@ -102,7 +102,13 @@ v0.5.4
 
 [X]Look into crash that happens when doing Shuffle All on entire library.
 
-[ ]Fix missing support for dark mode on MacOS.
+[X]Fix missing support for dark mode on MacOS.
+
+[ ]Fix crash when tagging tracks. Probably a bug in the new T3Net
+   implementation.
+
+   [ ]Reproduce by queueing T.M.N.T. 3 and pressing 'T' on each track until it
+      crashes.
 
 [ ]Album Artist tags should be in Artist list when available.
 
