@@ -104,6 +104,9 @@ v0.5.4
 
 [X]Fix missing support for dark mode on MacOS.
 
+[ ]Update queue length if Detected Length tag was updated through the Tag Track
+   dialog.
+
 [ ]Fix crash when tagging tracks. Probably a bug in the new T3Net
    implementation.
 
