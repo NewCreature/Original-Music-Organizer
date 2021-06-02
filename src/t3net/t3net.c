@@ -37,7 +37,7 @@ void t3net_strcpy(char * dest, const char * src, int size)
 char * t3net_load_file(const char * fn)
 {
 	char * data = NULL;
-	FILE * fp;
+	FILE * fp = NULL;
 	int size = 0;
 
 	fp = fopen(fn, "rb");
@@ -48,6 +48,7 @@ char * t3net_load_file(const char * fn)
 	fseek(fp, 0, SEEK_END);
 	size = ftell(fp);
 	fclose(fp);
+	fp = NULL;
 
 	data = malloc(size);
 	if(!data)
@@ -873,7 +874,7 @@ const char * t3net_get_data_entry_field(T3NET_DATA * data, int entry, const char
 	{
 		for(i = 0; i < data->entry[entry]->fields; i++)
 		{
-			if(!strcmp(data->entry[entry]->field[i]->name, field_name))
+			if(data->entry[entry]->field[i]->name && !strcmp(data->entry[entry]->field[i]->name, field_name))
 			{
 				return data->entry[entry]->field[i]->data;
 			}
