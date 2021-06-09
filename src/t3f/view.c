@@ -46,7 +46,18 @@ static void t3f_get_view_transformation(T3F_VIEW * view)
 {
 	double view_ratio, virtual_display_ratio;
 
-	if(view->flags & T3F_FORCE_ASPECT)
+	if(view->flags & T3F_NO_SCALE)
+	{
+		view->translate_x = view->offset_x;
+		view->translate_y = view->offset_y;
+		view->scale_x = 1.0;
+		view->scale_y = 1.0;
+		view->left = 0;
+		view->top = 0;
+		view->bottom = view->height;
+		view->right = view->width;
+	}
+	else if(view->flags & T3F_FORCE_ASPECT)
 	{
 		view_ratio = view->height / view->width;
 		virtual_display_ratio = (float)view->virtual_height / (float)view->virtual_width;
@@ -99,17 +110,6 @@ static void t3f_get_view_transformation(T3F_VIEW * view)
 			view->bottom = view->virtual_height;
 			view->right = view->virtual_width;
 		}
-	}
-	else if(view->flags & T3F_NO_SCALE)
-	{
-		view->translate_x = view->offset_x;
-		view->translate_y = view->offset_y;
-		view->scale_x = 1.0;
-		view->scale_y = 1.0;
-		view->left = 0;
-		view->top = 0;
-		view->bottom = view->height;
-		view->right = view->width;
 	}
 	else
 	{

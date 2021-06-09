@@ -15,7 +15,7 @@ static float allegro_get_element_width(T3F_GUI_ELEMENT * ep)
 	{
 		case T3F_GUI_ELEMENT_TEXT:
 		{
-			return al_get_text_width(*((ALLEGRO_FONT **)ep->resource), ep->data);
+			return t3f_get_text_width(*((T3F_FONT **)ep->resource), ep->data);
 		}
 		case T3F_GUI_ELEMENT_IMAGE:
 		{
@@ -31,7 +31,7 @@ static float allegro_get_element_height(T3F_GUI_ELEMENT * ep)
 	{
 		case T3F_GUI_ELEMENT_TEXT:
 		{
-			return al_get_font_line_height(*((ALLEGRO_FONT **)ep->resource));
+			return t3f_get_font_line_height(*((T3F_FONT **)ep->resource));
 		}
 		case T3F_GUI_ELEMENT_IMAGE:
 		{
@@ -44,7 +44,7 @@ static float allegro_get_element_height(T3F_GUI_ELEMENT * ep)
 static void allegro_render_element(T3F_GUI * pp, int i, bool hover)
 {
 	ALLEGRO_BITMAP * bitmap = NULL;
-	ALLEGRO_FONT * font = NULL;
+	T3F_FONT * font = NULL;
 	ALLEGRO_COLOR color;
 	int sx, sy;
 
@@ -72,20 +72,20 @@ static void allegro_render_element(T3F_GUI * pp, int i, bool hover)
 	{
 		case T3F_GUI_ELEMENT_TEXT:
 		{
-			font = *((ALLEGRO_FONT **)pp->element[i].resource);
+			font = *((T3F_FONT **)pp->element[i].resource);
 			if(pp->element[i].flags & T3F_GUI_ELEMENT_SHADOW)
 			{
 				if(!(pp->element[i].flags & T3F_GUI_ELEMENT_AUTOHIDE) || t3f_gui_check_hover_y(pp, i, t3f_gui_hover_y))
 				{
 					if(pp->element[i].flags & T3F_GUI_ELEMENT_CENTRE)
 					{
-						al_draw_text(font, al_map_rgba_f(0.0, 0.0, 0.0, 0.5), pp->ox + pp->element[i].ox + pp->element[i].sx, pp->oy + pp->element[i].oy + pp->element[i].sy, ALLEGRO_ALIGN_CENTRE, (char *)pp->element[i].data);
-						al_draw_text(font, color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, ALLEGRO_ALIGN_CENTRE, (char *)pp->element[i].data);
+						t3f_draw_text(font, al_map_rgba_f(0.0, 0.0, 0.0, 0.5), pp->ox + pp->element[i].ox + pp->element[i].sx, pp->oy + pp->element[i].oy + pp->element[i].sy, 0, ALLEGRO_ALIGN_CENTRE, (char *)pp->element[i].data);
+						t3f_draw_text(font, color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, 0, ALLEGRO_ALIGN_CENTRE, (char *)pp->element[i].data);
 					}
 					else
 					{
-						al_draw_text(font, al_map_rgba_f(0.0, 0.0, 0.0, 0.5), pp->ox + pp->element[i].ox + pp->element[i].sx, pp->oy + pp->element[i].oy + pp->element[i].sy, 0, (char *)pp->element[i].data);
-						al_draw_text(font, color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, 0, (char *)pp->element[i].data);
+						t3f_draw_text(font, al_map_rgba_f(0.0, 0.0, 0.0, 0.5), pp->ox + pp->element[i].ox + pp->element[i].sx, pp->oy + pp->element[i].oy + pp->element[i].sy, 0, 0, (char *)pp->element[i].data);
+						t3f_draw_text(font, color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, 0, 0, (char *)pp->element[i].data);
 					}
 				}
 			}
@@ -95,11 +95,11 @@ static void allegro_render_element(T3F_GUI * pp, int i, bool hover)
 				{
 					if(pp->element[i].flags & T3F_GUI_ELEMENT_CENTRE)
 					{
-						al_draw_text(font, color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, ALLEGRO_ALIGN_CENTRE, (char *)pp->element[i].data);
+						t3f_draw_text(font, color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, 0, ALLEGRO_ALIGN_CENTRE, (char *)pp->element[i].data);
 					}
 					else
 					{
-						al_draw_text(font, color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, 0, (char *)pp->element[i].data);
+						t3f_draw_text(font, color, pp->ox + pp->element[i].ox + sx, pp->oy + pp->element[i].oy + sy, 0, 0, (char *)pp->element[i].data);
 					}
 				}
 			}
@@ -199,7 +199,7 @@ void t3f_destroy_gui(T3F_GUI * pp)
 			{
 				case T3F_GUI_ELEMENT_TEXT:
 				{
-					al_free(pp->element[i].data);
+					al_free(pp->element[i].allocated_data);
 					break;
 				}
 				case T3F_GUI_ELEMENT_IMAGE:
@@ -242,15 +242,16 @@ int t3f_add_gui_image_element(T3F_GUI * pp, int (*proc)(void *, int, void *), vo
 	return 1;
 }
 
-int t3f_add_gui_text_element(T3F_GUI * pp, int (*proc)(void *, int, void *), char * text, void ** fp, int ox, int oy, ALLEGRO_COLOR color, int flags)
+int t3f_add_gui_text_element(T3F_GUI * pp, int (*proc)(void *, int, void *), const char * text, void ** fp, int ox, int oy, ALLEGRO_COLOR color, int flags)
 {
 	memset(&pp->element[pp->elements], 0, sizeof(T3F_GUI_ELEMENT));
 	pp->element[pp->elements].type = T3F_GUI_ELEMENT_TEXT;
 	pp->element[pp->elements].proc = proc;
 	if(flags & T3F_GUI_ELEMENT_COPY)
 	{
-		pp->element[pp->elements].data = al_malloc(strlen(text) + 1);
-		memcpy(pp->element[pp->elements].data, text, strlen(text) + 1);
+		pp->element[pp->elements].allocated_data = al_malloc(strlen(text) + 1);
+		memcpy(pp->element[pp->elements].allocated_data, text, strlen(text) + 1);
+		pp->element[pp->elements].data = pp->element[pp->elements].allocated_data;
 	}
 	else
 	{

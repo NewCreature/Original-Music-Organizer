@@ -36,9 +36,9 @@ OMO_THEME * omo_load_theme(const char * fn, int mode, int font_size)
 					if(val)
 					{
 						al_set_path_filename(path, val);
-						if(!t3f_load_resource((void **)(&tp->bitmap[i]), T3F_RESOURCE_TYPE_BITMAP, al_path_cstr(path, '/'), 0, 0, 0))
+						if(!t3f_load_resource((void **)(&tp->bitmap[i]), t3f_bitmap_resource_handler_proc, al_path_cstr(path, '/'), 0, 0, 0))
 						{
-							if(!t3f_load_resource((void **)(&tp->bitmap[i]), T3F_RESOURCE_TYPE_BITMAP, val, 0, 0, 0))
+							if(!t3f_load_resource((void **)(&tp->bitmap[i]), t3f_bitmap_resource_handler_proc, val, 0, 0, 0))
 							{
 								goto fail;
 							}

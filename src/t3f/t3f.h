@@ -11,6 +11,7 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_color.h>
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 #ifndef ALLEGRO_ANDROID
@@ -19,19 +20,20 @@
 #include <stdio.h>
 #include <math.h>
 
-#define T3F_USE_KEYBOARD    1
-#define T3F_USE_MOUSE       2
-#define T3F_USE_JOYSTICK    4
-#define T3F_USE_SOUND       8
-#define T3F_USE_FULLSCREEN 16
-#define T3F_RESIZABLE      32
-#define T3F_FORCE_ASPECT   64
-#define T3F_NO_DISPLAY    128
-#define T3F_USE_TOUCH     256
-#define T3F_USE_OPENGL    512
-#define T3F_FILL_SCREEN  1024
-#define T3F_USE_MENU     2048
-#define T3F_NO_SCALE     4096
+#define T3F_USE_KEYBOARD          1
+#define T3F_USE_MOUSE             2
+#define T3F_USE_JOYSTICK          4
+#define T3F_USE_SOUND             8
+#define T3F_USE_FULLSCREEN       16
+#define T3F_RESIZABLE            32
+#define T3F_FORCE_ASPECT         64
+#define T3F_NO_DISPLAY          128
+#define T3F_USE_TOUCH           256
+#define T3F_USE_OPENGL          512
+#define T3F_FILL_SCREEN        1024
+#define T3F_USE_MENU           2048
+#define T3F_NO_SCALE           4096
+#define T3F_USE_FIXED_PIPELINE 8192
 #define T3F_DEFAULT (T3F_USE_KEYBOARD | T3F_USE_MOUSE | T3F_USE_JOYSTICK | T3F_USE_TOUCH | T3F_USE_SOUND | T3F_FORCE_ASPECT)
 
 #define T3F_MAX_OPTIONS                 64

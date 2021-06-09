@@ -16,6 +16,7 @@ T3F_PLATFORM_LIBRARIES =\
 	`pkg-config $(PKG_CONFIG_OPTIONS) allegro_font$(ALLEGRO_SUFFIX)-5`\
 	`pkg-config $(PKG_CONFIG_OPTIONS) allegro_ttf$(ALLEGRO_SUFFIX)-5`\
 	`pkg-config $(PKG_CONFIG_OPTIONS) allegro_primitives$(ALLEGRO_SUFFIX)-5`\
+	`pkg-config $(PKG_CONFIG_OPTIONS) allegro_color$(ALLEGRO_SUFFIX)-5`\
 	`pkg-config $(PKG_CONFIG_OPTIONS) allegro_memfile$(ALLEGRO_SUFFIX)-5`\
 	`pkg-config $(PKG_CONFIG_OPTIONS) allegro_dialog$(ALLEGRO_SUFFIX)-5`\
 	`pkg-config $(PKG_CONFIG_OPTIONS) allegro_main$(ALLEGRO_SUFFIX)-5`\
@@ -58,7 +59,7 @@ prepare_platform:
 	@iconutil --convert icns temp.iconset -o ../icons/macos_icon.icns
 	@rm -rf temp.iconset
 
-mac_build_bundle : ../icons/macos_icon.icns
+mac_bundle : ../icons/macos_icon.icns
 	@$(DEL_FOLDER_COMMAND) $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@mkdir $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@mkdir $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents
@@ -79,17 +80,17 @@ mac_build_bundle : ../icons/macos_icon.icns
 	@sed -i '' "s|T3F_APP_PACKAGE|$(APP_ANDROID_PACKAGE)|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Info.plist
 	@echo Application bundle created!
 
-mac_bundle:
+mac_universal_bundle:
 	make clean
-	make MACOS_ARCHITECTURES="-arch i386" APP_EXE_SUFFIX=-i386 MACOS_SDK=MacOSX10.13.sdk MACOS_CXX_STDLIB=stdc++
+	make MACOS_ARCHITECTURES="-arch i386" APP_EXE_SUFFIX=-i386 MACOS_SDK=MacOSX10.13.sdk MACOS_CXX_STDLIB=stdc++ MACOS_MIN_VERSION=-mmacos-version-min=10.6
 	make clean
-	make MACOS_ARCHITECTURES="-arch x86_64" APP_EXE_SUFFIX=-x86_64 MACOS_SDK=MacOSX.sdk
+	make MACOS_ARCHITECTURES="-arch x86_64" APP_EXE_SUFFIX=-x86_64 MACOS_SDK=MacOSX10.13.sdk MACOS_CXX_STDLIB=stdc++ MACOS_MIN_VERSION=-mmacos-version-min=10.6
 	make clean
-	make MACOS_ARCHITECTURES="-arch arm64" APP_EXE_SUFFIX=-arm64 MACOS_SDK=MacOSX.sdk
+	make MACOS_ARCHITECTURES="-arch arm64" APP_EXE_SUFFIX=-arm64 MACOS_SDK=MacOSX.sdk MACOS_MIN_VERSION=-mmacos-version-min=11.0
 	lipo -create $(APP_EXE_NAME)-i386 $(APP_EXE_NAME)-x86_64 $(APP_EXE_NAME)-arm64 -output $(APP_EXE_NAME)
 	rm $(APP_EXE_NAME)-i386 $(APP_EXE_NAME)-x86_64 $(APP_EXE_NAME)-arm64
 	make mac_build_bundle
 
-mac_package: mac_bundle
+mac_package: mac_universal_bundle
 	rm -rf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME)-macos.dmg
 	../macos/create-dmg --volname $(APP_TITLE) --volicon $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents/Resources/$(APP_TITLE).icns --window-size 400 232 --icon-size 96 --icon "$(APP_TITLE)" 110 100 --app-drop-link 280 100 $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME)-macos.dmg $(APP_PACKAGE_DIR)/$(APP_TITLE).app

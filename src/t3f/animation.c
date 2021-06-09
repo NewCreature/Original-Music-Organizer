@@ -137,7 +137,7 @@ T3F_ANIMATION * t3f_load_animation_f(ALLEGRO_FILE * fp, const char * fn)
 				ap->bitmaps->count = al_fread16le(fp);
 				for(i = 0; i < ap->bitmaps->count; i++)
 				{
-					ap->bitmaps->bitmap[i] = t3f_load_resource_f((void **)(&ap->bitmaps->bitmap[i]), T3F_RESOURCE_TYPE_BITMAP, fp, fn, 1, 0);
+					ap->bitmaps->bitmap[i] = t3f_load_resource_f((void **)(&ap->bitmaps->bitmap[i]), t3f_bitmap_resource_handler_proc, fp, fn, 1, 0);
 				}
 				ap->frames = al_fread16le(fp);
 				for(i = 0; i < ap->frames; i++)
@@ -166,7 +166,7 @@ T3F_ANIMATION * t3f_load_animation_f(ALLEGRO_FILE * fp, const char * fn)
 				for(i = 0; i < ap->bitmaps->count; i++)
 				{
 					fpos = al_ftell(fp);
-					ap->bitmaps->bitmap[i] = t3f_load_resource_f((void **)(&ap->bitmaps->bitmap[i]), T3F_RESOURCE_TYPE_BITMAP, fp, fn, 0, 0);
+					ap->bitmaps->bitmap[i] = t3f_load_resource_f((void **)(&ap->bitmaps->bitmap[i]), t3f_bitmap_resource_handler_proc, fp, fn, 0, 0);
 					if(!ap->bitmaps->bitmap[i])
 					{
 						al_fseek(fp, fpos, ALLEGRO_SEEK_SET);
@@ -176,15 +176,13 @@ T3F_ANIMATION * t3f_load_animation_f(ALLEGRO_FILE * fp, const char * fn)
 						al_restore_state(&old_state);
 						if(bp)
 						{
-							ap->bitmaps->bitmap[i] = t3f_squeeze_bitmap(bp, NULL, NULL);
-							al_destroy_bitmap(bp);
+							ap->bitmaps->bitmap[i] = bp;
+							t3f_squeeze_bitmap(&ap->bitmaps->bitmap[i], NULL, NULL);
 						}
 					}
 					else if(al_get_bitmap_flags(ap->bitmaps->bitmap[i]) & ALLEGRO_MEMORY_BITMAP)
 					{
-						bp = t3f_squeeze_bitmap(ap->bitmaps->bitmap[i], NULL, NULL);
-						al_destroy_bitmap(ap->bitmaps->bitmap[i]);
-						ap->bitmaps->bitmap[i] = bp;
+						t3f_squeeze_bitmap(&ap->bitmaps->bitmap[i], NULL, NULL);
 					}
 					if(!ap->bitmaps->bitmap[i])
 					{
@@ -242,7 +240,7 @@ T3F_ANIMATION * t3f_load_animation_from_bitmap(const char * fn)
 	{
 		return NULL;
 	}
-	ap->bitmaps->bitmap[0] = t3f_load_resource((void **)(&(ap->bitmaps->bitmap[0])), T3F_RESOURCE_TYPE_BITMAP, fn, 0, 0, 0);
+	ap->bitmaps->bitmap[0] = t3f_load_resource((void **)(&(ap->bitmaps->bitmap[0])), t3f_bitmap_resource_handler_proc, fn, 0, 0, 0);
 	if(!ap->bitmaps->bitmap[0])
 	{
 		t3f_destroy_animation(ap);

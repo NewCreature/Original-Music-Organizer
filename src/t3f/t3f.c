@@ -637,7 +637,7 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 {
 	const char * cvalue = NULL;
 	const char * cvalue2 = NULL;
-	int dflags = 0;
+	int dflags = ALLEGRO_PROGRAMMABLE_PIPELINE;
 	int dx, dy, doy;
 	int dw, dh;
 	int ret = 1;
@@ -650,6 +650,10 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 		bool no_windowed = false;
 	#endif
 
+	if(flags & T3F_USE_FIXED_PIPELINE)
+	{
+		dflags = 0;
+	}
 	/* disable fsw support if the config file says to */
 	cvalue = al_get_config_value(t3f_config, "T3F", "real_fullscreen");
 	if(cvalue && !strcmp(cvalue, "true"))
@@ -680,6 +684,10 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 			t3f_flags |= T3F_USE_MENU;
 		}
 
+		if(flags & T3F_NO_SCALE)
+		{
+			t3f_flags |= T3F_NO_SCALE;
+		}
 		/* if we are using console (for a server, for instance) don't create display */
 		if(w > h)
 		{
@@ -801,7 +809,10 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 		t3f_display = al_create_display(dw, dh);
 		if(!t3f_display)
 		{
-			dflags = 0;
+			if(!(flags & T3F_USE_FIXED_PIPELINE))
+			{
+				dflags = ALLEGRO_PROGRAMMABLE_PIPELINE;
+			}
 			if(flags & T3F_RESIZABLE)
 			{
 				dflags |= ALLEGRO_RESIZABLE;

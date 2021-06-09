@@ -62,11 +62,11 @@ android_package_unsigned:
 windows_package:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts windows_zip
 
+mac_universal_bundle:
+	$(MAKE) -f ../scripts/makefile.macos -I ../scripts mac_universal_bundle
+
 mac_bundle:
 	$(MAKE) -f ../scripts/makefile.macos -I ../scripts mac_bundle
-
-mac_build_bundle:
-	$(MAKE) -f ../scripts/makefile.macos -I ../scripts mac_build_bundle
 
 mac_package:
 	$(MAKE) -f ../scripts/makefile.macos -I ../scripts mac_package
