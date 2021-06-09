@@ -50,7 +50,7 @@ char * t3net_load_file(const char * fn)
 	fclose(fp);
 	fp = NULL;
 
-	data = malloc(size);
+	data = malloc(size + 1);
 	if(!data)
 	{
 		goto fail;
@@ -62,6 +62,7 @@ char * t3net_load_file(const char * fn)
 	}
 	fread(data, 1, size, fp);
 	fclose(fp);
+	data[size] = 0;
 	return data;
 
 	fail:
