@@ -104,6 +104,10 @@ v0.5.4
 
 [X]Fix missing support for dark mode on MacOS.
 
+[ ]Fix queue total time adding length of track immediately after editing. The
+   old length should be subtracted before we add the new length if the length
+   was edited.
+
 [ ]Update queue length if Detected Length tag was updated through the Tag Track
    dialog.
 
