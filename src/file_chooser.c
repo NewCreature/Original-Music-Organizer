@@ -133,6 +133,8 @@ void omo_file_chooser_logic(void * data)
 						omo_sort_queue(app->player->queue, app->library, 0, 0, app->player->queue->entry_count);
 						app->spawn_queue_thread = true;
 						app->player->queue_pos = 0;
+						app->ui->ui_queue_list_element->d1 = 0;
+						app->ui->ui_queue_list_element->d2 = 0;
 						app->player->state = OMO_PLAYER_STATE_PLAYING;
 					}
 					al_start_timer(t3f_timer);
@@ -183,6 +185,8 @@ void omo_file_chooser_logic(void * data)
 							{
 								omo_sort_queue(app->player->queue, app->library, 0, 0, app->player->queue->entry_count);
 								app->player->queue_pos = 0;
+								app->ui->ui_queue_list_element->d1 = 0;
+								app->ui->ui_queue_list_element->d2 = 0;
 								app->player->state = OMO_PLAYER_STATE_PLAYING;
 								app->spawn_queue_thread = true;
 							}
