@@ -144,7 +144,7 @@ v0.5.4
 [ ]Look into crash when music is playing. It seems to happen with the DUMBA5
    codec handler.
 
-[ ]Look into crash when creating a small queue while scrolled down far in a
+[X]Look into crash when creating a small queue while scrolled down far in a
    larger queue. I tried loading up a queue of about 50 songs while a 52000+
    queue was open and it crashed two different times. Once, it waited until I
    clicked the scroll bar to crash.
