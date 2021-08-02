@@ -164,6 +164,9 @@ v0.5.4
    revert to All Artists/Albums any time we regenerate the lists to prevent this
    from happening.
 
+[ ]When Detected Length tag is updated after a track ends unexpectedly early,
+   the time displayed in the queue needs to be updated.
+
 
 v0.5.3
 ------
