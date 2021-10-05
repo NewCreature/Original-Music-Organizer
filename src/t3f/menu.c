@@ -86,6 +86,9 @@ bool t3f_attach_menu(ALLEGRO_MENU * mp)
 {
   al_register_event_source(t3f_queue, al_get_default_menu_event_source());
   al_set_display_menu(t3f_display, mp);
+  t3f_adjust_view(t3f_default_view, 0, 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), t3f_virtual_display_width / 2, t3f_virtual_display_height / 2, t3f_flags);
+	t3f_default_view->need_update = true;
+	t3f_select_view(t3f_default_view);
   return true;
 }
 

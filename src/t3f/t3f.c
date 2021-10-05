@@ -921,7 +921,6 @@ void t3f_exit(void)
 	al_set_config_value(t3f_config, "T3F", "window_pos_x", buf);
 	sprintf(buf, "%d", y);
 	al_set_config_value(t3f_config, "T3F", "window_pos_y", buf);
-	t3f_save_config();
 	t3f_quit = true;
 }
 
@@ -1435,6 +1434,7 @@ void t3f_run(void)
 
 void t3f_finish(void)
 {
+	t3f_save_config();
 	if(t3f_timer)
 	{
 		al_destroy_timer(t3f_timer);
