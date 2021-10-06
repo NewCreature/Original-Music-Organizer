@@ -64,7 +64,10 @@ static void open_tags_dialog(void * data, const char * fullfn)
 	{
 		if(omo_backup_entry_tags(app->library, app->ui->tags_entry, true))
 		{
-			omo_retrieve_track_tags(app->library, app->ui->tags_entry, "https://www.t3-i.com/omo/get_track_tags.php");
+			if(app->prefetch_tags)
+			{
+				omo_retrieve_track_tags(app->library, app->ui->tags_entry, "https://www.t3-i.com/omo/get_track_tags.php");
+			}
 		}
 		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 		{
@@ -98,7 +101,10 @@ static void open_multi_tags_dialog(void * data)
 			{
 				if(omo_backup_entry_tags(app->library, app->ui->tags_entry, first))
 				{
-					omo_retrieve_track_tags(app->library, app->ui->tags_entry, "https://www.t3-i.com/omo/get_track_tags.php");
+					if(app->prefetch_tags)
+					{
+						omo_retrieve_track_tags(app->library, app->ui->tags_entry, "https://www.t3-i.com/omo/get_track_tags.php");
+					}
 				}
 				first = false;
 				for(i = 0; i < OMO_MAX_TAG_TYPES; i++)

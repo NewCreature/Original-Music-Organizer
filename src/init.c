@@ -236,6 +236,15 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	{
 		t3f_attach_menu(app->menu[OMO_MENU_MAIN]);
 	}
+	val = al_get_config_value(t3f_config, "Settings", "prefetch_tags");
+	if(val && !strcmp(val, "false"))
+	{
+		app->prefetch_tags = false;
+	}
+	else
+	{
+		app->prefetch_tags = true;
+	}
 
 	app->ui = omo_create_ui();
 	if(!app->ui)
