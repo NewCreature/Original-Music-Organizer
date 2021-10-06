@@ -728,7 +728,7 @@ int omo_menu_library_edit_tags(int id, void * data)
 
 	if(app->library)
 	{
-		if(app->ui->ui_song_list_element->flags & D_GOTFOCUS)
+		if(app->ui->ui_song_list_element->flags & D_GOTFOCUS && app->ui->ui_song_list_element->d1 > 0)
 		{
 			j = app->ui->ui_song_list_element->d1 - 1;
 			if(j >= 0)
@@ -808,7 +808,7 @@ int omo_menu_library_edit_album_tags(int id, void * data)
 
 	if(app->library)
 	{
-		if(app->ui->ui_album_list_element->flags & D_GOTFOCUS)
+		if(app->ui->ui_album_list_element->flags & D_GOTFOCUS && app->ui->ui_album_list_element->d1 > 1)
 		{
 			enable_tags(app, true, app->library);
 			open_album_tags_dialog(app);
