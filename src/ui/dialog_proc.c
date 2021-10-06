@@ -10,7 +10,7 @@ static char ui_artist_text[1024] = {0};
 static char ui_album_text[1024] = {0};
 static char ui_song_text[1024] = {0};
 
-char * ui_queue_list_proc(int index, int *list_size, void * data)
+char * ui_queue_list_proc(int index, int *list_size, bool * multi, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
@@ -19,6 +19,10 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
 		if(list_size && app->player)
 		{
 			*list_size = app->player->queue ? app->player->queue->entry_count : 0;
+		}
+		if(multi)
+		{
+			*multi = true;
 		}
 		return NULL;
 	}
@@ -29,7 +33,7 @@ char * ui_queue_list_proc(int index, int *list_size, void * data)
 	return NULL;
 }
 
-char * ui_artist_list_proc(int index, int *list_size, void * data)
+char * ui_artist_list_proc(int index, int *list_size, bool * multi, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
@@ -43,6 +47,10 @@ char * ui_artist_list_proc(int index, int *list_size, void * data)
 		{
 			*list_size = 0;
 		}
+		if(multi)
+		{
+			*multi = false;
+		}
 		return NULL;
 	}
 	if(app->library && app->library->loaded && app->library->artist_entry)
@@ -53,7 +61,7 @@ char * ui_artist_list_proc(int index, int *list_size, void * data)
 	return ui_artist_text;
 }
 
-char * ui_song_list_proc(int index, int *list_size, void * data)
+char * ui_song_list_proc(int index, int *list_size, bool * multi, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	const char * title;
@@ -66,6 +74,10 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
 		if(list_size && app->library && app->library->loaded && app->library->song_entry)
 		{
 			*list_size = app->library->filtered_song_entry_count + 1;
+		}
+		if(multi)
+		{
+			*multi = false;
 		}
 		return NULL;
 	}
@@ -101,7 +113,7 @@ char * ui_song_list_proc(int index, int *list_size, void * data)
    return NULL;
 }
 
-char * ui_album_list_proc(int index, int *list_size, void * data)
+char * ui_album_list_proc(int index, int *list_size, bool * multi, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
@@ -110,6 +122,10 @@ char * ui_album_list_proc(int index, int *list_size, void * data)
 		if(list_size && app->library && app->library->loaded && app->library->album_entry)
 		{
 			*list_size = app->library->filtered_album_entry_count;
+		}
+		if(multi)
+		{
+			*multi = false;
 		}
 		return NULL;
 	}

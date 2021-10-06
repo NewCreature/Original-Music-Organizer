@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "dialog.h"
 #include "t3gui.h"
-#include "player.h"
 #include "theme.h"
 #include "resource.h"
 
@@ -15,7 +14,7 @@ static bool t3gui_initialized = false;
 
 static void t3gui_dialog_close_proc(T3GUI_ELEMENT * ep)
 {
-    t3gui_close_dialog_by_element(ep);
+	t3gui_close_dialog_by_element(ep);
 }
 
 static T3GUI_ELEMENT * t3gui_allocate_element(int count)
@@ -44,7 +43,7 @@ static void t3gui_expand_dialog_element(T3GUI_DIALOG * dp)
 	e = (dp->elements / T3GUI_DIALOG_ELEMENT_CHUNK_SIZE + 1) * T3GUI_DIALOG_ELEMENT_CHUNK_SIZE;
 	if(e != old_e)
 	{
-        printf("expand\n");
+		printf("expand\n");
 		old_element = dp->element;
 		dp->element = t3gui_allocate_element(e);
 		if(dp->element)
@@ -62,27 +61,27 @@ static void t3gui_expand_dialog_element(T3GUI_DIALOG * dp)
 
 bool t3gui_init(void)
 {
-    if(!t3gui_initialized)
-    {
-        t3gui_initialized = true;
-        return true;
-    }
-    return false;
+	if(!t3gui_initialized)
+	{
+		t3gui_initialized = true;
+		return true;
+	}
+	return false;
 }
 
 void t3gui_exit(void)
 {
-    if(t3gui_initialized)
-    {
-        t3gui_destroy_theme(t3gui_get_default_theme());
-        t3gui_unload_resources(NULL, true);
-        t3gui_initialized = false;
-    }
+	if(t3gui_initialized)
+	{
+		t3gui_destroy_theme(t3gui_get_default_theme());
+		t3gui_unload_resources(NULL, true);
+		t3gui_initialized = false;
+	}
 }
 
 ALLEGRO_EVENT_SOURCE * t3gui_get_event_source(void)
 {
-    return &t3gui_event_source;
+	return &t3gui_event_source;
 }
 
 T3GUI_DIALOG * t3gui_create_dialog(void)
@@ -105,6 +104,7 @@ T3GUI_DIALOG * t3gui_create_dialog(void)
 
 void t3gui_destroy_dialog(T3GUI_DIALOG * dp)
 {
+	t3gui_close_dialog(dp);
 	t3gui_destroy_element(dp->element);
 	free(dp);
 }
@@ -150,7 +150,7 @@ T3GUI_ELEMENT * t3gui_dialog_add_element(T3GUI_DIALOG * dialog, T3GUI_THEME * th
 
 void t3gui_center_dialog(T3GUI_DIALOG * dp, int w, int h)
 {
-    t3gui_centre_dialog(dp->element, w, h);
+	t3gui_centre_dialog(dp->element, w, h);
 }
 
 static T3GUI_PLAYER ** t3gui_allocate_player(int count)
@@ -200,168 +200,220 @@ static void t3gui_expand_player(void)
 
 void t3gui_set_focus_element(T3GUI_ELEMENT * element)
 {
-    int i;
+	int i;
 
-    if(t3gui_dialog_players)
-    {
-        for(i = 0; t3gui_dialog_player[t3gui_dialog_players - 1]->dialog[i].proc; i++)
-        {
-            if(&t3gui_dialog_player[t3gui_dialog_players - 1]->dialog[i] == element)
-            {
-                t3gui_set_player_focus(t3gui_dialog_player[t3gui_dialog_players - 1], i);
-                break;
-            }
-        }
-    }
+	if(t3gui_dialog_players)
+	{
+		for(i = 0; t3gui_dialog_player[t3gui_dialog_players - 1]->dialog[i].proc; i++)
+		{
+			if(&t3gui_dialog_player[t3gui_dialog_players - 1]->dialog[i] == element)
+			{
+				t3gui_set_player_focus(t3gui_dialog_player[t3gui_dialog_players - 1], i);
+				break;
+			}
+		}
+	}
 }
-
 
 bool t3gui_show_dialog_init(T3GUI_DIALOG * dp, ALLEGRO_EVENT_QUEUE * qp, int flags, void * user_data)
 {
-    int i;
-    int focus = -1;
+	int i;
+	int focus = -1;
 
-    /* ensure we have registered our event source to the user queue */
-    if(qp)
-    {
-        if(!event_source_initialized)
-        {
-            al_init_user_event_source(&t3gui_event_source);
-            event_source_initialized = true;
-        }
-        al_register_event_source(qp, &t3gui_event_source);
-    }
+	/* ensure we have registered our event source to the user queue */
+	if(qp)
+	{
+		if(!event_source_initialized)
+		{
+			al_init_user_event_source(&t3gui_event_source);
+			event_source_initialized = true;
+		}
+		al_register_event_source(qp, &t3gui_event_source);
+	}
 
-    /* make sure we have enough space allocated for the new player */
-    if(t3gui_allocated_dialog_players == 0)
-    {
-        t3gui_dialog_player = t3gui_allocate_player(T3GUI_DIALOG_PLAYER_CHUNK_SIZE);
-        if(t3gui_dialog_player)
-        {
-            t3gui_allocated_dialog_players = T3GUI_DIALOG_PLAYER_CHUNK_SIZE;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    t3gui_expand_player();
+	/* make sure we have enough space allocated for the new player */
+	if(t3gui_allocated_dialog_players == 0)
+	{
+		t3gui_dialog_player = t3gui_allocate_player(T3GUI_DIALOG_PLAYER_CHUNK_SIZE);
+		if(t3gui_dialog_player)
+		{
+			t3gui_allocated_dialog_players = T3GUI_DIALOG_PLAYER_CHUNK_SIZE;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	t3gui_expand_player();
 
-    /* initialize the player */
-    for(i = 0; i < dp->elements; i++)
-    {
-        dp->element[i].user_data = user_data;
-    }
-    for(i = 0; i < dp->elements; i++)
-    {
-        if(dp->element[i].flags & D_SETFOCUS)
-        {
-            focus = i;
-            break;
-        }
-    }
-    t3gui_dialog_player[t3gui_dialog_players] = t3gui_init_dialog(dp->element, focus, flags, qp, user_data, t3gui_dialog_close_proc);
-    if(t3gui_dialog_player[t3gui_dialog_players])
-    {
-        /* pause previous player */
-        if(t3gui_dialog_players > 0)
-        {
-            t3gui_pause_dialog(t3gui_dialog_player[t3gui_dialog_players - 1]);
-        }
-        t3gui_listen_for_events(t3gui_dialog_player[t3gui_dialog_players], al_get_keyboard_event_source());
-        t3gui_listen_for_events(t3gui_dialog_player[t3gui_dialog_players], al_get_mouse_event_source());
-        t3gui_listen_for_events(t3gui_dialog_player[t3gui_dialog_players], al_get_display_event_source(al_get_current_display()));
-    }
-    return true;
+	/* initialize the player */
+	for(i = 0; i < dp->elements; i++)
+	{
+		dp->element[i].user_data = user_data;
+	}
+	for(i = 0; i < dp->elements; i++)
+	{
+		if(dp->element[i].flags & D_SETFOCUS)
+		{
+			focus = i;
+			break;
+		}
+	}
+	t3gui_dialog_player[t3gui_dialog_players] = t3gui_init_dialog(dp->element, focus, flags, qp, user_data, t3gui_dialog_close_proc);
+	if(t3gui_dialog_player[t3gui_dialog_players])
+	{
+		/* pause previous player */
+		if(t3gui_dialog_players > 0)
+		{
+			t3gui_pause_dialog(t3gui_dialog_player[t3gui_dialog_players - 1]);
+		}
+		t3gui_listen_for_events(t3gui_dialog_player[t3gui_dialog_players], al_get_keyboard_event_source());
+		t3gui_listen_for_events(t3gui_dialog_player[t3gui_dialog_players], al_get_mouse_event_source());
+		t3gui_listen_for_events(t3gui_dialog_player[t3gui_dialog_players], al_get_display_event_source(al_get_current_display()));
+	}
+	return true;
 }
 
 bool t3gui_show_dialog(T3GUI_DIALOG * dp, ALLEGRO_EVENT_QUEUE * qp, int flags, void * user_data)
 {
-    if(t3gui_show_dialog_init(dp, qp, flags, user_data))
-    {
-        t3gui_start_dialog(t3gui_dialog_player[t3gui_dialog_players]);
-        t3gui_dialog_players++;
-        return true;
-    }
-    return false;
+	if(t3gui_show_dialog_init(dp, qp, flags, user_data))
+	{
+		t3gui_start_dialog(t3gui_dialog_player[t3gui_dialog_players]);
+		t3gui_dialog_players++;
+		return true;
+	}
+	return false;
 }
 
 bool t3gui_show_dialog_thread(T3GUI_DIALOG * dp, ALLEGRO_EVENT_QUEUE * qp, int flags, void * user_data)
 {
-    if(t3gui_show_dialog_init(dp, qp, flags, user_data))
-    {
-        t3gui_start_dialog_thread(t3gui_dialog_player[t3gui_dialog_players]);
-        t3gui_dialog_players++;
-        return true;
-    }
-    return false;
+	if(t3gui_show_dialog_init(dp, qp, flags, user_data))
+	{
+		t3gui_start_dialog_thread(t3gui_dialog_player[t3gui_dialog_players]);
+		t3gui_dialog_players++;
+		return true;
+	}
+	return false;
 }
 
 bool t3gui_close_dialog_by_element(T3GUI_ELEMENT * ep)
 {
-    int i, j;
+	int i, j;
 
-    for(i = 0; i < t3gui_dialog_players; i++)
-    {
-        if(ep == t3gui_dialog_player[i]->dialog)
-        {
-            if(t3gui_dialog_player[i]->threaded)
-            {
-                t3gui_stop_dialog_thread(t3gui_dialog_player[i]);
-            }
-            else
-            {
-                t3gui_stop_dialog(t3gui_dialog_player[i]);
-            }
-            if(t3gui_queue && t3gui_dialog_players == 1)
-            {
-                al_unregister_event_source(t3gui_queue, t3gui_get_player_event_source(t3gui_dialog_player[i]));
-            }
-            t3gui_shutdown_dialog(t3gui_dialog_player[i]);
-            for(j = i; j < t3gui_dialog_players - 1; j++)
-            {
-                t3gui_dialog_player[j] = t3gui_dialog_player[j + 1];
-            }
-            t3gui_dialog_players--;
-            if(t3gui_dialog_players <= 0)
-            {
-                t3gui_destroy_player(t3gui_dialog_player);
-                t3gui_allocated_dialog_players = 0;
-            }
-            else
-            {
-                t3gui_resume_dialog(t3gui_dialog_player[t3gui_dialog_players - 1]);
-            }
-            return true;
-        }
-    }
-    return false;
+	for(i = 0; i < t3gui_dialog_players; i++)
+	{
+		if(ep == t3gui_dialog_player[i]->dialog)
+		{
+			if(t3gui_dialog_player[i]->threaded)
+			{
+				t3gui_stop_dialog_thread(t3gui_dialog_player[i]);
+			}
+			else
+			{
+				t3gui_stop_dialog(t3gui_dialog_player[i]);
+			}
+			if(t3gui_queue && t3gui_dialog_players == 1)
+			{
+				al_unregister_event_source(t3gui_queue, t3gui_get_player_event_source(t3gui_dialog_player[i]));
+			}
+			t3gui_shutdown_dialog(t3gui_dialog_player[i]);
+			for(j = i; j < t3gui_dialog_players - 1; j++)
+			{
+				t3gui_dialog_player[j] = t3gui_dialog_player[j + 1];
+			}
+			t3gui_dialog_players--;
+			if(t3gui_dialog_players <= 0)
+			{
+				t3gui_destroy_player(t3gui_dialog_player);
+				t3gui_allocated_dialog_players = 0;
+			}
+			else
+			{
+				t3gui_resume_dialog(t3gui_dialog_player[t3gui_dialog_players - 1]);
+			}
+			return true;
+		}
+	}
+	return false;
 }
 
 bool t3gui_close_dialog(T3GUI_DIALOG * dp)
 {
-    return t3gui_close_dialog_by_element(dp->element);
+	return t3gui_close_dialog_by_element(dp->element);
 }
 
 void t3gui_logic(void)
 {
-    if(t3gui_dialog_players)
-    {
-        t3gui_process_dialog(t3gui_dialog_player[t3gui_dialog_players - 1]);
-    }
+	if(t3gui_dialog_players)
+	{
+		t3gui_process_dialog(t3gui_dialog_player[t3gui_dialog_players - 1]);
+	}
 }
 
 void t3gui_render(void)
 {
-    int i;
+	int i;
 
-    for(i = 0; i < t3gui_dialog_players; i++)
-    {
-        t3gui_draw_dialog(t3gui_dialog_player[i]);
-    }
+	for(i = 0; i < t3gui_dialog_players; i++)
+	{
+		t3gui_draw_dialog(t3gui_dialog_player[i]);
+	}
 }
 
 int t3gui_get_active_dialogs(void)
 {
-    return t3gui_dialog_players;
+	return t3gui_dialog_players;
+}
+
+int t3gui_get_mouse_x(void)
+{
+	if(t3gui_dialog_players)
+	{
+		return t3gui_dialog_player[t3gui_dialog_players - 1]->mouse_x;
+	}
+	return 0;
+}
+
+int t3gui_get_mouse_y(void)
+{
+	if(t3gui_dialog_players)
+	{
+		return t3gui_dialog_player[t3gui_dialog_players - 1]->mouse_y;
+	}
+	return 0;
+}
+
+int t3gui_get_mouse_z(void)
+{
+	if(t3gui_dialog_players)
+	{
+		return t3gui_dialog_player[t3gui_dialog_players - 1]->mouse_z;
+	}
+	return 0;
+}
+
+int t3gui_get_mouse_button(int button)
+{
+	if(t3gui_dialog_players)
+	{
+		return t3gui_dialog_player[t3gui_dialog_players - 1]->mouse_button[button];
+	}
+	return 0;
+}
+
+bool t3gui_get_key_state(int key_code)
+{
+	if(t3gui_dialog_players)
+	{
+		return t3gui_dialog_player[t3gui_dialog_players - 1]->key[key_code];
+	}
+	return false;
+}
+
+void t3gui_set_key_state(int key_code, bool onoff)
+{
+	if(t3gui_dialog_players)
+	{
+		t3gui_dialog_player[t3gui_dialog_players - 1]->key[key_code] = onoff;
+	}
 }

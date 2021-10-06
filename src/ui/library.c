@@ -159,7 +159,7 @@ void omo_library_logic(void * data)
 		app->ui->ui_album_list_element->d2 = 0;
 		app->ui->ui_song_list_element->d1 = 0;
 		app->ui->ui_song_list_element->d2 = 0;
-		val2 = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, app);
+		val2 = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, NULL, app);
 		al_stop_timer(t3f_timer);
 		omo_get_library_album_list(app->library, val2);
 		omo_get_library_song_list(app->library, val2, "All Albums");
@@ -171,8 +171,8 @@ void omo_library_logic(void * data)
 	{
 		app->ui->ui_song_list_element->d1 = 0;
 		app->ui->ui_song_list_element->d2 = 0;
-		val = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, app);
-		val2 = ui_album_list_proc(app->ui->ui_album_list_element->d1, NULL, app);
+		val = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, NULL, app);
+		val2 = ui_album_list_proc(app->ui->ui_album_list_element->d1, NULL, NULL, app);
 		al_stop_timer(t3f_timer);
 		omo_get_library_song_list(app->library, val, val2);
 		app->ui->apply_song_search_filter = true;
