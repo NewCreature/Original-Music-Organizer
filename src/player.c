@@ -3,6 +3,7 @@
 #include "player.h"
 #include "queue.h"
 #include "library_helpers.h"
+#include "queue_helpers.h"
 
 OMO_PLAYER * omo_create_player(void)
 {
@@ -174,6 +175,7 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 							omo_set_database_value(lp->entry_database, id, "Detected Length", buf);
 							omo_set_database_value(lp->entry_database, id, "Submitted", "false");
 							pp->new_tags = true;
+							omo_get_queue_entry_tags(pp->queue, pp->queue_pos, lp);
 						}
 					}
 				}
