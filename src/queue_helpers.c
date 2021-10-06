@@ -246,6 +246,7 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 			{
 				omo_strcpy(qp->entry[i]->tags.track, track, 8);
 			}
+			qp->length -= qp->entry[i]->tags.length;
 			qp->entry[i]->tags.length = omo_get_library_entry_length(lp, id);
 			qp->length += qp->entry[i]->tags.length;
 
