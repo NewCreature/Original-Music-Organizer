@@ -19,10 +19,39 @@ static void omo_toggle_library_view(void * data)
 	}
 }
 
+static bool selected(T3GUI_ELEMENT * ep, int entry)
+{
+	char * dp2 = ep->dp2;
+
+	if(dp2)
+	{
+		return dp2[entry];
+	}
+	else
+	{
+		if(ep->d1 == entry)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+static void unselect(T3GUI_ELEMENT * ep, int entry)
+{
+	char * dp2 = ep->dp2;
+
+	if(dp2)
+	{
+		dp2[entry] = 0;
+	}
+}
+
 void omo_shortcut_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	bool restart_player = false;
+	int i;
 
 	if(t3f_key[ALLEGRO_KEY_L])
 	{
@@ -82,18 +111,25 @@ void omo_shortcut_logic(void * data)
 	{
 		if(app->player->queue && app->ui->ui_queue_list_element->d1 < app->player->queue->entry_count)
 		{
-			if(app->ui->ui_queue_list_element->d1 == app->player->queue_pos)
+			for(i = app->player->queue->entry_count - 1; i >= 0; i--)
 			{
-				if(app->player->state == OMO_PLAYER_STATE_PLAYING)
+				if(selected(app->ui->ui_queue_list_element, i))
 				{
-					restart_player = true;
+					if(i == app->player->queue_pos)
+					{
+						if(app->player->state == OMO_PLAYER_STATE_PLAYING)
+						{
+							restart_player = true;
+						}
+						omo_stop_player(app->player);
+					}
+					omo_delete_queue_item(app->player->queue, i);
+					unselect(app->ui->ui_queue_list_element, i);
+					if(app->player->queue_pos > i)
+					{
+						app->player->queue_pos--;
+					}
 				}
-				omo_stop_player(app->player);
-			}
-			omo_delete_queue_item(app->player->queue, app->ui->ui_queue_list_element->d1);
-			if(app->player->queue_pos > app->ui->ui_queue_list_element->d1)
-			{
-				app->player->queue_pos--;
 			}
 			if(app->player->queue->entry_count > 0)
 			{
