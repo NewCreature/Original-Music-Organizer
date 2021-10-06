@@ -69,6 +69,10 @@ void omo_shortcut_logic(void * data)
 		{
 			omo_menu_library_edit_tags(0, app);
 		}
+		else if(app->library_view && app->ui->ui_album_list_element->flags & D_GOTFOCUS)
+		{
+			omo_menu_library_edit_album_tags(0, app);
+		}
 		t3f_key[ALLEGRO_KEY_T] = 0;
 	}
 	if(t3f_key[ALLEGRO_KEY_Z])

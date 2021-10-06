@@ -17,6 +17,7 @@
 #include "ui/library.h"
 #include "ui/tags_dialog.h"
 #include "ui/multi_tags_dialog.h"
+#include "ui/album_tags_dialog.h"
 #include "ui/split_track_dialog.h"
 #include "ui/tagger_key_dialog.h"
 #include "ui/new_profile_dialog.h"
@@ -164,6 +165,10 @@ void omo_logic(void * data)
 			{
 				omo_multi_tags_dialog_logic(data);
 			}
+			else if(app->ui->album_tags_popup_dialog)
+			{
+				omo_album_tags_dialog_logic(data);
+			}
 			else if(app->ui->split_track_popup_dialog)
 			{
 				omo_split_track_dialog_logic(data);
@@ -290,6 +295,12 @@ void omo_render(void * data)
 			if(app->ui->multi_tags_popup_dialog)
 			{
 				al_set_target_bitmap(al_get_backbuffer(app->ui->multi_tags_popup_dialog->display));
+				al_flip_display();
+				al_set_target_bitmap(al_get_backbuffer(t3f_display));
+			}
+			if(app->ui->album_tags_popup_dialog)
+			{
+				al_set_target_bitmap(al_get_backbuffer(app->ui->album_tags_popup_dialog->display));
 				al_flip_display();
 				al_set_target_bitmap(al_get_backbuffer(t3f_display));
 			}

@@ -17,6 +17,7 @@
 #include "menu_init.h"
 #include "tags_dialog.h"
 #include "multi_tags_dialog.h"
+#include "album_tags_dialog.h"
 #include "tagger_key_dialog.h"
 #include "filter_dialog.h"
 #include "new_profile_dialog.h"
@@ -123,6 +124,43 @@ static void open_multi_tags_dialog(void * data)
 		}
 	}
 	omo_open_multi_tags_dialog(app->ui, app);
+}
+
+static void open_album_tags_dialog(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	const char * val2;
+	int i, j;
+	bool first = true;
+
+	for(j = 0; j < app->library->filtered_song_entry_count; j++)
+	{
+		app->ui->tags_entry = app->library->entry[app->library->filtered_song_entry[j]]->id;
+		if(app->ui->tags_entry)
+		{
+			if(omo_backup_entry_tags(app->library, app->ui->tags_entry, first))
+			{
+				if(app->prefetch_tags)
+				{
+					omo_retrieve_track_tags(app->library, app->ui->tags_entry, "https://www.t3-i.com/omo/get_track_tags.php");
+				}
+			}
+			first = false;
+			for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+			{
+				strcpy(app->ui->tags_text[i], "");
+				if(omo_tag_type[i])
+				{
+					val2 = omo_get_database_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i]);
+					if(val2)
+					{
+						strcpy(app->ui->tags_text[i], val2);
+					}
+				}
+			}
+		}
+	}
+	omo_open_album_tags_dialog(app->ui, app);
 }
 
 static void open_split_track_dialog(void * data, const char * basefn, const char * fullfn)
@@ -422,6 +460,7 @@ static void enable_tags(APP_INSTANCE * app, bool multi, OMO_LIBRARY * lp)
 		conditionally_enable_tag(app, "Album Artist", lp);
 		conditionally_enable_tag(app, "Artist", lp);
 		conditionally_enable_tag(app, "Album", lp);
+//		conditionally_enable_tag(app, "Genre", lp);
 		conditionally_enable_tag(app, "Year", lp);
 		conditionally_enable_tag(app, "Copyright", lp);
 	}
@@ -758,6 +797,23 @@ int omo_menu_library_retrieve_tags(int id, void * data)
 
 	omo_retrieve_library_tags(app, "https://www.t3-i.com/omo/get_track_tags.php");
 
+	return 1;
+}
+
+int omo_menu_library_edit_album_tags(int id, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	char fullfn[1024];
+	int j;
+
+	if(app->library)
+	{
+		if(app->ui->ui_album_list_element->flags & D_GOTFOCUS)
+		{
+			enable_tags(app, true, app->library);
+			open_album_tags_dialog(app);
+		}
+	}
 	return 1;
 }
 

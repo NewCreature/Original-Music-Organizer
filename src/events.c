@@ -4,6 +4,8 @@
 #include "constants.h"
 #include "library_helpers.h"
 #include "ui/tags_dialog.h"
+#include "ui/multi_tags_dialog.h"
+#include "ui/album_tags_dialog.h"
 #include "ui/tagger_key_dialog.h"
 #include "ui/filter_dialog.h"
 #include "ui/new_profile_dialog.h"
@@ -21,6 +23,14 @@ void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 			if(app->ui->tags_popup_dialog && event->display.source == app->ui->tags_popup_dialog->display)
 			{
 				omo_close_tags_dialog(app->ui, data);
+			}
+			else if(app->ui->multi_tags_popup_dialog && event->display.source == app->ui->multi_tags_popup_dialog->display)
+			{
+				omo_close_multi_tags_dialog(app->ui, data);
+			}
+			else if(app->ui->album_tags_popup_dialog && event->display.source == app->ui->album_tags_popup_dialog->display)
+			{
+				omo_close_album_tags_dialog(app->ui, data);
 			}
 			else if(app->ui->split_track_popup_dialog && event->display.source == app->ui->split_track_popup_dialog->display)
 			{

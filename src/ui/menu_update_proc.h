@@ -11,6 +11,7 @@ int omo_menu_playback_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * 
 int omo_menu_library_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * data);
 int omo_menu_library_profile_update_proc(ALLEGRO_MENU * mp, int item, void * data);
 int omo_menu_library_profile_delete_update_proc(ALLEGRO_MENU * mp, int item, void * data);
+int omo_menu_library_edit_album_tags_update_proc(ALLEGRO_MENU * mp, int item, void * data);
 
 int omo_menu_cloud_update_proc(ALLEGRO_MENU * mp, int item, void * data);
 

@@ -116,7 +116,7 @@ int omo_menu_library_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * d
 	{
 		return 0;
 	}
-	if(app->library && app->library_view && app->ui->ui_song_list_element->flags & D_GOTFOCUS)
+	if(app->library && app->library_view && app->ui->ui_song_list_element->d1 > 0 && app->ui->ui_song_list_element->flags & D_GOTFOCUS)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
 	}
@@ -161,6 +161,25 @@ int omo_menu_library_profile_delete_update_proc(ALLEGRO_MENU * mp, int item, voi
 	else
 	{
 		t3f_set_menu_item_flags(mp, item, 0);
+	}
+	return 1;
+}
+
+int omo_menu_library_edit_album_tags_update_proc(ALLEGRO_MENU * mp, int item, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	if(!omo_menu_base_update_disable_proc(mp, item, data))
+	{
+		return 0;
+	}
+	if(app->library && app->library_view && app->ui->ui_album_list_element->d1 > 1 && app->ui->ui_album_list_element->flags & D_GOTFOCUS)
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
+	}
+	else
+	{
+		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
 	}
 	return 1;
 }

@@ -36,6 +36,7 @@ int omo_menu_library_edit_tags(int id, void * data);
 int omo_menu_library_split_track(int id, void * data);
 int omo_menu_library_submit_tags(int id, void * data);
 int omo_menu_library_retrieve_tags(int id, void * data);
+int omo_menu_library_edit_album_tags(int id, void * data);
 
 int omo_menu_view_basic(int id, void * data);
 int omo_menu_view_library(int id, void * data);
