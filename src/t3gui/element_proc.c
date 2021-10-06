@@ -1926,18 +1926,6 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
           if(new_dp2)
           {
             memset(new_dp2, 0, sizeof(char) * nelem);
-            if(d->ed1 > nelem)
-            {
-              l = nelem;
-            }
-            else
-            {
-              l = d->ed1;
-            }
-            for(i = 0; i < l; i++)
-            {
-              new_dp2[i] = dp2[i];
-            }
             if(d->dp2)
             {
               free(d->dp2);
