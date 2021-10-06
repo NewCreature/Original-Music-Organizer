@@ -1839,6 +1839,57 @@ static void flush_render(void)
 /* typedef for the listbox callback functions */
 typedef const char *(getfuncptr)(int index, int *num_elem, bool * multi, void *dp3);
 
+static void clear_selection(T3GUI_ELEMENT * d, int l)
+{
+  char * dp2 = d->dp2;
+  int i;
+
+  for(i = 0; i < l; i++)
+  {
+    dp2[i] = 0;
+  }
+}
+
+static void set_selection(T3GUI_ELEMENT * d, int entry, int max)
+{
+  int old_d1 = d->d1;
+  char * dp2 = d->dp2;
+  int i;
+
+  d->d1 = entry;
+  if(d->d1 < 0)
+  {
+    d->d1 = 0;
+  }
+  if(d->d1 >= max)
+  {
+    d->d1 = max - 1;
+  }
+  if(dp2)
+  {
+    if(t3gui_get_key_state(ALLEGRO_KEY_LSHIFT) || t3gui_get_key_state(ALLEGRO_KEY_RSHIFT))
+    {
+      for(i = old_d1; i <= d->d1; i++)
+      {
+        dp2[i] = 1;
+      }
+      for(i = d->d1; i <= old_d1; i++)
+      {
+        dp2[i] = 1;
+      }
+    }
+    else if(t3gui_get_key_state(ALLEGRO_KEY_LCTRL) || t3gui_get_key_state(ALLEGRO_KEY_RCTRL) || t3gui_get_key_state(ALLEGRO_KEY_COMMAND))
+    {
+      dp2[entry] = 1;
+    }
+    else
+    {
+      clear_selection(d, max);
+      dp2[entry] = 1;
+    }
+  }
+}
+
 int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
 {
     int ret = D_O_K;
@@ -1945,23 +1996,17 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
 
             if(c == ALLEGRO_KEY_DOWN)
             {
-                d->d1++;
-                if(d->d1 > nelem-1) d->d1 = nelem-1;
+              set_selection(d, d->d1 + 1, nelem);
                 ret |= D_USED_KEY;
             }
             else if(c == ALLEGRO_KEY_UP)
             {
-                d->d1--;
-                if (d->d1 < 0) d->d1 = 0;
+              set_selection(d, d->d1 - 1, nelem);
                 ret |= D_USED_KEY;
             }
             else if(c == ALLEGRO_KEY_PGDN)
             {
-                d->d1 += visible_elements;
-				if(d->d1 >= nelem)
-				{
-					d->d1 = nelem - 1;
-				}
+              set_selection(d, d->d1 + visible_elements, nelem);
 				d->d2 += visible_elements - 1;
 				if(d->d2 >= nelem - visible_elements)
 				{
@@ -1971,11 +2016,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
             }
             else if(c == ALLEGRO_KEY_PGUP)
             {
-                d->d1 -= visible_elements;
-				if(d->d1 < 0)
-				{
-					d->d1 = 0;
-				}
+              set_selection(d, d->d1 - visible_elements, nelem);
 				d->d2 -= visible_elements;
 				if(d->d2 < 0)
 				{
@@ -1985,13 +2026,13 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
             }
             else if(c == ALLEGRO_KEY_HOME)
             {
-                d->d1 = 0;
+                set_selection(d, 0, nelem);
                 d->d2 = 0;
                 ret |= D_USED_KEY;
             }
             else if(c == ALLEGRO_KEY_END)
             {
-                d->d1 = nelem - 1;
+              set_selection(d, nelem - 1, nelem);
                 d->d2 = nelem - visible_elements - 1;
                 ret |= D_USED_KEY;
             }
@@ -2033,42 +2074,8 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
                 int idx = d->d2 + (d->mousey - d->y) / al_get_font_line_height(font);
                 if(idx >= nelem) idx = nelem-1;
                 if(idx < 0) idx = 0;
-//                if(d->d1 != idx)
-                {
-                  if(multi)
-                  {
-                    if(t3gui_get_key_state(ALLEGRO_KEY_LSHIFT) || t3gui_get_key_state(ALLEGRO_KEY_RSHIFT))
-                    {
-                      for(i = d->d1; i <= idx; i++)
-                      {
-                        dp2[i] = 1;
-                      }
-                      for(i = idx; i <= d->d1; i++)
-                      {
-                        dp2[i] = 1;
-                      }
-                    }
-                    else if(t3gui_get_key_state(ALLEGRO_KEY_LCTRL) || t3gui_get_key_state(ALLEGRO_KEY_RCTRL) || t3gui_get_key_state(ALLEGRO_KEY_COMMAND))
-                    {
-                      dp2[idx] = !dp2[idx];
-                    }
-                    else
-                    {
-                      for(i = 0; i < nelem; i++)
-                      {
-                        dp2[i] = 0;
-                      }
-                      dp2[idx] = !dp2[idx];
-                    }
-                    d->d1 = idx;
-                    ret |= D_REDRAWME;
-                  }
-                  else
-                  {
-                    d->d1 = idx;
-                    ret |= D_REDRAWME;
-                  }
-                }
+                set_selection(d, idx, nelem);
+                ret |= D_REDRAWME;
             }
             ret |= D_WANTKEYBOARD;
             break;
@@ -2103,7 +2110,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
                     fg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_EG];
                 }
                 al_set_clipping_rectangle(d->x, d->y, list_width, d->h);
-                if((d->d1 == n) || (dp2 && dp2[n]) && d->flags & D_GOTFOCUS)
+                if(((d->d1 == n) || (dp2 && dp2[n])) && d->flags & D_GOTFOCUS)
                 {
                     al_draw_filled_rectangle(d->x+2.5,y+1.5,d->x+d->w-1.5,y+al_get_font_line_height(font)+1.5, d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_FG]);
                     fg = d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_BG];
