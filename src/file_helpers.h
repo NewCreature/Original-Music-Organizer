@@ -31,4 +31,6 @@ bool omo_queue_file(const char * fn, bool isfolder, void * data);
 
 void omo_clear_library_cache(void);
 
+bool omo_get_full_filename(const char * fn, const char * subfn, const char * track, char * buffer, int buffer_size);
+
 #endif

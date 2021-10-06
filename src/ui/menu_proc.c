@@ -16,6 +16,7 @@
 #include "../profile.h"
 #include "menu_init.h"
 #include "tags_dialog.h"
+#include "multi_tags_dialog.h"
 #include "tagger_key_dialog.h"
 #include "filter_dialog.h"
 #include "new_profile_dialog.h"
@@ -61,7 +62,7 @@ static void open_tags_dialog(void * data, const char * fullfn)
 	app->ui->tags_entry = omo_get_database_value(app->library->file_database, fullfn, "id");
 	if(app->ui->tags_entry)
 	{
-		if(omo_backup_entry_tags(app->library, app->ui->tags_entry))
+		if(omo_backup_entry_tags(app->library, app->ui->tags_entry, true))
 		{
 			omo_retrieve_track_tags(app->library, app->ui->tags_entry, "https://www.t3-i.com/omo/get_track_tags.php");
 		}
@@ -81,6 +82,43 @@ static void open_tags_dialog(void * data, const char * fullfn)
 	}
 }
 
+static void open_multi_tags_dialog(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	const char * val2;
+	int i, j;
+	bool first = true;
+
+	for(j = 0; j < app->player->queue->entry_count; j++)
+	{
+		if(omo_queue_item_selected(app->ui->ui_queue_list_element, j))
+		{
+			app->ui->tags_entry = omo_get_queue_entry_id(app->player->queue, j, app->library);
+			if(app->ui->tags_entry)
+			{
+				if(omo_backup_entry_tags(app->library, app->ui->tags_entry, first))
+				{
+					omo_retrieve_track_tags(app->library, app->ui->tags_entry, "https://www.t3-i.com/omo/get_track_tags.php");
+				}
+				first = false;
+				for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+				{
+					strcpy(app->ui->tags_text[i], "");
+					if(omo_tag_type[i])
+					{
+						val2 = omo_get_database_value(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i]);
+						if(val2)
+						{
+							strcpy(app->ui->tags_text[i], val2);
+						}
+					}
+				}
+			}
+		}
+	}
+	omo_open_multi_tags_dialog(app->ui, app);
+}
+
 static void open_split_track_dialog(void * data, const char * basefn, const char * fullfn)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
@@ -95,7 +133,7 @@ static void open_split_track_dialog(void * data, const char * basefn, const char
 		base_id = omo_get_library_file_base_id(app->library, basefn, buffer);
 		if(base_id)
 		{
-			if(omo_backup_entry_tags(app->library, base_id))
+			if(omo_backup_entry_tags(app->library, base_id, true))
 			{
 				omo_retrieve_track_tags(app->library, base_id, "https://www.t3-i.com/omo/get_track_tags.php");
 			}
@@ -297,41 +335,97 @@ int omo_menu_playback_shuffle(int id, void * data)
 	return 1;
 }
 
-static bool get_full_filename(const char * fn, const char * subfn, const char * track, char * buffer, int buffer_size)
+static int get_tag_slot(const char * tag_name)
 {
-	if(strlen(fn) < buffer_size)
+	int i;
+
+	for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 	{
-		strcpy(buffer, fn);
+		if(!strcmp(tag_name, omo_tag_type[i]))
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+static bool tag_matches(OMO_QUEUE * qp, int e1, int e2, int tag_slot, OMO_LIBRARY * lp)
+{
+	const char * id1;
+	const char * id2;
+	const char * val1;
+	const char * val2;
+
+	id1 = omo_get_queue_entry_id(qp, e1, lp);
+	if(id1)
+	{
+		id2 = omo_get_queue_entry_id(qp, e2, lp);
+		if(id2)
+		{
+			val1 = omo_get_database_value(lp->entry_database, id1, omo_tag_type[tag_slot]);
+			val2 = omo_get_database_value(lp->entry_database, id2, omo_tag_type[tag_slot]);
+			if(!val1 && !val2)
+			{
+				return true;
+			}
+			else if(val1 && val2 && !strcmp(val1, val2))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+static void conditionally_enable_tag(APP_INSTANCE * app, const char * tag_name, OMO_LIBRARY * lp)
+{
+	int i;
+	int first = -1;
+	int tag_slot;
+
+	tag_slot = get_tag_slot(tag_name);
+	if(tag_slot >= 0)
+	{
+		for(i = 0; i < app->player->queue->entry_count; i++)
+		{
+			if(omo_queue_item_selected(app->ui->ui_queue_list_element, i))
+			{
+				if(first < 0)
+				{
+					first = i;
+				}
+				if(tag_matches(app->player->queue, i, first, tag_slot, lp))
+				{
+					app->ui->tag_enabled[tag_slot] = true;
+				}
+			}
+		}
+	}
+}
+
+static void enable_tags(APP_INSTANCE * app, bool multi, OMO_LIBRARY * lp)
+{
+	int i;
+
+	if(multi)
+	{
+		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
+		{
+			app->ui->tag_enabled[i] = false;
+		}
+		conditionally_enable_tag(app, "Album Artist", lp);
+		conditionally_enable_tag(app, "Artist", lp);
+		conditionally_enable_tag(app, "Album", lp);
+		conditionally_enable_tag(app, "Year", lp);
+		conditionally_enable_tag(app, "Copyright", lp);
 	}
 	else
 	{
-		return false;
-	}
-	if(subfn)
-	{
-		if(strlen(buffer) + strlen(subfn) + 1 < buffer_size)
+		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 		{
-			strcat(buffer, "/");
-			strcat(buffer, subfn);
-		}
-		else
-		{
-			return false;
+			app->ui->tag_enabled[i] = true;
 		}
 	}
-	if(track)
-	{
-		if(strlen(buffer) + strlen(track) + 1 < buffer_size)
-		{
-			strcat(buffer, ":");
-			strcat(buffer, track);
-		}
-		else
-		{
-			return false;
-		}
-	}
-	return true;
 }
 
 int omo_menu_playback_edit_tags(int id, void * data)
@@ -343,11 +437,20 @@ int omo_menu_playback_edit_tags(int id, void * data)
 	app->ui->tags_queue_entry = -1;
 	if(app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
 	{
-		j = app->ui->ui_queue_list_element->d1;
-		if(get_full_filename(app->player->queue->entry[j]->file, app->player->queue->entry[j]->sub_file, app->player->queue->entry[j]->track, fullfn, 1024))
+		if(omo_queue_items_selected(app->ui->ui_queue_list_element, app->player->queue->entry_count) > 1)
 		{
-			app->ui->tags_queue_entry = app->ui->ui_queue_list_element->d1;
-			open_tags_dialog(app, fullfn);
+			enable_tags(app, true, app->library);
+			open_multi_tags_dialog(app);
+		}
+		else
+		{
+			j = app->ui->ui_queue_list_element->d1;
+			if(omo_get_full_filename(app->player->queue->entry[j]->file, app->player->queue->entry[j]->sub_file, app->player->queue->entry[j]->track, fullfn, 1024))
+			{
+				enable_tags(app, false, app->library);
+				app->ui->tags_queue_entry = app->ui->ui_queue_list_element->d1;
+				open_tags_dialog(app, fullfn);
+			}
 		}
 	}
 	return 1;
@@ -363,7 +466,7 @@ int omo_menu_playback_split_track(int id, void * data)
 	if(app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
 	{
 		j = app->ui->ui_queue_list_element->d1;
-		if(get_full_filename(app->player->queue->entry[j]->file, app->player->queue->entry[j]->sub_file, app->player->queue->entry[j]->track, fullfn, 1024))
+		if(omo_get_full_filename(app->player->queue->entry[j]->file, app->player->queue->entry[j]->sub_file, app->player->queue->entry[j]->track, fullfn, 1024))
 		{
 			app->ui->split_track_queue_entry = app->ui->ui_queue_list_element->d1;
 			open_split_track_dialog(app, app->player->queue->entry[j]->file, fullfn);
@@ -396,7 +499,7 @@ int omo_menu_playback_find_track(int id, void * data)
 	int i, j;
 
 	j = app->ui->ui_queue_list_element->d1;
-	if(get_full_filename(app->player->queue->entry[j]->file, app->player->queue->entry[j]->sub_file, app->player->queue->entry[j]->track, fullfn, 1024))
+	if(omo_get_full_filename(app->player->queue->entry[j]->file, app->player->queue->entry[j]->sub_file, app->player->queue->entry[j]->track, fullfn, 1024))
 	{
 		strcpy(app->ui->ui_artist_search_element->dp, "");
 		strcpy(app->ui->ui_album_search_element->dp, "");

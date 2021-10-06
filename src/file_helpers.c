@@ -841,3 +841,40 @@ void omo_clear_library_cache(void)
 		al_remove_filename(fn);
 	}
 }
+
+bool omo_get_full_filename(const char * fn, const char * subfn, const char * track, char * buffer, int buffer_size)
+{
+	if(strlen(fn) < buffer_size)
+	{
+		strcpy(buffer, fn);
+	}
+	else
+	{
+		return false;
+	}
+	if(subfn)
+	{
+		if(strlen(buffer) + strlen(subfn) + 1 < buffer_size)
+		{
+			strcat(buffer, "/");
+			strcat(buffer, subfn);
+		}
+		else
+		{
+			return false;
+		}
+	}
+	if(track)
+	{
+		if(strlen(buffer) + strlen(track) + 1 < buffer_size)
+		{
+			strcat(buffer, ":");
+			strcat(buffer, track);
+		}
+		else
+		{
+			return false;
+		}
+	}
+	return true;
+}

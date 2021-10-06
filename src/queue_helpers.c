@@ -1,4 +1,5 @@
 #include "t3f/t3f.h"
+#include "t3gui/t3gui.h"
 #include "instance.h"
 #include "library.h"
 #include "library_helpers.h"
@@ -486,4 +487,53 @@ bool omo_export_queue_to_playlist(OMO_QUEUE * qp, const char * fn)
 		}
 	}
 	return false;
+}
+
+const char * omo_get_queue_entry_id(OMO_QUEUE * qp, int entry, OMO_LIBRARY * lp)
+{
+	char fullfn[1024];
+
+	if(omo_get_full_filename(qp->entry[entry]->file, qp->entry[entry]->sub_file, qp->entry[entry]->track, fullfn, 1024))
+	{
+		return omo_get_database_value(lp->file_database, fullfn, "id");
+	}
+	return NULL;
+}
+
+bool omo_queue_item_selected(T3GUI_ELEMENT * d, int entry)
+{
+	char * dp2 = d->dp2;
+
+	if(dp2 && dp2[entry])
+	{
+		return true;
+	}
+	else if(d->d1 == entry)
+	{
+		return true;
+	}
+	return false;
+}
+
+int omo_queue_items_selected(T3GUI_ELEMENT * d, int max)
+{
+	char * dp2 = d->dp2;
+	int i;
+	int c = 0;
+
+	if(dp2)
+	{
+		for(i = 0; i < max; i++)
+		{
+			if(dp2[i])
+			{
+				c++;
+			}
+		}
+	}
+	else
+	{
+		c = 1;
+	}
+	return c;
 }

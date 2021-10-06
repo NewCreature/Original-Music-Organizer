@@ -1368,21 +1368,24 @@ bool omo_split_track(OMO_LIBRARY * lp, const char * basefn, char * split_string)
 	return true;
 }
 
-bool omo_backup_entry_tags(OMO_LIBRARY * lp, const char * id)
+bool omo_backup_entry_tags(OMO_LIBRARY * lp, const char * id, bool first)
 {
 	const char * val;
 	int i;
 
 	/* if we already have a backup, don't overwrite */
-	if(lp->entry_backup)
+	if(lp->entry_backup && first)
 	{
 		return false;
 	}
 
-	lp->entry_backup = al_create_config();
+	if(!lp->entry_backup)
+	{
+		lp->entry_backup = al_create_config();
+	}
 	if(lp->entry_backup)
 	{
-		al_set_config_value(lp->entry_backup, NULL, "id", id);
+//		al_set_config_value(lp->entry_backup, NULL, "id", id);
 		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 		{
 			if(omo_tag_type[i])
@@ -1411,14 +1414,15 @@ bool omo_backup_entry_tags(OMO_LIBRARY * lp, const char * id)
 
 bool omo_restore_entry_tags(OMO_LIBRARY * lp)
 {
+	ALLEGRO_CONFIG_SECTION * iterator;
 	const char * val;
 	const char * id;
 	int i;
 
 	if(lp->entry_backup)
 	{
-		id = al_get_config_value(lp->entry_backup, NULL, "id");
-		if(id)
+		id = al_get_first_config_section(lp->entry_backup, &iterator);
+		while(id)
 		{
 			for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 			{
@@ -1453,10 +1457,11 @@ bool omo_restore_entry_tags(OMO_LIBRARY * lp)
 			{
 				omo_remove_database_key(lp->entry_database, id, "Detected Length");
 			}
-			al_destroy_config(lp->entry_backup);
-			lp->entry_backup = NULL;
-			return true;
+			id = al_get_next_config_section(&iterator);
 		}
+		al_destroy_config(lp->entry_backup);
+		lp->entry_backup = NULL;
+		return true;
 	}
 	return false;
 }

@@ -6,7 +6,7 @@ int omo_menu_base_update_disable_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	if(app->ui->tags_popup_dialog || app->ui->split_track_popup_dialog || app->ui->tagger_key_popup_dialog || app->ui->new_profile_popup_dialog || app->ui->filter_popup_dialog)
+	if(app->ui->tags_popup_dialog || app->ui->multi_tags_popup_dialog || app->ui->split_track_popup_dialog || app->ui->tagger_key_popup_dialog || app->ui->new_profile_popup_dialog || app->ui->filter_popup_dialog)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
 		return 0;
@@ -19,7 +19,7 @@ int omo_menu_base_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	if(app->ui->tags_popup_dialog || app->ui->split_track_popup_dialog || app->ui->tagger_key_popup_dialog || app->ui->new_profile_popup_dialog || app->ui->filter_popup_dialog)
+	if(app->ui->tags_popup_dialog || app->ui->multi_tags_popup_dialog || app->ui->split_track_popup_dialog || app->ui->tagger_key_popup_dialog || app->ui->new_profile_popup_dialog || app->ui->filter_popup_dialog)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
 		return 0;

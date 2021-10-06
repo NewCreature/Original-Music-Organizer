@@ -55,11 +55,13 @@ typedef struct
 
 	/* tags dialog */
 	OMO_UI_POPUP_DIALOG * tags_popup_dialog;
+	OMO_UI_POPUP_DIALOG * multi_tags_popup_dialog;
 	char original_tags_text[OMO_UI_MAX_TAGS][OMO_UI_MAX_TAG_LENGTH];
 	char tags_text[OMO_UI_MAX_TAGS][OMO_UI_MAX_TAG_LENGTH];
 	const char * tags_entry;
 	T3GUI_ELEMENT * tags_ok_button_element;
 	int tags_queue_entry;
+	bool tag_enabled[OMO_MAX_TAG_TYPES];
 
 	/* split track dialog */
 	OMO_UI_POPUP_DIALOG * split_track_popup_dialog;

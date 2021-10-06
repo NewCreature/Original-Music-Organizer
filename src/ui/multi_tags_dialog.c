@@ -20,7 +20,7 @@ bool omo_open_multi_tags_dialog(OMO_UI * uip, void * data)
 
 	for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 	{
-		if(omo_multi_tag_type[i])
+		if(uip->tag_enabled[i])
 		{
 			rows++;
 		}
@@ -38,13 +38,13 @@ bool omo_open_multi_tags_dialog(OMO_UI * uip, void * data)
 	{
 		val = "data/themes/basic/omo_theme.ini";
 	}
-	uip->tags_popup_dialog = omo_create_popup_dialog(val, 640, h, data);
-	if(uip->tags_popup_dialog)
+	uip->multi_tags_popup_dialog = omo_create_popup_dialog(val, 640, h, data);
+	if(uip->multi_tags_popup_dialog)
 	{
-		t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_WINDOW_BOX], t3gui_box_proc, 0, 0, 640, h, 0, 0, 0, 0, NULL, NULL, NULL);
+		t3gui_dialog_add_element(uip->multi_tags_popup_dialog->dialog, uip->multi_tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_WINDOW_BOX], t3gui_box_proc, 0, 0, 640, h, 0, 0, 0, 0, NULL, NULL, NULL);
 		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 		{
-			if(omo_multi_tag_type[i])
+			if(uip->tag_enabled[i])
 			{
 				row++;
 				if(row > rows / 2)
@@ -53,18 +53,18 @@ bool omo_open_multi_tags_dialog(OMO_UI * uip, void * data)
 					column = 1;
 					y = 8;
 				}
-				t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, 8 + 320 * column, y, 320 - 16, al_get_font_line_height(uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]), 0, 0, 0, 0, (void *)omo_multi_tag_type[i], NULL, NULL);
-				y += al_get_font_line_height(uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 2;
+				t3gui_dialog_add_element(uip->multi_tags_popup_dialog->dialog, uip->multi_tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, 8 + 320 * column, y, 320 - 16, al_get_font_line_height(uip->multi_tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]), 0, 0, 0, 0, (void *)omo_tag_type[i], NULL, NULL);
+				y += al_get_font_line_height(uip->multi_tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 2;
 				strcpy(uip->original_tags_text[i], uip->tags_text[i]);
-				t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_edit_proc, 8 + 320 * column, y, 320 - 16, al_get_font_line_height(uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 4, 0, edit_flags, 256, 0, uip->tags_text[i], NULL, NULL);
+				t3gui_dialog_add_element(uip->multi_tags_popup_dialog->dialog, uip->multi_tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_edit_proc, 8 + 320 * column, y, 320 - 16, al_get_font_line_height(uip->multi_tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 4, 0, edit_flags, 256, 0, uip->tags_text[i], NULL, NULL);
 				edit_flags = 0;
-				y += al_get_font_line_height(uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) * 2 + 2;
+				y += al_get_font_line_height(uip->multi_tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) * 2 + 2;
 			}
 		}
 		y += 12;
-		uip->tags_ok_button_element = t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8 + 320 * column, y, 320 / 2 - 8 - 4, 32, '\r', 0, 0, 0, "Okay", ui_tags_button_proc, NULL);
-		t3gui_dialog_add_element(uip->tags_popup_dialog->dialog, uip->tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 320 * column + 320 / 2 + 4, y, 320 / 2 - 8 - 4, 32, 0, 0, 0, 1, "Cancel", ui_tags_button_proc, NULL);
-		t3gui_show_dialog(uip->tags_popup_dialog->dialog, t3f_queue, T3GUI_PLAYER_CLEAR, data);
+		uip->tags_ok_button_element = t3gui_dialog_add_element(uip->multi_tags_popup_dialog->dialog, uip->multi_tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8 + 320 * column, y, 320 / 2 - 8 - 4, 32, '\r', 0, 0, 0, "Okay", ui_tags_button_proc, NULL);
+		t3gui_dialog_add_element(uip->multi_tags_popup_dialog->dialog, uip->multi_tags_popup_dialog->theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 320 * column + 320 / 2 + 4, y, 320 / 2 - 8 - 4, 32, 0, 0, 0, 1, "Cancel", ui_tags_button_proc, NULL);
+		t3gui_show_dialog(uip->multi_tags_popup_dialog->dialog, t3f_queue, T3GUI_PLAYER_CLEAR, data);
 		return true;
 	}
 	return false;
@@ -72,8 +72,8 @@ bool omo_open_multi_tags_dialog(OMO_UI * uip, void * data)
 
 void omo_close_multi_tags_dialog(OMO_UI * uip, void * data)
 {
-	omo_close_popup_dialog(uip->tags_popup_dialog);
-	uip->tags_popup_dialog = NULL;
+	omo_close_popup_dialog(uip->multi_tags_popup_dialog);
+	uip->multi_tags_popup_dialog = NULL;
 }
 
 void omo_multi_tags_dialog_logic(void * data)
@@ -84,7 +84,8 @@ void omo_multi_tags_dialog_logic(void * data)
 	bool update_songs = false;
 	bool update_tags = false;
 	const char * val;
-	int i;
+	const char * id;
+	int i, j;
 
 	if(t3f_key[ALLEGRO_KEY_ESCAPE])
 	{
@@ -120,48 +121,68 @@ void omo_multi_tags_dialog_logic(void * data)
 		strcpy(app->edit_song_id, app->ui->tags_entry);
 		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 		{
-			if(omo_multi_tag_type[i] && strcmp(app->ui->tags_text[i], app->ui->original_tags_text[i]))
+			if(app->ui->tag_enabled[i] && strcmp(app->ui->tags_text[i], app->ui->original_tags_text[i]))
 			{
-				if(!strcmp(omo_multi_tag_type[i], "Artist"))
+				if(!strcmp(omo_tag_type[i], "Artist"))
 				{
 					update_artists = true;
 					update_songs = true;
 				}
-				else if(!strcmp(omo_multi_tag_type[i], "Album Artist"))
+				else if(!strcmp(omo_tag_type[i], "Album Artist"))
 				{
 					update_artists = true;
 					update_songs = true;
 				}
-				else if(!strcmp(omo_multi_tag_type[i], "Album"))
+				else if(!strcmp(omo_tag_type[i], "Album"))
 				{
 					update_albums = true;
 					update_songs = true;
 				}
-				else if(!strcmp(omo_multi_tag_type[i], "Title"))
+				else if(!strcmp(omo_tag_type[i], "Title"))
 				{
 					update_songs = true;
 				}
-				if(strlen(app->ui->tags_text[i]) == 0)
+				for(j = 0; j < app->player->queue->entry_count; j++)
 				{
-					omo_remove_database_key(app->library->entry_database, app->ui->tags_entry, omo_multi_tag_type[i]);
-				}
-				else
-				{
-					omo_set_database_value(app->library->entry_database, app->ui->tags_entry, omo_multi_tag_type[i], app->ui->tags_text[i]);
+					if(omo_queue_item_selected(app->ui->ui_queue_list_element, j))
+					{
+						id = omo_get_queue_entry_id(app->player->queue, j, app->library);
+						if(strlen(app->ui->tags_text[i]) == 0)
+						{
+							omo_remove_database_key(app->library->entry_database, id, omo_tag_type[i]);
+						}
+						else
+						{
+							omo_set_database_value(app->library->entry_database, id, omo_tag_type[i], app->ui->tags_text[i]);
+						}
+					}
 				}
 				update_tags = true;
 			}
 		}
 		if(update_tags)
 		{
-			omo_set_database_value(app->library->entry_database, app->ui->tags_entry, "Submitted", "false");
+			for(j = 0; j < app->player->queue->entry_count; j++)
+			{
+				if(omo_queue_item_selected(app->ui->ui_queue_list_element, j))
+				{
+					id = omo_get_queue_entry_id(app->player->queue, j, app->library);
+					omo_set_database_value(app->library->entry_database, id, "Submitted", "false");
+				}
+			}
 			app->spawn_cloud_thread = true;
 		}
 		omo_discard_entry_backup(app->library);
 		omo_close_multi_tags_dialog(app->ui, app);
 		if(app->ui->tags_queue_entry >= 0)
 		{
-			omo_get_queue_entry_tags(app->player->queue, app->ui->tags_queue_entry, app->library);
+			for(j = 0; j < app->player->queue->entry_count; j++)
+			{
+				if(omo_queue_item_selected(app->ui->ui_queue_list_element, j))
+				{
+					omo_get_queue_entry_tags(app->player->queue, j, app->library);
+				}
+			}
 		}
 		else
 		{

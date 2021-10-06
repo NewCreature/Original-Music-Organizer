@@ -343,6 +343,10 @@ void omo_exit(APP_INSTANCE * app)
 	{
 		omo_close_tags_dialog(app->ui, app);
 	}
+	if(app->ui->multi_tags_popup_dialog)
+	{
+		omo_close_tags_dialog(app->ui, app);
+	}
 	if(app->ui->split_track_popup_dialog)
 	{
 		omo_close_split_track_dialog(app->ui, app);
