@@ -6,6 +6,7 @@
 #include "library_helpers.h"
 #include "queue_helpers.h"
 #include "profile.h"
+#include "ui/rebase_song_folder_dialog.h"
 
 static void file_chooser_thread_helper(void * data)
 {
@@ -328,6 +329,12 @@ void omo_file_chooser_logic(void * data)
 						al_merge_config_into(app->library->entry_database->config, config);
 						al_destroy_config(config);
 					}
+					break;
+				}
+				case OMO_FILE_CHOOSER_REBASE_SONG_FOLDER:
+				{
+					al_set_config_value(t3f_config, "Settings", "base_path", al_get_native_file_dialog_path(app->file_chooser, 0));
+					omo_open_rebase_song_folder_dialog(app->ui, data);
 					break;
 				}
 			}

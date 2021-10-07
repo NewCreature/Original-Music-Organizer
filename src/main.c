@@ -29,6 +29,7 @@
 #include "library_helpers.h"
 #include "threads.h"
 #include "ui/about_dialog.h"
+#include "ui/rebase_song_folder_dialog.h"
 
 static int queue_list_visible_elements(T3GUI_ELEMENT * element)
 {
@@ -181,6 +182,10 @@ void omo_logic(void * data)
 			{
 				omo_new_profile_dialog_logic(data);
 			}
+			else if(app->ui->rebase_song_folder_popup_dialog)
+			{
+				omo_rebase_song_folder_dialog_logic(data);
+			}
 			else if(app->ui->filter_popup_dialog)
 			{
 				omo_filter_dialog_logic(data);
@@ -319,6 +324,12 @@ void omo_render(void * data)
 			if(app->ui->new_profile_popup_dialog)
 			{
 				al_set_target_bitmap(al_get_backbuffer(app->ui->new_profile_popup_dialog->display));
+				al_flip_display();
+				al_set_target_bitmap(al_get_backbuffer(t3f_display));
+			}
+			if(app->ui->rebase_song_folder_popup_dialog)
+			{
+				al_set_target_bitmap(al_get_backbuffer(app->ui->rebase_song_folder_popup_dialog->display));
 				al_flip_display();
 				al_set_target_bitmap(al_get_backbuffer(t3f_display));
 			}

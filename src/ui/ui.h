@@ -84,6 +84,11 @@ typedef struct
 	char new_profile_text[OMO_UI_MAX_TAG_LENGTH];
 	T3GUI_ELEMENT * new_profile_ok_button_element;
 
+	/* new profile dialog */
+	OMO_UI_POPUP_DIALOG * rebase_song_folder_popup_dialog;
+	char rebase_song_folder_text[OMO_UI_MAX_TAG_LENGTH];
+	T3GUI_ELEMENT * rebase_song_folder_ok_button_element;
+
 	/* filter dialog */
 	OMO_UI_POPUP_DIALOG * filter_popup_dialog;
 	T3GUI_ELEMENT * filter_ok_button_element;

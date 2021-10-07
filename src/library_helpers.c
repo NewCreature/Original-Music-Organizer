@@ -1550,3 +1550,47 @@ double omo_get_library_entry_length(OMO_LIBRARY * lp, const char * id)
 	}
 	return entry_length;
 }
+
+void omo_rebase_library_file_database(OMO_LIBRARY * lp, const char * base_path, const char * rebase_path)
+{
+	ALLEGRO_CONFIG * new_config;
+	ALLEGRO_CONFIG_SECTION * config_section;
+	ALLEGRO_CONFIG_ENTRY * config_entry;
+	const char * section;
+	const char * val;
+	const char * suffix;
+	int l, l2;
+	char write_section[1024];
+
+	if(lp->file_database->config)
+	{
+		new_config = al_create_config();
+		if(new_config)
+		{
+			section = al_get_first_config_section(lp->file_database->config, &config_section);
+			while(section)
+			{
+				/* rewrite section name using rebase_path if the base matches the section name */
+				l = strlen(section);
+				l2 = strlen(rebase_path);
+				if(l >= l2)
+				{
+					if(!memcmp(section, rebase_path, l2))
+					{
+						suffix = &section[l2];
+						sprintf(write_section, "%s%s", base_path, suffix);
+						val = al_get_first_config_entry(lp->file_database->config, section, &config_entry);
+						while(val)
+						{
+							al_set_config_value(new_config, write_section, val, al_get_config_value(lp->file_database->config, section, val));
+							val = al_get_next_config_entry(&config_entry);
+						}
+					}
+				}
+				section = al_get_next_config_section(&config_section);
+			}
+			al_destroy_config(lp->file_database->config);
+			lp->file_database->config = new_config;
+		}
+	}
+}

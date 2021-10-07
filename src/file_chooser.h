@@ -10,6 +10,7 @@
 #define OMO_FILE_CHOOSER_EXPORT_PLAYLIST       6
 #define OMO_FILE_CHOOSER_IMPORT_FILE_DATABASE  7
 #define OMO_FILE_CHOOSER_IMPORT_ENTRY_DATABASE 8
+#define OMO_FILE_CHOOSER_REBASE_SONG_FOLDER    9
 
 bool omo_start_file_chooser(void * data, const char * initial, const char * title, const char * types, int mode, bool threaded);
 void omo_file_chooser_logic(void * data);

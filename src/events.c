@@ -9,6 +9,7 @@
 #include "ui/tagger_key_dialog.h"
 #include "ui/filter_dialog.h"
 #include "ui/new_profile_dialog.h"
+#include "ui/rebase_song_folder_dialog.h"
 #include "ui/split_track_dialog.h"
 #include "ui/about_dialog.h"
 
@@ -43,6 +44,10 @@ void omo_event_handler(ALLEGRO_EVENT * event, void * data)
 			else if(app->ui->new_profile_popup_dialog && event->display.source == app->ui->new_profile_popup_dialog->display)
 			{
 				omo_close_new_profile_dialog(app->ui, data);
+			}
+			else if(app->ui->rebase_song_folder_popup_dialog && event->display.source == app->ui->rebase_song_folder_popup_dialog->display)
+			{
+				omo_close_rebase_song_folder_dialog(app->ui, data);
 			}
 			else if(app->ui->filter_popup_dialog && event->display.source == app->ui->filter_popup_dialog->display)
 			{
