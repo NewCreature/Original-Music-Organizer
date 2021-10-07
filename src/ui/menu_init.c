@@ -103,6 +103,9 @@ bool omo_setup_menus(void * data)
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Clear Library Folders", 0, NULL, omo_menu_library_clear_folders, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Rescan Library Folders", 0, NULL, omo_menu_library_rescan_folders, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Import File Database", 0, NULL, omo_menu_library_import_file_database, omo_menu_base_update_proc);
+	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Import Entry Database", 0, NULL, omo_menu_library_import_entry_database, omo_menu_base_update_proc);
+	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Edit Filter", 0, NULL, omo_menu_library_edit_filter, omo_menu_base_update_proc);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
 	t3f_add_menu_item(app->menu[OMO_MENU_LIBRARY], "Submit Library Tags", 0, NULL, omo_menu_library_submit_tags, omo_menu_cloud_update_proc);

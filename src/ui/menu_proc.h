@@ -31,6 +31,8 @@ int omo_menu_library_remove_profile(int id, void * data);
 int omo_menu_library_add_folder(int id, void * data);
 int omo_menu_library_clear_folders(int id, void * data);
 int omo_menu_library_rescan_folders(int id, void * data);
+int omo_menu_library_import_file_database(int id, void * data);
+int omo_menu_library_import_entry_database(int id, void * data);
 int omo_menu_library_edit_filter(int id, void * data);
 int omo_menu_library_edit_tags(int id, void * data);
 int omo_menu_library_split_track(int id, void * data);

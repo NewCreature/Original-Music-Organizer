@@ -100,6 +100,7 @@ void omo_file_chooser_logic(void * data)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	OMO_FILE_HELPER_DATA file_helper_data;
 	ALLEGRO_PATH * path;
+	ALLEGRO_CONFIG * config = NULL;
 	int total_files = 0;
 	int old_queue_size = 0;
 	const char * val;
@@ -307,6 +308,26 @@ void omo_file_chooser_logic(void * data)
 					al_set_config_value(t3f_config, "Settings", "last_playlist_filename", al_path_cstr(path, '/'));
 					omo_export_queue_to_playlist(app->player->queue, al_path_cstr(path, '/'));
 					al_destroy_path(path);
+					break;
+				}
+				case OMO_FILE_CHOOSER_IMPORT_FILE_DATABASE:
+				{
+					config = al_load_config_file(al_get_native_file_dialog_path(app->file_chooser, 0));
+					if(config)
+					{
+						al_merge_config_into(app->library->file_database->config, config);
+						al_destroy_config(config);
+					}
+					break;
+				}
+				case OMO_FILE_CHOOSER_IMPORT_ENTRY_DATABASE:
+				{
+					config = al_load_config_file(al_get_native_file_dialog_path(app->file_chooser, 0));
+					if(config)
+					{
+						al_merge_config_into(app->library->entry_database->config, config);
+						al_destroy_config(config);
+					}
 					break;
 				}
 			}

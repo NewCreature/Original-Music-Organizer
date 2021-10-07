@@ -711,6 +711,26 @@ int omo_menu_library_rescan_folders(int id, void * data)
 	return 1;
 }
 
+int omo_menu_library_import_file_database(int id, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	app->file_chooser_mode = OMO_FILE_CHOOSER_IMPORT_FILE_DATABASE;
+	app->file_chooser_done = false;
+	omo_start_file_chooser(data, NULL, "Select database file.", "*.ini", ALLEGRO_FILECHOOSER_FILE_MUST_EXIST, true);
+	return 1;
+}
+
+int omo_menu_library_import_entry_database(int id, void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+
+	app->file_chooser_mode = OMO_FILE_CHOOSER_IMPORT_ENTRY_DATABASE;
+	app->file_chooser_done = false;
+	omo_start_file_chooser(data, NULL, "Select database file.", "*.ini", ALLEGRO_FILECHOOSER_FILE_MUST_EXIST, true);
+	return 1;
+}
+
 int omo_menu_library_edit_filter(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
