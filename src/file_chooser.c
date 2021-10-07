@@ -1,6 +1,7 @@
 #include "t3f/t3f.h"
 #include "t3f/file_utils.h"
 #include "instance.h"
+#include "file_chooser.h"
 #include "file_helpers.h"
 #include "library_helpers.h"
 #include "queue_helpers.h"
@@ -117,7 +118,7 @@ void omo_file_chooser_logic(void * data)
 			al_set_config_value(t3f_config, "Settings", "last_music_filename", al_get_native_file_dialog_path(app->file_chooser, 0));
 			switch(app->file_chooser_mode)
 			{
-				case 0:
+				case OMO_FILE_CHOOSER_PLAY_FILES:
 				{
 					al_stop_timer(t3f_timer);
 					omo_stop_player(app->player);
@@ -140,7 +141,7 @@ void omo_file_chooser_logic(void * data)
 					al_start_timer(t3f_timer);
 					break;
 				}
-				case 1:
+				case OMO_FILE_CHOOSER_QUEUE_FILES:
 				{
 					al_stop_timer(t3f_timer);
 					total_files = omo_get_total_files(app->file_chooser, data);
@@ -162,7 +163,7 @@ void omo_file_chooser_logic(void * data)
 					al_start_timer(t3f_timer);
 					break;
 				}
-				case 2:
+				case OMO_FILE_CHOOSER_PLAY_FOLDER:
 				{
 					al_stop_timer(t3f_timer);
 					omo_stop_player(app->player);
@@ -195,7 +196,7 @@ void omo_file_chooser_logic(void * data)
 					al_start_timer(t3f_timer);
 					break;
 				}
-				case 3:
+				case OMO_FILE_CHOOSER_QUEUE_FOLDER:
 				{
 					al_stop_timer(t3f_timer);
 					omo_setup_file_helper_data(&file_helper_data, app->archive_handler_registry, app->codec_handler_registry, NULL, app->library, app->player->queue, app->queue_temp_path, NULL);
@@ -223,7 +224,7 @@ void omo_file_chooser_logic(void * data)
 					al_start_timer(t3f_timer);
 					break;
 				}
-				case 4:
+				case OMO_FILE_CHOOSER_ADD_LIBRARY_FOLDER:
 				{
 					al_stop_timer(t3f_timer);
 					al_set_config_value(t3f_config, "Settings", "last_music_folder", al_get_native_file_dialog_path(app->file_chooser, 0));
@@ -257,7 +258,7 @@ void omo_file_chooser_logic(void * data)
 					al_start_timer(t3f_timer);
 					break;
 				}
-				case 5:
+				case OMO_FILE_CHOOSER_LOAD_THEME:
 				{
 					al_set_config_value(t3f_config, "Settings", "theme", al_get_native_file_dialog_path(app->file_chooser, 0));
 					for(i = 0; i < app->ui->ui_dialog->elements; i++)
@@ -296,7 +297,7 @@ void omo_file_chooser_logic(void * data)
 					}
 					break;
 				}
-				case 6:
+				case OMO_FILE_CHOOSER_EXPORT_PLAYLIST:
 				{
 					path = al_create_path(al_get_native_file_dialog_path(app->file_chooser, 0));
 					if(path)

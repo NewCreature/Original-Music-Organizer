@@ -200,7 +200,7 @@ int omo_menu_file_play_files(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	app->file_chooser_mode = 0;
+	app->file_chooser_mode = OMO_FILE_CHOOSER_PLAY_FILES;
 	app->file_chooser_done = false;
 	omo_start_file_chooser(data, al_get_config_value(t3f_config, "Settings", "last_music_filename"), "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE, true);
 	return 1;
@@ -210,7 +210,7 @@ int omo_menu_file_queue_files(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	app->file_chooser_mode = 1;
+	app->file_chooser_mode = OMO_FILE_CHOOSER_QUEUE_FILES;
 	app->file_chooser_done = false;
 	omo_start_file_chooser(data, al_get_config_value(t3f_config, "Settings", "last_music_filename"), "Select music files.", omo_get_type_string(data), ALLEGRO_FILECHOOSER_FILE_MUST_EXIST | ALLEGRO_FILECHOOSER_MULTIPLE, true);
 	return 1;
@@ -220,7 +220,7 @@ int omo_menu_file_play_folder(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	app->file_chooser_mode = 2;
+	app->file_chooser_mode = OMO_FILE_CHOOSER_PLAY_FOLDER;
 	app->file_chooser_done = false;
 	omo_start_file_chooser(data, al_get_config_value(t3f_config, "Settings", "last_music_filename"), "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER, true);
 	return 1;
@@ -230,7 +230,7 @@ int omo_menu_file_queue_folder(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	app->file_chooser_mode = 3;
+	app->file_chooser_mode = OMO_FILE_CHOOSER_QUEUE_FOLDER;
 	app->file_chooser_done = false;
 	omo_start_file_chooser(data, al_get_config_value(t3f_config, "Settings", "last_music_filename"), "Select music folder.", NULL, ALLEGRO_FILECHOOSER_FOLDER, true);
 	return 1;
@@ -240,7 +240,7 @@ int omo_menu_file_save_playlist(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	app->file_chooser_mode = 6;
+	app->file_chooser_mode = OMO_FILE_CHOOSER_EXPORT_PLAYLIST;
 	app->file_chooser_done = false;
 	omo_start_file_chooser(data, al_get_config_value(t3f_config, "Settings", "last_playlist_filename"), "Enter playlist file name.", NULL, ALLEGRO_FILECHOOSER_SAVE, true);
 	return 1;
@@ -258,7 +258,7 @@ int omo_menu_file_load_theme(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	app->file_chooser_mode = 5;
+	app->file_chooser_mode = OMO_FILE_CHOOSER_LOAD_THEME;
 	app->file_chooser_done = false;
 	omo_start_file_chooser(data, NULL, "Select theme file.", "*.ini", ALLEGRO_FILECHOOSER_FILE_MUST_EXIST, true);
 
@@ -676,7 +676,7 @@ int omo_menu_library_add_folder(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	app->file_chooser_mode = 4;
+	app->file_chooser_mode = OMO_FILE_CHOOSER_ADD_LIBRARY_FOLDER;
 	app->file_chooser_done = false;
 	omo_start_file_chooser(data, al_get_config_value(t3f_config, "Settings", "last_music_filename"), "Select library folder.", al_get_config_value(t3f_config, "Settings", "last_music_folder"), ALLEGRO_FILECHOOSER_FOLDER, true);
 	return 1;
