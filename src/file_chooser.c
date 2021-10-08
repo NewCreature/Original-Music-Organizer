@@ -101,6 +101,7 @@ void omo_file_chooser_logic(void * data)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	OMO_FILE_HELPER_DATA file_helper_data;
 	ALLEGRO_PATH * path;
+	bool temp_library = false;
 	ALLEGRO_CONFIG * config = NULL;
 	int total_files = 0;
 	int old_queue_size = 0;
@@ -111,6 +112,8 @@ void omo_file_chooser_logic(void * data)
 	int d1[256];
 	int d2[256];
 	int d3[256];
+	char file_database_fn[1024];
+	char entry_database_fn[1024];
 	int i;
 
 	if(app->file_chooser && app->file_chooser_done)
@@ -316,10 +319,23 @@ void omo_file_chooser_logic(void * data)
 					config = al_load_config_file(al_get_native_file_dialog_path(app->file_chooser, 0));
 					if(config)
 					{
+						if(!app->library)
+						{
+							t3f_get_filename(t3f_data_path, "files.ini", file_database_fn, 1024);
+							t3f_get_filename(t3f_data_path, "database.ini", entry_database_fn, 1024);
+							app->library = omo_create_library(file_database_fn, entry_database_fn);
+							temp_library = true;
+						}
 						al_lock_mutex(app->library->file_database->mutex);
 						al_merge_config_into(app->library->file_database->config, config);
 						al_unlock_mutex(app->library->file_database->mutex);
 						al_destroy_config(config);
+						if(temp_library)
+						{
+							omo_save_library(app->library);
+							omo_destroy_library(app->library);
+							app->library = NULL;
+						}
 					}
 					break;
 				}
@@ -328,10 +344,23 @@ void omo_file_chooser_logic(void * data)
 					config = al_load_config_file(al_get_native_file_dialog_path(app->file_chooser, 0));
 					if(config)
 					{
+						if(!app->library)
+						{
+							t3f_get_filename(t3f_data_path, "files.ini", file_database_fn, 1024);
+							t3f_get_filename(t3f_data_path, "database.ini", entry_database_fn, 1024);
+							app->library = omo_create_library(file_database_fn, entry_database_fn);
+							temp_library = true;
+						}
 						al_lock_mutex(app->library->entry_database->mutex);
 						al_merge_config_into(app->library->entry_database->config, config);
-						al_lock_mutex(app->library->entry_database->mutex);
+						al_unlock_mutex(app->library->entry_database->mutex);
 						al_destroy_config(config);
+						if(temp_library)
+						{
+							omo_save_library(app->library);
+							omo_destroy_library(app->library);
+							app->library = NULL;
+						}
 					}
 					break;
 				}

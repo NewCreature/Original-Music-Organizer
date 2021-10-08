@@ -1561,7 +1561,17 @@ void omo_rebase_library_file_database(OMO_LIBRARY * lp, const char * base_path, 
 	const char * suffix;
 	int l, l2;
 	char write_section[1024];
+	bool temp_library = false;
+	char file_database_fn[1024];
+	char entry_database_fn[1024];
 
+	if(!lp)
+	{
+		t3f_get_filename(t3f_data_path, "files.ini", file_database_fn, 1024);
+		t3f_get_filename(t3f_data_path, "database.ini", entry_database_fn, 1024);
+		lp = omo_create_library(file_database_fn, entry_database_fn);
+		temp_library = true;
+	}
 	if(lp->file_database->config)
 	{
 		new_config = al_create_config();
@@ -1594,5 +1604,10 @@ void omo_rebase_library_file_database(OMO_LIBRARY * lp, const char * base_path, 
 			lp->file_database->config = new_config;
 			al_unlock_mutex(lp->file_database->mutex);
 		}
+	}
+	if(temp_library)
+	{
+		omo_save_library(lp);
+		omo_destroy_library(lp);
 	}
 }
