@@ -316,7 +316,9 @@ void omo_file_chooser_logic(void * data)
 					config = al_load_config_file(al_get_native_file_dialog_path(app->file_chooser, 0));
 					if(config)
 					{
+						al_lock_mutex(app->library->file_database->mutex);
 						al_merge_config_into(app->library->file_database->config, config);
+						al_unlock_mutex(app->library->file_database->mutex);
 						al_destroy_config(config);
 					}
 					break;
@@ -326,7 +328,9 @@ void omo_file_chooser_logic(void * data)
 					config = al_load_config_file(al_get_native_file_dialog_path(app->file_chooser, 0));
 					if(config)
 					{
+						al_lock_mutex(app->library->entry_database->mutex);
 						al_merge_config_into(app->library->entry_database->config, config);
+						al_lock_mutex(app->library->entry_database->mutex);
 						al_destroy_config(config);
 					}
 					break;

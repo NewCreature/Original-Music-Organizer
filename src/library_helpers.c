@@ -1567,6 +1567,7 @@ void omo_rebase_library_file_database(OMO_LIBRARY * lp, const char * base_path, 
 		new_config = al_create_config();
 		if(new_config)
 		{
+			al_lock_mutex(lp->file_database->mutex);
 			section = al_get_first_config_section(lp->file_database->config, &config_section);
 			while(section)
 			{
@@ -1591,6 +1592,7 @@ void omo_rebase_library_file_database(OMO_LIBRARY * lp, const char * base_path, 
 			}
 			al_destroy_config(lp->file_database->config);
 			lp->file_database->config = new_config;
+			al_unlock_mutex(lp->file_database->mutex);
 		}
 	}
 }
