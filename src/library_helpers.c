@@ -448,6 +448,19 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 	int c, i, j;
 	const char * cache_fn;
 
+	cache_fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.library", buffer, 1024);
+	if(!cache_fn)
+	{
+		return false;
+	}
+	val = al_get_config_value(t3f_config, "Settings", "manual_scan");
+	if(val && !strcmp(val, "true"))
+	{
+		if(omo_load_library_cache(app->loading_library, cache_fn))
+		{
+			return true;
+		}
+	}
 	val = al_get_config_value(app->library_config, omo_get_profile_section(app->library_config, omo_get_profile(omo_get_current_profile()), section_buffer), "library_folders");
 	if(!val || atoi(val) < 1)
 	{
@@ -469,16 +482,11 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 			}
 		}
 	}
-	val = al_get_config_value(t3f_config, "Settings", "profile");
-	if(!val)
-	{
-		val = "Default";
-	}
-	cache_fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.library", buffer, 1024);
-	if(!cache_fn)
-	{
-		return false;
-	}
+//	val = al_get_config_value(t3f_config, "Settings", "profile");
+//	if(!val)
+//	{
+//		val = "Default";
+//	}
 	if(app->loading_library->modified_time > get_path_mtime(cache_fn))
 	{
 		app->loading_library->modified = true;
