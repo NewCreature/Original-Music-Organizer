@@ -270,7 +270,7 @@ static void omo_count_archive_files(const char * fn, OMO_ARCHIVE_HANDLER * archi
 				extracted_fn = archive_handler->extract_file(archive_handler_data, i, fn_buffer);
 				if(extracted_fn)
 				{
-					c2 = codec_handler->get_track_count(NULL, extracted_fn);
+					c2 = codec_handler->get_track_count ? codec_handler->get_track_count(NULL, extracted_fn) : 1;
 					al_remove_filename(extracted_fn);
 					if(file_helper_data->library)
 					{
@@ -349,7 +349,7 @@ bool omo_count_file(const char * fn, bool isfolder, void * data)
 			}
 			else
 			{
-				c2 = codec_handler->get_track_count(NULL, fn);
+				c2 = codec_handler->get_track_count ? codec_handler->get_track_count(NULL, fn) : 1;
 				if(file_helper_data->library)
 				{
 					sprintf(buf2, "%d", c2);
@@ -448,7 +448,7 @@ bool omo_add_file(const char * fn, bool isfolder, void * data)
 			}
 			else
 			{
-				c = codec_handler->get_track_count(NULL, fn);
+				c = codec_handler->get_track_count ? codec_handler->get_track_count(NULL, fn) : 1;
 			}
 			for(i = 0; i < c; i++)
 			{
@@ -740,7 +740,7 @@ bool omo_queue_file(const char * fn, bool isfolder, void * data)
 						extracted_fn = archive_handler->extract_file(archive_handler_data, i, fn_buffer);
 						if(extracted_fn)
 						{
-							c2 = codec_handler->get_track_count(NULL, extracted_fn);
+							c2 = codec_handler->get_track_count ? codec_handler->get_track_count(NULL, extracted_fn) : 1;
 							al_remove_filename(extracted_fn);
 						}
 					}
@@ -786,7 +786,7 @@ bool omo_queue_file(const char * fn, bool isfolder, void * data)
 			}
 			else
 			{
-				c = codec_handler->get_track_count(NULL, fn);
+				c = codec_handler->get_track_count ? codec_handler->get_track_count(NULL, fn) : 1;
 			}
 			for(i = 0; i < c; i++)
 			{
