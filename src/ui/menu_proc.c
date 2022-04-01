@@ -90,7 +90,7 @@ static void open_multi_tags_dialog(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	const char * val2;
-	int i, j;
+	int i, j, c = 0;
 	bool first = true;
 
 	for(j = 0; j < app->player->queue->entry_count; j++)
@@ -100,6 +100,7 @@ static void open_multi_tags_dialog(void * data)
 			app->ui->tags_entry = omo_get_queue_entry_id(app->player->queue, j, app->library);
 			if(app->ui->tags_entry)
 			{
+				c++;
 				if(omo_backup_entry_tags(app->library, app->ui->tags_entry, first))
 				{
 					if(app->prefetch_tags)
@@ -123,7 +124,10 @@ static void open_multi_tags_dialog(void * data)
 			}
 		}
 	}
-	omo_open_multi_tags_dialog(app->ui, app);
+	if(c)
+	{
+		omo_open_multi_tags_dialog(app->ui, app);
+	}
 }
 
 static void open_album_tags_dialog(void * data)
