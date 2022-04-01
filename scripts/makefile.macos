@@ -3,7 +3,7 @@ T3F_CXX_STDLIB = -l$(MACOS_CXX_STDLIB)
 CC = $(MACOS_CC)
 CFLAGS = $(APP_CFLAGS) $(T3F_CFLAGS) $(MACOS_ARCHITECTURES) $(MACOS_CONFIG_CFLAGS) $(MACOS_SYS_ROOT) $(MACOS_MIN_VERSION) $(MACOS_CXX_STANDARD) $(APP_CFLAGS) $(MACOS_CFLAGS) -I/usr/local/include
 CXX = $(MACOS_CXX)
-CXXFLAGS = $(CFLAGS) -stdlib=lib$(MACOS_CXX_STDLIB)
+CXXFLAGS = $(CFLAGS) -stdlib=lib$(MACOS_CXX_STDLIB) -std=c++11
 LFLAGS = $(MACOS_CONFIG_LFLAGS) $(MACOS_ARCHITECTURES) $(MACOS_SYS_ROOT) $(MACOS_MIN_VERSION) -L/usr/local/lib -stdlib=lib$(MACOS_CXX_STDLIB)
 ALLEGRO_SUFFIX = $(MACOS_CONFIG_ALLEGRO_SUFFIX)
 PKG_CONFIG_OPTIONS = $(MACOS_CONFIG_PKG_CONFIG_OPTIONS)
@@ -82,13 +82,16 @@ mac_bundle : ../icons/macos_icon.icns
 
 mac_universal_bundle:
 	make clean
-	make MACOS_ARCHITECTURES="-arch i386" APP_EXE_SUFFIX=-i386 MACOS_SDK=MacOSX10.13.sdk MACOS_CXX_STDLIB=stdc++ MACOS_MIN_VERSION=-mmacos-version-min=10.6
-	make clean
-	make MACOS_ARCHITECTURES="-arch x86_64" APP_EXE_SUFFIX=-x86_64 MACOS_SDK=MacOSX10.13.sdk MACOS_CXX_STDLIB=stdc++ MACOS_MIN_VERSION=-mmacos-version-min=10.6
+#	make MACOS_ARCHITECTURES="-arch i386" APP_EXE_SUFFIX=-i386 MACOS_SDK=MacOSX10.13.sdk MACOS_CXX_STDLIB=c++ MACOS_MIN_VERSION=-mmacos-version-min=10.7
+#	make clean
+	make MACOS_ARCHITECTURES="-arch x86_64" APP_EXE_SUFFIX=-x86_64 MACOS_SDK=MacOSX.sdk MACOS_CXX_STDLIB=c++ MACOS_MIN_VERSION=-mmacos-version-min=10.7
 	make clean
 	make MACOS_ARCHITECTURES="-arch arm64" APP_EXE_SUFFIX=-arm64 MACOS_SDK=MacOSX.sdk MACOS_MIN_VERSION=-mmacos-version-min=11.0
-	lipo -create $(APP_EXE_NAME)-i386 $(APP_EXE_NAME)-x86_64 $(APP_EXE_NAME)-arm64 -output $(APP_EXE_NAME)
-	rm $(APP_EXE_NAME)-i386 $(APP_EXE_NAME)-x86_64 $(APP_EXE_NAME)-arm64
+#	lipo -create $(APP_EXE_NAME)-i386 $(APP_EXE_NAME)-x86_64 $(APP_EXE_NAME)-arm64 -output $(APP_EXE_NAME)
+	lipo -create $(APP_EXE_NAME)-x86_64 $(APP_EXE_NAME)-arm64 -output $(APP_EXE_NAME)
+#	rm $(APP_EXE_NAME)-i386 $(APP_EXE_NAME)-x86_64 $(APP_EXE_NAME)-arm64
+	make mac_bundle
+	rm $(APP_EXE_NAME)-x86_64 $(APP_EXE_NAME)-arm64
 	make mac_bundle
 
 mac_package: mac_universal_bundle
