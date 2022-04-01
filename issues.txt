@@ -100,6 +100,8 @@ Long Term Goals
 v0.5.4
 ------
 
+[ ]Add disambiguation tag for albums with the same name.
+
 [X]Look into crash that happens when doing Shuffle All on entire library.
 
 [X]Fix missing support for dark mode on MacOS.
