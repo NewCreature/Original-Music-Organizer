@@ -247,6 +247,15 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	{
 		app->prefetch_tags = true;
 	}
+	val = al_get_config_value(t3f_config, "Settings", "disable_cloud_syncing");
+	if(val && !strcmp(val, "true"))
+	{
+		app->disable_cloud_syncing = true;
+	}
+	else
+	{
+		app->disable_cloud_syncing = false;
+	}
 
 	app->ui = omo_create_ui();
 	if(!app->ui)

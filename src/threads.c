@@ -3,6 +3,14 @@
 #include "queue_helpers.h"
 #include "cloud.h"
 
+void omo_spawn_cloud_thread(APP_INSTANCE * app)
+{
+	if(!app->disable_cloud_syncing)
+	{
+		app->spawn_cloud_thread = true;
+	}
+}
+
 static void kill_all_threads(APP_INSTANCE * app)
 {
 	if(app->player->queue && app->player->queue->thread)

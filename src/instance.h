@@ -52,6 +52,7 @@ typedef struct
 	bool cloud_thread_done;
 	char cloud_url[256];
 	bool prefetch_tags;
+	bool disable_cloud_syncing;
 
 	ALLEGRO_PATH * library_temp_path;
 	ALLEGRO_PATH * queue_temp_path;

@@ -231,7 +231,7 @@ void omo_logic(void * data)
 			omo_player_logic(app->player, app->library, app->archive_handler_registry, app->codec_handler_registry, app->player_temp_path);
 			if(app->player->new_tags)
 			{
-				app->spawn_cloud_thread = true;
+				omo_spawn_cloud_thread(app);
 				app->player->new_tags = false;
 			}
 			update_seek_pos(app);

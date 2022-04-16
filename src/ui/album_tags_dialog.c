@@ -4,6 +4,7 @@
 #include "../queue_helpers.h"
 #include "../library_helpers.h"
 #include "../cloud.h"
+#include "../threads.h"
 #include "dialog_proc.h"
 #include "menu_proc.h"
 
@@ -160,7 +161,7 @@ void omo_album_tags_dialog_logic(void * data)
 				id = app->library->entry[app->library->filtered_song_entry[j]]->id;
 				omo_set_database_value(app->library->entry_database, id, "Submitted", "false");
 			}
-			app->spawn_cloud_thread = true;
+			omo_spawn_cloud_thread(app);
 		}
 		omo_discard_entry_backup(app->library);
 		omo_close_album_tags_dialog(app->ui, app);
