@@ -117,6 +117,7 @@ T3GUI_ELEMENT * t3gui_dialog_add_element(T3GUI_DIALOG * dialog, T3GUI_THEME * th
 	t3gui_expand_dialog_element(dialog);
 	if(dialog->elements < dialog->allocated_elements)
 	{
+		memset(&dialog->element[dialog->elements], 0, sizeof(T3GUI_ELEMENT));
 		dialog->element[dialog->elements].proc = proc;
 		dialog->element[dialog->elements].x = x;
 		dialog->element[dialog->elements].y = y;
@@ -350,13 +351,16 @@ void t3gui_logic(void)
 	}
 }
 
-void t3gui_render(void)
+void t3gui_render(ALLEGRO_DISPLAY * dp)
 {
 	int i;
 
 	for(i = 0; i < t3gui_dialog_players; i++)
 	{
-		t3gui_draw_dialog(t3gui_dialog_player[i]);
+		if(!dp || dp == al_get_current_display())
+		{
+			t3gui_draw_dialog(t3gui_dialog_player[i]);
+		}
 	}
 }
 
@@ -399,21 +403,4 @@ int t3gui_get_mouse_button(int button)
 		return t3gui_dialog_player[t3gui_dialog_players - 1]->mouse_button[button];
 	}
 	return 0;
-}
-
-bool t3gui_get_key_state(int key_code)
-{
-	if(t3gui_dialog_players)
-	{
-		return t3gui_dialog_player[t3gui_dialog_players - 1]->key[key_code];
-	}
-	return false;
-}
-
-void t3gui_set_key_state(int key_code, bool onoff)
-{
-	if(t3gui_dialog_players)
-	{
-		t3gui_dialog_player[t3gui_dialog_players - 1]->key[key_code] = onoff;
-	}
 }

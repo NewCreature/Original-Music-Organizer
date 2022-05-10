@@ -89,138 +89,6 @@ static int cmp_shift_tab(const T3GUI_ELEMENT *d1, const T3GUI_ELEMENT *d2)
 }
 
 
-
-/* min_dist:
- *  Returns the minimum distance between dialogs 'd1' and 'd2'. 'main_axis'
- *  is taken account to give different weights to the axes in the distance
- *  formula, as well as to shift the actual position of 'd2' along the axis
- *  by the amount specified by 'bias'.
- */
-static int min_dist(const T3GUI_ELEMENT *d1, const T3GUI_ELEMENT *d2, enum axis main_axis, int bias)
-{
-   int x_left = d1->x - d2->x - d2->w + 1;
-   int x_right = d2->x - d1->x - d1->w + 1;
-   int y_top = d1->y - d2->y - d2->h + 1;
-   int y_bottom = d2->y - d1->y - d1->h + 1;
-
-   if (main_axis == X_AXIS) {
-      x_left -= bias;
-      x_right += bias;
-      y_top *= DISTANCE_RATIO;
-      y_bottom *= DISTANCE_RATIO;
-   }
-   else {
-      x_left *= DISTANCE_RATIO;
-      x_right *= DISTANCE_RATIO;
-      y_top -= bias;
-      y_bottom += bias;
-   }
-
-   if (x_left > 0) { /* d2 is left of d1 */
-      if (y_top > 0)  /* d2 is above d1 */
-         return x_left + y_top;
-      else if (y_bottom > 0)  /* d2 is below d1 */
-         return x_left + y_bottom;
-      else  /* vertically overlapping */
-         return x_left;
-   }
-   else if (x_right > 0) { /* d2 is right of d1 */
-      if (y_top > 0)  /* d2 is above d1 */
-         return x_right + y_top;
-      else if (y_bottom > 0)  /* d2 is below d1 */
-         return x_right + y_bottom;
-      else  /* vertically overlapping */
-         return x_right;
-   }
-   /* horizontally overlapping */
-   else if (y_top > 0)  /* d2 is above d1 */
-      return y_top;
-   else if (y_bottom > 0)  /* d2 is below d1 */
-      return y_bottom;
-   else  /* overlapping */
-      return 0;
-}
-
-
-
-/* cmp_right:
- *  Comparison function for right arrow key movement.
- */
-static int cmp_right(const T3GUI_ELEMENT *d1, const T3GUI_ELEMENT *d2)
-{
-   int bias;
-   int screen_w = 3000;//al_get_display_width(al_get_current_display());
-
-   /* Wrap around if d2 is not fully contained in the half-plan
-      delimited by d1's right edge and not containing it. */
-   if (d2->x < d1->x + d1->w)
-      bias = +screen_w;
-   else
-      bias = 0;
-
-   return min_dist(d1, d2, X_AXIS, bias);
-}
-
-
-
-/* cmp_left:
- *  Comparison function for left arrow key movement.
- */
-static int cmp_left(const T3GUI_ELEMENT *d1, const T3GUI_ELEMENT *d2)
-{
-   int bias;
-   int screen_w = 3000;//al_get_display_width(al_get_current_display());
-
-   /* Wrap around if d2 is not fully contained in the half-plan
-      delimited by d1's left edge and not containing it. */
-   if (d2->x + d2->w > d1->x)
-      bias = -screen_w;
-   else
-      bias = 0;
-
-   return min_dist(d1, d2, X_AXIS, bias);
-}
-
-
-
-/* cmp_down:
- *  Comparison function for down arrow key movement.
- */
-static int cmp_down(const T3GUI_ELEMENT *d1, const T3GUI_ELEMENT *d2)
-{
-   int bias;
-   int screen_h = 3000;//al_get_display_height(al_get_current_display());
-
-   /* Wrap around if d2 is not fully contained in the half-plan
-      delimited by d1's bottom edge and not containing it. */
-   if (d2->y < d1->y + d1->h)
-      bias = +screen_h;
-   else
-      bias = 0;
-
-   return min_dist(d1, d2, Y_AXIS, bias);
-}
-
-
-
-/* cmp_up:
- *  Comparison function for up arrow key movement.
- */
-static int cmp_up(const T3GUI_ELEMENT *d1, const T3GUI_ELEMENT *d2)
-{
-   int bias;
-   int screen_h = 3000;//al_get_display_height(al_get_current_display());
-
-   /* Wrap around if d2 is not fully contained in the half-plan
-      delimited by d1's top edge and not containing it. */
-   if (d2->y + d2->h > d1->y)
-      bias = -screen_h;
-   else
-      bias = 0;
-
-   return min_dist(d1, d2, Y_AXIS, bias);
-}
-
 /* offer_focus:
  *  Offers the input focus to a particular object.
  */
@@ -498,7 +366,6 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
 
         case ALLEGRO_EVENT_KEY_DOWN:
         {
-            player->key[event->keyboard.keycode] = true;
             switch(event->keyboard.keycode)
             {
                 case ALLEGRO_KEY_LSHIFT:
@@ -546,7 +413,6 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
 
         case ALLEGRO_EVENT_KEY_UP:
         {
-          player->key[event->keyboard.keycode] = false;
             switch(event->keyboard.keycode)
             {
                 case ALLEGRO_KEY_LSHIFT:   /* Shift released */
@@ -754,47 +620,52 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
 
         case ALLEGRO_EVENT_MOUSE_AXES:
         {
+          int n;
+          bool track = false;
           player->mouse_x = event->mouse.x;
           player->mouse_y = event->mouse.y;
           player->mouse_z = event->mouse.z;
+
+          /* Are objects tracking the mouse? */
+          if(event->mouse.x != old_mouse_x || event->mouse.y != old_mouse_y)
+          {
+              for (n=0; player->dialog[n].proc; n++)
+              {
+                  player->dialog[n].mousex = event->mouse.x;
+                  player->dialog[n].mousey = event->mouse.y;
+                  if (player->dialog[n].flags & D_TRACKMOUSE)
+                  {
+                      player->res |= t3gui_object_message(player->dialog+n, MSG_MOUSEMOVE, 0);
+                      track = true;
+                  }
+              }
+          }
             /* has mouse object changed? */
-            (void)0;
-            int mouse_obj = t3gui_find_mouse_object(player->dialog, event->mouse.x, event->mouse.y);
-            int n;
-            if (mouse_obj != player->mouse_obj)
+            if(!track)
             {
-                if (player->mouse_obj >= 0)
-                {
-                    player->dialog[player->mouse_obj].flags &= ~D_GOTMOUSE;
-                    MESSAGE(player, player->mouse_obj, MSG_LOSTMOUSE, 0);
-                }
-                if (mouse_obj >= 0)
-                {
-                    player->dialog[mouse_obj].flags |= D_GOTMOUSE;
-                    MESSAGE(player, mouse_obj, MSG_GOTMOUSE, 0);
-                }
-                player->mouse_obj = mouse_obj;
+              int mouse_obj = t3gui_find_mouse_object(player->dialog, event->mouse.x, event->mouse.y);
+              if (mouse_obj != player->mouse_obj)
+              {
+                  if (player->mouse_obj >= 0)
+                  {
+                      player->dialog[player->mouse_obj].flags &= ~D_GOTMOUSE;
+                      MESSAGE(player, player->mouse_obj, MSG_LOSTMOUSE, 0);
+                  }
+                  if (mouse_obj >= 0)
+                  {
+                      player->dialog[mouse_obj].flags |= D_GOTMOUSE;
+                      MESSAGE(player, mouse_obj, MSG_GOTMOUSE, 0);
+                  }
+                  player->mouse_obj = mouse_obj;
 
-                /* move the input focus as well? */
-                if ((player->focus_follows_mouse) && (player->mouse_obj != player->keyboard_obj))
-                {
-                    player->res |= offer_focus(player->dialog, player->mouse_obj, &player->mouse_obj, true);
-                }
+                  /* move the input focus as well? */
+                  if ((player->focus_follows_mouse) && (player->mouse_obj != player->keyboard_obj))
+                  {
+                      player->res |= offer_focus(player->dialog, player->mouse_obj, &player->mouse_obj, true);
+                  }
+              }
             }
 
-            /* Are objects tracking the mouse? */
-            if(event->mouse.x != old_mouse_x || event->mouse.y != old_mouse_y)
-            {
-                for (n=0; player->dialog[n].proc; n++)
-                {
-                    player->dialog[n].mousex = event->mouse.x;
-                    player->dialog[n].mousey = event->mouse.y;
-                    if (player->dialog[n].flags & D_TRACKMOUSE)
-                    {
-                        player->res |= t3gui_object_message(player->dialog+n, MSG_MOUSEMOVE, 0);
-                    }
-                }
-            }
             old_mouse_x = event->mouse.x;
             old_mouse_y = event->mouse.y;
             if (event->mouse.dz)
@@ -907,11 +778,13 @@ static void update_dialog(T3GUI_PLAYER * player)
         {
             al_emit_user_event(t3gui_get_event_source(), &my_event, t3gui_event_destructor);
         }
-        t3gui_close_dialog_by_element(player->dialog);
+        player->delete = true;
     }
-
-    /* Clear some status flags that should not be retained */
-    player->res &= ~D_USED_CHAR;
+    else
+    {
+      /* Clear some status flags that should not be retained */
+      player->res &= ~D_USED_CHAR;
+    }
 }
 
 /* TODO: secondary click, mouse wheel scrolling.
@@ -1035,7 +908,7 @@ T3GUI_PLAYER *t3gui_init_dialog(T3GUI_ELEMENT *dialog, int focus_obj, int flags,
     /* Set default "grey-out" colour */
     for (c=0; dialog[c].proc; c++)
     {
-        ALLEGRO_COLOR grey = t3gui_silver;
+//        ALLEGRO_COLOR grey = t3gui_silver;
 //      dialog[c].mg = grey;
     }
     player->paused = false;
@@ -1188,7 +1061,8 @@ void t3gui_process_dialog(T3GUI_PLAYER * player)
 {
     ALLEGRO_EVENT event;
 
-    t3gui_dialog_message(player->dialog, MSG_IDLE, 0, &player->obj);    while(al_get_next_event(player->input, &event))
+    t3gui_dialog_message(player->dialog, MSG_IDLE, 0, &player->obj);
+    while(al_get_next_event(player->input, &event))
 	{
         dialog_thread_internal_event_handler(player, &event);
         if(!player->paused)
@@ -1196,6 +1070,11 @@ void t3gui_process_dialog(T3GUI_PLAYER * player)
             dialog_thread_event_handler(player, &event);
         }
         update_dialog(player);
+        if(player->delete)
+        {
+          t3gui_close_dialog_by_element(player->dialog);
+          break;
+        }
     }
 }
 

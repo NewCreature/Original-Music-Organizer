@@ -6,7 +6,7 @@
 #include "nine_patch.h"
 #include "player.h"
 
-#define T3GUI_DIALOG_ELEMENT_CHUNK_SIZE 128
+#define T3GUI_DIALOG_ELEMENT_CHUNK_SIZE 1024
 #define T3GUI_DIALOG_PLAYER_CHUNK_SIZE  16
 
 typedef struct
@@ -34,13 +34,11 @@ bool t3gui_show_dialog_thread(T3GUI_DIALOG * dp, ALLEGRO_EVENT_QUEUE * qp, int f
 bool t3gui_close_dialog(T3GUI_DIALOG * dp);
 bool t3gui_close_dialog_by_element(T3GUI_ELEMENT * ep);
 void t3gui_logic(void);
-void t3gui_render(void);
+void t3gui_render(ALLEGRO_DISPLAY * dp);
 int t3gui_get_active_dialogs(void);
 int t3gui_get_mouse_x(void);
 int t3gui_get_mouse_y(void);
 int t3gui_get_mouse_z(void);
 int t3gui_get_mouse_button(int button);
-bool t3gui_get_key_state(int key_code);
-void t3gui_set_key_state(int key_code, bool onoff);
 
 #endif

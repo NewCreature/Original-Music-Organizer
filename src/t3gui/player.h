@@ -15,7 +15,6 @@ typedef struct T3GUI_PLAYER
     int joy_x, joy_y, joy_b;
     int mouse_x, mouse_y, mouse_z;
     int mouse_button[32];
-    bool key[ALLEGRO_KEY_MAX];
     bool redraw;
     bool draw_veto;
     bool focus_follows_mouse;
@@ -42,6 +41,7 @@ typedef struct T3GUI_PLAYER
     bool no_close_callback;
     bool shift;
     int click_count;
+    bool delete;
 } T3GUI_PLAYER;
 
 T3GUI_PLAYER * t3gui_init_dialog(T3GUI_ELEMENT * dialog, int focus_obj, int flags, ALLEGRO_EVENT_QUEUE * qp, void * user_data, void (*close_proc)(T3GUI_ELEMENT * ep));

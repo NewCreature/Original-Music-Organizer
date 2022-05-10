@@ -64,7 +64,18 @@ static bool create_default_theme(T3GUI_THEME * theme)
         theme->state[i].color[T3GUI_THEME_COLOR_EG] = t3gui_red;
         t3gui_load_font(&theme->state[i].font[0], NULL, 0);
         theme->state[i].aux_font = NULL;
+        theme->state[i].left_margin = 1;
+        theme->state[i].right_margin = 1;
+        theme->state[i].top_margin = 1;
+        theme->state[i].bottom_margin = 1;
+        theme->state[i].scrollbar_size = 16;
+        theme->state[i].min_space = 0;
+        theme->state[i].click_travel = 1;
     }
+    theme->state[T3GUI_ELEMENT_STATE_HOVER].color[T3GUI_THEME_COLOR_BG] = t3gui_silver;
+    theme->state[T3GUI_ELEMENT_STATE_HOVER].color[T3GUI_THEME_COLOR_FG] = t3gui_black;
+    theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_BG] = t3gui_black;
+    theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_FG] = t3gui_white;
     return true;
 }
 
@@ -117,12 +128,66 @@ static ALLEGRO_COLOR get_color(const char * buf)
     return al_map_rgba(ce[0], ce[1], ce[2], ce[3]);
 }
 
+static int get_range_count(ALLEGRO_CONFIG * cp, const char * section)
+{
+  const char * val;
+  char buf[32];
+  int i = 0;
+
+  do
+  {
+    sprintf(buf, "font_range_%d_start", i);
+    val = al_get_config_value(cp, section, buf);
+    i++;
+  } while(val);
+  return i - 1;
+}
+
+static void get_range(ALLEGRO_CONFIG * cp, const char * section, int range, int * start, int * end)
+{
+  const char * val;
+  char buf[32];
+
+  sprintf(buf, "font_range_%d_start", range);
+  val = al_get_config_value(cp, section, buf);
+  if(val)
+  {
+    *start = atoi(val);
+  }
+  sprintf(buf, "font_range_%d_end", range);
+  val = al_get_config_value(cp, section, buf);
+  if(val)
+  {
+    *end = atoi(val);
+  }
+}
+
+static int * get_ranges(ALLEGRO_CONFIG * cp, const char * section)
+{
+  int * ranges;
+  int i, r, s;
+
+  r = get_range_count(cp, section);
+  s = sizeof(int) * (r * 2 + 1);
+  ranges = malloc(s);
+  if(ranges)
+  {
+    for(i = 0; i < r; i++)
+    {
+      get_range(cp, section, i, &ranges[i * 2], &ranges[i * 2 + 1]);
+    }
+    ranges[i * 2] = -1;
+  }
+  return ranges;
+}
+
 static void t3gui_get_theme_state(ALLEGRO_CONFIG * cp, const char * section, T3GUI_THEME_STATE * sp, ALLEGRO_PATH * theme_path)
 {
     const char * val;
     const char * val2;
     char key_buf[64] = {0};
     int j;
+    int * ranges;
 
     for(j = 0; j < T3GUI_THEME_MAX_BITMAPS; j++)
     {
@@ -161,19 +226,66 @@ static void t3gui_get_theme_state(ALLEGRO_CONFIG * cp, const char * section, T3G
             if(val2)
             {
                 al_set_path_filename(theme_path, val);
-                if(!t3gui_load_font(&sp->font[j], strlen(val) > 0 ? al_path_cstr(theme_path, '/') : NULL, atoi(val2)))
+                ranges = get_ranges(cp, section);
+                if(ranges)
                 {
-                    t3gui_load_font(&sp->font[j], strlen(val) > 0 ? val : NULL, atoi(val2));
+                  if(!t3gui_load_bitmap_font(&sp->font[j], al_path_cstr(theme_path, '/'), ranges))
+                  {
+                    t3gui_load_bitmap_font(&sp->font[j], val, ranges);
+                  }
+                  free(ranges);
                 }
-                if(j > 0)
+                if(!sp->font[j])
                 {
-                    if(sp->font[j - 1] && sp->font[j])
-                    {
-                        al_set_fallback_font(sp->font[j - 1], sp->font[j]);
-                    }
+                  if(!t3gui_load_font(&sp->font[j], strlen(val) > 0 ? al_path_cstr(theme_path, '/') : NULL, atoi(val2)))
+                  {
+                      t3gui_load_font(&sp->font[j], strlen(val) > 0 ? val : NULL, atoi(val2));
+                  }
+                  if(j > 0)
+                  {
+                      if(sp->font[j - 1] && sp->font[j])
+                      {
+                          al_set_fallback_font(sp->font[j - 1], sp->font[j]);
+                      }
+                  }
                 }
             }
         }
+    }
+    val = al_get_config_value(cp, section, "left_margin");
+    if(val)
+    {
+      sp->left_margin = atoi(val);
+    }
+    val = al_get_config_value(cp, section, "right_margin");
+    if(val)
+    {
+      sp->right_margin = atoi(val);
+    }
+    val = al_get_config_value(cp, section, "top_margin");
+    if(val)
+    {
+      sp->top_margin = atoi(val);
+    }
+    val = al_get_config_value(cp, section, "bottom_margin");
+    if(val)
+    {
+      sp->bottom_margin = atoi(val);
+    }
+    val = al_get_config_value(cp, section, "scrollbar_size");
+    if(val)
+    {
+      sp->scrollbar_size = atoi(val);
+    }
+    val = al_get_config_value(cp, section, "min_space");
+    if(val)
+    {
+      sp->min_space = atoi(val);
+    }
+    val = al_get_config_value(cp, section, "click_travel");
+    if(val)
+    {
+      sp->click_travel = atoi(val);
     }
 }
 
