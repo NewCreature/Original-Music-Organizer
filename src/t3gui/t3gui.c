@@ -404,3 +404,20 @@ int t3gui_get_mouse_button(int button)
 	}
 	return 0;
 }
+
+bool t3gui_get_key_state(int key_code)
+{
+	if(t3gui_dialog_players)
+	{
+		return t3gui_dialog_player[t3gui_dialog_players - 1]->key[key_code];
+	}
+	return false;
+}
+
+void t3gui_set_key_state(int key_code, bool onoff)
+{
+	if(t3gui_dialog_players)
+	{
+		t3gui_dialog_player[t3gui_dialog_players - 1]->key[key_code] = onoff;
+	}
+}

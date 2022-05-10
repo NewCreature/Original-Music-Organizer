@@ -40,5 +40,7 @@ int t3gui_get_mouse_x(void);
 int t3gui_get_mouse_y(void);
 int t3gui_get_mouse_z(void);
 int t3gui_get_mouse_button(int button);
+bool t3gui_get_key_state(int key_code);
+void t3gui_set_key_state(int key_code, bool onoff);
 
 #endif

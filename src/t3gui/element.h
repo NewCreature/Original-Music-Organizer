@@ -25,6 +25,7 @@ typedef struct T3GUI_ELEMENT
   int d3;
   int parent;
   int id1, id2, id3;
+  int ed1, ed2, ed3;
   void * dp4, * dp5, * dp6, *dp7;
 
   /* Private/internal data */
