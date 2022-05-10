@@ -240,6 +240,7 @@ T3F_COLLISION_TILEMAP * t3f_create_collision_tilemap(int w, int h, int tw, int t
 		{
 			tmp->data[i][j].slope = NULL;
 			tmp->data[i][j].user_data = NULL;
+			tmp->data[i][j].user_data_size = 0;
 			tmp->data[i][j].flags = 0;
 		}
 	}
@@ -306,6 +307,7 @@ T3F_COLLISION_TILEMAP * t3f_load_collision_tilemap_f(ALLEGRO_FILE * fp)
 						c = al_fgetc(fp);
 						if(c > 0)
 						{
+							tmp->data[j][k].user_data_size = c;
 							tmp->data[j][k].user_data = malloc(sizeof(int) * c);
 							for(l = 0; l < c; l++)
 							{
@@ -367,8 +369,8 @@ bool t3f_save_collision_tilemap_f(T3F_COLLISION_TILEMAP * tmp, ALLEGRO_FILE * fp
 		{
 			if(tmp->flags & T3F_COLLISION_TILEMAP_FLAG_USER_DATA)
 			{
-				al_fputc(fp, sizeof(tmp->data[j][k].user_data) / sizeof(int));
-				for(l = 0; l < (int)(sizeof(tmp->data[j][k].user_data) / sizeof(int)); l++)
+				al_fputc(fp, tmp->data[j][k].user_data_size);
+				for(l = 0; l < tmp->data[j][k].user_data_size; l++)
 				{
 					al_fwrite32le(fp, tmp->data[j][k].user_data[l]);
 				}

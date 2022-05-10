@@ -4,18 +4,6 @@
 static T3F_ATLAS * t3f_atlas[T3F_MAX_ATLASES] = {NULL};
 static int t3f_atlases = 0;
 
-static ALLEGRO_BITMAP * t3f_create_bitmap(int w, int h)
-{
-	ALLEGRO_STATE old_state;
-	ALLEGRO_BITMAP * bp;
-
-	al_store_state(&old_state, ALLEGRO_STATE_NEW_BITMAP_PARAMETERS);
-	al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR | ALLEGRO_NO_PRESERVE_TEXTURE);
-	bp = al_create_bitmap(w, h);
-	al_restore_state(&old_state);
-	return bp;
-}
-
 /* create an empty atlas of the specified type and size */
 T3F_ATLAS * t3f_create_atlas(int w, int h)
 {
@@ -27,10 +15,7 @@ T3F_ATLAS * t3f_create_atlas(int w, int h)
 	{
 		return NULL;
 	}
-	al_store_state(&old_state, ALLEGRO_STATE_NEW_BITMAP_PARAMETERS);
-	al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR | ALLEGRO_NO_PRESERVE_TEXTURE);
-	ap->page = t3f_create_bitmap(w, h);
-	al_restore_state(&old_state);
+	ap->page = al_create_bitmap(w, h);
 	if(!ap->page)
 	{
 		al_free(ap);
@@ -242,10 +227,7 @@ bool t3f_rebuild_atlases(void)
 
 	for(i = 0; i < t3f_atlases; i++)
 	{
-		al_store_state(&old_state, ALLEGRO_STATE_NEW_BITMAP_PARAMETERS);
-		al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR | ALLEGRO_NO_PRESERVE_TEXTURE);
-		t3f_atlas[i]->page = t3f_create_bitmap(t3f_atlas[i]->width, t3f_atlas[i]->height);
-		al_restore_state(&old_state);
+		t3f_atlas[i]->page = al_create_bitmap(t3f_atlas[i]->width, t3f_atlas[i]->height);
 		if(!t3f_atlas[i]->page)
 		{
 			return false;

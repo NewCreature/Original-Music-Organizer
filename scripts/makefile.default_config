@@ -29,6 +29,7 @@ ifndef MACOS_CXX_STDLIB
   MACOS_CXX_STDLIB = c++
 endif
 #MACOS_CONFIG_CFLAGS =
+#MACOS_CONFIG_CXXFLAGS =
 #MACOS_CONFIG_LFLAGS =
 MACOS_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
 MACOS_CONFIG_ALLEGRO_SUFFIX = -static
@@ -37,6 +38,15 @@ MACOS_CONFIG_ALLEGRO_SUFFIX = -static
 ###################
 # iPhone Settings #
 ###################
+IPHONE_CC = gcc
+IPHONE_CXX = g++
+ifndef IPHONE_CXX_STDLIB
+  IPHONE_CXX_STDLIB = c++
+endif
+#IPHONE_CONFIG_CFLAGS =
+#IPHONE_CONFIG_CXXFLAGS =
+MACOS_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
+MACOS_CONFIG_ALLEGRO_SUFFIX = -static
 IPHONE_CONFIG_DEPEND_LIBS = -lz -lpng -lvorbisidec -ldumb -lfreetype
 
 ####################
@@ -48,7 +58,8 @@ INNO_SETUP_COMPILER = ~/.wine/drive_c/Program\ Files/Inno\ Setup\ 5/Compil32.exe
 #################
 # MSYS Settings #
 #################
-MSYS_CONFIG_CFLAGS =
+#MSYS_CONFIG_CFLAGS =
+#MSYS_CONFIG_CXXFLAGS =
 MSYS_CONFIG_LFLAGS = -mwindows
 MSYS_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
 MSYS_CONFIG_ALLEGRO_SUFFIX = -static
@@ -60,13 +71,16 @@ MSYS_CONFIG_DEPEND_LIBS = -luuid -lkernel32 -lwinmm -lpsapi\
 ##################
 # Linux Settings #
 ##################
-LINUX_CONFIG_CFLAGS =
-LINUX_CONFIG_LFLAGS =
+#LINUX_CONFIG_CFLAGS =
+#LINUX_CONFIG_CXXFLAGS =
+#LINUX_CONFIG_LFLAGS =
 LINUX_CONFIG_PKG_CONFIG_OPTIONS = --libs
-LINUX_CONFIG_ALLEGRO_SUFFIX =
+#LINUX_CONFIG_ALLEGRO_SUFFIX =
 #LINUX_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
 #LINUX_CONFIG_ALLEGRO_SUFFIX = -static
 LINUX_CONFIG_DEPEND_LIBS = -lm -lstdc++
+LINUX_CONFIG_GTK_LIBS = `pkg-config gtk+-x11-2.0 --libs`
+LINUX_CONFIG_INSTALL_PREFIX = /usr/local
 
 #############################
 # Debian Packaging Settings #

@@ -26,13 +26,20 @@ APP_BINARY_PACKAGE_FILENAME = $(APP_PACKAGE_NAME)-$(T3F_PLATFORM_NAME).tar.gz
 all : $(APP_EXE_NAME) $(T3F_PLATFORM_TARGET) $(APP_EXTRA_TARGET)
 	@echo All targets built!
 
+finish:
+	@\:
+
+reset_config:
+	rm makefile.config
+	make finish
+
 $(APP_EXE_NAME) : prepare_platform $(T3F_OBJECTS) $(APP_OBJECTS)
 	$(CC) $(LFLAGS) $(CONFIG_LFLAGS) $(T3F_OBJECTS) $(APP_OBJECTS) $(APP_LIBS) $(T3F_LIBRARIES) $(DEPEND_LIBS) -o $(APP_EXE_NAME)
 	@echo Executable built!
 
 makefile.config:
-	touch makefile.config
-	@echo Generated empty 'makefile.config'.
+	cp ../scripts/makefile.default_config ./makefile.config
+	@echo Default configuration set.
 
 ../changes.txt:
 	cp ../misc/blank_changes ../changes.txt

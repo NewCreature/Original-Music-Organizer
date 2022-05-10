@@ -27,28 +27,28 @@
 
 typedef struct
 {
-	
+
 	float x, y;
-	
+
 } T3F_COLLISION_POINT;
 
 typedef struct
 {
-	
+
 	T3F_COLLISION_POINT point[T3F_MAX_COLLISION_POINTS];
 	int points;
-	
+
 } T3F_COLLISION_LIST;
 
 typedef struct
 {
-	
+
 	T3F_COLLISION_LIST top;
 	T3F_COLLISION_LIST bottom;
 	T3F_COLLISION_LIST left;
 	T3F_COLLISION_LIST right;
 	int flags;
-	
+
 } T3F_COLLISION_MAP;
 
 /* -a collision object is separate from your program's objects
@@ -57,37 +57,38 @@ typedef struct
     -if a collision occurs, copy the collision object's position into your own object */
 typedef struct
 {
-	
+
 	T3F_COLLISION_MAP map;
-	
+
 	float x, y;
 	float ox, oy;
 	float vx, vy;
-	
+
 	int flags;
-	
+
 } T3F_COLLISION_OBJECT;
 
 typedef struct
 {
-	
+
 	int * user_data; // user data
+  int user_data_size;
 	char * slope; // allocate this when using slope
 	int flags;
-	
+
 } T3F_COLLISION_TILE;
 
 typedef struct
 {
-	
+
 	T3F_COLLISION_TILE ** data;
 	int width;
 	int height;
 	int tile_width;
 	int tile_height;
-	
+
 	int flags;
-	
+
 } T3F_COLLISION_TILEMAP;
 
 T3F_COLLISION_OBJECT * t3f_create_collision_object(float rx, float ry, float w, float h, int tw, int th, int flags);

@@ -130,12 +130,8 @@ void t3f_draw_text_lines(T3F_TEXT_LINE_DATA * lines, ALLEGRO_COLOR color, float 
 
 void t3f_draw_multiline_text(T3F_FONT * fp, ALLEGRO_COLOR color, float x, float y, float z, float w, float tab, int flags, const char * text)
 {
-	const unsigned char * utext = (const unsigned char *)text;
 	T3F_TEXT_LINE_DATA line_data;
-	unsigned int i;
 	float pos = x;
-	float posy = y;
-	float fw, fh;
 	bool held;
 
 	if(strlen(text) < 1)
