@@ -44,7 +44,7 @@ static T3GUI_RESOURCE * t3gui_find_resource(const char * fn, int data_i)
     /* see if we have already loaded this resource */
     for(i = 0; i < t3gui_resources; i++)
     {
-        if(!strcmp(fn, t3gui_resource[i]->path) && t3gui_resource[i]->data_i == data_i && t3gui_resource[i]->display == al_get_current_display())
+        if(!strcmp(fn ? fn : "", t3gui_resource[i]->path) && t3gui_resource[i]->data_i == data_i && t3gui_resource[i]->display == al_get_current_display())
         {
             return t3gui_resource[i];
         }
@@ -74,7 +74,7 @@ bool t3gui_load_font(ALLEGRO_FONT ** fp, const char * fn, int size)
     {
         return false;
     }
-    rp = t3gui_find_resource(fn ? fn : "", size);
+    rp = t3gui_find_resource(fn, size);
     if(rp)
     {
         *fp = rp->data;
