@@ -164,19 +164,22 @@ static void get_range(ALLEGRO_CONFIG * cp, const char * section, int range, int 
 
 static int * get_ranges(ALLEGRO_CONFIG * cp, const char * section)
 {
-  int * ranges;
+  int * ranges = NULL;
   int i, r, s;
 
   r = get_range_count(cp, section);
-  s = sizeof(int) * (r * 2 + 1);
-  ranges = malloc(s);
-  if(ranges)
+  if(r)
   {
-    for(i = 0; i < r; i++)
+    s = sizeof(int) * (r * 2 + 1);
+    ranges = malloc(s);
+    if(ranges)
     {
-      get_range(cp, section, i, &ranges[i * 2], &ranges[i * 2 + 1]);
+      for(i = 0; i < r; i++)
+      {
+        get_range(cp, section, i, &ranges[i * 2], &ranges[i * 2 + 1]);
+      }
+      ranges[i * 2] = -1;
     }
-    ranges[i * 2] = -1;
   }
   return ranges;
 }
@@ -235,7 +238,7 @@ static void t3gui_get_theme_state(ALLEGRO_CONFIG * cp, const char * section, T3G
                   }
                   free(ranges);
                 }
-                if(!sp->font[j])
+                else
                 {
                   if(!t3gui_load_font(&sp->font[j], strlen(val) > 0 ? al_path_cstr(theme_path, '/') : NULL, atoi(val2)))
                   {
