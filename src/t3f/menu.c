@@ -10,6 +10,9 @@ static int (*t3f_menu_proc[T3F_MAX_MENU_ITEMS])(int id, void * data) = {NULL};
 static int (*t3f_menu_update_proc[T3F_MAX_MENU_ITEMS])(ALLEGRO_MENU * menu, int item, void * data) = {NULL};
 static bool t3f_refresh_menus_needed = false;
 static bool t3f_menus_allowed = true;
+static int _display_width = 0;
+static int _display_height = 0;
+static bool _menu_resize_flag = false;
 
 void t3f_reset_menus(void)
 {
@@ -84,6 +87,11 @@ void t3f_refresh_menus(void)
 
 bool t3f_attach_menu(ALLEGRO_MENU * mp)
 {
+  _display_width = al_get_display_width(t3f_display);
+  _display_height = al_get_display_height(t3f_display);
+  #ifdef ALLEGRO_UNIX
+    _menu_resize_flag = true;
+  #endif
   al_register_event_source(t3f_queue, al_get_default_menu_event_source());
   al_set_display_menu(t3f_display, mp);
   t3f_adjust_view(t3f_default_view, 0, 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), t3f_virtual_display_width / 2, t3f_virtual_display_height / 2, t3f_flags);
@@ -100,4 +108,13 @@ void t3f_enable_menus(bool enabled)
 bool t3f_menus_enabled(void)
 {
     return t3f_menus_allowed;
+}
+
+bool t3f_handle_menu_resize(void)
+{
+  if(_menu_resize_flag)
+  {
+    al_resize_display(t3f_display, _display_width, _display_height);
+    _menu_resize_flag = false;
+  }
 }

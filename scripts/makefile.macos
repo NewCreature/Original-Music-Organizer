@@ -42,6 +42,9 @@ include makefile.common
 prepare_platform:
 	@echo Ready to build...
 
+../macos/Info.plist: ../macos/default_Info.plist
+	@cp ../macos/default_Info.plist ../macos/Info.plist
+
 ../icons/macos_icon.icns: ../icons/16.png ../icons/32.png ../icons/64.png ../icons/128.png ../icons/256.png ../icons/512.png ../icons/1024.png
 	@mkdir -p temp.iconset
 	@cp ../icons/16.png temp.iconset/icon_16x16.png
@@ -59,7 +62,7 @@ prepare_platform:
 	@iconutil --convert icns temp.iconset -o ../icons/macos_icon.icns
 	@rm -rf temp.iconset
 
-mac_bundle : ../icons/macos_icon.icns
+mac_bundle : ../icons/macos_icon.icns ../macos/Info.plist
 	@$(DEL_FOLDER_COMMAND) $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@mkdir $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@mkdir $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Contents
