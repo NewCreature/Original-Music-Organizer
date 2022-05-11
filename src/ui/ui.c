@@ -426,7 +426,7 @@ static bool omo_add_player_elements(OMO_UI * uip, void * data)
 	uip->ui_current_time_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_INFO], t3gui_text_proc, 8, 8, width - 16, height - 16, 0, 0, 0, 0, uip->current_time_text, NULL, data);
 	for(i = 0; i < 6; i++)
 	{
-		uip->ui_button_element[i] = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8, 8, 16, 16, 0, 0, 0, i, uip->ui_button_text[i], ui_player_button_proc, uip->main_theme->bitmap[buttons[i]]);
+		uip->ui_button_element[i] = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_BUTTON], t3gui_push_button_proc, 8, 8, 16, 16, 0, 0, 1, i, uip->ui_button_text[i], ui_player_button_proc, uip->main_theme->bitmap[buttons[i]]);
 	}
 
 	return true;
