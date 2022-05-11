@@ -366,6 +366,7 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
 
         case ALLEGRO_EVENT_KEY_DOWN:
         {
+            player->key[event->keyboard.keycode] = true;
             switch(event->keyboard.keycode)
             {
                 case ALLEGRO_KEY_LSHIFT:
@@ -413,6 +414,7 @@ static void dialog_thread_event_handler(T3GUI_PLAYER * player, ALLEGRO_EVENT * e
 
         case ALLEGRO_EVENT_KEY_UP:
         {
+            player->key[event->keyboard.keycode] = false;
             switch(event->keyboard.keycode)
             {
                 case ALLEGRO_KEY_LSHIFT:   /* Shift released */
