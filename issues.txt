@@ -100,6 +100,8 @@ Long Term Goals
 v0.5.4
 ------
 
+[ ]Check boxes in filter dialog do not work. Formats cannot be toggled off.
+
 [ ]Revisit 'omo_create_main_dialog()' as it seems there is a memory leak where
    the dialog is first allocated under the right conditions.
 
