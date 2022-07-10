@@ -100,6 +100,10 @@ Long Term Goals
 v0.5.4
 ------
 
+[ ]See if we can fix playback of looping songs not ending correctly after
+   resuming on load before the library is finished loading. We might need to
+   srore each queued track's loop info.
+
 [ ]Check boxes in filter dialog do not work. Formats cannot be toggled off.
 
 [ ]Revisit 'omo_create_main_dialog()' as it seems there is a memory leak where
