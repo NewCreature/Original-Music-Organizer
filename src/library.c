@@ -264,6 +264,7 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
 	unsigned long file_size;
 	const char * md5_hash = NULL;
 	char fn_buffer[1024] = {0};
+	const char * script_url;
 
 	if(lp->entry_count < lp->entry_size)
 	{
@@ -354,9 +355,13 @@ int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subf
 			{
 				get_tags(lp, sum_string, fn, track, crp);
 			}
-			omo_retrieve_track_tags(lp, sum_string, "https://www.t3-i.com/omo/get_track_tags.php");
-			omo_set_database_value(lp->entry_database, sum_string, "scanned", "1");
-			retval = 1;
+			script_url = al_get_config_value(t3f_config, "Settings", "get_track_tags_url");
+			if(script_url)
+			{
+				omo_retrieve_track_tags(lp, sum_string, script_url);
+				omo_set_database_value(lp->entry_database, sum_string, "scanned", "1");
+				retval = 1;
+			}
 		}
 
 		/* clean up */

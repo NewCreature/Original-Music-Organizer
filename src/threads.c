@@ -32,6 +32,7 @@ void omo_threads_logic(APP_INSTANCE * app)
 	char entry_database_fn[1024];
 	char buffer[1024];
 	int i;
+	const char * script_url;
 
 	/* destroy thread when library scan finished */
 	if(app->library_thread && app->loading_library_file_helper_data.scan_done)
@@ -111,7 +112,11 @@ void omo_threads_logic(APP_INSTANCE * app)
 	if(app->spawn_cloud_thread && app->library)
 	{
 		app->cloud_thread_done = false;
-		omo_submit_library_tags(app, "https://www.t3-i.com/omo/tag_track.php");
+		script_url = al_get_config_value(t3f_config, "Settings", "tag_track_url");
+		if(script_url)
+		{
+			omo_submit_library_tags(app, script_url);
+		}
 		app->spawn_cloud_thread = false;
 	}
 	if(app->spawn_queue_thread)

@@ -81,14 +81,20 @@ bool omo_get_tagger_key(const char * name)
 	T3NET_ARGUMENTS * key_arguments;
 	T3NET_DATA * key_data;
 	const char * key_val;
+	const char * script_url;
 
+	script_url = al_get_config_value(t3f_config, "Settings", "get_tagger_key_url");
+	if(!script_url)
+	{
+		return false;
+	}
 	key_arguments = t3net_create_arguments();
 	if(key_arguments)
 	{
 		/* copy track info string to entry database first, before breaking up the
 		   track list to put into the file database */
 		t3net_add_argument(key_arguments, "name", name);
-		key_data = t3net_get_data(T3NET_CURL_DEFAULT, "https://www.t3-i.com/omo/get_tagger_key.php", key_arguments);
+		key_data = t3net_get_data(T3NET_CURL_DEFAULT, script_url, key_arguments);
 		if(key_data)
 		{
 			key_val = t3net_get_data_entry_field(key_data, 0, "tagger_key");

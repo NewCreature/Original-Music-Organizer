@@ -147,6 +147,27 @@ void omo_configure_codec_handlers(APP_INSTANCE * app)
 	omo_reconfigure_codec_handlers(app->codec_handler_registry, val);
 }
 
+static void provide_default_urls(void)
+{
+	const char * val;
+
+	val = al_get_config_value(t3f_config, "Settings", "get_tagger_key_url");
+	if(!val)
+	{
+		al_set_config_value(t3f_config, "Settings", "get_tagger_key_url", "https://www.tcubedsoftware.com/scripts/omo/get_tagger_key.php");
+	}
+	val = al_get_config_value(t3f_config, "Settings", "get_track_tags_url");
+	if(!val)
+	{
+		al_set_config_value(t3f_config, "Settings", "get_track_tags_url", "https://www.tcubedsoftware.com/scripts/omo/get_track_tags.php");
+	}
+	val = al_get_config_value(t3f_config, "Settings", "tag_track_url");
+	if(!val)
+	{
+		al_set_config_value(t3f_config, "Settings", "tag_track_url", "https://www.tcubedsoftware.com/scripts/omo/tag_track.php");
+	}
+}
+
 /* initialize our app, load graphics, etc. */
 bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 {
