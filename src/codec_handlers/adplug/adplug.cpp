@@ -391,5 +391,6 @@ extern "C" OMO_CODEC_HANDLER * omo_codec_adplug_get_codec_handler(void)
 	omo_codec_handler_add_type(&codec_handler, ".xad");
 	omo_codec_handler_add_type(&codec_handler, ".xms");
 	omo_codec_handler_add_type(&codec_handler, ".xsm");
+	omo_codec_handler_add_type(&codec_handler, ".mdi");
 	return &codec_handler;
 }
