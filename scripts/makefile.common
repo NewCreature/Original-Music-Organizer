@@ -74,8 +74,27 @@ package: clean
 	$(shell rm -rf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME); mkdir ../temp; mkdir ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../bin" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../src" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../scripts" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../docs" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../android" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../debian" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../macos" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L  "../win32" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../icons" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../iphone" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../graphics_src" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../packages" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../misc" ../temp/$(APP_PACKAGE_NAME); cp "../changes.txt" ../temp/$(APP_PACKAGE_NAME); cp "../build.txt" ../temp/$(APP_PACKAGE_NAME); cp "../issues.txt" ../temp/$(APP_PACKAGE_NAME); cd ../temp; rm -f $(APP_PACKAGE_FILENAME); export COPY_EXTENDED_ATTRIBUTES_DISABLE=true; export COPYFILE_DISABLE=true; tar --exclude="." --exclude=".DS_Store" --exclude="old" $(PACKAGE_EXCLUSIONS) --dereference -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
 	@echo Package successfully created!
 
-binary_package: $(APP_EXE_NAME)
-	$(shell rm -rf $(APP_PACKAGE_DIR)/$(APP_BINARY_PACKAGE_FILENAME); mkdir ../temp; cp -a -R -L "../bin" ../temp/$(APP_PACKAGE_NAME); cd ../temp; tar -czf $(APP_PACKAGE_DIR)/$(APP_BINARY_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
+binary_package_temp: $(APP_EXE_NAME)
+	@rm -rf $(APP_PACKAGE_DIR)/$(APP_BINARY_PACKAGE_FILENAME)
+	@mkdir ../temp
+	@mkdir ../temp/$(APP_PACKAGE_NAME)
+	@echo "Copy app data..."
+	@rsync -avq --exclude=".*" --exclude="src/" --exclude="android/" --exclude="debian/" --exclude="iphone/" --exclude="macos/" --exclude="misc/" --exclude="packages/" --exclude="scripts/" --exclude="temp/" --exclude="win32/" --exclude="changes.txt" --exclude="issues.txt" ../ ../temp/$(APP_PACKAGE_NAME)
+	@echo "Make install script..."
+	@cp ../misc/binary_install.sh ../temp/$(APP_PACKAGE_NAME)/install.sh
+	@$(SED_COMMAND) 's|T3F_APP_TITLE|$(APP_TITLE)|' ../temp/$(APP_PACKAGE_NAME)/install.sh
+	@$(SED_COMMAND) 's|T3F_APP_NAME|$(APP_NAME)|' ../temp/$(APP_PACKAGE_NAME)/install.sh
+	@$(SED_COMMAND) 's|T3F_APP_DIR|$(DEBIAN_DIR)|' ../temp/$(APP_PACKAGE_NAME)/install.sh
+	@$(SED_COMMAND) 's|T3F_APP_CATEGORIES|$(DEBIAN_DESKTOP_CATEGORIES)|' ../temp/$(APP_PACKAGE_NAME)/install.sh
+	@cp ../misc/binary_uninstall.sh ../temp/$(APP_PACKAGE_NAME)/uninstall.sh
+	@$(SED_COMMAND) 's|T3F_APP_TITLE|$(APP_TITLE)|' ../temp/$(APP_PACKAGE_NAME)/uninstall.sh
+	@$(SED_COMMAND) 's|T3F_APP_NAME|$(APP_NAME)|' ../temp/$(APP_PACKAGE_NAME)/uninstall.sh
+	@$(SED_COMMAND) 's|T3F_APP_DIR|$(DEBIAN_DIR)|' ../temp/$(APP_PACKAGE_NAME)/uninstall.sh
+	@$(SED_COMMAND) 's|T3F_APP_CATEGORIES|$(DEBIAN_DESKTOP_CATEGORIES)|' ../temp/$(APP_PACKAGE_NAME)/uninstall.sh
+
+binary_package: binary_package_temp
+	@echo "Build archive..."
+	$(shell cd ../temp; tar -czf $(APP_PACKAGE_DIR)/$(APP_BINARY_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
 
 #make a copy of the source tree with non-demo data deleted
 demo_copy:
@@ -89,7 +108,7 @@ demo_clean:
 demo_edit:
 	$(SED_COMMAND) 's|= $(APP_NAME)|= $(APP_NAME)-demo|' $(DEMO_DIR)/src/makefile.defines
 	$(SED_COMMAND) 's|$(subst $(SPACE),\$(SPACE),$(APP_TITLE))|$(subst $(SPACE),\$(SPACE),$(APP_TITLE))\\$(SPACE)Demo|' $(DEMO_DIR)/src/makefile.defines
-	$(SED_COMMAND) 's|$(APP_ANDROID_PACKAGE)|$(APP_ANDROID_PACKAGE)demo|' $(DEMO_DIR)/src/makefile.defines
+	$(SED_COMMAND) 's|$(APP_ID)|$(APP_ID)demo|' $(DEMO_DIR)/src/makefile.defines
 	$(SED_COMMAND) 's|$(APP_NAME)|$(APP_NAME)-demo|' $(DEMO_DIR)/docs/changelog
 
 demo_edit_gp:

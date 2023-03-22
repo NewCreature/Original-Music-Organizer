@@ -2,6 +2,7 @@ T3F_PLATFORM_NAME = linux
 CC = gcc
 CFLAGS = $(T3F_CFLAGS) $(APP_CFLAGS) $(LINUX_CFLAGS) $(LINUX_CONFIG_CFLAGS)
 CXXFLAGS = $(CFLAGS) $(LINUX_CONFIG_CXXFLAGS)
+CONFIG_ENVIRONMENT = test
 PKG_CONFIG_OPTIONS = $(LINUX_CONFIG_PKG_CONFIG_OPTIONS)
 ALLEGRO_SUFFIX = $(LINUX_CONFIG_ALLEGRO_SUFFIX)
 T3F_PLATFORM_OBJECTS = t3f/menu.o $(LINUX_PLATFORM_OBJECTS)
@@ -26,6 +27,9 @@ DEL_FOLDER_COMMAND = rm -rf
 SED_COMMAND = sed -i
 COPY_COMMAND = cp
 PATH_SEPARATOR = /
+ifndef INSTALL_PREFIX
+	INSTALL_PREFIX=$(LINUX_CONFIG_INSTALL_PREFIX)
+endif
 
 include makefile.common
 
@@ -33,34 +37,49 @@ prepare_platform:
 	@echo Ready to build...
 
 install: $(APP_EXE_NAME)
-	mkdir -p $(LINUX_CONFIG_INSTALL_PREFIX)/share/$(DEBIAN_APP_NAME)
-	mkdir -p $(LINUX_CONFIG_INSTALL_PREFIX)/share/doc
-	mkdir -p $(LINUX_CONFIG_INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)
-	mkdir -p $(LINUX_CONFIG_INSTALL_PREFIX)/share/icons
-	mkdir -p $(LINUX_CONFIG_INSTALL_PREFIX)/share/applications
-	mkdir -p $(LINUX_CONFIG_INSTALL_PREFIX)/share/menu
-	cp -a ../bin/data $(LINUX_CONFIG_INSTALL_PREFIX)/share/$(DEBIAN_APP_NAME)
-	cp ../docs/changelog $(LINUX_CONFIG_INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/changelog
-	cp ../docs/README $(LINUX_CONFIG_INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/README
-	cp ../docs/copyright $(LINUX_CONFIG_INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/copyright
-	cp ../icons/icon.svg $(LINUX_CONFIG_INSTALL_PREFIX)/share/icons/$(DEBIAN_APP_NAME).svg
-	cp ../bin/$(DEBIAN_APP_NAME) $(LINUX_CONFIG_INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)
-	printf "[Desktop Entry]\nName="$(APP_TITLE)"\nExec=$(LINUX_CONFIG_INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)\nIcon=$(DEBIAN_APP_NAME)\nTerminal=false\nType=Application\nCategories=$(DEBIAN_DESKTOP_CATEGORIES);" > $(LINUX_CONFIG_INSTALL_PREFIX)/share/applications/$(DEBIAN_APP_NAME).desktop
-	chmod 755 $(LINUX_CONFIG_INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)
-	find $(LINUX_CONFIG_INSTALL_PREFIX)/share/$(DEBIAN_APP_NAME) -type f -exec chmod 644 {} \;
-	chmod 644 $(LINUX_CONFIG_INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/README
-	chmod 644 $(LINUX_CONFIG_INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/changelog
-	chmod 644 $(LINUX_CONFIG_INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/copyright
-	chmod 644 $(LINUX_CONFIG_INSTALL_PREFIX)/share/icons/$(DEBIAN_APP_NAME).svg
-	chmod 644 $(LINUX_CONFIG_INSTALL_PREFIX)/share/applications/$(DEBIAN_APP_NAME).desktop
+	mkdir -p $(INSTALL_PREFIX)/share/$(DEBIAN_APP_NAME)
+	mkdir -p $(INSTALL_PREFIX)/share/doc
+	mkdir -p $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)
+	mkdir -p $(INSTALL_PREFIX)/share/icons
+	mkdir -p $(INSTALL_PREFIX)/share/applications
+	mkdir -p $(INSTALL_PREFIX)/share/menu
+	cp -a ../bin/data $(INSTALL_PREFIX)/share/$(DEBIAN_APP_NAME)
+	-cp ../docs/changelog $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/changelog
+	cp ../docs/README $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/README
+	cp ../docs/copyright $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/copyright
+	cp ../icons/icon.svg $(INSTALL_PREFIX)/share/icons/$(DEBIAN_APP_NAME).svg
+	cp ../bin/$(DEBIAN_APP_NAME) $(INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)
+	printf "[Desktop Entry]\nName="$(APP_TITLE)"\nExec=$(INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)\nIcon=$(DEBIAN_APP_NAME)\nTerminal=false\nType=Application\nCategories=$(DEBIAN_DESKTOP_CATEGORIES);" > $(INSTALL_PREFIX)/share/applications/$(DEBIAN_APP_NAME).desktop
+	chmod 755 $(INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)
+	find $(INSTALL_PREFIX)/share/$(DEBIAN_APP_NAME) -type f -exec chmod 644 {} \;
+	chmod 644 $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/README
+	-chmod 644 $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/changelog
+	chmod 644 $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/copyright
+	chmod 644 $(INSTALL_PREFIX)/share/icons/$(DEBIAN_APP_NAME).svg
+	chmod 644 $(INSTALL_PREFIX)/share/applications/$(DEBIAN_APP_NAME).desktop
 	update-desktop-database
 
 uninstall:
-	rm -rf $(LINUX_CONFIG_INSTALL_PREFIX)/share/$(DEBIAN_APP_NAME)
-	rm -rf $(LINUX_CONFIG_INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/changelog
-	rm -rf $(LINUX_CONFIG_INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/README
-	rm -rf $(LINUX_CONFIG_INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/copyright
-	rm -rf $(LINUX_CONFIG_INSTALL_PREFIX)/share/pixmaps/$(DEBIAN_APP_NAME).svg
-	rm -rf $(LINUX_CONFIG_INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)
-	rm -rf $(LINUX_CONFIG_INSTALL_PREFIX)/share/applications/$(DEBIAN_APP_NAME).desktop
+	rm -rf $(INSTALL_PREFIX)/share/$(DEBIAN_APP_NAME)
+	rm -rf $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/changelog
+	rm -rf $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/README
+	rm -rf $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/copyright
+	rm -rf $(INSTALL_PREFIX)/share/pixmaps/$(DEBIAN_APP_NAME).svg
+	rm -rf $(INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)
+	rm -rf $(INSTALL_PREFIX)/share/applications/$(DEBIAN_APP_NAME).desktop
 	update-desktop-database
+
+install_flatpak:
+	@cp -a ../ $(INSTALL_PREFIX)
+	@mkdir -p $(INSTALL_PREFIX)/share/icons
+	@mkdir -p $(INSTALL_PREFIX)/share/applications
+	@mkdir -p $(INSTALL_PREFIX)/share/metainfo
+	@cp ../icons/icon.svg $(INSTALL_PREFIX)/share/icons/$(APP_ID).svg
+	@printf "[Desktop Entry]\nName="$(APP_TITLE)"\nExec=$(INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)\nIcon=$(APP_ID)\nTerminal=false\nType=Application\nCategories=$(DEBIAN_DESKTOP_CATEGORIES);" > $(INSTALL_PREFIX)/share/applications/$(APP_ID).desktop
+	@cp ../misc/flatpak_appdata.xml $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml
+	@$(SED_COMMAND) 's|T3F_APP_COPYRIGHT|$(APP_COPYRIGHT)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml
+	@$(SED_COMMAND) 's|T3F_APP_ID|$(APP_ID)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml
+	@$(SED_COMMAND) 's|T3F_APP_TITLE|$(APP_TITLE)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml
+	@$(SED_COMMAND) 's|T3F_APP_VERSION|$(APP_VERSION)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml
+	@$(SED_COMMAND) 's|T3F_APP_PUBLISHER|$(APP_PUBLISHER)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml	
+	@$(SED_COMMAND) 's|T3F_APP_URL|$(APP_URL)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml	

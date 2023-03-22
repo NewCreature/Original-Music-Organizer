@@ -117,4 +117,5 @@ bool t3f_handle_menu_resize(void)
     al_resize_display(t3f_display, _display_width, _display_height);
     _menu_resize_flag = false;
   }
+  return true;
 }

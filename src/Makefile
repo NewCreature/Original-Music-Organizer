@@ -74,6 +74,9 @@ mac_package:
 iphone_package:
 	$(MAKE) -f ../scripts/makefile.iphone -I ../scripts iphone_package
 
+flatpak:
+	$(MAKE) -f ../scripts/makefile.flatpak -I ../scripts flatpak
+
 demo:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts demo
 
@@ -94,3 +97,6 @@ install:
 
 uninstall:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts uninstall
+
+install_flatpak:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts install_flatpak

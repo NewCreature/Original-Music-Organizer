@@ -35,14 +35,14 @@ android_sign: ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk
 
 edit_project:
 	@echo Editing project data to match our project definitions...
-	sed -i '' "s|org.liballeg.app|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/src/main/AndroidManifest.xml
+	sed -i '' "s|org.liballeg.app|$(APP_ID)|" ../android_temp/app.project/app/src/main/AndroidManifest.xml
 	sed -i '' "s|APP_ORIENTATION|$(APP_ORIENTATION)|" ../android_temp/app.project/app/src/main/AndroidManifest.xml
 	sed -i '' "s|AllegroActivity|$(APP_TITLE)|" ../android_temp/app.project/app/src/main/res/values/strings.xml
-	sed -i '' "s|APP_PACKAGE|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/build.gradle
+	sed -i '' "s|APP_PACKAGE|$(APP_ID)|" ../android_temp/app.project/app/build.gradle
 	sed -i '' "s|APP_VERSION|$(APP_VERSION)|" ../android_temp/app.project/app/build.gradle
 	sed -i '' "s|APP_RELEASE|$(APP_RELEASE)|" ../android_temp/app.project/app/build.gradle
-	sed -i '' "s|org.liballeg.app|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/src/main/java/org/liballeg/app/MainActivity.java
-	sed -i '' "s|org.liballeg.app|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/src/main/java/org/liballeg/app/EditBoxActivity.java
+	sed -i '' "s|org.liballeg.app|$(APP_ID)|" ../android_temp/app.project/app/src/main/java/org/liballeg/app/MainActivity.java
+	sed -i '' "s|org.liballeg.app|$(APP_ID)|" ../android_temp/app.project/app/src/main/java/org/liballeg/app/EditBoxActivity.java
 
 copy_resources:
 	@echo Copying data to Android project...

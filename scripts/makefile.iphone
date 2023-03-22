@@ -47,7 +47,7 @@ $(APP_PACKAGE_DIR)/$(APP_TITLE).app : $(APP_EXE_NAME)
 	@sed -i '' "s|T3F_APP_ICON|$(APP_TITLE).icns|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Info.plist
 	@sed -i '' "s|T3F_APP_DISPLAY_NAME|$(APP_TITLE)|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Info.plist
 	@sed -i '' "s|T3F_APP_VERSION|$(APP_VERSION)|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Info.plist
-	@sed -i '' "s|T3F_APP_PACKAGE|$(APP_ANDROID_PACKAGE)|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Info.plist
+	@sed -i '' "s|T3F_APP_PACKAGE|$(APP_ID)|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Info.plist
 	@echo Application bundle created!
 
 iphone_package: $(APP_PACKAGE_DIR)/$(APP_TITLE).app

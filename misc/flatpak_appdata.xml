@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- T3F_APP_COPYRIGHT -->
+
+<component type="desktop-application">
+
+  <id>T3F_APP_ID</id>
+  <name>T3F_APP_TITLE</name>
+  <developer_name>T3F_APP_PUBLISHER</developer_name>
+  <release version="T3F_APP_VERSION" />
+  <launchable type="desktop-id">T3F_APP_ID.desktop</launchable>
+  <content_rating type="oars-1.1" />
+  <license type="LicenseRef-proprietary" />
+  <description>
+    <p>
+      A drawing program.
+    </p>
+  </description>
+  <url type="homepage">T3F_APP_URL</url>
+  <metadata_license>FSFAP</metadata_license>
+
+</component>
