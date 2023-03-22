@@ -4,6 +4,13 @@ OMO Issues
 Long Term Goals
 ---------------
 
+[ ]Add support files for users to deploy their own OMO infrastructure.
+
+   [ ]Need SQL command to generate compatible database.
+
+   [ ]Need PHP scripts and template configuration script to minimize the amount
+      of work needed to do a deployment.
+
 [ ]GME codec handler position slider is longer than song length when resuming
    previous state on program load.
 
@@ -100,16 +107,18 @@ Long Term Goals
 v0.5.4
 ------
 
+[ ]Make cloud sync URLs user configurable.
+
 [ ]See if we can fix playback of looping songs not ending correctly after
    resuming on load before the library is finished loading. We might need to
    srore each queued track's loop info.
 
-[ ]Check boxes in filter dialog do not work. Formats cannot be toggled off.
+[X]Check boxes in filter dialog do not work. Formats cannot be toggled off.
 
 [ ]Revisit 'omo_create_main_dialog()' as it seems there is a memory leak where
    the dialog is first allocated under the right conditions.
 
-[ ]Add option to disable cloud syncing. We should still flag unsynced tags so
+[X]Add option to disable cloud syncing. We should still flag unsynced tags so
    all modified tags will be synced once syncing is re-enabled.
 
 [ ]Add support for SID music format. We should be able to utilize libresid
@@ -126,7 +135,7 @@ v0.5.4
 
 [X]Fix missing support for dark mode on MacOS.
 
-[ ]Fix queue total time adding length of track immediately after editing. The
+[X]Fix queue total time adding length of track immediately after editing. The
    old length should be subtracted before we add the new length if the length
    was edited.
 
