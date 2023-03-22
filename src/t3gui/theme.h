@@ -25,7 +25,10 @@ typedef struct
     int right_margin;
     int top_margin;
     int bottom_margin;
-    int scrollbar_size;
+    int width;
+    int height;
+    int size;
+    int scale;
     int min_space;
     int click_travel;
 

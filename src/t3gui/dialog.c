@@ -330,6 +330,32 @@ void t3gui_position_dialog(T3GUI_ELEMENT *dialog, int x, int y)
    }
 }
 
+void t3gui_align_dialog_element(T3GUI_ELEMENT * dialog, T3GUI_ELEMENT * element, int x, int y)
+{
+   T3GUI_ELEMENT * current = dialog;
+   int dx, dy;
+
+   while(current->proc)
+   {
+      if(current == element)
+      {
+         dx = x - element->x;
+         dy = y - element->y;
+         break;
+      }
+      current++;
+   }
+   if(current->proc)
+   {
+      current = dialog;
+      while(current->proc)
+      {
+         current->x += dx;
+         current->y += dy;
+         current++;
+      }
+   }
+}
 
 uint32_t t3gui_index_to_id(T3GUI_ELEMENT *dialog, int index)
 {

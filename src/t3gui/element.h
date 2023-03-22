@@ -22,7 +22,7 @@ typedef struct T3GUI_ELEMENT
   uint32_t id;                  /* Unique ID by which to find this widget */
   T3GUI_DIALOG_PROC callback;
 
-  int d3;
+  int d3, d4;
   int parent;
   int id1, id2, id3;
   int ed1, ed2, ed3;

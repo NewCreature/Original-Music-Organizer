@@ -177,7 +177,7 @@ static int move_focus(T3GUI_ELEMENT *d, int keycode, bool shift, int *focus_obj)
    /* fill temporary table */
    for (c=0; d[c].proc; c++) {
       if (((*focus_obj < 0) || (c != *focus_obj))
-            && !(d[c].flags & (D_DISABLED | D_HIDDEN))) {
+            && !(d[c].flags & (D_DISABLED | D_HIDDEN | D_NOFOCUS))) {
          obj[obj_count].index = c;
          if (*focus_obj >= 0)
             obj[obj_count].diff = cmp(d+*focus_obj, d+c);
@@ -757,6 +757,13 @@ static void update_dialog(T3GUI_PLAYER * player)
         player->keyboard_obj = -1;
     }
 
+    /* remove focus from disabled items */
+    if(player->dialog[player->mouse_obj].flags & D_DISABLED)
+    {
+        player->dialog[player->mouse_obj].flags &= ~D_GOTMOUSE;
+        player->mouse_obj = -1;
+    }
+
     if(player->res & D_REDRAW_ANY)
     {
         player->redraw = true;
@@ -1059,10 +1066,20 @@ bool t3gui_resume_dialog(T3GUI_PLAYER *player)
    return true;
 }
 
+T3GUI_ELEMENT * t3gui_get_player_click_element(T3GUI_PLAYER * player)
+{
+    if(player->click_obj >= 0)
+    {
+        return &player->dialog[player->click_obj];
+    }
+    return NULL;
+}
+
 void t3gui_process_dialog(T3GUI_PLAYER * player)
 {
     ALLEGRO_EVENT event;
 
+    update_dialog(player);
     t3gui_dialog_message(player->dialog, MSG_IDLE, 0, &player->obj);
     while(al_get_next_event(player->input, &event))
 	{

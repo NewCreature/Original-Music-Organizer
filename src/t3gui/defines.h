@@ -79,6 +79,8 @@
 //#define D_GOTKEYBOARD   0x0800   /* from here on is free for your own use */
 #define D_INTERACT      0x1000
 #define D_SETFOCUS      0x2000
+#define D_NOFOCUS       0x4000
+#define D_USER          0x8000
 
 /* Event types */
 #define T3GUI_EVENT_CLOSE       ALLEGRO_GET_EVENT_TYPE('e','g','g', 'c')

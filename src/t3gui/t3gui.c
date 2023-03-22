@@ -364,6 +364,37 @@ void t3gui_render(ALLEGRO_DISPLAY * dp)
 	}
 }
 
+T3GUI_ELEMENT * t3gui_get_click_element(void)
+{
+	if(t3gui_dialog_players)
+	{
+		return t3gui_get_player_click_element(t3gui_dialog_player[t3gui_dialog_players - 1]);
+	}
+	return NULL;
+}
+
+T3GUI_ELEMENT * t3gui_get_hover_element(void * proc)
+{
+	T3GUI_ELEMENT * d;
+	int x, y;
+
+	if(t3gui_dialog_players)
+	{
+		d = t3gui_dialog_player[t3gui_dialog_players - 1]->dialog;
+		x = t3gui_get_mouse_x();
+		y = t3gui_get_mouse_y();
+		while(d->proc)
+		{
+			if(d->proc == proc && x >= d->x && x < d->x + d->w && y >= d->y && y < d->y + d->h)
+			{
+				return d;
+			}
+			d++;
+		}
+	}
+	return NULL;
+}
+
 int t3gui_get_active_dialogs(void)
 {
 	return t3gui_dialog_players;

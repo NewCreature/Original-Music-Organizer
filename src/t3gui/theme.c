@@ -68,7 +68,10 @@ static bool create_default_theme(T3GUI_THEME * theme)
         theme->state[i].right_margin = 1;
         theme->state[i].top_margin = 1;
         theme->state[i].bottom_margin = 1;
-        theme->state[i].scrollbar_size = 16;
+        theme->state[i].width = -1;
+        theme->state[i].height = -1;
+        theme->state[i].size = -1;
+        theme->state[i].scale = 1;
         theme->state[i].min_space = 0;
         theme->state[i].click_travel = 1;
     }
@@ -275,10 +278,25 @@ static void t3gui_get_theme_state(ALLEGRO_CONFIG * cp, const char * section, T3G
     {
       sp->bottom_margin = atoi(val);
     }
-    val = al_get_config_value(cp, section, "scrollbar_size");
+    val = al_get_config_value(cp, section, "width");
     if(val)
     {
-      sp->scrollbar_size = atoi(val);
+      sp->width = atoi(val);
+    }
+    val = al_get_config_value(cp, section, "height");
+    if(val)
+    {
+      sp->height = atoi(val);
+    }
+    val = al_get_config_value(cp, section, "size");
+    if(val)
+    {
+      sp->size = atoi(val);
+    }
+    val = al_get_config_value(cp, section, "scale");
+    if(val)
+    {
+      sp->scale = atoi(val);
     }
     val = al_get_config_value(cp, section, "min_space");
     if(val)

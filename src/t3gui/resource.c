@@ -163,7 +163,7 @@ bool t3gui_load_bitmap_font(ALLEGRO_FONT ** fp, const char * fn, int * ranges)
     {
         return false;
     }
-    rp = t3gui_find_resource(fn, 0);
+    rp = t3gui_find_resource(fn, count_ranges(ranges));
     if(rp)
     {
         *fp = rp->data;

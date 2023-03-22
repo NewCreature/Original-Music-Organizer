@@ -25,6 +25,7 @@ T3GUI_ELEMENT *t3gui_find_widget_id(T3GUI_ELEMENT *dialog, uint32_t id);
 void t3gui_get_dialog_bounding_box(T3GUI_ELEMENT *dialog, int *min_x, int *min_y, int *max_x, int *max_y);
 void t3gui_centre_dialog(T3GUI_ELEMENT *dialog, int w, int h);
 void t3gui_position_dialog(T3GUI_ELEMENT *dialog, int x, int y);
+void t3gui_align_dialog_element(T3GUI_ELEMENT * dialog, T3GUI_ELEMENT * element, int x, int y);
 
 int t3gui_do_dialog_interval(T3GUI_ELEMENT *dialog, double speed_sec, int focus);
 int t3gui_do_dialog(T3GUI_ELEMENT *dialog, int focus);

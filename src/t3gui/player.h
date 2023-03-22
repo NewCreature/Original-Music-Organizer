@@ -63,6 +63,8 @@ ALLEGRO_EVENT_SOURCE *t3gui_get_player_event_source(T3GUI_PLAYER *player);
 bool t3gui_pause_dialog(T3GUI_PLAYER * player);
 bool t3gui_resume_dialog(T3GUI_PLAYER * player);
 
+T3GUI_ELEMENT * t3gui_get_player_click_element(T3GUI_PLAYER * player);
+
 void t3gui_process_dialog(T3GUI_PLAYER * player);
 bool t3gui_draw_dialog(T3GUI_PLAYER *player);
 
