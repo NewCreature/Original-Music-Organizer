@@ -114,7 +114,7 @@ v0.5.4
 
    [ ]Not able to reproduce for some reason.
 
-[ ]Add Opus codec handler.
+[X]Add Opus codec handler.
 
 [ ]Look into crash when loading when queue is in certain state.
 
