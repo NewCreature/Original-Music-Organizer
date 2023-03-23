@@ -153,10 +153,6 @@ v0.5.4
 
 [ ]Album Artist tags should be in Artist list when available.
 
-[ ]If OMO is closed while a track is playing, that track should resume playing
-   the next time OMO is opened. Currently, the player seems to be in a playing
-   state, but the track is not actually playing.
-
 [ ]Investigate random crash inside omo_retrieve_track_tags().
 
    [ ]Likely a bug in T3NET. Need to ensure T3NET can handle bad data for when
