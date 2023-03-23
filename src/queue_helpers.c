@@ -206,6 +206,9 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 	const char * album = NULL;
 	const char * title = NULL;
 	const char * track = NULL;
+	const char * loop_start = NULL;
+	const char * loop_end = NULL;
+	const char * fade_time = NULL;
 	bool ret = false;
 
 	qp->entry[i]->tags_retrieved = false;
@@ -245,6 +248,21 @@ bool omo_get_queue_entry_tags(OMO_QUEUE * qp, int i, OMO_LIBRARY * lp)
 			if(track)
 			{
 				omo_strcpy(qp->entry[i]->tags.track, track, 8);
+			}
+			loop_start = omo_get_database_value(lp->entry_database, id, "Loop Start");
+			if(loop_start)
+			{
+				qp->entry[i]->tags.loop_start = atof(loop_start);
+			}
+			loop_end = omo_get_database_value(lp->entry_database, id, "Loop End");
+			if(loop_end)
+			{
+				qp->entry[i]->tags.loop_end = atof(loop_end);
+			}
+			fade_time = omo_get_database_value(lp->entry_database, id, "Fade Time");
+			if(fade_time)
+			{
+				qp->entry[i]->tags.fade_time = atof(fade_time);
 			}
 			qp->length -= qp->entry[i]->tags.length;
 			qp->entry[i]->tags.length = omo_get_library_entry_length(lp, id);

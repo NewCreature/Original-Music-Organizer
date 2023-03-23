@@ -3,7 +3,7 @@
 #include "instance.h"
 #include "queue.h"
 
-static const char * omo_queue_file_header = "OQ02";
+static const char * omo_queue_file_header = "OQ03";
 
 OMO_QUEUE * omo_create_queue(int files)
 {
@@ -71,6 +71,9 @@ static bool omo_save_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE_ENTRY * ep)
 			return false;
 		}
 		t3f_fwrite_float(fp, ep->tags.length);
+		t3f_fwrite_float(fp, ep->tags.loop_start);
+		t3f_fwrite_float(fp, ep->tags.loop_end);
+		t3f_fwrite_float(fp, ep->tags.fade_time);
 	}
 	return true;
 }
@@ -184,6 +187,9 @@ static bool omo_load_queue_entry_f(ALLEGRO_FILE * fp, OMO_QUEUE * qp)
 		}
 		strcpy(qp->entry[qp->entry_count - 1]->tags.track, tag);
 		qp->entry[qp->entry_count - 1]->tags.length = t3f_fread_float(fp);
+		qp->entry[qp->entry_count - 1]->tags.loop_start = t3f_fread_float(fp);
+		qp->entry[qp->entry_count - 1]->tags.loop_end = t3f_fread_float(fp);
+		qp->entry[qp->entry_count - 1]->tags.fade_time = t3f_fread_float(fp);
 	}
 	return true;
 

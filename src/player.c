@@ -209,6 +209,11 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 			al_start_timer(t3f_timer);
 			if(pp->track)
 			{
+				/* read values from queue first, then override with library values */
+				force_length = pp->queue->entry[pp->queue_pos]->tags.length;
+				loop_start = pp->queue->entry[pp->queue_pos]->tags.loop_start;
+				loop_end = pp->queue->entry[pp->queue_pos]->tags.loop_end;
+				fade_time = pp->queue->entry[pp->queue_pos]->tags.fade_time;
 				if(lp)
 				{
 					id = omo_get_library_file_id(lp, pp->queue->entry[pp->queue_pos]->file, pp->queue->entry[pp->queue_pos]->sub_file, pp->queue->entry[pp->queue_pos]->track);
@@ -235,6 +240,10 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 							fade_time = atof(val);
 						}
 					}
+				}
+				if(loop_start > 0.0 && loop_end > 0.0)
+				{
+					force_length = 0.0;
 				}
 				val = al_get_config_value(t3f_config, "Settings", "loop_count");
 				if(omo_player_play_file(pp, loop_start, loop_end, fade_time, val ? atoi(val) : 1, force_length))

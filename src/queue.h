@@ -12,6 +12,9 @@ typedef struct
 	char title[256];
 	char track[8];
 	double length;
+	double loop_start;
+	double loop_end;
+	double fade_time;
 
 } OMO_QUEUE_TAGS;
 
