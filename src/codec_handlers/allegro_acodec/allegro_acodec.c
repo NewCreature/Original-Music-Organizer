@@ -2,6 +2,7 @@
 
 #include <vorbis/vorbisfile.h>
 #include <FLAC/metadata.h>
+#include <opus/opusfile.h>
 
 #include "../codec_handler.h"
 
@@ -149,6 +150,33 @@ static const char * codec_get_tag(void * data, const char * name)
 			}
 		}
 	}
+	if(!strcasecmp(codec_data->codec_file_extension, ".opus"))
+	{
+		OggOpusFile * op_file = NULL;
+		int op_error;
+		const OpusTags * op_file_tags = NULL;
+		const char * op_comment_text = NULL;
+
+		op_file = op_open_file(codec_data->player_filename, &op_error);
+		if(op_file)
+		{
+			op_file_tags = op_tags(op_file, 0);
+			if(op_file_tags)
+			{
+				op_comment_text = opus_tags_query(op_file_tags, get_tag_name(data, name), 0);
+				if(op_comment_text)
+				{
+					strcpy(codec_data->codec_tag_buffer, op_comment_text);
+				}
+			}
+			op_free(op_file);
+			if(op_comment_text)
+			{
+				return codec_data->codec_tag_buffer;
+			}
+		}
+	}
+
 	return NULL;
 }
 
@@ -379,5 +407,6 @@ OMO_CODEC_HANDLER * omo_codec_allegro_acodec_get_codec_handler(void)
 	omo_codec_handler_add_type(&codec_handler, ".ogg");
 	omo_codec_handler_add_type(&codec_handler, ".flac");
 	omo_codec_handler_add_type(&codec_handler, ".wav");
+	omo_codec_handler_add_type(&codec_handler, ".opus");
 	return &codec_handler;
 }
