@@ -112,6 +112,11 @@ v0.5.4
 
 [ ]Add Opus codec handler.
 
+[ ]Look into crash when loading when queue is in certain state.
+
+   [ ]Closed program after queue with invalid entries processed and it crashed
+      upon reopening.
+
 [X]Make cloud sync URLs user configurable.
 
 [ ]See if we can fix playback of looping songs not ending correctly after
