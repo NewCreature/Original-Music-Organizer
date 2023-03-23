@@ -139,7 +139,10 @@ static int count_files(void * data)
 			line_pointer = al_fgets(fp, line_buffer, 256);
 			if(line_pointer)
 			{
-				line_count++;
+				if(!strstr(line_pointer, "__MACOSX"))
+				{
+					line_count++;
+				}
 			}
 			else
 			{
@@ -149,7 +152,7 @@ static int count_files(void * data)
 		al_fclose(fp);
 	}
 	al_destroy_path(path);
-	return line_count - 12;
+	return line_count - 3;
 }
 
 static void remove_line_endings(char * buffer)
@@ -193,11 +196,14 @@ static const char * get_file(void * data, int index, char * buffer)
 			line_pointer = al_fgets(fp, line_buffer, 256);
 			if(line_pointer)
 			{
-				line_count++;
-				if(line_count - skip_lines == index)
+				if(!strstr(line_pointer, "__MACOSX"))
 				{
-					strcpy(buffer, &line_buffer[fn_offset]);
-					remove_line_endings(buffer);
+					line_count++;
+					if(line_count - skip_lines == index)
+					{
+						strcpy(buffer, &line_buffer[fn_offset]);
+						remove_line_endings(buffer);
+					}
 				}
 			}
 			else
