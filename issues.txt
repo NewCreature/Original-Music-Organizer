@@ -149,9 +149,6 @@ v0.5.4
    old length should be subtracted before we add the new length if the length
    was edited.
 
-[ ]Update queue length if Detected Length tag was updated through the Tag Track
-   dialog.
-
 [ ]Fix crash when tagging tracks. Probably a bug in the new T3Net
    implementation.
 
