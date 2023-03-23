@@ -107,8 +107,10 @@ Long Term Goals
 v0.5.4
 ------
 
-[ ]Remove libarchive dependency and use Allegro's built-in PhysFS support for
+[X]Remove libarchive dependency and use Allegro's built-in PhysFS support for
    opening ZIP files.
+
+[ ]Add Opus codec handler.
 
 [ ]Make cloud sync URLs user configurable.
 
