@@ -168,6 +168,57 @@ static void provide_default_urls(void)
 	}
 }
 
+static void migrate_databases(void)
+{
+	ALLEGRO_PATH * pp = NULL;
+	ALLEGRO_PATH * migrate_from_path = NULL;
+	const char * old_org_name;
+	const char * old_app_name;
+	ALLEGRO_PATH * migrate_to_path = NULL;
+	ALLEGRO_CONFIG * config = NULL;
+
+	old_org_name = al_get_org_name();
+	old_app_name = al_get_app_name();
+	if(old_org_name && old_app_name)
+	{
+		migrate_to_path = al_get_standard_path(ALLEGRO_USER_DATA_PATH);
+		if(migrate_to_path)
+		{
+			/* see if we need to migrate before proceeding */
+			al_set_org_name("t3-i");
+			al_set_app_name("OMO");
+			migrate_from_path = al_get_standard_path(ALLEGRO_USER_DATA_PATH);
+			if(migrate_from_path)
+			{
+				al_set_path_filename(migrate_from_path, "files.ini");
+				al_set_path_filename(migrate_to_path, "files.ini");
+				if(!al_filename_exists(al_path_cstr(migrate_to_path, '/')))
+				{
+					config = al_load_config_file(al_path_cstr(migrate_from_path, '/'));
+					if(config)
+					{
+						al_save_config_file(al_path_cstr(migrate_to_path, '/'), config);
+						al_destroy_config(config);
+					}
+				}
+				al_set_path_filename(migrate_from_path, "database.ini");
+				al_set_path_filename(migrate_to_path, "database.ini");
+				if(!al_filename_exists(al_path_cstr(migrate_to_path, '/')))
+				{
+					config = al_load_config_file(al_path_cstr(migrate_from_path, '/'));
+					if(config)
+					{
+						al_save_config_file(al_path_cstr(migrate_to_path, '/'), config);
+						al_destroy_config(config);
+					}
+				}
+				al_destroy_path(migrate_from_path);
+			}
+			al_destroy_path(migrate_to_path);
+		}
+	}
+}
+
 /* initialize our app, load graphics, etc. */
 bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 {
@@ -185,6 +236,8 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	t3f_set_event_handler(omo_event_handler);
 
 	t3net_setup(NULL, al_path_cstr(t3f_temp_path, '/'));
+	provide_default_urls();
+	migrate_databases();
 
 	if(!t3gui_init())
 	{
