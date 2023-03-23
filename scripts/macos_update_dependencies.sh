@@ -74,14 +74,17 @@ then
 fi
 cd mpg123
 git pull
-./configure CFLAGS="-arch i386 -arch x86_64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.13.sdk -mmacos-version-min=10.6" --enable-shared=no --enable-static=yes
+./configure CFLAGS="-arch i386 -arch x86_64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.13.sdk -mmacos-version-min=10.6" --enable-shared=no --enable-static=yes --with-cpu=generic
 make
 mv src/libmpg123/.libs/libmpg123.a libmpg123.a
 make clean
-./configure CFLAGS="-arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.sdk -mmacos-version-min=11.0" --enable-shared=no --enable-static=yes
+echo ---------------------------------
+echo ---------------------------------
+./configure CFLAGS="-arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.sdk -mmacos-version-min=11.0" --enable-shared=no --enable-static=yes --with-cpu=generic --host=`uname -m`-apple-darwin
 make
-merge_libs src/libmpg123/.libs/ ./ libmpg123.a
-sudo make install
+merge_libs src/libmpg123/.libs . libmpg123.a
+sudo cp src/libmpg123/mpg123.h /usr/local/include
+sudo cp src/libmpg123/.libs/libmpg123.a /usr/local/libs
 cd ..
 
 # return to original location
