@@ -21,10 +21,10 @@ Supported Formats
 
 OMO currently supports playing back files in these formats on all supported
 platforms: MP3, MP2, MPG, MOD, S3M, XM, IT, 669, AMF, DSM, MTM, OKT, PSM, PTM,
-STM, UMX, J2B, WAV, OGG, FLAC, AY, GBS, GYM, HES, KSS, NSF, SAP, SPC, VGM, VGZ,
-ADL, AMD, BAM, CFF, CMF, D00, DFM, DMO, DRO, DTM, HSC, HSP, IMF, KSM, LAA, LDS,
-M, MAD, MDI, MKJ, MSC, MTK, RAD, RIX, ROL, SA2, SAT, SCI, SNG, XAD, XMS, XSM,
-MID, RMI, and YM.
+STM, UMX, J2B, WAV, VOC, OGG, FLAC, OPUS, AY, GBS, GYM, HES, KSS, NSF, SAP,
+SPC, VGM, VGZ, ADL, AMD, BAM, CFF, CMF, D00, DFM, DMO, DRO, DTM, HSC, HSP, IMF,
+KSM, LAA, LDS, M, MAD, MDI, MKJ, MSC, MTK, RAD, RIX, ROL, SA2, SAT, SCI, SNG,
+XAD, XMS, XSM, MID, RMI, and YM.
 
 Additional support for these formats is available on MacOS: MP4, M4A, AAC.
 

@@ -116,6 +116,21 @@
 			<dict>
 				<key>CFBundleTypeExtensions</key>
 				<array>
+					<string>voc</string>
+				</array>
+				<key>CFBundleTypeMIMETypes</key>
+				<array>
+					<string>audio/voc</string>
+				</array>
+				<key>CFBundleTypeName</key>
+				<string>VOC Audio File</string>
+				<key>CFBundleTypeRole</key>
+				<string>Viewer</string>
+			</dict>
+
+			<dict>
+				<key>CFBundleTypeExtensions</key>
+				<array>
 					<string>aac</string>
 				</array>
 				<key>CFBundleTypeName</key>
@@ -135,6 +150,21 @@
 				</array>
 				<key>CFBundleTypeName</key>
 				<string>Ogg Vorbis File</string>
+				<key>CFBundleTypeRole</key>
+				<string>Viewer</string>
+			</dict>
+
+			<dict>
+				<key>CFBundleTypeExtensions</key>
+				<array>
+					<string>opus</string>
+				</array>
+				<key>CFBundleTypeMIMETypes</key>
+				<array>
+					<string>audio/opus</string>
+				</array>
+				<key>CFBundleTypeName</key>
+				<string>Ogg Opus File</string>
 				<key>CFBundleTypeRole</key>
 				<string>Viewer</string>
 			</dict>
@@ -203,6 +233,7 @@
 					<string>lds</string>
 					<string>m</string>
 					<string>mad</string>
+					<string>mdi</string>
 					<string>mid</string>
 					<string>mkj</string>
 					<string>msc</string>
