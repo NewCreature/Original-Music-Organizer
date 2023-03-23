@@ -4,7 +4,7 @@ Building OMO from Source Code
 Before building OMO, check to see if a build is available for your platform on
 the project's home page:
 
-http://www.t3-i.com/pages/project.php?id=omo
+https://www.tcubedsoftware.com/scripts/pages/project.php?id=omo
 
 If a build is unavailable for your platform or you just wish to build from
 source, follow the instructions in this document.
@@ -16,15 +16,6 @@ Dependencies
 OMO relies on several freely available libraries for its functionality. These
 dependencies must be installed prior to building OMO:
 
- * libdumb
- * libgme (with zlib support enabled)
- * libogg
- * libvorbis
- * libvorbisfile
- * libFLAC
- * libmpg123
- * libarchive
- * libcurl
  * Allegro 5
  * Allegro 5 Audio Add-On
  * Allegro 5 Audio Codec Add-On with Ogg Vorbis and FLAC support enabled
@@ -34,7 +25,16 @@ dependencies must be installed prior to building OMO:
  * Allegro 5 TTF Add-On (requires libfreetype)
  * Allegro 5 Primitives Add-On
  * Allegro 5 Memfile Add-On
+ * libdumb
+ * libgme (with zlib support enabled)
+ * libogg
+ * libvorbis
+ * libvorbisfile
+ * libFLAC
+ * libmpg123
  * unrar (non-free version)
+ * unzip
+ * curl
 
 unrar notes: There are two versions of unrar available. One is the free
 implementation. The other is the freeware version. The free implementation will
