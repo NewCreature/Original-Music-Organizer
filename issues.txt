@@ -107,6 +107,9 @@ Long Term Goals
 v0.5.4
 ------
 
+[ ]Remove libarchive dependency and use Allegro's built-in PhysFS support for
+   opening ZIP files.
+
 [ ]Make cloud sync URLs user configurable.
 
 [ ]See if we can fix playback of looping songs not ending correctly after
