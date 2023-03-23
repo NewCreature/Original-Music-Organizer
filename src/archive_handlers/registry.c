@@ -15,16 +15,34 @@ OMO_ARCHIVE_HANDLER_REGISTRY * omo_create_archive_handler_registry(void)
 
 void omo_destroy_archive_handler_registry(OMO_ARCHIVE_HANDLER_REGISTRY * rp)
 {
+	int i;
+
+	for(i = 0; i < rp->archive_handlers; i++)
+	{
+		if(rp->archive_handler[i].exit)
+		{
+			rp->archive_handler[i].exit();
+		}
+	}
 	free(rp);
 }
 
 bool omo_register_archive_handler(OMO_ARCHIVE_HANDLER_REGISTRY * rp, OMO_ARCHIVE_HANDLER * ap)
 {
+	bool ret = true;
+
 	if(rp->archive_handlers < OMO_MAX_REGISTERED_ARCHIVE_HANDLERS)
 	{
-		memcpy(&rp->archive_handler[rp->archive_handlers], ap, sizeof(OMO_ARCHIVE_HANDLER));
-		rp->archive_handlers++;
-		return true;
+		if(ap->init)
+		{
+			ret = ap->init();			
+		}
+		if(ret)
+		{
+			memcpy(&rp->archive_handler[rp->archive_handlers], ap, sizeof(OMO_ARCHIVE_HANDLER));
+			rp->archive_handlers++;
+			return true;
+		}
 	}
 	return false;
 }

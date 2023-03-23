@@ -12,6 +12,10 @@ typedef struct
 	char type[OMO_ARCHIVE_HANDLER_MAX_TYPES][OMO_ARCHIVE_HANDLER_MAX_TYPE_SIZE];
 	int types;
 
+	/* init/exit */
+	bool (*init)(void);
+	void (*exit)(void);
+
 	/* archive handling functions */
 	void * (*open_archive)(const char * fn, ALLEGRO_PATH * temp_path);
 	void (*close_archive)(void * data);

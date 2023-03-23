@@ -19,7 +19,7 @@
 #include "command_line.h"
 #include "cloud.h"
 
-#include "archive_handlers/libarchive/libarchive.h"
+#include "archive_handlers/unzip/unzip.h"
 #include "archive_handlers/unrar/unrar.h"
 
 #include "codec_handlers/dumba5/dumba5.h"
@@ -206,7 +206,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		printf("Error setting up archive handlers!\n");
 		return false;
 	}
-	omo_register_archive_handler(app->archive_handler_registry, omo_get_libarchive_archive_handler());
+	omo_register_archive_handler(app->archive_handler_registry, omo_get_unzip_archive_handler());
 	omo_register_archive_handler(app->archive_handler_registry, omo_get_unrar_archive_handler());
 
 	/* register players */
