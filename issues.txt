@@ -119,7 +119,7 @@ v0.5.4
 
 [X]Make cloud sync URLs user configurable.
 
-[ ]See if we can fix playback of looping songs not ending correctly after
+[X]See if we can fix playback of looping songs not ending correctly after
    resuming on load before the library is finished loading. We might need to
    srore each queued track's loop info.
 
