@@ -9,6 +9,7 @@
 typedef struct
 {
 
+  char id[128];
 	char type[OMO_ARCHIVE_HANDLER_MAX_TYPES][OMO_ARCHIVE_HANDLER_MAX_TYPE_SIZE];
 	int types;
 

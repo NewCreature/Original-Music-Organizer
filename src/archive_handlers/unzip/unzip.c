@@ -247,6 +247,7 @@ static OMO_ARCHIVE_HANDLER archive_handler;
 OMO_ARCHIVE_HANDLER * omo_get_unzip_archive_handler(void)
 {
 	memset(&archive_handler, 0, sizeof(OMO_ARCHIVE_HANDLER));
+	strcpy(archive_handler.id, "unzip");
 	archive_handler.open_archive = open_archive;
 	archive_handler.close_archive = close_archive;
 	archive_handler.count_files = count_files;

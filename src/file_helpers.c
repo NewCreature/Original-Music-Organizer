@@ -126,7 +126,7 @@ void omo_setup_file_helper_data(OMO_FILE_HELPER_DATA * fhdp, OMO_ARCHIVE_HANDLER
 	fhdp->scan_done = false;
 }
 
-static bool file_needs_scan(const char * fn, OMO_LIBRARY * lp)
+static bool file_needs_scan(const char * fn, OMO_ARCHIVE_HANDLER * ahp, OMO_LIBRARY * lp)
 {
 	ALLEGRO_FS_ENTRY * fs_entry;
 	const char * val;
@@ -135,23 +135,31 @@ static bool file_needs_scan(const char * fn, OMO_LIBRARY * lp)
 
 	if(lp)
 	{
-		val = omo_get_database_value(lp->file_database, fn, "file_time");
-		if(val)
+		val = omo_get_database_value(lp->file_database, fn, "archive_handler");
+		if(!val || strcmp(val, ahp->id))
 		{
-			file_time = atol(val);
-			fs_entry = al_create_fs_entry(fn);
-			if(fs_entry)
-			{
-				if(file_time < al_get_fs_entry_mtime(fs_entry))
-				{
-					ret = true;
-				}
-				al_destroy_fs_entry(fs_entry);
-			}
+			ret = true;
 		}
 		else
 		{
-			ret = true;
+			val = omo_get_database_value(lp->file_database, fn, "file_time");
+			if(val)
+			{
+				file_time = atol(val);
+				fs_entry = al_create_fs_entry(fn);
+				if(fs_entry)
+				{
+					if(file_time < al_get_fs_entry_mtime(fs_entry))
+					{
+						ret = true;
+					}
+					al_destroy_fs_entry(fs_entry);
+				}
+			}
+			else
+			{
+				ret = true;
+			}
 		}
 	}
 	else
@@ -226,7 +234,7 @@ static void omo_count_archive_files(const char * fn, OMO_ARCHIVE_HANDLER * archi
 	int i;
 
 	val = NULL;
-	need_scan = file_needs_scan(fn, file_helper_data->library);
+	need_scan = file_needs_scan(fn, archive_handler, file_helper_data->library);
 	if(!need_scan)
 	{
 		c = omo_get_archive_file_count(fn, file_helper_data);
@@ -247,6 +255,7 @@ static void omo_count_archive_files(const char * fn, OMO_ARCHIVE_HANDLER * archi
 				file_time = al_get_fs_entry_mtime(fs_entry);
 				sprintf(buf, "%lu", file_time);
 				omo_set_database_value(file_helper_data->library->file_database, fn, "file_time", buf);
+				omo_set_database_value(file_helper_data->library->file_database, fn, "archive_handler", archive_handler->id);
 				al_destroy_fs_entry(fs_entry);
 			}
 		}
