@@ -103,16 +103,16 @@ static bool omo_player_play_file(OMO_PLAYER * pp, double loop_start, double loop
 {
 	const char * val;
 
-	if(pp->track->codec_handler->set_loop)
+	if(loop_end > loop_start)
 	{
-		if(loop_end > loop_start)
+		if(pp->track->codec_handler->set_loop)
 		{
 			pp->track->codec_handler->set_loop(pp->track->codec_data, loop_start, loop_end, fade_time, loop_count);
 		}
 	}
-	if(pp->track->codec_handler->set_length)
+	else if(force_length > 0.0)
 	{
-		if(force_length > 0.0)
+		if(pp->track->codec_handler->set_length)
 		{
 			pp->track->codec_handler->set_length(pp->track->codec_data, force_length);
 		}
@@ -240,10 +240,6 @@ void omo_player_logic(OMO_PLAYER * pp, OMO_LIBRARY * lp, OMO_ARCHIVE_HANDLER_REG
 							fade_time = atof(val);
 						}
 					}
-				}
-				if(loop_start > 0.0 && loop_end > 0.0)
-				{
-					force_length = 0.0;
 				}
 				val = al_get_config_value(t3f_config, "Settings", "loop_count");
 				if(omo_player_play_file(pp, loop_start, loop_end, fade_time, val ? atoi(val) : 1, force_length))
