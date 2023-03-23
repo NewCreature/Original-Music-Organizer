@@ -408,5 +408,6 @@ OMO_CODEC_HANDLER * omo_codec_allegro_acodec_get_codec_handler(void)
 	omo_codec_handler_add_type(&codec_handler, ".flac");
 	omo_codec_handler_add_type(&codec_handler, ".wav");
 	omo_codec_handler_add_type(&codec_handler, ".opus");
+	omo_codec_handler_add_type(&codec_handler, ".voc");
 	return &codec_handler;
 }
