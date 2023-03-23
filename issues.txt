@@ -110,6 +110,8 @@ v0.5.4
 [X]Remove libarchive dependency and use Allegro's built-in PhysFS support for
    opening ZIP files.
 
+[ ]Fix freeze when changing view.
+
 [ ]Add Opus codec handler.
 
 [ ]Look into crash when loading when queue is in certain state.
@@ -148,12 +150,6 @@ v0.5.4
 [X]Fix queue total time adding length of track immediately after editing. The
    old length should be subtracted before we add the new length if the length
    was edited.
-
-[ ]Fix crash when tagging tracks. Probably a bug in the new T3Net
-   implementation.
-
-   [ ]Reproduce by queueing T.M.N.T. 3 and pressing 'T' on each track until it
-      crashes.
 
 [ ]Album Artist tags should be in Artist list when available.
 
