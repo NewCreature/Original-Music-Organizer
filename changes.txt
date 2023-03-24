@@ -27,5 +27,6 @@ APP_TITLE (APP_VERSION) maverick; urgency=low
   * Add support for Ogg Opus format.
   * Add support for VOC format.
   * Allow cloud URLs to be configured.
+  * Improve graphics for slider GUI elements.
 
  -- APP_MAINTAINER  BUILD_DATE +0000
