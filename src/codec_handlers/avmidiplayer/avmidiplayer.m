@@ -39,6 +39,7 @@ static void * codec_load_file(const char * fn, const char * subfn)
 		}
 		else
 		{
+			free(data);
 			return NULL;
 		}
 	}
