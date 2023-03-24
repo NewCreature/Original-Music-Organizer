@@ -1,5 +1,31 @@
 APP_TITLE (APP_VERSION) maverick; urgency=low
 
-  * List of updates.
+  * Fix issue where the queue list was displaying 'Unknown' for the title…
+    even though the title was known. Fix other issues with the queue list.
+  * Multi-trhreading fix for DUMBA5 codec handler.
+  * Fix crash when seeking with DUMBA5 codec handler.
+  * Fix T3Net memory issues.
+  * Combine track info from multiple database entries. This ensures the user
+    gets all available track info if some is missing from an entry.
+  * Fix possible buffer overruns in library module.
+  * Fix many NULL pointer access issues.
+  * Support dark mode on MacOS.
+  * Associate with supported file types on MacOS.
+  * Add Apple M-series chip support.
+  * Add support for unrar 6.0 to unrar archive handler.
+  * Add multi-select to library and queue lists.
+  * Enable editing tags for multiple entries at once.
+  * Update queue length if length or loop information for queued items changed.
+  * Add functions to streamline moving a music library.
+  * Add StSound codec handler. This adds support for the YM audio format.
+  * Add option to disable cloud syncing.
+  * Fix T3GUI memory issues.
+  * Enable MDI format that adplug supports.
+  * Fix filter dialog not allowing formats to be toggled with the mouse.
+  * Queue now remembers loop information. This fixes looping tracks not playing
+    back properly when the library is not finished loading.
+  * Add support for Ogg Opus format.
+  * Add support for VOC format.
+  * Allow cloud URLs to be configured.
 
  -- APP_MAINTAINER  BUILD_DATE +0000
