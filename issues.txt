@@ -107,6 +107,15 @@ Long Term Goals
 v0.5.4
 ------
 
+[ ]Songs that don't have disambiguation data get listed in all albums with that
+   have the same name. Nondisambiguated songs should be listed together and
+   excluded from disambiguated album song lists.
+
+[ ]Fix scroll bar not going all the way down sometimes.
+
+[ ]Fix list box not scrolling when current song is not visible after previous
+   song ends.
+
 [X]Remove libarchive dependency and use Allegro's built-in PhysFS support for
    opening ZIP files.
 
