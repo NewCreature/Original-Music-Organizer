@@ -13,7 +13,7 @@ APP_TITLE (APP_VERSION) maverick; urgency=low
   * Associate with supported file types on MacOS.
   * Add Apple M-series chip support.
   * Add support for unrar 6.0 to unrar archive handler.
-  * Add multi-select to library and queue lists.
+  * Add multi-select to queue list.
   * Enable editing tags for multiple entries at once.
   * Update queue length if length or loop information for queued items changed.
   * Add functions to streamline moving a music library.
@@ -28,5 +28,7 @@ APP_TITLE (APP_VERSION) maverick; urgency=low
   * Add support for VOC format.
   * Allow cloud URLs to be configured.
   * Improve graphics for slider GUI elements.
+  * Fix memory leak in Apple AVMIDIPlayer codec handler.
+  * Add 'Disambiguation' tag.
 
  -- APP_MAINTAINER  BUILD_DATE +0000
