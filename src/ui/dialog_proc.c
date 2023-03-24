@@ -132,7 +132,7 @@ char * ui_album_list_proc(int index, int *list_size, bool * multi, void * data)
 	if(app->library && app->library->loaded && app->library->album_entry)
 	{
 		sprintf(ui_album_text, "%s", app->library->filtered_album_entry[index].name);
-		if(app->library->filtered_album_entry[index].disambiguation)
+		if(app->library->filtered_album_entry[index].disambiguation && strlen(app->library->filtered_album_entry[index].disambiguation))
 		{
 			strcat(ui_album_text, " (");
 			strcat(ui_album_text, app->library->filtered_album_entry[index].disambiguation);

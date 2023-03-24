@@ -88,6 +88,7 @@ bool omo_allocate_library(OMO_LIBRARY * lp, int total_files)
 	lp->album_entry_size = total_files + 2;
 	lp->album_entry_count = 0;
 	strcpy(lp->last_album_name, "");
+	strcpy(lp->last_album_disambiguation, "");
 
 	lp->song_entry = NULL;
 
@@ -495,7 +496,7 @@ static bool find_album(OMO_LIBRARY * lp, const char * name, const char * disambi
 
 	for(i = 0; i < lp->album_entry_count; i++)
 	{
-		if(!strcmp(lp->album_entry[i].name, name) && (disambiguation ? !strcmp(disambiguation, lp->last_album_disambiguation) : 1))
+		if(!strcmp(lp->album_entry[i].name, name) && ((disambiguation && lp->album_entry[i].disambiguation) ? !strcmp(disambiguation, lp->album_entry[i].disambiguation) : (!disambiguation && !lp->album_entry[i].disambiguation)))
 		{
 			return true;
 		}

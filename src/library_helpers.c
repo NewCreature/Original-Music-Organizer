@@ -637,6 +637,7 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 			return false;
 		}
 		strcpy(lp->last_album_name, "");
+		strcpy(lp->last_album_disambiguation, "");
 		memset(lp->album_entry, 0, sizeof(OMO_ALBUM_ENTRY *) * lp->entry_count + 2);
 		if(!strcmp(artist, "All Artists"))
 		{
@@ -696,6 +697,7 @@ bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist)
 					val2 = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Disambiguation");
 					if(val)
 					{
+						printf("add %s %s\n", val, val2 ? val2 : "-");
 						omo_add_album_to_library(lp, val, val2);
 					}
 				}
@@ -851,7 +853,7 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 				val2 = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Disambiguation");
 				if(val)
 				{
-					if(!strcmp(val, album) && ((disambiguation && val2) ? !strcmp(val2, disambiguation) : 1) && !song_already_listed(lp, lp->entry[i]->id))
+					if(!strcmp(val, album) && ((disambiguation && val2) ? !strcmp(val2, disambiguation) : (!disambiguation && !val2)) && !song_already_listed(lp, lp->entry[i]->id))
 					{
 						add_song(lp, i, ignore_genre);
 					}
@@ -936,9 +938,10 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 				if(!val || !strcmp(val, artist))
 				{
 					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
+					val2 = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Disambiguation");
 					if(val)
 					{
-						if(!strcmp(val, album) && !song_already_listed(lp, lp->entry[i]->id))
+						if(!strcmp(val, album) && ((disambiguation && val2) ? !strcmp(val2, disambiguation) : (!disambiguation && !val2)) && !song_already_listed(lp, lp->entry[i]->id))
 						{
 							add_song(lp, i, ignore_genre);
 						}
@@ -1006,9 +1009,10 @@ bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char
 				if((val && !strcmp(val, artist)) || (val2 && !strcmp(val2, artist)))
 				{
 					val = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Album");
+					val2 = omo_get_database_value(lp->entry_database, lp->entry[i]->id, "Disambiguation");
 					if(val)
 					{
-						if(!strcmp(val, album) && !song_already_listed(lp, lp->entry[i]->id))
+						if(!strcmp(val, album) && ((disambiguation && val2) ? !strcmp(val2, disambiguation) : (!disambiguation && !val2)) && !song_already_listed(lp, lp->entry[i]->id))
 						{
 							add_song(lp, i, ignore_genre);
 						}
