@@ -31,7 +31,7 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
 		rows++;
 	}
 	h = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) * 3 + 4;
-	h *= rows / 2;
+	h *= (rows / 2 + 1);
 	h += 8;
 
 	val = al_get_config_value(t3f_config, "Settings", "theme");
@@ -48,7 +48,7 @@ bool omo_open_tags_dialog(OMO_UI * uip, void * data)
 			if(omo_tag_type[i])
 			{
 				row++;
-				if(row > rows / 2)
+				if(row > rows / 2 + rows % 2)
 				{
 					row = 0;
 					column = 1;

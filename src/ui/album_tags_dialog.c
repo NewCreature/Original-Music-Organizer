@@ -27,7 +27,7 @@ bool omo_open_album_tags_dialog(OMO_UI * uip, void * data)
 		}
 	}
 	h = al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) * 3 + 4;
-	h *= (rows / 2 + (rows % 2 == 0 ? 1 : 0));
+	h *= (rows / 2 + 1);
 	h += 8;
 
 	val = al_get_config_value(t3f_config, "Settings", "theme");
@@ -44,7 +44,7 @@ bool omo_open_album_tags_dialog(OMO_UI * uip, void * data)
 			if(uip->tag_enabled[i])
 			{
 				row++;
-				if(row > rows / 2)
+				if(row > rows / 2 + rows % 2)
 				{
 					row = 0;
 					column = 1;
@@ -137,6 +137,11 @@ void omo_album_tags_dialog_logic(void * data)
 				}
 				else if(!strcmp(omo_tag_type[i], "Title"))
 				{
+					update_songs = true;
+				}
+				else if(!strcmp(omo_tag_type[i], "Disambiguation"))
+				{
+					update_albums = true;
 					update_songs = true;
 				}
 				for(j = 0; j < app->library->filtered_song_entry_count; j++)

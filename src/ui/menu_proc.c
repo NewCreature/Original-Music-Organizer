@@ -481,6 +481,7 @@ static void enable_tags(APP_INSTANCE * app, bool multi, OMO_LIBRARY * lp)
 		conditionally_enable_tag(app, "Album Artist", lp);
 		conditionally_enable_tag(app, "Artist", lp);
 		conditionally_enable_tag(app, "Album", lp);
+		conditionally_enable_tag(app, "Disambiguation", lp);
 		conditionally_enable_tag(app, "Genre", lp);
 		conditionally_enable_tag(app, "Year", lp);
 		conditionally_enable_tag(app, "Copyright", lp);
