@@ -1988,6 +1988,11 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
       {
         d->ed1 = nelem;
         d->dp2 = malloc(sizeof(char) * nelem);
+        dp2 = d->dp2;
+        if(d->d1 < nelem)
+        {
+            dp2[d->d1] = 1;
+        }
       }
       else
       {

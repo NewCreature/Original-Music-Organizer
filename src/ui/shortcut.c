@@ -37,16 +37,6 @@ static bool selected(T3GUI_ELEMENT * ep, int entry)
 	return false;
 }
 
-static void unselect(T3GUI_ELEMENT * ep, int entry)
-{
-	char * dp2 = ep->dp2;
-
-	if(dp2)
-	{
-		dp2[entry] = 0;
-	}
-}
-
 void omo_shortcut_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
@@ -128,13 +118,14 @@ void omo_shortcut_logic(void * data)
 						omo_stop_player(app->player);
 					}
 					omo_delete_queue_item(app->player->queue, i);
-					unselect(app->ui->ui_queue_list_element, i);
 					if(app->player->queue_pos > i)
 					{
 						app->player->queue_pos--;
 					}
 				}
 			}
+			free(app->ui->ui_queue_list_element->dp2);
+			app->ui->ui_queue_list_element->dp2 = NULL;
 			if(app->player->queue->entry_count > 0)
 			{
 				app->spawn_queue_thread = true;
