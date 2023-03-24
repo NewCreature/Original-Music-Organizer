@@ -109,7 +109,7 @@ static void open_multi_tags_dialog(void * data)
 				c++;
 				if(omo_backup_entry_tags(app->library, app->ui->tags_entry, first))
 				{
-					if(app->prefetch_tags)
+					if(app->prefetch_tags && first)
 					{
 						script_url = al_get_config_value(t3f_config, "Settings", "get_track_tags_url");
 						omo_retrieve_track_tags(app->library, app->ui->tags_entry, script_url);
@@ -152,7 +152,7 @@ static void open_album_tags_dialog(void * data)
 		{
 			if(omo_backup_entry_tags(app->library, app->ui->tags_entry, first))
 			{
-				if(app->prefetch_tags)
+				if(app->prefetch_tags && first)
 				{
 					script_url = al_get_config_value(t3f_config, "Settings", "get_track_tags_url");
 					if(script_url)
