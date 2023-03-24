@@ -1951,7 +1951,7 @@ static void set_selection(T3GUI_ELEMENT * d, int entry, int max)
     }
     else if(t3gui_get_key_state(ALLEGRO_KEY_LCTRL) || t3gui_get_key_state(ALLEGRO_KEY_RCTRL) || t3gui_get_key_state(ALLEGRO_KEY_COMMAND))
     {
-      dp2[entry] = 1;
+      dp2[entry] = !dp2[entry];
     }
     else
     {
@@ -2176,7 +2176,7 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
                     fg = d->theme->state[T3GUI_ELEMENT_STATE_NORMAL].color[T3GUI_THEME_COLOR_EG];
                 }
                 al_set_clipping_rectangle(d->x, d->y, list_width, d->h);
-                if(((d->d1 == n) || (dp2 && dp2[n])) && d->flags & D_GOTFOCUS)
+                if(((!multi && d->d1 == n) || (multi && dp2 && dp2[n])) && d->flags & D_GOTFOCUS)
                 {
                     al_draw_filled_rectangle(d->x, y, d->x + d->w, y + al_get_font_line_height(font) + d->theme->state[0].top_margin + d->theme->state[0].bottom_margin, d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_BG]);
                     fg = d->theme->state[T3GUI_ELEMENT_STATE_SELECTED].color[T3GUI_THEME_COLOR_FG];
