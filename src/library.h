@@ -18,6 +18,14 @@ typedef struct
 typedef struct
 {
 
+	char * name;
+	char * disambiguation;
+
+} OMO_ALBUM_ENTRY;
+
+typedef struct
+{
+
 	/* two databases, one for storing file paths and one for storing song
 	   information that the file database references by id */
 	OMO_DATABASE * file_database;
@@ -36,12 +44,13 @@ typedef struct
 	char ** filtered_artist_entry;
 	int filtered_artist_entry_count;
 
-	char ** album_entry;
+	OMO_ALBUM_ENTRY * album_entry;
 	int album_entry_size;
 	int album_entry_count;
 	char last_album_name[256];
+	char last_album_disambiguation[256];
 	const char * album_filter;
-	char ** filtered_album_entry;
+	OMO_ALBUM_ENTRY * filtered_album_entry;
 	int filtered_album_entry_count;
 
 	/* current list of songs for song list pane */
@@ -67,7 +76,7 @@ void omo_destroy_library(OMO_LIBRARY * lp);
 bool omo_save_library(OMO_LIBRARY * lp);
 int omo_add_file_to_library(OMO_LIBRARY * lp, const char * fn, const char * subfn, const char * track, OMO_ARCHIVE_HANDLER_REGISTRY * rp, OMO_CODEC_HANDLER_REGISTRY * crp, ALLEGRO_PATH * temp_path);
 bool omo_add_artist_to_library(OMO_LIBRARY * lp, const char * name);
-bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name);
+bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name, const char * disambiguation);
 void omo_free_album_list(OMO_LIBRARY * lp);
 
 #endif

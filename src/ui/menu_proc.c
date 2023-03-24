@@ -562,6 +562,7 @@ int omo_menu_playback_find_track(int id, void * data)
 	const char * track_id;
 	const char * artist;
 	const char * album;
+	const char * disambiguation;
 	char fullfn[1024];
 	int i, j;
 
@@ -574,7 +575,7 @@ int omo_menu_playback_find_track(int id, void * data)
 		omo_filter_library_artist_list(app->library, NULL);
 		omo_filter_library_album_list(app->library, NULL);
 		omo_filter_library_song_list(app->library, NULL);
-		omo_get_library_song_list(app->library, "All Artists", "All Albums");
+		omo_get_library_song_list(app->library, "All Artists", "All Albums", NULL);
 		track_id = omo_get_database_value(app->library->file_database, fullfn, "id");
 		if(track_id)
 		{
@@ -599,18 +600,19 @@ int omo_menu_playback_find_track(int id, void * data)
 				omo_get_library_album_list(app->library, artist);
 			}
 			album = omo_get_database_value(app->library->entry_database, track_id, "Album");
+			disambiguation = omo_get_database_value(app->library->entry_database, track_id, "Disambiguation");
 			if(album)
 			{
 				for(i = 0; i < app->library->album_entry_count; i++)
 				{
-					if(!strcmp(album, app->library->album_entry[i]))
+					if(!strcmp(album, app->library->album_entry[i].name) && (disambiguation ? !strcmp(disambiguation, app->library->album_entry[i].disambiguation) : 1))
 					{
 						app->ui->ui_album_list_element->d1 = i;
 						fix_scroll_position(app->ui->ui_album_list_element, app->library->album_entry_count);
 						break;
 					}
 				}
-				omo_get_library_song_list(app->library, artist ? artist : "All Artists", album);
+				omo_get_library_song_list(app->library, artist ? artist : "All Artists", album, disambiguation);
 			}
 			for(i = 0; i < app->library->song_entry_count; i++)
 			{

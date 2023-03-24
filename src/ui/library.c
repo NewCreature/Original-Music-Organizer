@@ -124,6 +124,7 @@ void omo_library_logic(void * data)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	const char * val;
 	const char * val2;
+	const char * val3;
 	int i;
 
 	/* update library filter if user has typed into the search field */
@@ -162,7 +163,7 @@ void omo_library_logic(void * data)
 		val2 = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, NULL, app);
 		al_stop_timer(t3f_timer);
 		omo_get_library_album_list(app->library, val2);
-		omo_get_library_song_list(app->library, val2, "All Albums");
+		omo_get_library_song_list(app->library, val2, "All Albums", NULL);
 		app->ui->apply_album_search_filter = true;
 		app->ui->apply_song_search_filter = true;
 		al_start_timer(t3f_timer);
@@ -172,9 +173,18 @@ void omo_library_logic(void * data)
 		app->ui->ui_song_list_element->d1 = 0;
 		app->ui->ui_song_list_element->d2 = 0;
 		val = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, NULL, app);
-		val2 = ui_album_list_proc(app->ui->ui_album_list_element->d1, NULL, NULL, app);
+		if(app->ui->ui_album_list_element->d1 < 2)
+		{
+			val2 = ui_album_list_proc(app->ui->ui_album_list_element->d1, NULL, NULL, app);
+			val3 = NULL;
+		}
+		else
+		{
+			val2 = app->library->album_entry[app->ui->ui_album_list_element->d1].name;
+			val3 = app->library->album_entry[app->ui->ui_album_list_element->d1].disambiguation;
+		}
 		al_stop_timer(t3f_timer);
-		omo_get_library_song_list(app->library, val, val2);
+		omo_get_library_song_list(app->library, val, val2, val3);
 		app->ui->apply_song_search_filter = true;
 		al_start_timer(t3f_timer);
 	}

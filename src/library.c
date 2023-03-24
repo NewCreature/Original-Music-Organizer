@@ -79,11 +79,12 @@ bool omo_allocate_library(OMO_LIBRARY * lp, int total_files)
 	lp->artist_entry_count = 0;
 	strcpy(lp->last_artist_name, "");
 
-	lp->album_entry = malloc(sizeof(char *) * total_files + 2);
+	lp->album_entry = malloc(sizeof(OMO_ALBUM_ENTRY *) * total_files + 2);
 	if(!lp->album_entry)
 	{
 		goto fail;
 	}
+	memset(lp->album_entry, 0, sizeof(OMO_ALBUM_ENTRY *) * total_files + 2);
 	lp->album_entry_size = total_files + 2;
 	lp->album_entry_count = 0;
 	strcpy(lp->last_album_name, "");
@@ -121,10 +122,15 @@ void omo_free_album_list(OMO_LIBRARY * lp)
 	{
 		for(i = 0; i < lp->album_entry_count; i++)
 		{
-			if(lp->album_entry[i])
+			if(lp->album_entry[i].name)
 			{
-				free(lp->album_entry[i]);
-				lp->album_entry[i] = NULL;
+				free(lp->album_entry[i].name);
+				lp->album_entry[i].name = NULL;
+			}
+			if(lp->album_entry[i].disambiguation)
+			{
+				free(lp->album_entry[i].disambiguation);
+				lp->album_entry[i].disambiguation = NULL;
 			}
 		}
 		lp->album_entry_count = 0;
@@ -477,19 +483,19 @@ bool omo_add_artist_to_library(OMO_LIBRARY * lp, const char * name)
 	return false;
 }
 
-static bool find_album(OMO_LIBRARY * lp, const char * name)
+static bool find_album(OMO_LIBRARY * lp, const char * name, const char * disambiguation)
 {
 	int i;
 
 	/* optimize finding artist if it's the same as the previously added one */
-	if(!strcmp(name, lp->last_album_name))
+	if(!strcmp(name, lp->last_album_name) && (disambiguation ? !strcmp(disambiguation, lp->last_album_disambiguation) : 1))
 	{
 		return true;
 	}
 
 	for(i = 0; i < lp->album_entry_count; i++)
 	{
-		if(!strcmp(lp->album_entry[i], name))
+		if(!strcmp(lp->album_entry[i].name, name) && (disambiguation ? !strcmp(disambiguation, lp->last_album_disambiguation) : 1))
 		{
 			return true;
 		}
@@ -497,16 +503,16 @@ static bool find_album(OMO_LIBRARY * lp, const char * name)
 	return false;
 }
 
-bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name)
+bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name, const char * disambiguation)
 {
 	if(lp->album_entry_count < lp->album_entry_size)
 	{
-		if(!find_album(lp, name))
+		if(!find_album(lp, name, disambiguation))
 		{
-			lp->album_entry[lp->album_entry_count] = malloc(strlen(name) + 1);
-			if(lp->album_entry[lp->album_entry_count])
+			lp->album_entry[lp->album_entry_count].name = malloc(strlen(name) + 1);
+			if(lp->album_entry[lp->album_entry_count].name)
 			{
-				strcpy(lp->album_entry[lp->album_entry_count], name);
+				strcpy(lp->album_entry[lp->album_entry_count].name, name);
 				if(strlen(name) < 256)
 				{
 					strcpy(lp->last_album_name, name);
@@ -515,9 +521,29 @@ bool omo_add_album_to_library(OMO_LIBRARY * lp, const char * name)
 				{
 					strcpy(lp->last_album_name, "");
 				}
-				lp->album_entry_count++;
-				return true;
 			}
+			if(disambiguation)
+			{
+				lp->album_entry[lp->album_entry_count].disambiguation = malloc(strlen(disambiguation) + 1);
+				if(lp->album_entry[lp->album_entry_count].disambiguation)
+				{
+					strcpy(lp->album_entry[lp->album_entry_count].disambiguation, disambiguation);
+					if(strlen(disambiguation) < 256)
+					{
+						strcpy(lp->last_album_disambiguation, disambiguation);
+					}
+					else
+					{
+						strcpy(lp->last_album_disambiguation, "");
+					}
+				}
+				else
+				{
+					free(lp->album_entry[lp->album_entry_count].name);
+				}
+			}
+			lp->album_entry_count++;
+			return true;
 		}
 	}
 	return false;

@@ -29,6 +29,7 @@ typedef struct
 	bool prune_library;
 	char edit_artist[256];
 	char edit_album[256];
+	char edit_disambiguation[256];
 	char edit_song_id[256];
 	int profile_select_id[OMO_MAX_PROFILES];
 	int profile_delete_id;

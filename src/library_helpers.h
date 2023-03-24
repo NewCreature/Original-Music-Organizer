@@ -10,7 +10,7 @@ bool omo_build_library_artists_list(APP_INSTANCE * app, OMO_LIBRARY * lp);
 void omo_filter_library_artist_list(OMO_LIBRARY * lp, const char * filter);
 bool omo_get_library_album_list(OMO_LIBRARY * lp, const char * artist);
 void omo_filter_library_album_list(OMO_LIBRARY * lp, const char * filter);
-bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char * album);
+bool omo_get_library_song_list(OMO_LIBRARY * lp, const char * artist, const char * album, const char * disambiguation);
 void omo_filter_library_song_list(OMO_LIBRARY * lp, const char * filter);
 void omo_setup_library(APP_INSTANCE * app, const char * file_database_fn, const char * entry_database_fn, ALLEGRO_CONFIG * config);
 void omo_setup_library_lists(APP_INSTANCE * app);

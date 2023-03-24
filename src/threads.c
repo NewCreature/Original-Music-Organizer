@@ -68,7 +68,7 @@ void omo_threads_logic(APP_INSTANCE * app)
 				}
 				for(i = 0; i < app->library->album_entry_count; i++)
 				{
-					if(!strcmp(app->library->album_entry[i], app->edit_album))
+					if(!strcmp(app->library->album_entry[i].name, app->edit_album) && (app->library->album_entry[i].disambiguation ? !strcmp(app->library->album_entry[i].disambiguation, app->edit_disambiguation) : 1))
 					{
 						app->ui->ui_album_list_element->d1 = i;
 						break;

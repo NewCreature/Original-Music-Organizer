@@ -142,6 +142,11 @@ void omo_tags_dialog_logic(void * data)
 				{
 					update_songs = true;
 				}
+				else if(!strcmp(omo_tag_type[i], "Disambiguation"))
+				{
+					update_albums = true;
+					update_songs = true;
+				}
 				if(strlen(app->ui->tags_text[i]) == 0)
 				{
 					omo_remove_database_key(app->library->entry_database, app->ui->tags_entry, omo_tag_type[i]);

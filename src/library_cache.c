@@ -2,7 +2,7 @@
 #include "t3f/file.h"
 #include "library.h"
 
-static const char * omo_library_file_header = "OL01";
+static const char * omo_library_file_header = "OL02";
 static const char * omo_library_artists_file_header = "OAR01";
 static const char * omo_library_albums_file_header = "OAL01";
 static const char * omo_library_songs_file_header = "OS01";
@@ -276,8 +276,13 @@ bool omo_load_library_albums_cache(OMO_LIBRARY * lp, const char * fn)
 		}
 		for(i = 0; i < lp->album_entry_count; i++)
 		{
-			lp->album_entry[i] = t3f_load_string_f(fp);
-			if(!lp->album_entry[i])
+			lp->album_entry[i].name = t3f_load_string_f(fp);
+			if(!lp->album_entry[i].name)
+			{
+				goto fail;
+			}
+			lp->album_entry[i].disambiguation = t3f_load_string_f(fp);
+			if(!lp->album_entry[i].disambiguation)
 			{
 				goto fail;
 			}
@@ -290,9 +295,13 @@ bool omo_load_library_albums_cache(OMO_LIBRARY * lp, const char * fn)
 	{
 		for(i = 0; i < lp->album_entry_count; i++)
 		{
-			if(lp->album_entry[i])
+			if(lp->album_entry[i].disambiguation)
 			{
-				free(lp->album_entry[i]);
+				free(lp->album_entry[i].disambiguation);
+			}
+			if(lp->album_entry[i].name)
+			{
+				free(lp->album_entry[i].name);
 			}
 		}
 		lp->album_entry_count = 0;
@@ -329,7 +338,11 @@ bool omo_save_library_albums_cache(OMO_LIBRARY * lp, const char * fn)
 	}
 	for(i = 0; i < lp->album_entry_count; i++)
 	{
-		if(!t3f_save_string_f(fp, lp->album_entry[i]))
+		if(!t3f_save_string_f(fp, lp->album_entry[i].name))
+		{
+			goto fail;
+		}
+		if(!t3f_save_string_f(fp, lp->album_entry[i].disambiguation ? lp->album_entry[i].disambiguation : ""))
 		{
 			goto fail;
 		}
