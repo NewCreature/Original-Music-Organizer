@@ -43,7 +43,7 @@ MACOS_DEPEND_LIBS =
 LINUX_CFLAGS = -I/usr/local/include/binio
 LINUX_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/unix/alsa.o
 #LINUX_PLATFORM_LIBS =
-LINUX_DEPEND_LIBS = -larchive -lcurl -lasound
+LINUX_DEPEND_LIBS = -lcurl -lasound -lstdc++
 #LINUX_PLATFORM_TARGET =
 
 ################################################
