@@ -436,6 +436,7 @@ static time_t get_path_mtime(const char * fn)
 	ALLEGRO_FS_ENTRY * ep;
 	time_t mtime = 0;
 
+	printf("path: %s\n", fn);
 	ep = al_create_fs_entry(fn);
 	if(ep)
 	{
@@ -453,10 +454,10 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 	time_t mtime;
 	const char * val;
 	int c, i, j;
-	const char * cache_fn;
+	char cache_fn[1024];
 
-	cache_fn = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.library", buffer, 1024);
-	if(!cache_fn)
+	val = omo_get_profile_path(omo_get_profile(omo_get_current_profile()), "omo.library", cache_fn, 1024);
+	if(!val)
 	{
 		return false;
 	}
@@ -489,11 +490,6 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 			}
 		}
 	}
-//	val = al_get_config_value(t3f_config, "Settings", "profile");
-//	if(!val)
-//	{
-//		val = "Default";
-//	}
 	if(app->loading_library->modified_time > get_path_mtime(cache_fn))
 	{
 		app->loading_library->modified = true;
