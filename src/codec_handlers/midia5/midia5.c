@@ -22,8 +22,103 @@ typedef struct
 	double event_time;
 	int midi_event[32];
 	float volume;
+	bool fluidsynth_running;
 
 } CODEC_DATA;
+
+#ifdef ALLEGRO_UNIX
+	#ifndef ALLEGRO_MACOSX
+		static int get_fluidsynth_device(void)
+		{
+			int device_count;
+			int i;
+
+			device_count = midia5_get_output_device_count();
+			for(i = 0; i < device_count; i++)
+			{
+				if(!memcmp(midia5_get_output_device_name(i), "FLUID", 5))
+				{
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		static char * get_helper_script_path(char * buf, int buf_size)
+		{
+			ALLEGRO_PATH * path;
+
+			path = al_get_standard_path(ALLEGRO_EXENAME_PATH);
+			if(path)
+			{
+				al_set_path_filename(path, "fluidsynth-helper.sh");
+				strcpy(buf, al_path_cstr(path, '/'));
+				al_destroy_path(path);
+				return buf;
+			}
+			return NULL;
+		}
+
+		static int start_fluidsynth(void)
+		{
+			char command[1024];
+
+			if(get_helper_script_path(command, 1024))
+			{
+				strcat(command, " start");
+				return system(command);
+			}
+			return 0;
+		}
+
+		static int stop_fluidsynth(void)
+		{
+			char command[1024];
+
+			if(get_helper_script_path(command, 1024))
+			{
+				strcat(command, " stop");
+				return system(command);
+			}
+			return 0;
+		}
+
+		static void enable_fluidsynth(CODEC_DATA * data)
+		{
+			int try = 0;
+			int i;
+
+			if(get_fluidsynth_device() < 0)
+			{
+				for(i = 0; i < 5; i++)
+				{
+					start_fluidsynth();
+					al_rest(0.5);
+					while(get_fluidsynth_device() < 0 && try < 5)
+					{
+						printf("FluidSynth device not found. Retrying...\n");
+						al_rest(0.5);
+						try++;
+					}
+					if(try < 5)
+					{
+						data->fluidsynth_running = true;
+						break;
+					}
+					else
+					{
+						stop_fluidsynth();
+						try = 0;
+					}
+				}
+			}
+			else
+			{
+				data->fluidsynth_running = false;
+			}
+		}
+	#endif
+#endif
 
 static bool codec_init(void)
 {
@@ -278,6 +373,11 @@ static bool codec_play(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
+	#ifdef ALLEGRO_UNIX
+		#ifndef ALLEGRO_MACOSX
+			enable_fluidsynth(codec_data);
+		#endif
+	#endif
 	codec_data->device = get_midi_device();
 	if(codec_data->device >= 0)
 	{
@@ -310,6 +410,15 @@ static bool codec_pause(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
+	#ifdef ALLEGRO_UNIX
+		#ifndef ALLEGRO_MACOSX
+			if(codec_data->fluidsynth_running)
+			{
+				stop_fluidsynth();
+				codec_data->fluidsynth_running = false;
+			}
+		#endif
+	#endif
 	codec_data->paused = true;
 	midia5_reset_output_device(codec_data->midia5_output);
 	return true;
@@ -319,6 +428,11 @@ static bool codec_resume(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
+	#ifdef ALLEGRO_UNIX
+		#ifndef ALLEGRO_MACOSX
+			enable_fluidsynth(codec_data);
+		#endif
+	#endif
 	codec_data->paused = false;
 	return true;
 }
@@ -327,6 +441,15 @@ static void codec_stop(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
+	#ifdef ALLEGRO_UNIX
+		#ifndef ALLEGRO_MACOSX
+			if(codec_data->fluidsynth_running)
+			{
+				stop_fluidsynth();
+				codec_data->fluidsynth_running = false;
+			}
+		#endif
+	#endif
 	al_join_thread(codec_data->thread, NULL);
 	midia5_destroy_output_handle(codec_data->midia5_output);
 }
