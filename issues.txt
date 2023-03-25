@@ -154,7 +154,7 @@ v0.5.4
 [X]Can't delete two playlist entries back to back. I think the multi-select code
    may have broken this functionality a bit.
 
-[ ]Add disambiguation tag for albums with the same name.
+[X]Add disambiguation tag for albums with the same name.
 
 [X]Look into crash that happens when doing Shuffle All on entire library.
 
