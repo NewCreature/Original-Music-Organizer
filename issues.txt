@@ -111,7 +111,7 @@ v0.5.4
    have the same name. Nondisambiguated songs should be listed together and
    excluded from disambiguated album song lists.
 
-[ ]Investigate library cache never loading on MacOS machine.
+[X]Investigate library cache never loading on MacOS machine.
 
 [ ]Fix scroll bar not going all the way down sometimes.
 
