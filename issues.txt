@@ -122,11 +122,6 @@ v0.5.4
 
 [X]Investigate library cache never loading on MacOS machine.
 
-[ ]Streamline FluidSynth handling and make it more robust.
-
-   [ ]See if FluidSynth is running already and make a note if it is. We don't
-      want to disable it when stopping the player if it was already running.
-
 [ ]Fix scroll bar not going all the way down sometimes.
 
 [ ]Fix list box not scrolling when current song is not visible after previous
