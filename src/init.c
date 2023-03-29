@@ -238,6 +238,11 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	t3net_setup(NULL, al_path_cstr(t3f_temp_path, '/'));
 	provide_default_urls();
 	migrate_databases();
+	if(!omo_init_cloud())
+	{
+		printf("Failed to initialize cloud module!\n");
+		return false;
+	}
 
 	if(!t3gui_init())
 	{

@@ -7,6 +7,7 @@
 #include "track.h"
 #include "instance.h"
 
+static ALLEGRO_MUTEX * cloud_mutex = NULL;
 static char convert_tag_buffer[256];
 
 static char * convert_tag_name(const char * tag_name)
@@ -76,6 +77,36 @@ static int cloud_strcmp(const char * s1, const char * s2)
 	return 0;
 }
 
+bool omo_init_cloud(void)
+{
+	cloud_mutex = al_create_mutex();
+	if(cloud_mutex)
+	{
+		return true;
+	}
+	return false;
+}
+
+void omo_exit_cloud(void)
+{
+	if(cloud_mutex)
+	{
+		al_destroy_mutex(cloud_mutex);
+		cloud_mutex = NULL;
+	}
+}
+
+T3NET_DATA * omo_get_remote_data(const char * url, const T3NET_ARGUMENTS * arguments)
+{
+	T3NET_DATA * ret;
+
+	al_lock_mutex(cloud_mutex);
+	ret = t3net_get_data(T3NET_CURL_DEFAULT, url, arguments);
+	al_unlock_mutex(cloud_mutex);
+
+	return ret;
+}
+
 bool omo_get_tagger_key(const char * name)
 {
 	T3NET_ARGUMENTS * key_arguments;
@@ -94,7 +125,7 @@ bool omo_get_tagger_key(const char * name)
 		/* copy track info string to entry database first, before breaking up the
 		   track list to put into the file database */
 		t3net_add_argument(key_arguments, "name", name);
-		key_data = t3net_get_data(T3NET_CURL_DEFAULT, script_url, key_arguments);
+		key_data = omo_get_remote_data(script_url, key_arguments);
 		if(key_data)
 		{
 			key_val = t3net_get_data_entry_field(key_data, 0, "tagger_key");
@@ -174,7 +205,7 @@ bool omo_submit_track_tags(OMO_LIBRARY * lp, const char * id, const char * url, 
 					t3net_add_argument(arguments, convert_tag_name("Detected Length"), val);
 				}
 				omo_unload_track(track);
-				submit_data = t3net_get_data(T3NET_CURL_DEFAULT, url, arguments);
+				submit_data = omo_get_remote_data(url, arguments);
 				if(submit_data)
 				{
 					submit_error = t3net_get_error(submit_data);
@@ -213,7 +244,7 @@ bool omo_retrieve_track_tags(OMO_LIBRARY * lp, const char * id, const char * url
 	{
 		t3net_add_argument(arguments, "track_id", id);
 		t3net_add_argument(arguments, "ascend", "true");
-		track_data = t3net_get_data(T3NET_CURL_DEFAULT, url, arguments);
+		track_data = omo_get_remote_data(url, arguments);
 		t3net_destroy_arguments(arguments);
 		if(track_data)
 		{
