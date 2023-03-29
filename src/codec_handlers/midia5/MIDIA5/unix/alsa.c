@@ -290,14 +290,14 @@ void _midia5_platform_reset_output_device(MIDIA5_OUTPUT_HANDLE * hp)
 	MIDIA5_ALSA_DATA * cm_data = (MIDIA5_ALSA_DATA *)hp->platform_data;
 	int i, j;
 
-	for(i = 0; i < 0xF; i++)
+	for(i = 0; i <= 0xF; i++)
 	{
-		for(j = 0; j < 128; j++)
-		{
-			midia5_send_data(hp, 0x80 | i);
-			midia5_send_data(hp, j);
-			midia5_send_data(hp, 127);
-		}
+		midia5_send_data(hp, 0xB0 | i);
+		midia5_send_data(hp, 120);
+		midia5_send_data(hp, 0);
+		midia5_send_data(hp, 0xB0 | i);
+		midia5_send_data(hp, 123);
+		midia5_send_data(hp, 0);
 	}
 }
 
