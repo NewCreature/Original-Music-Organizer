@@ -144,10 +144,10 @@ static void setup_player_module(OMO_UI * uip, int x, int y, int w, int h, int fl
 	uip->ui_seek_control_element->w = w - time_width - bezel;
 	uip->ui_seek_control_element->h = slider_size;
 	uip->ui_current_time_element->x = x + w - time_width + bezel;
-	uip->ui_current_time_element->y = pos_y - 2;
+	uip->ui_current_time_element->y = pos_y - 4;
 	uip->ui_current_time_element->w = time_width - bezel;
 	uip->ui_current_time_element->h = time_height;
-	pos_y += slider_size + bezel;
+	pos_y += slider_size + bezel - 2;
 
 	button_height = button_size;
 	button_y = pos_y;
@@ -279,7 +279,7 @@ static void setup_library_status_module(OMO_UI * uip, int x, int y, int w, int h
 	uip->ui_status_bar_element->x = x;
 	uip->ui_status_bar_element->y = y;
 	uip->ui_status_bar_element->w = w;
-	uip->ui_status_bar_element->h = h - 4;
+	uip->ui_status_bar_element->h = h;
 }
 
 static void resize_dialogs(OMO_UI * uip, int mode, int width, int height)
