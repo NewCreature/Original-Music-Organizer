@@ -37,6 +37,5 @@ APP_TITLE (APP_VERSION) maverick; urgency=low
     if necessary.
   * Fix issue with MIDIA5 codec handler that caused notes to hang after
     stopping playback.
-  * If multiple tags for a track exist in the cloud, use the latest one.
 
  -- APP_MAINTAINER  BUILD_DATE +0000
