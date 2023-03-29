@@ -22,6 +22,7 @@ else
     rm -f $prefix/share/icons/$app_name.svg 2>/dev/null
     rm -f $prefix/share/icons/$app_name.png 2>/dev/null
     rm -f $prefix/$app_dir/$app_name
+    rm -f $prefix/$app_dir/$app_name-helper.sh
     rm -f $prefix/share/applications/$app_name.desktop
     update-desktop-database
   else

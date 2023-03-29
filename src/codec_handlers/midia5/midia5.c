@@ -51,7 +51,7 @@ typedef struct
 			path = al_get_standard_path(ALLEGRO_EXENAME_PATH);
 			if(path)
 			{
-				al_set_path_filename(path, "fluidsynth-helper.sh");
+				al_set_path_filename(path, "omo-helper.sh");
 				strcpy(buf, al_path_cstr(path, '/'));
 				al_destroy_path(path);
 				return buf;

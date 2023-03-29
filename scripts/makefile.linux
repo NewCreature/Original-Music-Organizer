@@ -49,8 +49,10 @@ install: $(APP_EXE_NAME)
 	cp ../docs/copyright $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/copyright
 	cp ../icons/icon.svg $(INSTALL_PREFIX)/share/icons/$(DEBIAN_APP_NAME).svg
 	cp ../bin/$(DEBIAN_APP_NAME) $(INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)
+	-cp ../bin/$(DEBIAN_APP_NAME)-helper.sh $(INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)-helper.sh
 	printf "[Desktop Entry]\nName="$(APP_TITLE)"\nExec=$(INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)\nIcon=$(DEBIAN_APP_NAME)\nTerminal=false\nType=Application\nCategories=$(DEBIAN_DESKTOP_CATEGORIES);" > $(INSTALL_PREFIX)/share/applications/$(DEBIAN_APP_NAME).desktop
 	chmod 755 $(INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)
+	-chmod 755 $(INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)-helper.sh
 	find $(INSTALL_PREFIX)/share/$(DEBIAN_APP_NAME) -type f -exec chmod 644 {} \;
 	chmod 644 $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/README
 	-chmod 644 $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/changelog
@@ -65,7 +67,8 @@ uninstall:
 	rm -rf $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/README
 	rm -rf $(INSTALL_PREFIX)/share/doc/$(DEBIAN_APP_NAME)/copyright
 	rm -rf $(INSTALL_PREFIX)/share/pixmaps/$(DEBIAN_APP_NAME).svg
-	rm -rf $(INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)
+	rm -f $(INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)
+	rm -f $(INSTALL_PREFIX)/$(DEBIAN_DIR)/$(DEBIAN_APP_NAME)-helper.sh
 	rm -rf $(INSTALL_PREFIX)/share/applications/$(DEBIAN_APP_NAME).desktop
 	update-desktop-database
 
