@@ -489,7 +489,12 @@ OMO_UI * omo_create_ui(void)
 	if(uip)
 	{
 		memset(uip, 0, sizeof(OMO_UI));
-		load_ui_data(uip);
+		if(!load_ui_data(uip))
+		{
+			printf("failed to load UI data\n");
+			free(uip);
+			return NULL;
+		}
 	}
 	return uip;
 }
