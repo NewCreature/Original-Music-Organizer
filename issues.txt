@@ -107,6 +107,8 @@ Long Term Goals
 v0.5.4
 ------
 
+[ ]Viewing "All Artists->Album" with no disambiduation shows blank song list.
+
 [X]Songs that don't have disambiguation data get listed in all albums with that
    have the same name. Nondisambiguated songs should be listed together and
    excluded from disambiguated album song lists.
