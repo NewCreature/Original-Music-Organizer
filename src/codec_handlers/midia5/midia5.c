@@ -22,7 +22,7 @@ typedef struct
 	double event_time;
 	int midi_event[32];
 	float volume;
-	bool fluidsynth_running;
+	bool fluidsynth_started; // did we start FluidSynth?
 
 } CODEC_DATA;
 
@@ -102,7 +102,7 @@ typedef struct
 					}
 					if(try < 5)
 					{
-						data->fluidsynth_running = true;
+						data->fluidsynth_started = true;
 						break;
 					}
 					else
@@ -114,7 +114,7 @@ typedef struct
 			}
 			else
 			{
-				data->fluidsynth_running = false;
+				data->fluidsynth_started = false;
 			}
 		}
 	#endif
@@ -412,10 +412,10 @@ static bool codec_pause(void * data)
 
 	#ifdef ALLEGRO_UNIX
 		#ifndef ALLEGRO_MACOSX
-			if(codec_data->fluidsynth_running)
+			if(codec_data->fluidsynth_started)
 			{
 				stop_fluidsynth();
-				codec_data->fluidsynth_running = false;
+				codec_data->fluidsynth_started = false;
 			}
 		#endif
 	#endif
@@ -443,10 +443,10 @@ static void codec_stop(void * data)
 
 	#ifdef ALLEGRO_UNIX
 		#ifndef ALLEGRO_MACOSX
-			if(codec_data->fluidsynth_running)
+			if(codec_data->fluidsynth_started)
 			{
 				stop_fluidsynth();
-				codec_data->fluidsynth_running = false;
+				codec_data->fluidsynth_started = false;
 			}
 		#endif
 	#endif
