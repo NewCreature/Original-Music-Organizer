@@ -147,7 +147,7 @@ static void setup_player_module(OMO_UI * uip, int x, int y, int w, int h, int fl
 	uip->ui_current_time_element->y = pos_y - 4;
 	uip->ui_current_time_element->w = time_width - bezel;
 	uip->ui_current_time_element->h = time_height;
-	pos_y += slider_size + bezel - 2;
+	pos_y += slider_size + bezel - 1;
 
 	button_height = button_size;
 	button_y = pos_y;
