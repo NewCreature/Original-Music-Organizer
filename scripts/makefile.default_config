@@ -71,15 +71,25 @@ MSYS_CONFIG_DEPEND_LIBS = -luuid -lkernel32 -lwinmm -lpsapi\
 ##################
 # Linux Settings #
 ##################
+
+# settings for static linking (use for distribution to others)
 #LINUX_CONFIG_CFLAGS = -DT3F_PNG
 #LINUX_CONFIG_CXXFLAGS =
 #LINUX_CONFIG_LFLAGS =
+#LINUX_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
+#LINUX_CONFIG_ALLEGRO_SUFFIX = -static
+
+# settings for dynamic linking (use for local build for personal use)
+LINUX_CONFIG_CFLAGS =
+LINUX_CONFIG_CXXFLAGS =
+LINUX_CONFIG_LFLAGS =
+LINUX_CONFIG_PKG_CONFIG_OPTIONS = --libs
+LINUX_CONFIG_ALLEGRO_SUFFIX =
+
+# other settings
 #LINUX_CONFIG_PKG_CONFIG_OPTIONS = --with-path=/usr/local/lib/pkgconfig --libs
-#LINUX_CONFIG_ALLEGRO_SUFFIX =
-LINUX_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
-LINUX_CONFIG_ALLEGRO_SUFFIX = -static
 LINUX_CONFIG_DEPEND_LIBS = -lm -lstdc++ -lsharpyuv -lpng -lz
-LINUX_CONFIG_GTK_LIBS = `pkg-config gtk+-x11-2.0 --libs`
+LINUX_CONFIG_GTK_LIBS = `pkg-config gtk+-x11-3.0 --libs`
 LINUX_CONFIG_INSTALL_PREFIX = /usr/local
 
 #############################
