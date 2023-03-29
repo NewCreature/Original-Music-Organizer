@@ -81,5 +81,5 @@ install_flatpak:
 	@$(SED_COMMAND) 's|T3F_APP_ID|$(APP_ID)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml
 	@$(SED_COMMAND) 's|T3F_APP_TITLE|$(APP_TITLE)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml
 	@$(SED_COMMAND) 's|T3F_APP_VERSION|$(APP_VERSION)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml
-	@$(SED_COMMAND) 's|T3F_APP_PUBLISHER|$(APP_PUBLISHER)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml	
-	@$(SED_COMMAND) 's|T3F_APP_URL|$(APP_URL)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml	
+	@$(SED_COMMAND) 's|T3F_APP_PUBLISHER|$(APP_PUBLISHER)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml
+	@$(SED_COMMAND) 's|T3F_APP_URL|$(APP_URL)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml

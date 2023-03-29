@@ -31,6 +31,9 @@
 #ifdef ALLEGRO_WINDOWS
 	#include "windows.h"
 #endif
+#ifdef T3F_PNG
+	#include "png.h"
+#endif
 
 /* display data */
 int t3f_virtual_display_width = 0;
@@ -427,6 +430,9 @@ int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_pro
 		printf("Failed to initialize image add-on!\n");
 		return 0;
 	}
+	#ifdef T3F_PNG
+		t3f_enable_internal_png_handler();
+	#endif
 	al_init_font_addon();
 	if(!al_init_ttf_addon())
 	{

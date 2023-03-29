@@ -40,10 +40,10 @@ MACOS_DEPEND_LIBS =
 ###############
 # Linux stuff #
 ###############
-LINUX_CFLAGS = -I/usr/local/include/binio
+LINUX_CFLAGS = -I/usr/local/include/binio -DT3NET_NO_LIBCURL
 LINUX_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/unix/alsa.o
 #LINUX_PLATFORM_LIBS =
-LINUX_DEPEND_LIBS = -lcurl -lasound -lstdc++
+LINUX_DEPEND_LIBS = -lasound -lstdc++ -lz
 #LINUX_PLATFORM_TARGET =
 
 ################################################
