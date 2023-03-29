@@ -30,5 +30,13 @@ APP_TITLE (APP_VERSION) maverick; urgency=low
   * Improve graphics for slider GUI elements.
   * Fix memory leak in Apple AVMIDIPlayer codec handler.
   * Add 'Disambiguation' tag.
+  * Use curl instead of libcurl for cloud tags syncing.
+  * Fail gracefully if GUI themes fail to load.
+  * Work around GTK crash when statically linking libpng.
+  * Made MIDIA5 codec handler automatically start and stop FluidSynth on Linux
+    if necessary.
+  * Fix issue with MIDIA5 codec handler that caused notes to hang after
+    stopping playback.
+  * If multiple tags for a track exist in the cloud, use the latest one.
 
  -- APP_MAINTAINER  BUILD_DATE +0000
