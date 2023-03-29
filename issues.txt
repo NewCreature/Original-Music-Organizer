@@ -107,7 +107,11 @@ Long Term Goals
 v0.5.4
 ------
 
-[ ]Viewing "All Artists->Album" with no disambiduation shows blank song list.
+[ ]Scrutinize tags cloud sync. Tags that don't successfully submit are
+   supposed to try again later. I keep seeing signs that some tags never get
+   submitted properly and thus retry forever.
+
+[X]Viewing "All Artists->Album" with no disambiduation shows blank song list.
 
 [X]Songs that don't have disambiguation data get listed in all albums with that
    have the same name. Nondisambiguated songs should be listed together and
