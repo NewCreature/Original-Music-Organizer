@@ -4,6 +4,24 @@ OMO Issues
 Long Term Goals
 ---------------
 
+[ ]Look into missing button graphics on Windows.
+
+[ ]Consider setting the track length if the entered fade time is 0.
+
+[ ]Add per-codec handler gain settings. The main player should multiply the gain
+   by the per-codec handler value.
+
+   [ ]We should provide suitable default values for each codec handler.
+
+   [ ]We should consider other per-codec handler settings.
+
+[ ]Album Artist tags should be in Artist list when available.
+
+[ ]Add support for SID music format. We should be able to utilize libresid
+   (libresid-builder-dev in Ubuntu) and libsidplay2 (libsidplay2-dev in Ubuntu)
+   as dependencies. Alternatively, we can include the source for both of these
+   libraries.
+
 [ ]Add support files for users to deploy their own OMO infrastructure.
 
    [ ]Need SQL command to generate compatible database.
@@ -107,18 +125,30 @@ Long Term Goals
 v0.5.4
 ------
 
-[ ]Obfuscate URLs to work around Mod Security rules.
+[ ]After tagging a song while Unknown Artist/Album is selected, the song list
+   shows all songs, but the selection still shows Unknown. We should probably
+   revert to All Artists/Albums any time we regenerate the lists to prevent this
+   from happening.
 
-[ ]T3Net has some potential race conditions where different threads might be
+[ ]Fix scroll bar not going all the way down sometimes.
+
+[ ]Fix list box not scrolling when current song is not visible after previous
+   song ends.
+
+[X]Obfuscate URLs to work around Mod Security rules.
+
+[X]T3Net has some potential race conditions where different threads might be
    trying to access the same resources. I think this might be what's causing
    the random crashing.
 
-[ ]Random crashing during playback. Happened a few times after opening tags
-   editor.
+   [X]Added mutex locking to all t3net_get_data() calls.
 
-[ ]Scrutinize tags cloud sync. Tags that don't successfully submit are
+[X]Scrutinize tags cloud sync. Tags that don't successfully submit are
    supposed to try again later. I keep seeing signs that some tags never get
    submitted properly and thus retry forever.
+
+   [X]Tags were failing to submit due to Apache Mod Security on the host. A
+      workaround has been implemented.
 
 [X]Viewing "All Artists->Album" with no disambiduation shows blank song list.
 
@@ -128,24 +158,10 @@ v0.5.4
 
 [X]Investigate library cache never loading on MacOS machine.
 
-[ ]Fix scroll bar not going all the way down sometimes.
-
-[ ]Fix list box not scrolling when current song is not visible after previous
-   song ends.
-
 [X]Remove libarchive dependency and use Allegro's built-in PhysFS support for
    opening ZIP files.
 
-[ ]Fix freeze when changing view.
-
-   [ ]Not able to reproduce for some reason.
-
 [X]Add Opus codec handler.
-
-[ ]Look into crash when loading when queue is in certain state.
-
-   [ ]Closed program after queue with invalid entries processed and it crashed
-      upon reopening.
 
 [X]Make cloud sync URLs user configurable.
 
@@ -155,16 +171,8 @@ v0.5.4
 
 [X]Check boxes in filter dialog do not work. Formats cannot be toggled off.
 
-[ ]Revisit 'omo_create_main_dialog()' as it seems there is a memory leak where
-   the dialog is first allocated under the right conditions.
-
 [X]Add option to disable cloud syncing. We should still flag unsynced tags so
    all modified tags will be synced once syncing is re-enabled.
-
-[ ]Add support for SID music format. We should be able to utilize libresid
-   (libresid-builder-dev in Ubuntu) and libsidplay2 (libsidplay2-dev in Ubuntu)
-   as dependencies. Alternatively, we can include the source for both of these
-   libraries.
 
 [X]Can't delete two playlist entries back to back. I think the multi-select code
    may have broken this functionality a bit.
@@ -179,48 +187,22 @@ v0.5.4
    old length should be subtracted before we add the new length if the length
    was edited.
 
-[ ]Album Artist tags should be in Artist list when available.
-
-[ ]Investigate random crash inside omo_retrieve_track_tags().
-
-   [ ]Likely a bug in T3NET. Need to ensure T3NET can handle bad data for when
-      the http request doesn't get the expected result.
-
-[ ]Consider setting the track length if the entered fade time is 0.
-
-[ ]Add per-codec handler gain settings. The main player should multiply the gain
-   by the per-codec handler value.
-
-   [ ]We should provide suitable default values for each codec handler.
-
-   [ ]We should consider other per-codec handler settings.
-
 [X]Crash when artist name is too long.
-
-[ ]Look into missing button graphics on Windows.
-
-[ ]Look into crash when music is playing. It seems to happen with the DUMBA5
-   codec handler.
 
 [X]Look into crash when creating a small queue while scrolled down far in a
    larger queue. I tried loading up a queue of about 50 songs while a 52000+
    queue was open and it crashed two different times. Once, it waited until I
    clicked the scroll bar to crash.
 
-[ ]See if we can start FluidSynth automatically when we need it instead of
+[X]See if we can start FluidSynth automatically when we need it instead of
    requiring the user to start it manually.
 
-   [ ]This method worked successfully in Instant Instruments. We'll use that
+   [X]This method worked successfully in Instant Instruments. We'll use that
       implementation or a variation of it.
 
 [X]Look into queue list showing "Unknown" for title when the artist is unknown.
    We should be able to show the correct title whether or not we know who the
    artist is.
-
-[ ]After tagging a song while Unknown Artist/Album is selected, the song list
-   shows all songs, but the selection still shows Unknown. We should probably
-   revert to All Artists/Albums any time we regenerate the lists to prevent this
-   from happening.
 
 [X]When Detected Length tag is updated after a track ends unexpectedly early,
    the time displayed in the queue needs to be updated.
