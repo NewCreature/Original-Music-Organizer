@@ -186,6 +186,66 @@ static int escape_strlen(const char * s)
 	return l;
 }
 
+static void reverse_http(char * s)
+{
+	char * http = strstr(s, "http\%3A\%2F\%2F");
+	char * ptth = "ptth\%3A\%2F\%2F";
+	int i;
+
+	if(http)
+	{
+		for(i = 0; i < strlen(ptth); i++)
+		{
+			http[i] = ptth[i];
+		}
+	}
+}
+
+static void reverse_https(char * s)
+{
+	char * http = strstr(s, "https\%3A\%2F\%2F");
+	char * ptth = "sptth\%3A\%2F\%2F";
+	int i;
+
+	if(http)
+	{
+		for(i = 0; i < strlen(ptth); i++)
+		{
+			http[i] = ptth[i];
+		}
+	}
+}
+
+static void reverse_ptth(char * s)
+{
+	char * ptth = strstr(s, "ptth://");
+	char * http = "http://";
+	int i;
+
+	if(ptth)
+	{
+		for(i = 0; i < strlen(http); i++)
+		{
+			ptth[i] = http[i];
+		}
+	}
+}
+
+static void reverse_sptth(char * s)
+{
+	char * ptth = strstr(s, "ptths://");
+	char * http = "https://";
+	int i;
+
+	if(ptth)
+	{
+		for(i = 0; i < strlen(http); i++)
+		{
+			ptth[i] = http[i];
+		}
+	}
+}
+
 char * t3net_escape(const char * s)
 {
 	char buf[16] = {0};
@@ -210,6 +270,8 @@ char * t3net_escape(const char * s)
 		fragment = url_encode_char(s[i], buf, 16);
 		strcat(escape_s, fragment);
 	}
+	reverse_http(escape_s);
+	reverse_https(escape_s);
 	return escape_s;
 
 	fail:
@@ -796,6 +858,8 @@ T3NET_DATA * t3net_get_data(int method, const char * url, const T3NET_ARGUMENTS 
 	raw_data = t3net_get_raw_data(method, url, arguments);
 	if(raw_data)
 	{
+		reverse_ptth(raw_data);
+		reverse_sptth(raw_data);
 		data = t3net_get_data_from_string(raw_data);
 		free(raw_data);
 	}
