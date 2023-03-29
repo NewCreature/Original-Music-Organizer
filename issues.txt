@@ -107,6 +107,12 @@ Long Term Goals
 v0.5.4
 ------
 
+[ ]Obfuscate URLs to work around Mod Security rules.
+
+[ ]T3Net has some potential race conditions where different threads might be
+   trying to access the same resources. I think this might be what's causing
+   the random crashing.
+
 [ ]Random crashing during playback. Happened a few times after opening tags
    editor.
 
