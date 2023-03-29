@@ -212,6 +212,7 @@ bool omo_retrieve_track_tags(OMO_LIBRARY * lp, const char * id, const char * url
 	if(arguments)
 	{
 		t3net_add_argument(arguments, "track_id", id);
+		t3net_add_argument(arguments, "ascend", "true");
 		track_data = t3net_get_data(T3NET_CURL_DEFAULT, url, arguments);
 		t3net_destroy_arguments(arguments);
 		if(track_data)
