@@ -436,7 +436,6 @@ static time_t get_path_mtime(const char * fn)
 	ALLEGRO_FS_ENTRY * ep;
 	time_t mtime = 0;
 
-	printf("path: %s\n", fn);
 	ep = al_create_fs_entry(fn);
 	if(ep)
 	{
