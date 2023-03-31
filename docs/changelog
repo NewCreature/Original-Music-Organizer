@@ -1,3 +1,45 @@
+omo (0.5.4) maverick; urgency=low
+
+  * Fix issue where the queue list was displaying 'Unknown' for the title…
+    even though the title was known. Fix other issues with the queue list.
+  * Multi-trhreading fix for DUMBA5 codec handler.
+  * Fix crash when seeking with DUMBA5 codec handler.
+  * Fix T3Net memory issues.
+  * Combine track info from multiple database entries. This ensures the user
+    gets all available track info if some is missing from an entry.
+  * Fix possible buffer overruns in library module.
+  * Fix many NULL pointer access issues.
+  * Support dark mode on MacOS.
+  * Associate with supported file types on MacOS.
+  * Add Apple M-series chip support.
+  * Add support for unrar 6.0 to unrar archive handler.
+  * Add multi-select to queue list.
+  * Enable editing tags for multiple entries at once.
+  * Update queue length if length or loop information for queued items changed.
+  * Add functions to streamline moving a music library.
+  * Add StSound codec handler. This adds support for the YM audio format.
+  * Add option to disable cloud syncing.
+  * Fix T3GUI memory issues.
+  * Enable MDI format that adplug supports.
+  * Fix filter dialog not allowing formats to be toggled with the mouse.
+  * Queue now remembers loop information. This fixes looping tracks not playing
+    back properly when the library is not finished loading.
+  * Add support for Ogg Opus format.
+  * Add support for VOC format.
+  * Allow cloud URLs to be configured.
+  * Improve graphics for slider GUI elements.
+  * Fix memory leak in Apple AVMIDIPlayer codec handler.
+  * Add 'Disambiguation' tag.
+  * Use curl instead of libcurl for cloud tags syncing.
+  * Fail gracefully if GUI themes fail to load.
+  * Work around GTK crash when statically linking libpng.
+  * Made MIDIA5 codec handler automatically start and stop FluidSynth on Linux
+    if necessary.
+  * Fix issue with MIDIA5 codec handler that caused notes to hang after
+    stopping playback.
+
+ -- Todd Cope <todd@t3-i.com>  Fri, 31 Mar 2023 23:53:22 +0000
+
 OMO (0.5.3) maverick; urgency=low
 
   * Fix potential crash when interacting with the cloud.
