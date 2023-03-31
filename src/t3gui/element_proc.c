@@ -1945,7 +1945,7 @@ static void set_selection(T3GUI_ELEMENT * d, int entry, int max)
     else
     {
       clear_selection(d, max);
-      dp2[entry] = 1;
+      dp2[d->d1] = 1;
     }
   }
 }
