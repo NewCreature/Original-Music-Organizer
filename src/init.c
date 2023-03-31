@@ -378,7 +378,15 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 				{
 					app->player->queue_pos = atoi(val);
 					app->ui->ui_queue_list_element->d1 = app->player->queue_pos;
-					app->ui->ui_queue_list_element->d2 = app->ui->ui_queue_list_element->d1;
+					val = al_get_config_value(t3f_config, "Settings", "queue_scroll_position");
+					if(val)
+					{
+						app->ui->ui_queue_list_element->d2 = atoi(val);
+					}
+					else
+					{
+						app->ui->ui_queue_list_element->d2 = app->ui->ui_queue_list_element->d1;
+					}
 					val = al_get_config_value(t3f_config, "Settings", "queue_track_position");
 					if(val)
 					{
@@ -421,12 +429,15 @@ void omo_exit(APP_INSTANCE * app)
 
 	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.queue", buffer, 1024));
 	al_remove_config_key(t3f_config, "Settings", "queue_position");
+	al_remove_config_key(t3f_config, "Settings", "queue_scroll_position");
 	if(app->player->queue)
 	{
 		if(omo_save_queue(app->player->queue, t3f_get_filename(t3f_data_path, "omo.queue", buffer, 1024)))
 		{
 			sprintf(buf, "%d", app->player->queue_pos);
 			al_set_config_value(t3f_config, "Settings", "queue_position", buf);
+			sprintf(buf, "%d", app->ui->ui_queue_list_element->d2);
+			al_set_config_value(t3f_config, "Settings", "queue_scroll_position", buf);
 		}
 	}
 	t3f_save_config();
