@@ -146,10 +146,10 @@ v0.5.4
    revert to All Artists/Albums any time we regenerate the lists to prevent this
    from happening.
 
-[ ]Fix scroll bar not going all the way down sometimes.
-
 [ ]Fix list box not scrolling when current song is not visible after previous
    song ends.
+
+[X]Fix scroll bar not going all the way down sometimes.
 
 [X]Adding disambiguation to Star Wars NES didn't regenerate library lists.
    Probably need to check if disambiguation changed during edit and use that as
