@@ -973,7 +973,7 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
 
    hmar = hh/2;
    irange = (vert) ? d->h : d->w;
-   slmax = irange - hh;
+   slmax = irange - hh - 1;
    slratio = slmax / (d->d1);
    slpos = slratio * d->d2;
    slp = slpos;
@@ -986,20 +986,9 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
          vert = false;
 
       if (vert) {
-
-         if (hh > d->h) hh = d->h;
-
-         p9 = handle_bp;
-         if(hh < get_nine_patch_bitmap_min_height(p9))
-         {
-             hh = get_nine_patch_bitmap_min_height(p9);
-         }
-         offset = (d->h - hh) * value / range;
+         offset = (int)(slmax) * value / range;
       } else {
-
-         if (hh > d->w) hh = d->w;
-
-         offset = (int)(d->w - hh) * value / range;
+         offset = (int)(slmax) * value / range;
       }
 
       if (vert) {
@@ -1203,8 +1192,8 @@ int t3gui_slider_proc(int msg, T3GUI_ELEMENT *d, int c)
             mp = msx - d->x;
          if (mp < 0)
             mp = 0;
-         if (mp > irange-hh)
-            mp = irange-hh;
+         if (mp > irange-hh-1)
+            mp = irange-hh-1;
          slpos = mp;
          slmax = slpos / slratio;
          newpos = slmax;
