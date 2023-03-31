@@ -139,6 +139,11 @@ void omo_multi_tags_dialog_logic(void * data)
 				{
 					update_songs = true;
 				}
+				else if(!strcmp(omo_tag_type[i], "Disambiguation"))
+				{
+					update_albums = true;
+					update_songs = true;
+				}
 				for(j = 0; j < app->player->queue->entry_count; j++)
 				{
 					if(omo_queue_item_selected(app->ui->ui_queue_list_element, j))
