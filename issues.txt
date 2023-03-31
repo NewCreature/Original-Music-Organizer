@@ -125,22 +125,6 @@ Long Term Goals
 v0.5.4
 ------
 
-[ ]Crash when attempting to open multi-tags editor dialog.
-
-   [ ]Open Star Wars BG soundtrack ZIP.
-
-   [ ]Select all.
-
-   [ ]Open multi-tags editor with T.
-
-   [ ]Add Disambiguation tag.
-
-   [ ]Okay dialog.
-
-   [ ]Select a single track from the playlist.
-
-   [ ]Press T to crash.
-
 [X]After tagging a song while Unknown Artist/Album is selected, the song list
    shows all songs, but the selection still shows Unknown. We should probably
    revert to All Artists/Albums any time we regenerate the lists to prevent this
