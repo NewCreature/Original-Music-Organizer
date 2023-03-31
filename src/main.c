@@ -241,19 +241,26 @@ void omo_logic(void * data)
 			/* see if we should scroll the queue list */
 			if(app->player->queue && app->player->queue_pos != old_queue_list_pos)
 			{
-				if(old_queue_list_pos >= app->ui->ui_queue_list_element->d2 && old_queue_list_pos < app->ui->ui_queue_list_element->d2 + visible + 1)
+				if(old_queue_list_pos >= app->ui->ui_queue_list_element->d2 && old_queue_list_pos < app->ui->ui_queue_list_element->d2 + visible)
 				{
+					/* go to previous page */
 					if(app->player->queue_pos < app->ui->ui_queue_list_element->d2)
 					{
-						app->ui->ui_queue_list_element->d2 -= visible + 1;
+						app->ui->ui_queue_list_element->d2 -= visible;
 						if(app->ui->ui_queue_list_element->d2 < 0)
 						{
 							app->ui->ui_queue_list_element->d2 = 0;
 						}
 					}
-					else if(app->player->queue_pos > app->ui->ui_queue_list_element->d2 + visible)
+
+					/* go to next page */
+					if(app->player->queue_pos > app->ui->ui_queue_list_element->d2 + visible - 1)
 					{
-						app->ui->ui_queue_list_element->d2 += visible + 1;
+						app->ui->ui_queue_list_element->d2 += visible;
+						if(app->ui->ui_queue_list_element->d2 + visible > app->player->queue->entry_count)
+						{
+							app->ui->ui_queue_list_element->d2 = app->player->queue->entry_count - visible;
+						}
 					}
 				}
 			}
