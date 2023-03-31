@@ -146,7 +146,7 @@ v0.5.4
    revert to All Artists/Albums any time we regenerate the lists to prevent this
    from happening.
 
-[ ]Fix list box not scrolling when current song is not visible after previous
+[X]Fix list box not scrolling when current song is not visible after previous
    song ends.
 
 [X]Fix scroll bar not going all the way down sometimes.
