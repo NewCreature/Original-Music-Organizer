@@ -188,6 +188,7 @@ void omo_album_tags_dialog_logic(void * data)
 		{
 			app->spawn_library_lists_thread = true;
 			app->destroy_library_lists_cache = true;
+			app->find_edited_track = true;
 		}
 		app->button_pressed = -1;
 		t3f_key[ALLEGRO_KEY_ENTER] = 0;

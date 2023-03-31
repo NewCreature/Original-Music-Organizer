@@ -67,6 +67,7 @@ typedef struct
 	bool spawn_cloud_thread;
 	bool spawn_queue_thread;
 	bool destroy_library_lists_cache;
+	bool find_edited_track;
 
 	/* test data */
 	int test_mode;

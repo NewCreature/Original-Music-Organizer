@@ -47,33 +47,8 @@ void omo_threads_logic(APP_INSTANCE * app)
 		{
 			if(app->library->loaded)
 			{
-				app->ui->apply_artist_search_filter = true;
-				app->ui->apply_album_search_filter = true;
-				app->ui->apply_song_search_filter = true;
-				for(i = 0; i < app->library->artist_entry_count; i++)
-				{
-					if(!strcmp(app->library->artist_entry[i], app->edit_artist))
-					{
-						app->ui->ui_artist_list_element->d1 = i;
-						break;
-					}
-				}
-				for(i = 0; i < app->library->song_entry_count; i++)
-				{
-					if(!strcmp(app->library->entry[app->library->song_entry[i]]->id, app->edit_song_id))
-					{
-						app->ui->ui_song_list_element->d1 = i + 1;
-						break;
-					}
-				}
-				for(i = 0; i < app->library->album_entry_count; i++)
-				{
-					if(!strcmp(app->library->album_entry[i].name, app->edit_album) && (app->library->album_entry[i].disambiguation ? !strcmp(app->library->album_entry[i].disambiguation, app->edit_disambiguation) : 1))
-					{
-						app->ui->ui_album_list_element->d1 = i;
-						break;
-					}
-				}
+				omo_find_track(app, app->edit_song_id);
+				app->find_edited_track = false;
 			}
 			else
 			{

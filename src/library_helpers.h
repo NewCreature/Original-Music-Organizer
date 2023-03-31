@@ -24,5 +24,6 @@ bool omo_restore_entry_tags(OMO_LIBRARY * lp);
 void omo_discard_entry_backup(OMO_LIBRARY * lp);
 double omo_get_library_entry_length(OMO_LIBRARY * lp, const char * id);
 void omo_rebase_library_file_database(OMO_LIBRARY * lp, const char * base_path, const char * rebase_path);
+bool omo_find_track(APP_INSTANCE * app, const char * track_id);
 
 #endif
