@@ -141,10 +141,6 @@ v0.5.4
 
    [ ]Press T to crash.
 
-[ ]Adding disambiguation to Star Wars NES didn't regenerate library lists.
-   Probably need to check if disambiguation changed during edit and use that as
-   another trigger for regenerating library lists.
-
 [ ]After tagging a song while Unknown Artist/Album is selected, the song list
    shows all songs, but the selection still shows Unknown. We should probably
    revert to All Artists/Albums any time we regenerate the lists to prevent this
@@ -154,6 +150,10 @@ v0.5.4
 
 [ ]Fix list box not scrolling when current song is not visible after previous
    song ends.
+
+[X]Adding disambiguation to Star Wars NES didn't regenerate library lists.
+   Probably need to check if disambiguation changed during edit and use that as
+   another trigger for regenerating library lists.
 
 [X]Obfuscate URLs to work around Mod Security rules.
 
