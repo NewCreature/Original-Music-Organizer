@@ -228,7 +228,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	int player_state;
 
 	/* initialize T3F */
-	if(!t3f_initialize(T3F_APP_TITLE, 640, 480, 60.0, omo_logic, omo_render, T3F_DEFAULT | T3F_RESIZABLE | T3F_USE_MENU | T3F_USE_OPENGL, app))
+	if(!t3f_initialize(T3F_APP_TITLE, 640, 480, 60.0, omo_logic, omo_render, T3F_DEFAULT | T3F_RESIZABLE | T3F_USE_MENU | T3F_USE_OPENGL | T3F_USE_FIXED_PIPELINE, app))
 	{
 		printf("Error initializing T3F!\n");
 		return false;
