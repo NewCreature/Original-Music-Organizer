@@ -1,3 +1,4 @@
+T3F_PREFIX = /usr/local
 T3F_PLATFORM_NAME = macos
 T3F_CXX_STDLIB = -l$(MACOS_CXX_STDLIB)
 CC = $(MACOS_CC)

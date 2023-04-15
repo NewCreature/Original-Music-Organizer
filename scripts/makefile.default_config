@@ -66,7 +66,7 @@ MSYS_CONFIG_ALLEGRO_SUFFIX = -static
 MSYS_CONFIG_DEPEND_LIBS = -luuid -lkernel32 -lwinmm -lpsapi\
               -lopengl32 -lglu32 -luser32 -lcomdlg32 -lgdi32 -lshell32 -lole32\
               -ladvapi32 -lws2_32 -lshlwapi -lvorbisfile -lvorbis -lFLAC -logg\
-              -ldumb -lopusfile -lopus -lfreetype -lpng -lz -ljpeg -ld3d9 -ldsound -lstdc++ -lssp
+              -ldumb -lopusfile -lopus -lfreetype -lpng -lz -ljpeg -lwebp -ld3d9 -ldsound -lstdc++ -lssp -lsharpyuv
 
 ##################
 # Linux Settings #
