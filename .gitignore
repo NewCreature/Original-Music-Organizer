@@ -37,6 +37,7 @@ Thumbs.db
 *.app
 src/makefile.config
 bin/omo
+bin/omo.exe
 bin/unrar
 icons/macosx_icon.icns
 icons/windows_icon.ico
