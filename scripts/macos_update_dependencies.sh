@@ -11,7 +11,7 @@ function remake_dir() {
 }
 
 if [ "$#" -ne 1 ]; then
-  echo "Usage: macos_set_up_dependencies <path>"
+  echo "Usage: macos_update_dependencies <path>"
   exit 1
 fi
 
