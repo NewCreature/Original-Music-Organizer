@@ -41,7 +41,7 @@ bin/omo.exe
 bin/unrar
 icons/macosx_icon.icns
 icons/windows_icon.ico
-win32/makeicon
+win32/makeicon.exe
 
 # other files
 src/php/settings.php
