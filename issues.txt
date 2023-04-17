@@ -125,6 +125,8 @@ Long Term Goals
 v0.5.4
 ------
 
+[ ]Crash when switching between library and basic view on occasion.
+
 [ ]Queue list multi-select is corrupted when switching between library and
    basic views. Probably need to reset a variable or clear an array.
 
