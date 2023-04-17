@@ -128,8 +128,12 @@ v0.5.4
 [ ]Queue list multi-select is corrupted when switching between library and
    basic views. Probably need to reset a variable or clear an array.
 
-[ ]Window has black area at the bottom the size of the menu when switching
+[X]Window has black area at the bottom the size of the menu when switching
    between basic and library views.
+
+   [X]This is the result of a bug in Allegro that was adding extra height to
+      the display if a menu is attached. A pull request has been sent so
+      hopefully they will accept it or at least offer another fix.
 
 [X]After tagging a song while Unknown Artist/Album is selected, the song list
    shows all songs, but the selection still shows Unknown. We should probably
