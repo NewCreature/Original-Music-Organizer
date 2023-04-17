@@ -79,7 +79,7 @@ MINGW_DEPEND_LIBS = -larchive_static -lcurl -lwldap32
 MSYS_CFLAGS = -DT3NET_NO_LIBCURL -DALLEGRO_STATICLINK -DFLAC__NO_DLL
 MSYS_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/windows/midiout.o
 #MSYS_PLATFORM_LIBS =
-MSYS_DEPEND_LIBS = -larchive -lcurl
+MSYS_DEPEND_LIBS = -larchive
 #MSYS_PLATFORM_TARGET =
 
 #################
