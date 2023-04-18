@@ -23,6 +23,7 @@
 #include "new_profile_dialog.h"
 #include "split_track_dialog.h"
 #include "about_dialog.h"
+#include "dialog_proc.h"
 
 static char type_buf[1024] = {0};
 
@@ -800,6 +801,33 @@ int omo_menu_library_edit_album_tags(int id, void * data)
 	return 1;
 }
 
+static char * get_old_selection(void * data)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	int nelem;
+	bool multi;
+	char * ret;
+
+	ui_queue_list_proc(-1, &nelem, &multi, data);
+	ret = malloc(sizeof(char) * nelem);
+	if(ret)
+	{
+		memcpy(ret, app->ui->ui_queue_list_element->dp2, sizeof(char) * nelem);
+	}
+	return ret;
+}
+
+static void put_old_selection(void * data, char * in)
+{
+	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	int nelem;
+	bool multi;
+
+	ui_queue_list_proc(-1, &nelem, &multi, data);
+	memcpy(app->ui->ui_queue_list_element->dp2, in, sizeof(char) * nelem);
+	free(in);
+}
+
 int omo_menu_view_basic(int id, void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
@@ -810,7 +838,11 @@ int omo_menu_view_basic(int id, void * data)
 	int c_x, c_y, c_width, c_height, c_old_width;
 	char buf[32] = {0};
 	ALLEGRO_MONITOR_INFO monitor_info;
+	char * old_selection;
+	int old_index;
 
+	old_selection = get_old_selection(data);
+	old_index = app->ui->ui_queue_list_element->d2;
 	if(app->library_view)
 	{
 		t3gui_close_dialog(app->ui->ui_dialog);
@@ -857,6 +889,12 @@ int omo_menu_view_basic(int id, void * data)
 		omo_set_window_constraints(app);
 		t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
 	}
+	if(old_selection)
+	{
+		put_old_selection(data, old_selection);
+		app->ui->ui_queue_list_element->d2 = old_index;
+		t3gui_set_focus_element(app->ui->ui_queue_list_element);
+	}
 	return 1;
 }
 
@@ -870,7 +908,11 @@ int omo_menu_view_library(int id, void * data)
 	int c_x, c_y, c_width, c_height, c_old_width;
 	char buf[32] = {0};
 	ALLEGRO_MONITOR_INFO monitor_info;
+	char * old_selection;
+	int old_index;
 
+	old_selection = get_old_selection(data);
+	old_index = app->ui->ui_queue_list_element->d2;
 	if(!app->library_view)
 	{
 		t3gui_close_dialog(app->ui->ui_dialog);
@@ -921,6 +963,12 @@ int omo_menu_view_library(int id, void * data)
 		omo_create_main_dialog(app->ui, 1, c_width, c_height, app);
 		omo_set_window_constraints(app);
 		t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
+	}
+	if(old_selection)
+	{
+		put_old_selection(data, old_selection);
+		app->ui->ui_queue_list_element->d2 = old_index;
+		t3gui_set_focus_element(app->ui->ui_queue_list_element);
 	}
 
 	return 1;
