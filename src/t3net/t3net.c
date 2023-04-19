@@ -1,3 +1,6 @@
+#ifdef ALLEGRO_WINDOWS
+	#include <windows.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +17,28 @@ char t3net_server_message[1024] = {0};
 
 static char t3net_temp_dir[1024] = {0};
 static char t3net_curl_command[1024] = {0};
+
+static int run_system_command(char * command)
+{
+	#ifdef ALLEGRO_WINDOWS
+		STARTUPINFO si = {0};
+		PROCESS_INFORMATION pi = {0};
+		SECURITY_ATTRIBUTES sa;
+		sa.nLength = sizeof(sa);
+		sa.lpSecurityDescriptor = NULL;
+		sa.bInheritHandle = TRUE;
+		si.cb = sizeof(si);
+		si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+		si.hStdInput = NULL;
+		si.hStdOutput = NULL;
+		si.hStdError = NULL;
+		si.wShowWindow = SW_HIDE;
+		ret = CreateProcess(NULL, command, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi);
+		WaitForSingleObject(pi.hProcess, INFINITE);
+	#else
+		return system(command);
+	#endif
+}
 
 void t3net_strcpy(char * dest, const char * src, int size)
 {
@@ -564,7 +589,7 @@ char * t3net_get_raw_data(int method, const char * url, const T3NET_ARGUMENTS * 
 		}
 		sprintf(temp_path, "%st3net.out", t3net_temp_dir);
 		sprintf(curl_command, "%s --connect-timeout %d \"%s\" --silent --output \"%s\"", t3net_curl_command, T3NET_TIMEOUT_TIME, final_url, temp_path);
-		system(curl_command);
+		run_system_command(curl_command);
 		free(curl_command);
 		data.data = t3net_load_file(temp_path);
 	}
