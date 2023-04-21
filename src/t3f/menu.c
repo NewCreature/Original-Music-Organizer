@@ -97,6 +97,14 @@ bool t3f_attach_menu(ALLEGRO_MENU * mp)
   t3f_adjust_view(t3f_default_view, 0, 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), t3f_virtual_display_width / 2, t3f_virtual_display_height / 2, t3f_flags);
 	t3f_default_view->need_update = true;
 	t3f_select_view(t3f_default_view);
+  /* work around Allegro bug by resizing display a little */
+  #ifdef ALLEGRO_WINDOWS
+    if(t3f_flags & T3F_USE_OPENGL)
+    {
+      al_resize_display(t3f_display, al_get_display_width(t3f_display) - 1, al_get_display_height(t3f_display));
+      al_resize_display(t3f_display, al_get_display_width(t3f_display) + 1, al_get_display_height(t3f_display));
+    }
+  #endif
   return true;
 }
 

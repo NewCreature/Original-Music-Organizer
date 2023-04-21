@@ -316,11 +316,6 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	if(!val || strcmp(val, "true"))
 	{
 		t3f_attach_menu(app->menu[OMO_MENU_MAIN]);
-		/* work around Allegro bug by resizing display a little */
-		#ifdef ALLEGRO_WINDOWS
-			al_resize_display(t3f_display, al_get_display_width(t3f_display) - 1, al_get_display_height(t3f_display));
-			al_resize_display(t3f_display, al_get_display_width(t3f_display) + 1, al_get_display_height(t3f_display));
-		#endif
 	}
 	val = al_get_config_value(t3f_config, "Settings", "prefetch_tags");
 	if(val && !strcmp(val, "false"))
