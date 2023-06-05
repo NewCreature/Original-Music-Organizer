@@ -152,7 +152,7 @@ static int count_files(void * data)
 		al_fclose(fp);
 	}
 	al_destroy_path(path);
-	return line_count - 3;
+	return line_count - 4;
 }
 
 static void remove_line_endings(char * buffer)
@@ -177,7 +177,7 @@ static const char * get_file(void * data, int index, char * buffer)
 	char line_buffer[256];
 	char * line_pointer;
 	int line_count = 0;
-	int skip_lines = 3;
+	int skip_lines = 4;
 	int fn_offset = 30;
 	int i;
 	path = al_clone_path(archive_data->temp_path);
@@ -203,6 +203,7 @@ static const char * get_file(void * data, int index, char * buffer)
 					{
 						strcpy(buffer, &line_buffer[fn_offset]);
 						remove_line_endings(buffer);
+						break;
 					}
 				}
 			}
