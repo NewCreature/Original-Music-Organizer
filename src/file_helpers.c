@@ -372,6 +372,47 @@ bool omo_count_file(const char * fn, bool isfolder, void * data)
 	return false;
 }
 
+/* repair archive contents generated from libarchive handler */
+static bool repair_archive(OMO_FILE_HELPER_DATA * fhd, const char * fn)
+{
+	const char * val;
+	char buf[64];
+	char buf2[64];
+	int i, c;
+
+	val = omo_get_database_value(fhd->library->file_database, fn, "archive_files");
+	if(val)
+	{
+		c = atoi(val);
+		if(c > 0)
+		{
+			/* check for libarchive marker */
+			val = omo_get_database_value(fhd->library->file_database, fn, "entry_0");
+			if(val && val[0] == '-')
+			{
+				printf("repairing...\n");
+				for(i = 0; i < c - 2; i++)
+				{
+					sprintf(buf, "entry_%d", i);
+					sprintf(buf2, "entry_%d", i + 1);
+					val = omo_get_database_value(fhd->library->file_database, fn, buf2);
+					omo_set_database_value(fhd->library->file_database, fn, buf, val);
+				}
+				for(i = c - 2; i < c; i++)
+				{
+					sprintf(buf, "entry_%d", i);
+					omo_remove_database_key(fhd->library->file_database, fn, buf);
+					sprintf(buf, "entry_%d_tracks", i);
+					omo_remove_database_key(fhd->library->file_database, fn, buf);
+				}
+				sprintf(buf, "%d", c - 2);
+				omo_set_database_value(fhd->library->file_database, fn, "archive_files", buf);
+				printf("Repaired archive data for %s!\n", fn);
+			}
+		}
+	}
+}
+
 bool omo_add_file(const char * fn, bool isfolder, void * data)
 {
 	OMO_FILE_HELPER_DATA * file_helper_data = (OMO_FILE_HELPER_DATA *)data;
@@ -401,6 +442,7 @@ bool omo_add_file(const char * fn, bool isfolder, void * data)
 	archive_handler = omo_get_archive_handler(file_helper_data->archive_handler_registry, fn);
 	if(archive_handler)
 	{
+		repair_archive(file_helper_data, fn);
 		val = omo_get_database_value(file_helper_data->library->file_database, fn, "archive_files");
 		if(val)
 		{
@@ -442,6 +484,11 @@ bool omo_add_file(const char * fn, bool isfolder, void * data)
 				{
 					ret = omo_add_file_to_library(file_helper_data->library, fn, buf, NULL, file_helper_data->archive_handler_registry, file_helper_data->codec_handler_registry, file_helper_data->temp_path);
 				}
+			}
+			else
+			{
+				sprintf(buf, "entry_%d_tracks", i);
+				omo_remove_database_key(file_helper_data->library->file_database, fn, buf);
 			}
 		}
 	}
