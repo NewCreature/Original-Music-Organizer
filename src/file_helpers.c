@@ -372,13 +372,45 @@ bool omo_count_file(const char * fn, bool isfolder, void * data)
 	return false;
 }
 
+static bool flag_tracks_for_repair(OMO_FILE_HELPER_DATA * fhd, const char * fn, int entry)
+{
+	char buf[1024];
+	const char * val;
+	int i, c;
+
+	sprintf(buf, "entry_%d_tracks", entry);
+	val = omo_get_database_value(fhd->library->file_database, fn, buf);
+	if(val)
+	{
+		c = atoi(val);
+		for(i = 0; i < c; i++)
+		{
+			sprintf(buf, "%s/%d:%d", fn, entry, i);
+			val = omo_get_database_value(fhd->library->entry_database, buf, "id");
+			if(val)
+			{
+				omo_remove_database_key(fhd->library->entry_database, val, "scanned");
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
 /* repair archive contents generated from libarchive handler */
 static bool repair_archive(OMO_FILE_HELPER_DATA * fhd, const char * fn)
 {
 	const char * val;
 	char buf[64];
 	char buf2[64];
-	int i, c;
+	int i, c, t;
+
+	/* don't repair if 'archive_handler' is not 'unzip' */
+	val = omo_get_database_value(fhd->library->file_database, fn, "archive_handler");
+	if(val && strcmp(val, "unzip"))
+	{
+		return false;
+	}
 
 	val = omo_get_database_value(fhd->library->file_database, fn, "archive_files");
 	if(val)
@@ -386,7 +418,7 @@ static bool repair_archive(OMO_FILE_HELPER_DATA * fhd, const char * fn)
 		c = atoi(val);
 		if(c > 0)
 		{
-			/* check for libarchive marker */
+			/* check for unzip bad data marker and repair if found */
 			val = omo_get_database_value(fhd->library->file_database, fn, "entry_0");
 			if(val && val[0] == '-')
 			{
@@ -397,6 +429,7 @@ static bool repair_archive(OMO_FILE_HELPER_DATA * fhd, const char * fn)
 					sprintf(buf2, "entry_%d", i + 1);
 					val = omo_get_database_value(fhd->library->file_database, fn, buf2);
 					omo_set_database_value(fhd->library->file_database, fn, buf, val);
+					flag_tracks_for_repair(fhd, fn, i);
 				}
 				for(i = c - 2; i < c; i++)
 				{
@@ -409,8 +442,10 @@ static bool repair_archive(OMO_FILE_HELPER_DATA * fhd, const char * fn)
 				omo_set_database_value(fhd->library->file_database, fn, "archive_files", buf);
 				printf("Repaired archive data for %s!\n", fn);
 			}
+			return true;
 		}
 	}
+	return false;
 }
 
 bool omo_add_file(const char * fn, bool isfolder, void * data)
