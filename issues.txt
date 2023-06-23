@@ -134,6 +134,15 @@ v0.5.5
    [X]The index was off by one in the unzip archive handler. This, along with
       some other issues have been fixed.
 
+[ ]Looping Ogg Vorbis files causes issues with player.
+
+   [ ]Position handle moves back to loop start.
+
+   [ ]When playback engine ends playback after fade, detected length gets set.
+
+   [ ]If we are using Allegro's information about playback position, we should
+      change it to use an internal tracker.
+
 [ ]Force rescan of all files in archives that require repair. These files may
    have their IDs attached to the wrong files due to the off by one unzip
    archive handler bug.
