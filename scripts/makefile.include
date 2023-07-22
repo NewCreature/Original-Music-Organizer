@@ -20,4 +20,4 @@ T3F_CORE_OBJECTS =\
     t3f/primitives.o\
     t3f/file_utils.o\
     t3f/file.o\
-    t3f/png.o
+    t3f/internal_png.o

@@ -934,7 +934,7 @@ void t3f_set_clipping_rectangle(int x, int y, int w, int h)
 	}
 	al_transform_coordinates(&t3f_current_transform, &tx, &ty);
 	al_transform_coordinates(&t3f_current_transform, &twx, &twy);
-	al_set_clipping_rectangle(tx, ty, twx - tx, twy - ty);
+	al_set_clipping_rectangle(tx + 0.5, ty + 0.5, twx - tx + 0.5, twy - ty + 0.5);
 }
 
 void t3f_set_event_handler(void (*proc)(ALLEGRO_EVENT * event, void * data))
@@ -1051,6 +1051,11 @@ void t3f_set_mouse_xy(float x, float y)
 {
 	al_transform_coordinates(&t3f_current_view->transform, &x, &y);
 	al_set_mouse_xy(t3f_display, x, y);
+	t3f_real_mouse_x = x;
+	t3f_real_mouse_y = y;
+	t3f_touch[0].real_x = x;
+	t3f_touch[0].real_y = y;
+	t3f_select_input_view(t3f_current_view);
 }
 
 void t3f_clear_touch_data(void)

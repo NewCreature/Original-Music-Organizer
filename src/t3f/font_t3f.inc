@@ -79,6 +79,7 @@ static T3F_FONT_DATA * generate_font(const char * fn, int size, bool outline, AL
 	{
 		goto fail;
 	}
+	memset(fp, 0, sizeof(T3F_FONT_DATA));
 	if(t3f_font_file_is_true_type(fn))
 	{
 		normal_font = al_load_ttf_font(fn, size, 0);
@@ -258,7 +259,21 @@ static T3F_FONT_DATA * load_font_old(const char * fn, int size, int flags)
 
 	if(generate)
 	{
+		val = al_get_config_value(cp, "T3F Font Generator", "size_multiplier");
+		if(val)
+		{
+			size *= atoi(val);
+		}
 		fp = generate_font(al_path_cstr(pp, '/'), size, outline, outline_color);
+		if(!fp)
+		{
+			goto fail;
+		}
+		val = al_get_config_value(cp, "T3F Font Generator", "scale");
+		if(val)
+		{
+			fp->scale = atof(val);
+		}
 	}
 	else
 	{

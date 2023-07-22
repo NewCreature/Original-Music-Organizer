@@ -4,7 +4,6 @@
 #include "t3f.h"
 
 #define T3F_FONT_MAX_CHARACTERS 256
-#define T3F_FONT_OUTLINE          1
 #define T3F_FONT_ALIGN_RIGHT      1
 #define T3F_FONT_ALIGN_CENTER     2
 
