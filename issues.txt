@@ -114,11 +114,6 @@ Long Term Goals
 
 [ ]Add manual.
 
-[ ]Allow multiple items to be selected in the list boxes. We need to add
-   another argument to the list box callbacks to check whether an item is
-   selected. We also need a way to check whether the list box is single-select
-   or multi-select.
-
 [ ]Add support for Amiga XPK compressed files.
 
 
@@ -151,6 +146,19 @@ v0.5.5
    archived files may be incorrect.
 
 [ ]Crash when switching between library and basic view on occasion.
+
+[ ]Investigate 0:00 detected length with MP3 files. This might be something in
+   the Apple AVPlayer codec handler since that is what I'm using when
+   encountering the issue.
+
+[ ]Add option to remove detected length tag from selected track in player.
+
+[ ]Implement loop preferences.
+
+   [ ]Add max loops and target length settings to config file. If target length
+      is set, loop as many times as necessary to reach the target length. If
+      max loops is set, don't exceed this number of loops when trying to reach
+      the target length.
 
 
 v0.5.4
