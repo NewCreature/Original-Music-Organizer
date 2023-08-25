@@ -120,6 +120,11 @@ Long Term Goals
 v0.5.5
 ------
 
+[ ]Clicking an album in the album list when a search filter is being used
+   displays the incorrect song list for the album. It shows the songs from the
+   album that would be at the selected position in the list if there was no
+   filter text entered.
+
 [X]When playing Sonic the Hedgehog 2 soundtrack from ZIP, the song tags are not
    correctly matched to the file. This might be due to the switch from
    libarchive to the ZIP command line tool. The order of files might be
