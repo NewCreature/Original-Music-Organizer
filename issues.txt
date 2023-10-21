@@ -120,7 +120,7 @@ Long Term Goals
 v0.5.5
 ------
 
-[ ]Look into certain NSF files for FDS games not playing pack correctly.
+[ ]Look into certain NSF files for FDS games not playing back correctly.
 
 [ ]Add libvgm codec handler. This will enable support for a wider variety of
    emulated game music. The current VGM handler has limited sound chip support.
