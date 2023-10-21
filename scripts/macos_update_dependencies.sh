@@ -89,5 +89,31 @@ sudo cp src/libmpg123/mpg123.h /usr/local/include
 sudo cp src/libmpg123/.libs/libmpg123.a /usr/local/libs
 cd ..
 
+# libvgm
+SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$X86_SDK
+if [ ! -d "libvgm" ];
+then
+  git clone https://github.com/ValleyBell/libvgm.git
+fi
+cd libvgm
+git pull
+remake_dir _build_x86
+cd _build_x86
+cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=i386\;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DBUILD_PLAYER=OFF -DBUILD_VGM2WAV=OFF
+make
+cd ..
+SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$ARM_SDK
+remake_dir _build_arm
+cd _build_arm
+cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 -DBUILD_PLAYER=OFF -DBUILD_VGM2WAV=OFF
+make
+merge_libs bin ../_build_x86/bin libvgm-audio.a
+merge_libs bin ../_build_x86/bin libvgm-emu.a
+merge_libs bin ../_build_x86/bin libvgm-player.a
+merge_libs bin ../_build_x86/bin libvgm-utils.a
+sudo make install
+cd ..
+cd ..
+
 # return to original location
 cd $START_PATH
