@@ -7,8 +7,8 @@
 #include <vgm/player/playerbase.hpp>
 #include <vgm/player/vgmplayer.hpp>
 #include <vgm/player/playera.hpp>
-#include <vgm/audio/AudioStream.h>
-#include <vgm/audio/AudioStream_SpcDrvFuns.h>
+//#include <vgm/audio/AudioStream.h>
+//#include <vgm/audio/AudioStream_SpcDrvFuns.h>
 #include <vgm/emu/Resampler.h>
 #include <vgm/emu/SoundDevs.h>	// for DEVID_*
 #include <vgm/emu/EmuCores.h>
@@ -18,7 +18,8 @@
 
 typedef struct
 {
-	PlayerA player_handler;
+	DATA_LOADER * dLoad;
+	PlayerA * player_handler;
 	PlayerA::Config config;
 	PlayerBase * player;
 	VGMPlayer * vgm_player;
@@ -33,42 +34,55 @@ typedef struct
 static void * codec_load_file(const char * fn, const char * subfn)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)malloc(sizeof(CODEC_DATA));
-	DATA_LOADER *dLoad = NULL;
 
 	if(codec_data)
 	{
-		codec_data->player_handler.RegisterPlayerEngine(new VGMPlayer);
-		codec_data->config = codec_data->player_handler.GetConfiguration();
-		codec_data->config.masterVol = 100;
+		memset(codec_data, 0, sizeof(CODEC_DATA));
+		codec_data->player_handler = new PlayerA;
+		if(!codec_data->player_handler)
+		{
+			goto fail;
+		}
+		codec_data->player_handler->RegisterPlayerEngine(new VGMPlayer);
+		codec_data->config = codec_data->player_handler->GetConfiguration();
+		codec_data->config.masterVol = 0x10000;
 		codec_data->config.loopCount = 1;
 		codec_data->config.fadeSmpls = 44100 * 8;	// fade over 4 seconds
 		codec_data->config.endSilenceSmpls = 44100 / 2;	// 0.5 seconds of silence at the end
 		codec_data->config.pbSpeed = 1.0;
-		codec_data->player_handler.SetConfiguration(codec_data->config);
-		dLoad = FileLoader_Init(fn);
-		if(!dLoad)
+		codec_data->player_handler->SetConfiguration(codec_data->config);
+		codec_data->dLoad = FileLoader_Init(fn);
+		if(!codec_data->dLoad)
 		{
 			goto fail;
 		}
-		DataLoader_SetPreloadBytes(dLoad,0x100);
-		if(codec_data->player_handler.LoadFile(dLoad))
+		DataLoader_SetPreloadBytes(codec_data->dLoad, 0x100);
+		if(DataLoader_Load(codec_data->dLoad))
 		{
 			goto fail;
 		}
-		codec_data->player = codec_data->player_handler.GetPlayer();
+		if(codec_data->player_handler->LoadFile(codec_data->dLoad))
+		{
+			goto fail;
+		}
+		codec_data->player = codec_data->player_handler->GetPlayer();
 		codec_data->vgm_player = dynamic_cast<VGMPlayer*>(codec_data->player);
 		codec_data->vgm_header = codec_data->vgm_player->GetFileHeader();
-//		printf("VGM v%3X, Total Length: %.2f s, Loop Length: %.2f s", vgmhdr->fileVer,
-//				player->Tick2Second(player->GetTotalTicks()), player->Tick2Second(player->GetLoopTicks()));
-		codec_data->player_handler.SetLoopCount(codec_data->vgm_player->GetModifiedLoopCount(10));
+		printf("VGM v%3X, Total Length: %.2f s, Loop Length: %.2f s", codec_data->vgm_header->fileVer,
+				codec_data->player->Tick2Second(codec_data->player->GetTotalTicks()), codec_data->player->Tick2Second(codec_data->player->GetLoopTicks()));
+		codec_data->player_handler->SetLoopCount(codec_data->vgm_player->GetModifiedLoopCount(10));
 		return codec_data;
 	}
 
 	fail:
 	{
-		if(dLoad)
+		if(codec_data->player_handler)
 		{
-			DataLoader_Deinit(dLoad);
+			delete codec_data->player_handler;
+		}
+		if(codec_data->dLoad)
+		{
+			DataLoader_Deinit(codec_data->dLoad);
 		}
 	}
 	return NULL;
@@ -76,7 +90,10 @@ static void * codec_load_file(const char * fn, const char * subfn)
 
 static void codec_unload_file(void * data)
 {
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
+	codec_data->player_handler->UnloadFile();
+	DataLoader_Deinit(codec_data->dLoad);
 }
 
 static const char * codec_get_tag(void * data, const char * name)
@@ -150,9 +167,11 @@ static void * _libvgm_update_thread(ALLEGRO_THREAD * thread, void * arg)
 	UINT32 devOptID;
 	int ret;
 
+	printf("libvgm thread\n");
 	queue = al_create_event_queue();
 	if(!queue)
 	{
+		printf("break 1\n");
 		return NULL;
 	}
 	al_register_event_source(queue, al_get_audio_stream_event_source(codec_data->codec_stream));
@@ -196,7 +215,7 @@ static void * _libvgm_update_thread(ALLEGRO_THREAD * thread, void * arg)
 			devOpts.emuCore[0] = FCC_MAME;
 		codec_data->player->SetDeviceOptions(devOptID, devOpts);
 	}
-	codec_data->player_handler.Start();
+	codec_data->player_handler->Start();
 
 	while(!done)
 	{
@@ -215,8 +234,13 @@ static void * _libvgm_update_thread(ALLEGRO_THREAD * thread, void * arg)
 				}
 				else
 				{
+					if (! (codec_data->player_handler->GetState() & PLAYSTATE_PLAY))
+					{
+						printf("not playing!\n");
+					}
+					printf("fill buffer %lu\n", codec_data->sample_count);
 					al_lock_mutex(codec_data->codec_mutex);
-					int renderedBytes = codec_data->player_handler.Render(4096, fragment);
+					int renderedBytes = codec_data->player_handler->Render(8192, fragment);
 					codec_data->sample_count += renderedBytes;
 					al_unlock_mutex(codec_data->codec_mutex);
 				}
@@ -240,9 +264,13 @@ static bool codec_play(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 	
+	printf("play 1\n");
+	codec_data->player_handler->SetOutputSettings(44100, 2, 16, 4096);
+
 	codec_data->codec_stream = al_create_audio_stream(4, 4096, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_1);
 	if(!codec_data->codec_stream)
 	{
+	printf("play 2\n");
 		goto fail;
 	}
 
@@ -250,11 +278,13 @@ static bool codec_play(void * data)
 	codec_data->codec_thread = al_create_thread(_libvgm_update_thread, codec_data);
 	if(!codec_data->codec_thread)
 	{
+	printf("play 3\n");
 		goto fail;
 	}
 	codec_data->codec_mutex = al_create_mutex();
 	if(!codec_data->codec_mutex)
 	{
+	printf("play 4\n");
 		goto fail;
 	}
 	al_start_thread(codec_data->codec_thread);
@@ -278,22 +308,38 @@ static bool codec_play(void * data)
 			codec_data->codec_stream = NULL;
 		}
 	}
+	printf("play 5\n");
 
 	return false;
 }
 
 static bool codec_pause(void * data)
 {
-	return false;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->paused = true;
+	return true;
 }
 
 static bool codec_resume(void * data)
 {
-	return false;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->paused = false;
+	return true;
 }
 
 static void codec_stop(void * data)
 {
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	al_destroy_thread(codec_data->codec_thread);
+	codec_data->codec_thread = NULL;
+	al_destroy_mutex(codec_data->codec_mutex);
+	codec_data->codec_mutex = NULL;
+	al_destroy_audio_stream(codec_data->codec_stream);
+	codec_data->codec_stream = NULL;
+	codec_data->player_handler->Stop();
 }
 
 static bool codec_seek(void * data, double pos)
