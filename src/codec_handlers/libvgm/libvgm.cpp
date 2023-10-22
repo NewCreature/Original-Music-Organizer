@@ -128,6 +128,7 @@ static void codec_unload_file(void * data)
 	codec_data->player_handler->UnloadFile();
 	delete codec_data->player_handler;
 	DataLoader_Deinit(codec_data->dLoad);
+	free(codec_data);
 }
 
 static const char * codec_get_tag(void * data, const char * name)
@@ -214,7 +215,10 @@ static int codec_get_track_count(void * data, const char * fn)
 
 static void update_player_settings(CODEC_DATA * codec_data)
 {
-	al_lock_mutex(codec_data->codec_mutex);
+	if(codec_data->codec_mutex)
+	{
+		al_lock_mutex(codec_data->codec_mutex);
+	}
 	codec_data->config = codec_data->player_handler->GetConfiguration();
 	codec_data->config.masterVol = 0x10000;
 	codec_data->config.loopCount = codec_data->loop_count;
@@ -222,7 +226,10 @@ static void update_player_settings(CODEC_DATA * codec_data)
 	codec_data->config.endSilenceSmpls = 44100 / 2;	// 0.5 seconds of silence at the end
 	codec_data->config.pbSpeed = 1.0;
 	codec_data->player_handler->SetConfiguration(codec_data->config);
-	al_unlock_mutex(codec_data->codec_mutex);
+	if(codec_data->codec_mutex)
+	{
+		al_unlock_mutex(codec_data->codec_mutex);
+	}
 }
 
 static bool codec_set_loop(void * data, double loop_start, double loop_end, double fade_time, int loop_count)
