@@ -29,6 +29,7 @@
 #include "codec_handlers/midia5/midia5.h"
 #include "codec_handlers/adplug/adplug.h"
 #include "codec_handlers/stsound/stsound.h"
+#include "codec_handlers/libvgm/libvgm.h"
 
 /* Mac OS X codecs */
 #ifdef ALLEGRO_MACOSX
@@ -287,6 +288,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	#endif
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_adplug_get_codec_handler());
 	omo_register_codec_handler(app->codec_handler_registry, omo_codec_stsound_get_codec_handler());
+	omo_register_codec_handler(app->codec_handler_registry, omo_codec_libvgm_get_codec_handler());
 	omo_configure_codec_handlers(app);
 
 	/* create default profile */

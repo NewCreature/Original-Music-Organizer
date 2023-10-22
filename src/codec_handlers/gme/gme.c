@@ -422,8 +422,8 @@ OMO_CODEC_HANDLER * omo_codec_gme_get_codec_handler(void)
 	omo_codec_handler_add_type(&codec_handler, ".sp7");
 	omo_codec_handler_add_type(&codec_handler, ".sp8");
 	omo_codec_handler_add_type(&codec_handler, ".sp9");
-	omo_codec_handler_add_type(&codec_handler, ".vgm");
-	omo_codec_handler_add_type(&codec_handler, ".vg");
-	omo_codec_handler_add_type(&codec_handler, ".vgz");
+//	omo_codec_handler_add_type(&codec_handler, ".vgm");
+//	omo_codec_handler_add_type(&codec_handler, ".vg");
+//	omo_codec_handler_add_type(&codec_handler, ".vgz");
 	return &codec_handler;
 }
