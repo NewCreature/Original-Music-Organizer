@@ -259,9 +259,6 @@ static void * _libvgm_update_thread(ALLEGRO_THREAD * thread, void * arg)
 	char * fragment;
 	uint16_t * fragment_16;
 	bool done = false;
-	PLR_DEV_OPTS devOpts;
-	UINT32 devOptID;
-	int ret;
 
 	queue = al_create_event_queue();
 	if(!queue)
@@ -269,47 +266,6 @@ static void * _libvgm_update_thread(ALLEGRO_THREAD * thread, void * arg)
 		return NULL;
 	}
 	al_register_event_source(queue, al_get_audio_stream_event_source(codec_data->codec_stream));
-
-	devOptID = PLR_DEV_ID(DEVID_SN76496, 0);
-	ret = codec_data->player->GetDeviceOptions(devOptID, devOpts);
-	if (! (ret & 0x80))
-	{
-		static const INT16 panPos[4] = {0x00, -0x80, +0x80, 0x00};
-		if (! devOpts.emuCore[0])
-			devOpts.emuCore[0] = FCC_MAXM;
-		memcpy(devOpts.panOpts.chnPan, panPos, sizeof(panPos));
-		codec_data->player->SetDeviceOptions(devOptID, devOpts);
-	}
-	
-	devOptID = PLR_DEV_ID(DEVID_YM2413, 0);
-	ret = codec_data->player->GetDeviceOptions(devOptID, devOpts);
-	if (! (ret & 0x80))
-	{
-		static const INT16 panPos[14] = {
-			-0x100, +0x100, -0x80, +0x80, -0x40, +0x40, -0xC0, +0xC0, 0x00,
-			-0x60, +0x60, 0x00, -0xC0, +0xC0};
-		memcpy(devOpts.panOpts.chnPan, panPos, sizeof(panPos));
-		codec_data->player->SetDeviceOptions(devOptID, devOpts);
-	}
-	
-	devOptID = PLR_DEV_ID(DEVID_AY8910, 0);
-	ret = codec_data->player->GetDeviceOptions(devOptID, devOpts);
-	if (! (ret & 0x80))
-	{
-		static const INT16 panPos[3] = {-0x80, +0x80, 0x00};
-		memcpy(devOpts.panOpts.chnPan, panPos, sizeof(panPos));
-		codec_data->player->SetDeviceOptions(devOptID, devOpts);
-	}
-
-	devOptID = PLR_DEV_ID(DEVID_C6280, 0);
-	ret = codec_data->player->GetDeviceOptions(devOptID, devOpts);
-	if (! (ret & 0x80))
-	{
-		if (! devOpts.emuCore[0])
-			devOpts.emuCore[0] = FCC_MAME;
-		codec_data->player->SetDeviceOptions(devOptID, devOpts);
-	}
-	codec_data->player_handler->Start();
 
 	while(!done)
 	{
@@ -353,6 +309,9 @@ static void * _libvgm_update_thread(ALLEGRO_THREAD * thread, void * arg)
 static bool codec_play(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	PLR_DEV_OPTS devOpts;
+	UINT32 devOptID;
+	int ret;
 	
 	codec_data->config = codec_data->player_handler->GetConfiguration();
 	codec_data->config.masterVol = 0x10000;
@@ -381,6 +340,47 @@ static bool codec_play(void * data)
 	{
 		goto fail;
 	}
+	devOptID = PLR_DEV_ID(DEVID_SN76496, 0);
+	ret = codec_data->player->GetDeviceOptions(devOptID, devOpts);
+	if (! (ret & 0x80))
+	{
+		static const INT16 panPos[4] = {0x00, -0x80, +0x80, 0x00};
+		if (! devOpts.emuCore[0])
+			devOpts.emuCore[0] = FCC_MAXM;
+		memcpy(devOpts.panOpts.chnPan, panPos, sizeof(panPos));
+		codec_data->player->SetDeviceOptions(devOptID, devOpts);
+	}
+	
+	devOptID = PLR_DEV_ID(DEVID_YM2413, 0);
+	ret = codec_data->player->GetDeviceOptions(devOptID, devOpts);
+	if (! (ret & 0x80))
+	{
+		static const INT16 panPos[14] = {
+			-0x100, +0x100, -0x80, +0x80, -0x40, +0x40, -0xC0, +0xC0, 0x00,
+			-0x60, +0x60, 0x00, -0xC0, +0xC0};
+		memcpy(devOpts.panOpts.chnPan, panPos, sizeof(panPos));
+		codec_data->player->SetDeviceOptions(devOptID, devOpts);
+	}
+	
+	devOptID = PLR_DEV_ID(DEVID_AY8910, 0);
+	ret = codec_data->player->GetDeviceOptions(devOptID, devOpts);
+	if (! (ret & 0x80))
+	{
+		static const INT16 panPos[3] = {-0x80, +0x80, 0x00};
+		memcpy(devOpts.panOpts.chnPan, panPos, sizeof(panPos));
+		codec_data->player->SetDeviceOptions(devOptID, devOpts);
+	}
+
+	devOptID = PLR_DEV_ID(DEVID_C6280, 0);
+	ret = codec_data->player->GetDeviceOptions(devOptID, devOpts);
+	if (! (ret & 0x80))
+	{
+		if (! devOpts.emuCore[0])
+			devOpts.emuCore[0] = FCC_MAME;
+		codec_data->player->SetDeviceOptions(devOptID, devOpts);
+	}
+	codec_data->player_handler->Start();
+
 	al_start_thread(codec_data->codec_thread);
 	return true;
 
