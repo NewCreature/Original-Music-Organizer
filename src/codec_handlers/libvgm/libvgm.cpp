@@ -31,6 +31,8 @@ typedef struct
 	ALLEGRO_MUTEX * codec_mutex;
 	bool paused;
 	unsigned long sample_count;
+	double fade_time;
+	int loop_count;
 } CODEC_DATA;
 
 static void * codec_load_file(const char * fn, const char * subfn)
@@ -45,14 +47,9 @@ static void * codec_load_file(const char * fn, const char * subfn)
 		{
 			goto fail;
 		}
+		codec_data->fade_time = 8.0; // default to 8 second fade
+		codec_data->loop_count = 1; // default to 1 loop (play once)
 		codec_data->player_handler->RegisterPlayerEngine(new VGMPlayer);
-		codec_data->config = codec_data->player_handler->GetConfiguration();
-		codec_data->config.masterVol = 0x10000;
-		codec_data->config.loopCount = 1;
-		codec_data->config.fadeSmpls = 44100 * 8;	// fade over 8 seconds
-		codec_data->config.endSilenceSmpls = 44100 / 2;	// 0.5 seconds of silence at the end
-		codec_data->config.pbSpeed = 1.0;
-		codec_data->player_handler->SetConfiguration(codec_data->config);
 		codec_data->dLoad = FileLoader_Init(fn);
 		if(!codec_data->dLoad)
 		{
@@ -70,6 +67,10 @@ static void * codec_load_file(const char * fn, const char * subfn)
 		codec_data->player = codec_data->player_handler->GetPlayer();
 		codec_data->vgm_player = dynamic_cast<VGMPlayer*>(codec_data->player);
 		codec_data->vgm_header = codec_data->vgm_player->GetFileHeader();
+		if(codec_data->player->GetLoopTicks() == 0) // 0 fade when no loop data
+		{
+			codec_data->fade_time = 0.0;
+		}
 		printf("VGM v%3X, Total Length: %.2f s, Loop Length: %.2f s", codec_data->vgm_header->fileVer,
 				codec_data->player->Tick2Second(codec_data->player->GetTotalTicks()), codec_data->player->Tick2Second(codec_data->player->GetLoopTicks()));
 		//codec_data->player_handler->SetLoopCount(codec_data->vgm_player->GetModifiedLoopCount(10));
@@ -151,6 +152,10 @@ static int codec_get_track_count(void * data, const char * fn)
 
 static bool codec_set_loop(void * data, double loop_start, double loop_end, double fade_time, int loop_count)
 {
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->fade_time = fade_time;
+
 	return false;
 }
 
@@ -261,13 +266,18 @@ static bool codec_play(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 	
-	printf("play 1\n");
+	codec_data->config = codec_data->player_handler->GetConfiguration();
+	codec_data->config.masterVol = 0x10000;
+	codec_data->config.loopCount = codec_data->loop_count;
+	codec_data->config.fadeSmpls = 44100 * codec_data->fade_time;
+	codec_data->config.endSilenceSmpls = 44100 / 2;	// 0.5 seconds of silence at the end
+	codec_data->config.pbSpeed = 1.0;
+	codec_data->player_handler->SetConfiguration(codec_data->config);
 	codec_data->player_handler->SetOutputSettings(44100, 2, 16, _libvgm_buf_size);
 
 	codec_data->codec_stream = al_create_audio_stream(4, _libvgm_buf_size, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
 	if(!codec_data->codec_stream)
 	{
-	printf("play 2\n");
 		goto fail;
 	}
 
@@ -275,13 +285,11 @@ static bool codec_play(void * data)
 	codec_data->codec_thread = al_create_thread(_libvgm_update_thread, codec_data);
 	if(!codec_data->codec_thread)
 	{
-	printf("play 3\n");
 		goto fail;
 	}
 	codec_data->codec_mutex = al_create_mutex();
 	if(!codec_data->codec_mutex)
 	{
-	printf("play 4\n");
 		goto fail;
 	}
 	al_start_thread(codec_data->codec_thread);
@@ -305,7 +313,6 @@ static bool codec_play(void * data)
 			codec_data->codec_stream = NULL;
 		}
 	}
-	printf("play 5\n");
 
 	return false;
 }
@@ -341,6 +348,14 @@ static void codec_stop(void * data)
 
 static bool codec_seek(void * data, double pos)
 {
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	unsigned long seek_sample = pos * 44100.0;
+
+	al_lock_mutex(codec_data->codec_mutex);
+	codec_data->player->Seek(PLAYPOS_SAMPLE, seek_sample);
+	codec_data->sample_count = seek_sample * 2;
+	al_unlock_mutex(codec_data->codec_mutex);
+	
 	return true;
 }
 
@@ -358,6 +373,7 @@ static double codec_get_length(void * data)
 
 	al_lock_mutex(codec_data->codec_mutex);
 	len = codec_data->player->Tick2Second(codec_data->player->GetTotalTicks());
+	len += codec_data->fade_time;
 	al_unlock_mutex(codec_data->codec_mutex);
 
 	return len;
