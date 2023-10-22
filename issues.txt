@@ -122,10 +122,10 @@ v0.5.5
 
 [ ]Look into certain NSF files for FDS games not playing back correctly.
 
-[ ]Add libvgm codec handler. This will enable support for a wider variety of
+[X]Add libvgm codec handler. This will enable support for a wider variety of
    emulated game music. The current VGM handler has limited sound chip support.
 
-   [ ]Got audio to come out but playback speed is too slow for some reason.
+   [X]Got audio to come out but playback speed is too slow for some reason.
       Fix playback speed.
 
 [ ]Clicking an album in the album list when a search filter is being used
