@@ -30,10 +30,41 @@ typedef struct
 	ALLEGRO_THREAD * codec_thread;
 	ALLEGRO_MUTEX * codec_mutex;
 	bool paused;
+	float volume;
 	unsigned long sample_count;
 	double fade_time;
 	int loop_count;
+	double length;
+	const char * tag_title;
+	const char * tag_artist;
+	const char * tag_album;
+	const char * tag_system;
+	const char * tag_date;
+	const char * tag_comment;
+	char tag_loop_start[64];
+	char tag_loop_end[64];
+	char tag_fade_time[64];
 } CODEC_DATA;
+
+static void load_tags(CODEC_DATA * codec_data)
+{
+	const char* const* tagList = codec_data->player->GetTags();
+	for (const char* const* t = tagList; *t; t += 2)
+	{
+		if (!strcmp(t[0], "TITLE"))
+			codec_data->tag_title = t[1];
+		else if (!strcmp(t[0], "ARTIST"))
+			codec_data->tag_artist = t[1];
+		else if (!strcmp(t[0], "GAME"))
+			codec_data->tag_album = t[1];
+		else if (!strcmp(t[0], "SYSTEM"))
+			codec_data->tag_system = t[1];
+		else if (!strcmp(t[0], "DATE"))
+			codec_data->tag_date = t[1];
+		else if (!strcmp(t[0], "COMMENT"))
+			codec_data->tag_comment = t[1];
+	}
+}
 
 static void * codec_load_file(const char * fn, const char * subfn)
 {
@@ -49,6 +80,7 @@ static void * codec_load_file(const char * fn, const char * subfn)
 		}
 		codec_data->fade_time = 8.0; // default to 8 second fade
 		codec_data->loop_count = 1; // default to 1 loop (play once)
+		codec_data->length = -1.0; // cache length for faster access
 		codec_data->player_handler->RegisterPlayerEngine(new VGMPlayer);
 		codec_data->dLoad = FileLoader_Init(fn);
 		if(!codec_data->dLoad)
@@ -71,9 +103,7 @@ static void * codec_load_file(const char * fn, const char * subfn)
 		{
 			codec_data->fade_time = 0.0;
 		}
-		printf("VGM v%3X, Total Length: %.2f s, Loop Length: %.2f s", codec_data->vgm_header->fileVer,
-				codec_data->player->Tick2Second(codec_data->player->GetTotalTicks()), codec_data->player->Tick2Second(codec_data->player->GetLoopTicks()));
-		//codec_data->player_handler->SetLoopCount(codec_data->vgm_player->GetModifiedLoopCount(10));
+		load_tags(codec_data);
 		return codec_data;
 	}
 
@@ -96,6 +126,7 @@ static void codec_unload_file(void * data)
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
 	codec_data->player_handler->UnloadFile();
+	delete codec_data->player_handler;
 	DataLoader_Deinit(codec_data->dLoad);
 }
 
@@ -103,64 +134,123 @@ static const char * codec_get_tag(void * data, const char * name)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	const char* songTitle = NULL;
-	const char* songAuthor = NULL;
-	const char* songGame = NULL;
-	const char* songSystem = NULL;
-	const char* songDate = NULL;
-	const char* songComment = NULL;
+	if(!strcmp(name, "Album"))
+	{
+		if(strlen(codec_data->tag_album))
+		{
+			return codec_data->tag_album;
+		}
+	}
+	else if(!strcmp(name, "Artist"))
+	{
+		if(strlen(codec_data->tag_artist))
+		{
+			return codec_data->tag_artist;
+		}
+	}
+	else if(!strcmp(name, "Album"))
+	{
+		if(strlen(codec_data->tag_album))
+		{
+			return codec_data->tag_album;
+		}
+	}
+	else if(!strcmp(name, "Title"))
+	{
+		if(strlen(codec_data->tag_title))
+		{
+			return codec_data->tag_title;
+		}
+	}
+	else if(!strcmp(name, "Copyright"))
+	{
+		if(strlen(codec_data->tag_date))
+		{
+			return codec_data->tag_date;
+		}
+	}
+	else if(!strcmp(name, "Comment"))
+	{
+		if(strlen(codec_data->tag_comment))
+		{
+			return codec_data->tag_comment;
+		}
+	}
+	else if(!strcmp(name, "Loop Start"))
+	{
+		if(codec_data->player->GetLoopTicks())
+		{
+			sprintf(codec_data->tag_loop_start, "%.3f", codec_data->player->Tick2Second(codec_data->player->GetTotalTicks() - (codec_data->player->GetLoopTicks() * codec_data->loop_count)) - codec_data->fade_time);
+			return codec_data->tag_loop_start;
+		}
+		return NULL;
+	}
+	else if(!strcmp(name, "Loop End"))
+	{
+		if(codec_data->player->GetLoopTicks())
+		{
+			sprintf(codec_data->tag_loop_end, "%.3f", codec_data->player->Tick2Second(codec_data->player->GetTotalTicks() - (codec_data->player->GetLoopTicks() * codec_data->loop_count)) - codec_data->fade_time + codec_data->player->Tick2Second(codec_data->player->GetLoopTicks()));
+			return codec_data->tag_loop_end;
+		}
+		return NULL;
+	}
+	else if(!strcmp(name, "Fade Time"))
+	{
+		if(codec_data->player->GetLoopTicks())
+		{
+			sprintf(codec_data->tag_fade_time, "8.0");
+			return codec_data->tag_fade_time;
+		}
+		return NULL;
+	}
 
-	const char* const* tagList = codec_data->player->GetTags();
-	for (const char* const* t = tagList; *t; t += 2)
-	{
-		if (!strcmp(t[0], "TITLE"))
-			songTitle = t[1];
-		else if (!strcmp(t[0], "ARTIST"))
-			songAuthor = t[1];
-		else if (!strcmp(t[0], "GAME"))
-			songGame = t[1];
-		else if (!strcmp(t[0], "SYSTEM"))
-			songSystem = t[1];
-		else if (!strcmp(t[0], "DATE"))
-			songDate = t[1];
-		else if (!strcmp(t[0], "COMMENT"))
-			songComment = t[1];
-	}
-	
-	if (songTitle != NULL && songTitle[0] != '\0')
-		printf("\nSong Title: %s", songTitle);
-//	if (showTags >= 2)
-	{
-		if (songAuthor != NULL && songAuthor[0] != '\0')
-			printf("\nSong Author: %s", songAuthor);
-		if (songGame != NULL && songGame[0] != '\0')
-			printf("\nSong Game: %s", songGame);
-		if (songSystem != NULL && songSystem[0] != '\0')
-			printf("\nSong System: %s", songSystem);
-		if (songDate != NULL && songDate[0] != '\0')
-			printf("\nSong Date: %s", songDate);
-		if (songComment != NULL && songComment[0] != '\0')
-			printf("\nSong Comment: %s", songComment);
-	}
 	return NULL;
 }
 
 static int codec_get_track_count(void * data, const char * fn)
 {
-	return 0;
+	return 1;
+}
+
+static void update_player_settings(CODEC_DATA * codec_data)
+{
+	al_lock_mutex(codec_data->codec_mutex);
+	codec_data->config = codec_data->player_handler->GetConfiguration();
+	codec_data->config.masterVol = 0x10000;
+	codec_data->config.loopCount = codec_data->loop_count;
+	codec_data->config.fadeSmpls = 44100 * codec_data->fade_time;
+	codec_data->config.endSilenceSmpls = 44100 / 2;	// 0.5 seconds of silence at the end
+	codec_data->config.pbSpeed = 1.0;
+	codec_data->player_handler->SetConfiguration(codec_data->config);
+	al_unlock_mutex(codec_data->codec_mutex);
 }
 
 static bool codec_set_loop(void * data, double loop_start, double loop_end, double fade_time, int loop_count)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
+	codec_data->loop_count = loop_count;
 	codec_data->fade_time = fade_time;
+	update_player_settings(codec_data);
 
 	return false;
 }
 
 static bool codec_set_volume(void * data, float volume)
 {
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	codec_data->volume = volume;
+	if(codec_data->codec_mutex)
+	{
+		al_lock_mutex(codec_data->codec_mutex);
+		if(codec_data->codec_stream)
+		{
+			al_set_audio_stream_gain(codec_data->codec_stream, volume);
+		}
+		al_unlock_mutex(codec_data->codec_mutex);
+	}
+
 	return true;
 }
 
@@ -280,6 +370,7 @@ static bool codec_play(void * data)
 	{
 		goto fail;
 	}
+	al_set_audio_stream_gain(codec_data->codec_stream, codec_data->volume);
 
 	al_attach_audio_stream_to_mixer(codec_data->codec_stream, al_get_default_mixer());
 	codec_data->codec_thread = al_create_thread(_libvgm_update_thread, codec_data);
@@ -369,14 +460,22 @@ static double codec_get_position(void * data)
 static double codec_get_length(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
-	double len;
 
-	al_lock_mutex(codec_data->codec_mutex);
-	len = codec_data->player->Tick2Second(codec_data->player->GetTotalTicks());
-	len += codec_data->fade_time;
-	al_unlock_mutex(codec_data->codec_mutex);
+	if(codec_data->length < 0.0)
+	{
+		if(codec_data->codec_mutex)
+		{
+			al_lock_mutex(codec_data->codec_mutex);
+		}
+		codec_data->length = codec_data->player->Tick2Second(codec_data->player->GetTotalTicks());
+		codec_data->length += codec_data->fade_time;
+		if(codec_data->codec_mutex)
+		{
+			al_unlock_mutex(codec_data->codec_mutex);
+		}
+	}
 
-	return len;
+	return codec_data->length;
 }
 
 static bool codec_done_playing(void * data)
@@ -384,6 +483,11 @@ static bool codec_done_playing(void * data)
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
 	UINT8 state = codec_data->player->GetState();
+
+	if(codec_get_position(data) >= codec_get_length(data))
+	{
+		return true;
+	}
 
 	return state & (PLAYSTATE_FIN | PLAYSTATE_END);
 }
