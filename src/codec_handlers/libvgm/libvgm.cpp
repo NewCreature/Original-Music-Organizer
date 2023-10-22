@@ -16,6 +16,8 @@
 
 #include "../codec_handler.h"
 
+static const int _libvgm_buf_size = 4096;
+
 typedef struct
 {
 	DATA_LOADER * dLoad;
@@ -47,7 +49,7 @@ static void * codec_load_file(const char * fn, const char * subfn)
 		codec_data->config = codec_data->player_handler->GetConfiguration();
 		codec_data->config.masterVol = 0x10000;
 		codec_data->config.loopCount = 1;
-		codec_data->config.fadeSmpls = 44100 * 8;	// fade over 4 seconds
+		codec_data->config.fadeSmpls = 44100 * 8;	// fade over 8 seconds
 		codec_data->config.endSilenceSmpls = 44100 / 2;	// 0.5 seconds of silence at the end
 		codec_data->config.pbSpeed = 1.0;
 		codec_data->player_handler->SetConfiguration(codec_data->config);
@@ -70,7 +72,7 @@ static void * codec_load_file(const char * fn, const char * subfn)
 		codec_data->vgm_header = codec_data->vgm_player->GetFileHeader();
 		printf("VGM v%3X, Total Length: %.2f s, Loop Length: %.2f s", codec_data->vgm_header->fileVer,
 				codec_data->player->Tick2Second(codec_data->player->GetTotalTicks()), codec_data->player->Tick2Second(codec_data->player->GetLoopTicks()));
-		codec_data->player_handler->SetLoopCount(codec_data->vgm_player->GetModifiedLoopCount(10));
+		//codec_data->player_handler->SetLoopCount(codec_data->vgm_player->GetModifiedLoopCount(10));
 		return codec_data;
 	}
 
@@ -162,16 +164,15 @@ static void * _libvgm_update_thread(ALLEGRO_THREAD * thread, void * arg)
 	CODEC_DATA * codec_data = (CODEC_DATA *)arg;
 	ALLEGRO_EVENT_QUEUE * queue;
 	char * fragment;
+	uint16_t * fragment_16;
 	bool done = false;
 	PLR_DEV_OPTS devOpts;
 	UINT32 devOptID;
 	int ret;
 
-	printf("libvgm thread\n");
 	queue = al_create_event_queue();
 	if(!queue)
 	{
-		printf("break 1\n");
 		return NULL;
 	}
 	al_register_event_source(queue, al_get_audio_stream_event_source(codec_data->codec_stream));
@@ -228,20 +229,16 @@ static void * _libvgm_update_thread(ALLEGRO_THREAD * thread, void * arg)
 			fragment = (char *)al_get_audio_stream_fragment(codec_data->codec_stream);
 			if(fragment)
 			{
+				fragment_16 = (uint16_t *)fragment;
 				if(codec_data->paused)
 				{
-					memset(fragment, 0, sizeof(short) * 4096 * 2);
+					memset(fragment, 0, sizeof(short) * _libvgm_buf_size * 2);
 				}
 				else
 				{
-					if (! (codec_data->player_handler->GetState() & PLAYSTATE_PLAY))
-					{
-						printf("not playing!\n");
-					}
-					printf("fill buffer %lu\n", codec_data->sample_count);
 					al_lock_mutex(codec_data->codec_mutex);
-					int renderedBytes = codec_data->player_handler->Render(8192, fragment);
-					codec_data->sample_count += renderedBytes;
+					int renderedBytes = codec_data->player_handler->Render(_libvgm_buf_size * 4, fragment);
+					codec_data->sample_count += renderedBytes / 2;
 					al_unlock_mutex(codec_data->codec_mutex);
 				}
 				if(!al_set_audio_stream_fragment(codec_data->codec_stream, fragment))
@@ -265,9 +262,9 @@ static bool codec_play(void * data)
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 	
 	printf("play 1\n");
-	codec_data->player_handler->SetOutputSettings(44100, 2, 16, 4096);
+	codec_data->player_handler->SetOutputSettings(44100, 2, 16, _libvgm_buf_size);
 
-	codec_data->codec_stream = al_create_audio_stream(4, 4096, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_1);
+	codec_data->codec_stream = al_create_audio_stream(4, _libvgm_buf_size, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
 	if(!codec_data->codec_stream)
 	{
 	printf("play 2\n");
@@ -349,17 +346,30 @@ static bool codec_seek(void * data, double pos)
 
 static double codec_get_position(void * data)
 {
-	return 0;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	return (float)codec_data->sample_count / 2.0 / 44100.0;
 }
 
 static double codec_get_length(void * data)
 {
-	return 0;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+	double len;
+
+	al_lock_mutex(codec_data->codec_mutex);
+	len = codec_data->player->Tick2Second(codec_data->player->GetTotalTicks());
+	al_unlock_mutex(codec_data->codec_mutex);
+
+	return len;
 }
 
 static bool codec_done_playing(void * data)
 {
-	return false;
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	UINT8 state = codec_data->player->GetState();
+
+	return state & (PLAYSTATE_FIN | PLAYSTATE_END);
 }
 
 static const char * codec_get_info(void * data)
