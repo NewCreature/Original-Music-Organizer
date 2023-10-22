@@ -44,6 +44,7 @@ typedef struct
 	char tag_loop_start[64];
 	char tag_loop_end[64];
 	char tag_fade_time[64];
+	char info_buffer[64];
 } CODEC_DATA;
 
 static void load_tags(CODEC_DATA * codec_data)
@@ -137,42 +138,35 @@ static const char * codec_get_tag(void * data, const char * name)
 
 	if(!strcmp(name, "Album"))
 	{
-		if(strlen(codec_data->tag_album))
+		if(codec_data->tag_album && strlen(codec_data->tag_album))
 		{
 			return codec_data->tag_album;
 		}
 	}
 	else if(!strcmp(name, "Artist"))
 	{
-		if(strlen(codec_data->tag_artist))
+		if(codec_data->tag_artist && strlen(codec_data->tag_artist))
 		{
 			return codec_data->tag_artist;
 		}
 	}
-	else if(!strcmp(name, "Album"))
-	{
-		if(strlen(codec_data->tag_album))
-		{
-			return codec_data->tag_album;
-		}
-	}
 	else if(!strcmp(name, "Title"))
 	{
-		if(strlen(codec_data->tag_title))
+		if(codec_data->tag_title && strlen(codec_data->tag_title))
 		{
 			return codec_data->tag_title;
 		}
 	}
 	else if(!strcmp(name, "Copyright"))
 	{
-		if(strlen(codec_data->tag_date))
+		if(codec_data->tag_date && strlen(codec_data->tag_date))
 		{
 			return codec_data->tag_date;
 		}
 	}
 	else if(!strcmp(name, "Comment"))
 	{
-		if(strlen(codec_data->tag_comment))
+		if(codec_data->tag_comment && strlen(codec_data->tag_comment))
 		{
 			return codec_data->tag_comment;
 		}
@@ -184,7 +178,6 @@ static const char * codec_get_tag(void * data, const char * name)
 			sprintf(codec_data->tag_loop_start, "%.3f", codec_data->player->Tick2Second(codec_data->player->GetTotalTicks() - (codec_data->player->GetLoopTicks() * codec_data->loop_count)) - codec_data->fade_time);
 			return codec_data->tag_loop_start;
 		}
-		return NULL;
 	}
 	else if(!strcmp(name, "Loop End"))
 	{
@@ -193,7 +186,6 @@ static const char * codec_get_tag(void * data, const char * name)
 			sprintf(codec_data->tag_loop_end, "%.3f", codec_data->player->Tick2Second(codec_data->player->GetTotalTicks() - (codec_data->player->GetLoopTicks() * codec_data->loop_count)) - codec_data->fade_time + codec_data->player->Tick2Second(codec_data->player->GetLoopTicks()));
 			return codec_data->tag_loop_end;
 		}
-		return NULL;
 	}
 	else if(!strcmp(name, "Fade Time"))
 	{
@@ -202,7 +194,6 @@ static const char * codec_get_tag(void * data, const char * name)
 			sprintf(codec_data->tag_fade_time, "8.0");
 			return codec_data->tag_fade_time;
 		}
-		return NULL;
 	}
 
 	return NULL;
@@ -501,7 +492,15 @@ static bool codec_done_playing(void * data)
 
 static const char * codec_get_info(void * data)
 {
-	return "libvgm";
+	CODEC_DATA * codec_data = (CODEC_DATA *)data;
+
+	strcpy(codec_data->info_buffer, "libvgm");
+	if(codec_data->tag_system && strlen(codec_data->tag_system))
+	{
+		strcat(codec_data->info_buffer, ": ");
+		strcat(codec_data->info_buffer, codec_data->tag_system);
+	}
+	return codec_data->info_buffer;
 }
 
 static OMO_CODEC_HANDLER codec_handler;
