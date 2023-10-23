@@ -122,6 +122,11 @@ v0.5.5
 
 [ ]Look into certain NSF files for FDS games not playing back correctly.
 
+[ ]Allow overriding internal loops in libvgm codec handler. If the user sets up
+   loops, we should respect those settings instead of using the VGM's internal
+   loop settings. We should be able to do this by making it loop infinitely and
+   handling the fade manually.
+
 [X]Add libvgm codec handler. This will enable support for a wider variety of
    emulated game music. The current VGM handler has limited sound chip support.
 
