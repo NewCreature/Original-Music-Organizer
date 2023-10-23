@@ -1,24 +1,36 @@
 T3F_PLATFORM_NAME = android
+T3F_PLATFORM_OBJECTS = $(ANDROID_PLATFORM_OBJECTS)
+T3F_PLATFORM_LIBRARIES =\
+	-L$(ANDROID_LIBRARY_ROOT)/lib\
+	-lallegro\
+	-lallegro_audio\
+	-lallegro_image\
+	-lallegro_acodec\
+	-lallegro_font\
+	-lallegro_ttf\
+	-lallegro_primitives\
+	-lallegro_memfile\
+	-lallegro_color\
+	-lallegro_physfs
 #LIB_SUFFIX =
-ANDROID_NATIVE_CALL_PREFIX = $(subst .,_,$(APP_ID))
-CC = $(ANDROID_TOOLCHAIN_ROOT)-$(ANDROID_ARCHITECTURE)/bin/$(ANDROID_HOST)-gcc
-CFLAGS = $(T3F_CFLAGS) $(APP_CFLAGS) $(ANDROID_CFLAGS) $(ANDROID_CONFIG_CFLAGS)-DT3F_ANDROID -DT3F_ANDROID_NATIVE_CALL_PREFIX=$(ANDROID_NATIVE_CALL_PREFIX) --sysroot=$(ANDROID_TOOLCHAIN_ROOT)-$(ANDROID_ARCHITECTURE)/sysroot $(ANDROID_C_ARCH) $(CFLAGS_ARCH) -fPIC
-CXXFLAGS = $(CFLAGS) $(ANDROID_CONFIG_CXXFLAGS)
+ANDROID_NATIVE_CALL_PREFIX = $(subst .,_,$(APP_ANDROID_PACKAGE))
+CC = $(ANDROID_CC)
+CXX = $(ANDROID_CXX)
+CFLAGS = $(T3F_CFLAGS) $(APP_CFLAGS) $(ANDROID_CFLAGS) $(ANDROID_CONFIG_CFLAGS)-DT3F_ANDROID -DT3F_ANDROID_NATIVE_CALL_PREFIX=$(ANDROID_NATIVE_CALL_PREFIX) -I$(ANDROID_LIBRARY_ROOT)/include $(ANDROID_C_ARCH) $(CFLAGS_ARCH) -fPIC --target=$(ANDROID_COMPILER_TARGET) --sysroot=$(ANDROID_SYSROOT) -g -DDEBUGMODE=1
+CXXFLAGS = $(APP_CXXFLAGS) $(CFLAGS) $(ANDROID_CONFIG_CXXFLAGS)
 T3F_PLATFORM_OBJECTS = $(ANDROID_PLATFORM_OBJECTS)
 T3F_PLATFORM_LIBS = $(ANDROID_PLATFORM_LIBS) $(ANDROID_DEPEND_LIBS) -lallegro_physfs$(LIB_SUFFIX) -lphysfs
 #DEL_COMMAND = rm -f
 #DEL_FOLDER_COMMAND = rm -rf
 
-#default to ARM since that is the most common
-ANDROID_ARCHITECTURE = armeabi-v7a
 ANDROID_NATIVE_SHARED_OBJECT = ../android_temp/app.project/app/src/main/jniLibs/$(ANDROID_ARCHITECTURE)/libapp.so
 
 include makefile.common
 
 copy_libs:
 	@echo Copying Allegro libs to Android project...
-	cp -a $(ANDROID_TOOLCHAIN_ROOT)-$(ANDROID_ARCHITECTURE)/sysroot/usr/lib/liballegro*.so ../android_temp/app.project/app/src/main/jniLibs/$(ANDROID_ARCHITECTURE)
-	cp -a ../allegro-release.aar ../android_temp/app.project/app/libs/allegro.aar
+	cp -a $(ANDROID_LIBRARY_ROOT)/lib/liballegro*.so ../android_temp/app.project/app/src/main/jniLibs/$(ANDROID_ARCHITECTURE)
+	cp -a $(ANDROID_LIBRARY_ROOT)/lib/allegro-release.aar ../android_temp/app.project/app/libs/allegro.aar
 
 create_native_lib: $(T3F_OBJECTS) $(APP_OBJECTS)
-	$(CC) $(LFLAGS_ARCH) -shared -o $(ANDROID_NATIVE_SHARED_OBJECT) $(T3F_OBJECTS) $(APP_OBJECTS) $(PLATFORM_LIBS) $(APP_LIBS) $(T3F_LIBRARIES) $(DEPEND_LIBS)
+	$(CC) --target=$(ANDROID_COMPILER_TARGET) $(LFLAGS_ARCH) -shared -Wl,-soname,libapp.so -o $(ANDROID_NATIVE_SHARED_OBJECT) $(T3F_OBJECTS) $(APP_OBJECTS) $(PLATFORM_LIBS) $(APP_LIBS) $(T3F_PLATFORM_LIBRARIES) $(DEPEND_LIBS) --sysroot=$(ANDROID_SYSROOT) -latomic -lm -Wl,--build-id=sha1

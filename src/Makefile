@@ -44,8 +44,10 @@ release:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts release
 
 package:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts clean
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts package
+
+source_only_package:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts source_only_package
 
 binary_package:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts binary_package
@@ -56,8 +58,14 @@ debian_package:
 android_package:
 	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_package
 
-android_package_unsigned:
-	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_package_unsigned
+android_bundle:
+	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_bundle
+
+android_install:
+	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_install
+
+android_debug:
+	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_debug
 
 windows_package:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts windows_zip
@@ -84,7 +92,7 @@ demo_gp:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts demo_gp
 
 makeicon:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts ../win32/makeicon
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts ../windows/makeicon
 
 reset_config:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts reset_config
@@ -100,3 +108,33 @@ uninstall:
 
 install_flatpak:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts install_flatpak
+
+data_package:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts data_package
+
+steam_binary_package:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts steam_binary_package SYSTEM=$(SYSTEM)
+
+mac_sign_bundle:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_sign_bundle
+
+mac_notarize_bundle:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_notarize_bundle
+
+mac_sign_and_notarize_bundle:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_sign_and_notarize_bundle
+
+mac_sign_package:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_sign_package
+
+mac_steam_package:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_steam_package
+
+mac_i386:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_i386
+
+mac_x86_64:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_x86_64
+
+mac_arm64:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_arm64

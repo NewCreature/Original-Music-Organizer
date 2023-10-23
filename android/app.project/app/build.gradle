@@ -1,23 +1,26 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 26
+    namespace "APP_PACKAGE"
     defaultConfig {
-        applicationId "org.liballeg.${APP_ID}"
-        minSdkVersion 15
-        targetSdkVersion 33
-        versionCode 1
-        versionName "1.0"
+        applicationId "APP_PACKAGE"
+        minSdkVersion 16
+        targetSdkVersion 26
+        versionCode APP_RELEASE
+        versionName "APP_VERSION"
     }
     buildTypes {
         release {
             minifyEnabled false
         }
     }
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "org.liballeg.android:allegro:1.0@aar"
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.liballeg.android:allegro:1.0@aar"
 }
-

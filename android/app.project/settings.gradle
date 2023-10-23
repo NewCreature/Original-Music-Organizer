@@ -1,1 +1,1 @@
-include ":${GRADLE_PROJECT}"
+include ":app"

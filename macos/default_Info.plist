@@ -4,6 +4,12 @@
 <dict>
 	<key>CFBundleExecutable</key>
 	<string>T3F_APP_EXECUTABLE</string>
+	<key>CFBundleIdentifier</key>
+	<string>T3F_APP_PACKAGE</string>
+	<key>CFBundleName</key>
+	<string>T3F_APP_DISPLAY_NAME</string>
+	<key>CFBundleVersion</key>
+	<string>T3F_APP_VERSION</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
@@ -13,7 +19,7 @@
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>NSHighResolutionCapable</key>
-    <false/>
+	<false/>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
@@ -28,7 +34,7 @@
 				<string>****</string>
 			</array>
 			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
+			<string>None</string>
 		</dict>
 	</array>
 	<key>CFBundleIconFile</key>

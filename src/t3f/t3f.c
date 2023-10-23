@@ -25,6 +25,7 @@
 #include "view.h"
 #include "music.h"
 #include "android.h"
+#include "input.h"
 #ifndef ALLEGRO_ANDROID
 	#include "menu.h"
 #endif
@@ -60,6 +61,7 @@ bool t3f_mouse_hidden = false;
 /* joystick data */
 ALLEGRO_JOYSTICK * t3f_joystick[T3F_MAX_JOYSTICKS] = {NULL};
 ALLEGRO_JOYSTICK_STATE t3f_joystick_state[T3F_MAX_JOYSTICKS];
+bool t3f_joystick_state_updated[T3F_MAX_JOYSTICKS] = {false};
 
 /* touch data */
 T3F_TOUCH t3f_touch[T3F_MAX_TOUCHES];
@@ -75,10 +77,14 @@ bool t3f_quit = false;
 int t3f_requested_flags = 0;
 int t3f_flags = 0;
 int t3f_option[T3F_MAX_OPTIONS] = {0};
+static int _t3f_logic_ticks = 0;
+static bool _t3f_mouse_warped = false;
+static float _t3f_mouse_warp_x = 0.0;
+static float _t3f_mouse_warp_y = 0.0;
 
 void (*t3f_logic_proc)(void * data) = NULL;
 void (*t3f_render_proc)(void * data) = NULL;
-static void * t3f_user_data = NULL;
+static void * t3f_app_data = NULL;
 
 ALLEGRO_DISPLAY * t3f_display = NULL;
 ALLEGRO_TIMER * t3f_timer = NULL;
@@ -86,10 +92,12 @@ ALLEGRO_EVENT_QUEUE * t3f_queue = NULL;
 char t3f_window_title[1024] = {0};
 
 ALLEGRO_CONFIG * t3f_config = NULL;
+ALLEGRO_CONFIG * t3f_user_data = NULL;
 ALLEGRO_PATH * t3f_data_path = NULL;
 ALLEGRO_PATH * t3f_config_path = NULL;
 ALLEGRO_PATH * t3f_temp_path = NULL;
 static char t3f_config_filename[1024] = {0};
+static char t3f_user_data_filename[1024] = {0};
 
 /* colors */
 ALLEGRO_COLOR t3f_color_white;
@@ -228,13 +236,18 @@ static bool t3f_locate_resource(const char * filename)
 	/* handle Android first so we don't do unnecessary checks */
 	#ifdef ALLEGRO_ANDROID
 
+		PHYSFS_AndroidInit android_init;
 		int ret;
 
+		/* try to use PHYSFS to access data */
 		path = al_get_standard_path(ALLEGRO_EXENAME_PATH);
 		if(path)
 		{
-			/* try to use PHYSFS to access data */
-			if(PHYSFS_init(al_path_cstr(path, '/')))
+			/* Pass NULL here even though the docs say not to. We don't use the write
+			   functionality of PhysFS anyway. */
+//			android_init.jnienv = _al_android_get_jnienv();
+//			android_init.context = _al_android_activity_object();
+			if(PHYSFS_init(NULL))
 			{
 				ret = PHYSFS_addToSearchPath(al_path_cstr(path, '/'), 1);
 				al_destroy_path(path);
@@ -392,7 +405,7 @@ int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_pro
 		return 0;
 	}
 
-	al_set_app_name(name);
+	al_set_app_name(T3F_APP_DATA_DIR);
 	if(t3f_developer_name)
 	{
 		al_set_org_name(t3f_developer_name);
@@ -401,6 +414,10 @@ int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_pro
 	/* set up application path */
 	t3f_config_path = al_get_standard_path(ALLEGRO_USER_SETTINGS_PATH);
 	t3f_data_path = al_get_standard_path(ALLEGRO_USER_DATA_PATH);
+	#ifdef ALLEGRO_WINDOWS
+		al_append_path_component(t3f_config_path, "config");
+		al_append_path_component(t3f_data_path, "data");
+	#endif
 	t3f_temp_path = al_get_standard_path(ALLEGRO_TEMP_PATH);
 	t3f_setup_directories(t3f_config_path);
 	t3f_setup_directories(t3f_data_path);
@@ -424,6 +441,20 @@ int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_pro
 		t3f_config = al_create_config();
 	}
 	t3f_get_options();
+
+	/* set up user data file */
+	temp_path = al_clone_path(t3f_data_path);
+	al_set_path_filename(temp_path, "user_data.ini");
+	strcpy(t3f_user_data_filename, al_path_cstr(temp_path, '/'));
+	al_destroy_path(temp_path);
+	old_interface = al_get_new_file_interface();
+	al_set_standard_file_interface();
+	t3f_user_data = al_load_config_file(t3f_user_data_filename);
+	al_set_new_file_interface(old_interface);
+	if(!t3f_user_data)
+	{
+		t3f_user_data = al_create_config();
+	}
 
 	if(!al_init_image_addon())
 	{
@@ -555,7 +586,7 @@ int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_pro
 
 	t3f_logic_proc = logic_proc;
 	t3f_render_proc = render_proc;
-	t3f_user_data = data;
+	t3f_app_data = data;
 
 	/* locate user resources */
 	t3f_locate_resource("data/t3f.dat");
@@ -572,6 +603,21 @@ void t3f_set_option(int option, int value)
 	snprintf(buf, 64, "Key %d", option);
 	snprintf(vbuf, 64, "%d", value);
 	al_set_config_value(t3f_config, "Options", buf, vbuf);
+}
+
+bool t3f_option_is_set(int option)
+{
+	char buf[64] = {0};
+	const char * val;
+
+	sprintf(buf, "Key %d", option);
+	val = al_get_config_value(t3f_config, "Options", buf);
+
+	if(val)
+	{
+		return true;
+	}
+	return false;
 }
 
 static void handle_view_resize(void)
@@ -945,12 +991,31 @@ void t3f_set_event_handler(void (*proc)(ALLEGRO_EVENT * event, void * data))
 bool t3f_save_config(void)
 {
 	const ALLEGRO_FILE_INTERFACE * old_interface;
-	bool ret;
+	bool ret = false;
 
-	old_interface = al_get_new_file_interface();
-	al_set_standard_file_interface();
-	ret = al_save_config_file(t3f_config_filename, t3f_config);
-	al_set_new_file_interface(old_interface);
+	if(t3f_config)
+	{
+		old_interface = al_get_new_file_interface();
+		al_set_standard_file_interface();
+		ret = al_save_config_file(t3f_config_filename, t3f_config);
+		al_set_new_file_interface(old_interface);
+	}
+
+	return ret;
+}
+
+bool t3f_save_user_data(void)
+{
+	const ALLEGRO_FILE_INTERFACE * old_interface;
+	bool ret = false;
+
+	if(t3f_user_data)
+	{
+		old_interface = al_get_new_file_interface();
+		al_set_standard_file_interface();
+		ret = al_save_config_file(t3f_user_data_filename, t3f_user_data);
+		al_set_new_file_interface(old_interface);
+	}
 
 	return ret;
 }
@@ -1046,16 +1111,24 @@ bool t3f_get_mouse_mickeys(int * x, int * y, int * z)
 	return false;
 }
 
-/* set the mouse coordinate to (x, y) in the currently active view */
-void t3f_set_mouse_xy(float x, float y)
+static void _t3f_update_mouse_xy(float x, float y)
 {
-	al_transform_coordinates(&t3f_current_view->transform, &x, &y);
-	al_set_mouse_xy(t3f_display, x, y);
 	t3f_real_mouse_x = x;
 	t3f_real_mouse_y = y;
 	t3f_touch[0].real_x = x;
 	t3f_touch[0].real_y = y;
 	t3f_select_input_view(t3f_current_view);
+}
+
+/* set the mouse coordinate to (x, y) in the currently active view */
+void t3f_set_mouse_xy(float x, float y)
+{
+	al_transform_coordinates(&t3f_current_view->transform, &x, &y);
+	al_set_mouse_xy(t3f_display, x, y);
+	_t3f_update_mouse_xy(x, y);
+	_t3f_mouse_warped = true;
+	_t3f_mouse_warp_x = x;
+	_t3f_mouse_warp_y = y;
 }
 
 void t3f_clear_touch_data(void)
@@ -1065,6 +1138,7 @@ void t3f_clear_touch_data(void)
 	for(i = 0; i < T3F_MAX_TOUCHES; i++)
 	{
 		t3f_touch[i].active = false;
+		t3f_touch[i].pressed = false;
 		t3f_touch[i].released = false;
 	}
 }
@@ -1181,7 +1255,9 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 		{
 			char val[8] = {0};
 			al_acknowledge_resize(t3f_display);
-			t3f_handle_menu_resize();
+			#ifndef ALLEGRO_ANDROID
+				t3f_handle_menu_resize();
+			#endif
 			handle_view_resize();
 			sprintf(val, "%d", al_get_display_width(t3f_display));
 			al_set_config_value(t3f_config, "T3F", "display_width", val);
@@ -1247,6 +1323,7 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 			t3f_mouse_z = event->mouse.z;
 
 			t3f_touch[0].active = true;
+			t3f_touch[0].pressed = true;
 			t3f_touch[0].real_x = t3f_real_mouse_x;
 			t3f_touch[0].real_y = t3f_real_mouse_y;
 			t3f_touch[0].primary = true;
@@ -1302,6 +1379,24 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 			break;
 		}
 
+		case ALLEGRO_EVENT_JOYSTICK_CONFIGURATION:
+		{
+			int i;
+			al_reconfigure_joysticks();
+			memset(t3f_joystick, 0, sizeof(ALLEGRO_JOYSTICK *));
+			for(i = 0; i < T3F_MAX_JOYSTICKS; i++)
+			{
+				memset(&t3f_joystick_state[i], 0, sizeof(ALLEGRO_JOYSTICK_STATE));
+			}
+			memset(t3f_joystick_state_updated, 0, sizeof(bool));
+			for(i = 0; i < al_get_num_joysticks(); i++)
+			{
+				t3f_joystick[i] = al_get_joystick(i);
+			}
+			_t3f_input_handle_joystick_event(event);
+			break;
+		}
+
 		case ALLEGRO_EVENT_JOYSTICK_AXIS:
 		case ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN:
 		case ALLEGRO_EVENT_JOYSTICK_BUTTON_UP:
@@ -1310,7 +1405,9 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 			if(jn >= 0)
 			{
 				al_get_joystick_state(event->joystick.id, &t3f_joystick_state[jn]);
+				t3f_joystick_state_updated[jn] = true;
 			}
+			_t3f_input_handle_joystick_event(event);
 			break;
 		}
 
@@ -1320,6 +1417,7 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 			t3f_touch[event->touch.id + 1].real_x = event->touch.x;
 			t3f_touch[event->touch.id + 1].real_y = event->touch.y;
 			t3f_touch[event->touch.id + 1].primary = event->touch.primary;
+			t3f_touch[event->touch.id + 1].pressed = true;
 			break;
 		}
 
@@ -1351,7 +1449,8 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 			{
 				t3f_pause_music();
 			}
-			al_save_config_file(t3f_config_filename, t3f_config);
+			t3f_save_config();
+			t3f_save_user_data();
 			break;
 		}
 		case ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING:
@@ -1371,7 +1470,7 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 		#ifndef ALLEGRO_ANDROID
 			case ALLEGRO_EVENT_MENU_CLICK:
 			{
-				t3f_process_menu_click(event->user.data1, t3f_user_data);
+				t3f_process_menu_click(event->user.data1, t3f_app_data);
 				break;
 			}
 		#endif
@@ -1379,16 +1478,7 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 		/* this keeps your program running */
 		case ALLEGRO_EVENT_TIMER:
 		{
-			t3f_android_support_helper();
-			#ifndef ALLEGRO_ANDROID
-				t3f_update_menus(t3f_user_data);
-			#endif
-			if(!(t3f_flags & T3F_NO_DISPLAY))
-			{
-				t3f_select_input_view(t3f_default_view);
-			}
-			t3f_logic_proc(t3f_user_data);
-			t3f_need_redraw = true;
+			_t3f_logic_ticks++;
 			break;
 		}
 	}
@@ -1409,7 +1499,7 @@ void t3f_render(bool flip)
 			t3f_select_view(t3f_current_view);
 		}
 		al_use_transform(&t3f_current_transform);
-		t3f_render_proc(t3f_user_data);
+		t3f_render_proc(t3f_app_data);
 		if(flip)
 		{
 			al_flip_display();
@@ -1428,7 +1518,7 @@ void t3f_process_events(bool ignore)
 		{
 			if(t3f_event_handler_proc)
 			{
-				t3f_event_handler_proc(&event, t3f_user_data);
+				t3f_event_handler_proc(&event, t3f_app_data);
 			}
 			else
 			{
@@ -1443,6 +1533,7 @@ void t3f_process_events(bool ignore)
 void t3f_run(void)
 {
 	ALLEGRO_EVENT event;
+	int i;
 
 	al_start_timer(t3f_timer);
 	while(!t3f_quit)
@@ -1457,12 +1548,32 @@ void t3f_run(void)
 		al_wait_for_event(t3f_queue, &event);
 		if(t3f_event_handler_proc)
 		{
-			t3f_event_handler_proc(&event, t3f_user_data);
+			t3f_event_handler_proc(&event, t3f_app_data);
 		}
 		else
 		{
 			t3f_event_handler(&event);
 		}
+
+		if(_t3f_mouse_warped)
+		{
+			_t3f_update_mouse_xy(_t3f_mouse_warp_x, _t3f_mouse_warp_y);
+			_t3f_mouse_warped = false;
+		}
+		for(i = 0; i < _t3f_logic_ticks && !t3f_quit; i++)
+		{
+			t3f_android_support_helper();
+			#ifndef ALLEGRO_ANDROID
+				t3f_update_menus(t3f_app_data);
+			#endif
+			if(!(t3f_flags & T3F_NO_DISPLAY))
+			{
+				t3f_select_input_view(t3f_default_view);
+			}
+			t3f_logic_proc(t3f_app_data);
+			t3f_need_redraw = true;
+		}
+		_t3f_logic_ticks = 0;
 
        	/* draw after we have run all the logic */
 		if(t3f_need_redraw && al_event_queue_is_empty(t3f_queue))
@@ -1485,6 +1596,7 @@ void t3f_run(void)
 void t3f_finish(void)
 {
 	t3f_save_config();
+	t3f_save_user_data();
 	if(t3f_timer)
 	{
 		al_destroy_timer(t3f_timer);

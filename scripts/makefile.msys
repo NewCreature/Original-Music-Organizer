@@ -1,8 +1,10 @@
 T3F_PREFIX = /mingw32
 T3F_PLATFORM_NAME = windows
-CC = gcc
+T3F_PLATFORM_ARCHITECTURE = i386
+CC = $(MSYS_CONFIG_CC)
+CXX = $(MSYS_CONFIG_CXX)
 CFLAGS = $(T3F_CFLAGS) $(APP_CFLAGS) $(MSYS_CFLAGS) $(MSYS_CONFIG_CFLAGS) -DT3F_NO_UTF8
-CXXFLAGS = $(CFLAGS) $(MSYS_CONFIG_CXXFLAGS)
+CXXFLAGS = $(APP_CXXFLAGS) $(CFLAGS) $(MSYS_CONFIG_CXXFLAGS)
 LFLAGS = -static -static-libgcc -static-libstdc++
 CONFIG_LFLAGS = $(MSYS_CONFIG_LFLAGS)
 ALLEGRO_SUFFIX = $(MSYS_CONFIG_ALLEGRO_SUFFIX)
@@ -36,15 +38,15 @@ include makefile.common
 prepare_platform:
 	@echo Ready to build...
 
-../icons/windows_icon.ico: ../icons/16.png ../icons/24.png ../icons/32.png ../icons/48.png ../icons/256.png ../win32/makeicon$(EXE_SUFFIX)
-	../win32/makeicon$(EXE_SUFFIX) -o ../icons/windows_icon.ico ../icons/16.png ../icons/24.png ../icons/32.png ../icons/48.png ../icons/64.png ../icons/256.png
+../icons/windows_icon.ico: ../icons/16.png ../icons/24.png ../icons/32.png ../icons/48.png ../icons/256.png ../windows/makeicon$(EXE_SUFFIX)
+	../windows/makeicon$(EXE_SUFFIX) -o ../icons/windows_icon.ico ../icons/16.png ../icons/24.png ../icons/32.png ../icons/48.png ../icons/64.png ../icons/256.png
 
-icon.o : ../icons/windows_icon.ico ../win32/icon.rc
-	windres --include-dir=../icons -o icon.o ../win32/icon.rc
+icon.o : ../icons/windows_icon.ico ../windows/icon.rc
+	windres --include-dir=../icons -o icon.o ../windows/icon.rc
 
-../win32/info_fixer: ../win32/info_fixer.o
-	$(CC) $(T3F_CFLAGS) ../win32/info_fixer.o -o ../win32/info_fixer
+../windows/info_fixer: ../windows/info_fixer.o
+	$(CC) $(T3F_CFLAGS) ../windows/info_fixer.o -o ../windows/info_fixer
 
 windows_zip: $(APP_EXE_NAME)
-	@cd ../bin; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../win32/blobs && zip -9 ../$(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../../; cp -a docs win32; cd win32/docs; mv changelog history.txt; mv README readme.txt; mv copyright license.txt; cd ..; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip docs; rm -rf docs
+	@cd ../bin; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../windows/blobs && zip -9 ../$(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../../; cp -a docs windows; cd windows/docs; mv changelog history.txt; mv README readme.txt; mv copyright license.txt; cd ..; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip docs; rm -rf docs
 	@echo Windows package created!

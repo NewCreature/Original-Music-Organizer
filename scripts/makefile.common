@@ -4,7 +4,7 @@ SPACE:=$(NOTHING) $(NOTHING)
 
 T3F_LIBRARIES = $(T3F_PLATFORM_LIBRARIES)
 
-T3F_CFLAGS = -DT3F_DEVELOPER_NAME="\"$(subst \ ,$(SPACE),$(APP_COMPANY))\"" -DT3F_PACKAGE_NAME="\"$(subst \ ,$(SPACE),$(APP_NAME))\"" -DT3F_APP_VERSION="\"$(subst \ ,$(SPACE),$(APP_VERSION))\"" -DT3F_APP_TITLE="\"$(subst \ ,$(SPACE),$(APP_TITLE))\"" -DT3F_APP_COPYRIGHT="\"$(subst \ ,$(SPACE),$(APP_COPYRIGHT))\"" -DT3F_APP_PUBLISHER="\"$(subst \ ,$(SPACE),$(APP_PUBLISHER))\""
+T3F_CFLAGS = -DT3F_DEVELOPER_NAME="\"$(subst \ ,$(SPACE),$(APP_COMPANY))\"" -DT3F_PACKAGE_NAME="\"$(subst \ ,$(SPACE),$(APP_NAME))\"" -DT3F_APP_VERSION="\"$(subst \ ,$(SPACE),$(APP_VERSION))\"" -DT3F_APP_TITLE="\"$(subst \ ,$(SPACE),$(APP_TITLE))\"" -DT3F_APP_DATA_DIR="\"$(subst \ ,$(SPACE),$(APP_DATA_DIR))\"" -DT3F_APP_COPYRIGHT="\"$(subst \ ,$(SPACE),$(APP_COPYRIGHT))\"" -DT3F_APP_PUBLISHER="\"$(subst \ ,$(SPACE),$(APP_PUBLISHER))\"" -DT3F_APP_STEAM_ID=$(APP_STEAM_ID)
 
 include makefile.defines
 include makefile.default_config
@@ -23,6 +23,7 @@ APP_PACKAGE_NAME = $(APP_NAME)-$(APP_VERSION)
 APP_PACKAGE_FILENAME = $(APP_PACKAGE_NAME)-src.tar.gz
 APP_HOST_ARCHITECTURE = $(shell uname -m)
 APP_BINARY_PACKAGE_FILENAME = $(APP_PACKAGE_NAME)-$(T3F_PLATFORM_NAME)-$(APP_HOST_ARCHITECTURE).tar.gz
+APP_TEMP_DIR = ../temp/$(APP_PACKAGE_NAME)
 
 all : $(APP_EXE_NAME) $(T3F_PLATFORM_TARGET) $(APP_EXTRA_TARGET)
 	@echo All targets built!
@@ -70,17 +71,32 @@ endif
 	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME))
 	@echo Cleanup complete!
 
+clean_packages:
+	@echo Cleaning up old paclages...
+	@rm -f $(APP_PACKAGE_DIR)/*.tar.gz
+	@rm -f $(APP_PACKAGE_DIR)/*.zip
+	@rm -f $(APP_PACKAGE_DIR)/*.apk
+	@rm -f $(APP_PACKAGE_DIR)/*.dmg
+	@rm -rf $(APP_PACKAGE_DIR)/*.app
+
 #create tar.gz package for source code distribution
-package: clean
-	$(shell rm -rf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME); mkdir ../temp; mkdir ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../bin" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../src" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../scripts" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../docs" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../android" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../debian" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../macos" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L  "../win32" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../icons" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../iphone" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../graphics_src" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../packages" ../temp/$(APP_PACKAGE_NAME); cp -a -R -L "../misc" ../temp/$(APP_PACKAGE_NAME); cp "../changes.txt" ../temp/$(APP_PACKAGE_NAME); cp "../build.txt" ../temp/$(APP_PACKAGE_NAME); cp "../issues.txt" ../temp/$(APP_PACKAGE_NAME); cd ../temp; rm -f $(APP_PACKAGE_FILENAME); export COPY_EXTENDED_ATTRIBUTES_DISABLE=true; export COPYFILE_DISABLE=true; tar --exclude="." --exclude=".DS_Store" --exclude="old" $(PACKAGE_EXCLUSIONS) --dereference -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
+package: clean clean_packages
+	$(shell rm -rf $(APP_TEMP_DIR); mkdir -p $(APP_TEMP_DIR); cp -a -R -L "../bin" $(APP_TEMP_DIR); cp -a -R -L "../src" $(APP_TEMP_DIR); cp -a -R -L "../scripts" $(APP_TEMP_DIR); cp -a -R -L "../docs" $(APP_TEMP_DIR); cp -a -R -L "../android" $(APP_TEMP_DIR); cp -a -R -L "../debian" $(APP_TEMP_DIR); cp -a -R -L "../linux" $(APP_TEMP_DIR);  cp -a -R -L "../macos" $(APP_TEMP_DIR); cp -a -R -L  "../windows" $(APP_TEMP_DIR); cp -a -R -L "../icons" $(APP_TEMP_DIR); cp -a -R -L "../iphone" $(APP_TEMP_DIR); cp -a -R -L "../graphics_src" $(APP_TEMP_DIR); cp -a -R -L "../packages" $(APP_TEMP_DIR); cp -a -R -L "../misc" $(APP_TEMP_DIR); cp "../changes.txt" $(APP_TEMP_DIR); cp "../issues.txt" $(APP_TEMP_DIR); cd ../temp; rm -f $(APP_PACKAGE_FILENAME); export COPY_EXTENDED_ATTRIBUTES_DISABLE=true; export COPYFILE_DISABLE=true; tar --exclude="." --exclude=".DS_Store" --exclude="old" $(PACKAGE_EXCLUSIONS) --dereference -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
+	@echo Package successfully created!
+
+source_only_package: clean clean_packages
+	$(shell rm -rf $(APP_TEMP_DIR); mkdir -p $(APP_TEMP_DIR); mkdir -p $(APP_TEMP_DIR)/bin/data; cp ../bin/data/t3f.dat $(APP_TEMP_DIR)/bin/data; cp -a -R -L "../src" $(APP_TEMP_DIR); cp -a -R -L "../scripts" $(APP_TEMP_DIR); cp -a -R -L "../docs" $(APP_TEMP_DIR); cp -a -R -L "../android" $(APP_TEMP_DIR); cp -a -R -L "../debian" $(APP_TEMP_DIR); cp -a -R -L "../linux" $(APP_TEMP_DIR); cp -a -R -L "../macos" $(APP_TEMP_DIR); cp -a -R -L  "../windows" $(APP_TEMP_DIR); cp -a -R -L "../icons" $(APP_TEMP_DIR); cp -a -R -L "../iphone" $(APP_TEMP_DIR); cp -a -R -L "../graphics_src" $(APP_TEMP_DIR); cp -a -R -L "../packages" $(APP_TEMP_DIR); cp -a -R -L "../misc" $(APP_TEMP_DIR); cp "../changes.txt" $(APP_TEMP_DIR); cp "../issues.txt" $(APP_TEMP_DIR); cd ../temp; rm -f $(APP_PACKAGE_FILENAME); export COPY_EXTENDED_ATTRIBUTES_DISABLE=true; export COPYFILE_DISABLE=true; tar --exclude="." --exclude=".DS_Store" --exclude="old" $(PACKAGE_EXCLUSIONS) --dereference -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
 	@echo Package successfully created!
 
 binary_package_temp: $(APP_EXE_NAME)
 	@rm -rf $(APP_PACKAGE_DIR)/$(APP_BINARY_PACKAGE_FILENAME)
+	@rm -rf ../temp
 	@mkdir ../temp
 	@mkdir ../temp/$(APP_PACKAGE_NAME)
 	@echo "Copy app data..."
-	@rsync -avq --exclude=".*" --exclude="src/" --exclude="android/" --exclude="debian/" --exclude="iphone/" --exclude="macos/" --exclude="misc/" --exclude="packages/" --exclude="scripts/" --exclude="temp/" --exclude="win32/" --exclude="changes.txt" --exclude="issues.txt" ../ ../temp/$(APP_PACKAGE_NAME)
+	@rsync -avq --exclude=".*" --exclude="src/" --exclude="android/" --exclude="debian/" --exclude="iphone/" --exclude="linux/" --exclude="macos/" --exclude="misc/" --exclude="packages/" --exclude="scripts/" --exclude="temp/" --exclude="windows/" --exclude="graphics_src/" --exclude="changes.txt" --exclude="issues.txt" ../ ../temp/$(APP_PACKAGE_NAME)
+	@cp ../$(T3F_PLATFORM_NAME)/blobs/$(T3F_PLATFORM_ARCHITECTURE)/* ../temp/$(APP_PACKAGE_NAME)/bin
+	@rm -f ../temp/$(APP_PACKAGE_NAME)/bin/binaries.here
 	@echo "Make install script..."
 	@cp ../misc/binary_install.sh ../temp/$(APP_PACKAGE_NAME)/install.sh
 	@$(SED_COMMAND) 's|T3F_APP_TITLE|$(APP_TITLE)|' ../temp/$(APP_PACKAGE_NAME)/install.sh
@@ -120,5 +136,13 @@ demo: clean demo_copy demo_clean demo_edit
 
 demo_gp: demo demo_edit_gp
 
-../win32/makeicon$(EXE_SUFFIX): ../win32/makeicon.o
-	$(CC) $(LFLAGS) ../win32/makeicon.o $(T3F_LIBRARIES) -o ../win32/makeicon
+../windows/makeicon$(EXE_SUFFIX): ../windows/makeicon.o
+	$(CC) $(LFLAGS) ../windows/makeicon.o $(T3F_LIBRARIES) -o ../windows/makeicon
+
+data_package: source_only_package
+	rm -f $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-data.zip
+	cd ../bin && touch data/steam.dat && zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-data.zip data -x data/.\* && rm data/steam.dat && cd ../ && zip -9 -r packages/$(APP_NAME)-$(APP_VERSION)-data.zip docs && cd packages && zip -9 $(APP_NAME)-$(APP_VERSION)-data.zip $(APP_NAME)-$(APP_VERSION)-src.tar.gz
+
+steam_binary_package: $(APP_EXE_NAME)
+	rm -f $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME)-$(T3F_PLATFORM_NAME)-binaries.zip
+	cd ../bin && zip -9 $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-$(T3F_PLATFORM_NAME)-binaries.zip * -x data\*; cd ../$(T3F_PLATFORM_NAME)/blobs/$(T3F_PLATFORM_ARCHITECTURE) && zip -9 -r ../../$(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-$(T3F_PLATFORM_NAME)-binaries.zip * -x binaries.here || true

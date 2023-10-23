@@ -21,12 +21,12 @@ include makefile.common
 prepare_platform:
 	@echo Ready to build...
 
-icon.o : ../icons/windows_icon.ico ../win32/icon.rc
-	i586-mingw32msvc-windres --include-dir=../icons -o icon.o ../win32/icon.rc
+icon.o : ../icons/windows_icon.ico ../windows/icon.rc
+	i586-mingw32msvc-windres --include-dir=../icons -o icon.o ../windows/icon.rc
 
-../win32/info_fixer: ../win32/info_fixer.o
-	$(CC) $(T3F_CFLAGS) ../win32/info_fixer.o -o ../win32/info_fixer
+../windows/info_fixer: ../windows/info_fixer.o
+	$(CC) $(T3F_CFLAGS) ../windows/info_fixer.o -o ../windows/info_fixer
 
 windows_zip: $(APP_EXE_NAME)
-	@cd ../bin; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../win32/blobs && zip -9 ../$(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../../; cp -a docs win32; cd win32/docs; mv changelog history.txt; mv README readme.txt; mv copyright license.txt; cd ..; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip docs; rm -rf docs
+	@cd ../bin; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../windows/blobs && zip -9 ../$(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip *; cd ../../; cp -a docs windows; cd windows/docs; mv changelog history.txt; mv README readme.txt; mv copyright license.txt; cd ..; zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip docs; rm -rf docs
 	@echo Windows package created!

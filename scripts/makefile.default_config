@@ -1,11 +1,30 @@
+##################
+# Other Settings #
+########################################################
+# Put any extra development environment settings here. #
+########################################################
+#CONFIG_SETTING =
+
 ####################
 # Android Settings #
 ####################
-ANDROID_SDK_ROOT = $(HOME)/Development/Android/Tools/android-sdk
-ANDROID_NDK_ROOT = $(HOME)/Development/Android/Tools/android-ndk
-ANDROID_TOOLCHAIN_ROOT = $(HOME)/Development/Android/Tools/android-toolchain
+ANDROID_JAVA_HOME = /Applications/Android\ Studio.app/Contents/jbr/Contents/Home
+ANDROID_SDK_ROOT = $(HOME)/Library/Android/sdk
+ANDROID_NDK_ROOT = $(ANDROID_SDK_ROOT)/ndk/25.2.9519653
+ANDROID_TOOLCHAIN_ROOT = $(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/darwin-x86_64
+ifndef ANDROID_ARCHITECTURE
+  ANDROID_ARCHITECTURE = armeabi-v7a
+endif
+ANDROID_LIBRARY_ROOT = $(HOME)/code/libraries/android/$(ANDROID_ARCHITECTURE)
+ANDROID_CC = $(ANDROID_TOOLCHAIN_ROOT)/bin/clang
+ANDROID_CXX = $(ANDROID_TOOLCHAIN_ROOT)/bin/clang++
+ifndef ANDROID_COMPILER_TARGET
+  ANDROID_COMPILER_TARGET = armv7-none-linux-androideabi19
+endif
+ANDROID_SYSROOT = $(ANDROID_TOOLCHAIN_ROOT)/sysroot
 ANDROID_VERSION_TARGET = android-26
-ALLEGRO_SRC_ROOT = $(HOME)/T3/Projects/Dev/allegro5
+#ANDROID_SIGNING_SETTINGS =
+#ANDROID_SIGNING_KEY =
 
 #####################
 # Mac OS X Settings #
@@ -14,6 +33,16 @@ ALLEGRO_SRC_ROOT = $(HOME)/T3/Projects/Dev/allegro5
 # 'xcode-select -s /Applications/Xcode.app' to select toolchain. This allows  #
 # us to just use 'gcc' and 'g++' like we would on other Unix systems to build #
 # things. 'MacOSX10.13.sdk' is the last SDK we can use to target i386.        #
+#                                                                             #
+# 'mac_sign_bundle' requires you to have set MACOS_CONFIG_CERT_NAME if you    #
+# installed more than one certificate into your keychain. Additionally, your  #
+# certificate must be trusted or the signing process will fail. If you got    #
+# your certificate by following the steps on the Apple Developer portal and   #
+# the certificate is showing as not trusted, this is most likely due to       #
+# missing certificates in the chain of trust. You might need to install extra #
+# intermediate certificates from Apple's Worldwide Developer Relations. See:  #
+# https://www.apple.com/certificateauthority for a list of available certs.   #
+# Certificates should be installed into the System keychain.                  #
 ###############################################################################
 ifndef MACOS_TOOLCHAIN_ROOT
   MACOS_TOOLCHAIN_ROOT = /Library/Developer/CommandLineTools/SDKs
@@ -34,6 +63,11 @@ endif
 MACOS_CONFIG_PKG_CONFIG_OPTIONS = --libs --static
 MACOS_CONFIG_ALLEGRO_SUFFIX = -static
 MACOS_CONFIG_DEPEND_LIBS = -lsharpyuv
+#MACOS_CONFIG_CERT_NAME =
+#MACOS_CONFIG_APPLE_ID =
+#MACOS_CONFIG_APPLE_ID_PASSWORD =
+#MACOS_CONFIG_APPLE_TEAM_ID =
+MACOS_CONFIG_XCODE_PATH = /Applications/Xcode.app
 
 ###################
 # iPhone Settings #
@@ -58,6 +92,8 @@ INNO_SETUP_COMPILER = ~/.wine/drive_c/Program\ Files/Inno\ Setup\ 5/Compil32.exe
 #################
 # MSYS Settings #
 #################
+MSYS_CONFIG_CC = gcc
+MSYS_CONFIG_CXX = g++
 #MSYS_CONFIG_CFLAGS =
 #MSYS_CONFIG_CXXFLAGS =
 MSYS_CONFIG_LFLAGS = -mwindows

@@ -21,12 +21,12 @@ prepare_platform:
 	@chcp 65001
 	@echo Ready to build...
 
-../icons/windows_icon.ico: ../icons/16.png ../icons/24.png ../icons/32.png ../icons/48.png ../icons/256.png ../win32/makeicon$(EXE_SUFFIX)
-	../win32/makeicon -o ../icons/windows_icon.ico ../icons/16.png ../icons/24.png ../icons/32.png ../icons/48.png ../icons/64.png ../icons/256.png
+../icons/windows_icon.ico: ../icons/16.png ../icons/24.png ../icons/32.png ../icons/48.png ../icons/64.png ../icons/256.png ../windows/makeicon$(EXE_SUFFIX)
+	../windows/makeicon -o ../icons/windows_icon.ico ../icons/16.png ../icons/24.png ../icons/32.png ../icons/48.png ../icons/64.png ../icons/256.png
 
-icon.o : ../icons/windows_icon.ico ../win32/icon.rc
-	windres --include-dir=../icons -o icon.o ../win32/icon.rc
+icon.o : ../icons/windows_icon.ico ../windows/icon.rc
+	windres --include-dir=../icons -o icon.o ../windows/icon.rc
 
 windows_zip: $(APP_EXE_NAME)
-	cd ../bin && zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip * && cd ../win32/blobs && zip -9 ../$(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip * && cd ../.. && md win32\\docs && xcopy docs win32\\docs /E && cd win32/docs && rename changelog history.txt && rename README readme.txt && rename copyright license.txt && cd .. && zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip docs && rmdir /S /Q docs
+	cd ../bin && zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip * && cd ../windows/blobs && zip -9 ../$(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip * && cd ../.. && md windows\\docs && xcopy docs windows\\docs /E && cd windows/docs && rename changelog history.txt && rename README readme.txt && rename copyright license.txt && cd .. && zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-windows.zip docs && rmdir /S /Q docs
 	@echo Windows package created!

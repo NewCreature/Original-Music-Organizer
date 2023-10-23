@@ -89,6 +89,7 @@ int t3f_get_gui_height(T3F_GUI * pp, float * top);
 void t3f_select_previous_gui_element(T3F_GUI * pp);
 void t3f_select_next_gui_element(T3F_GUI * pp);
 void t3f_activate_selected_gui_element(T3F_GUI * pp, void * data);
+void t3f_reset_gui_input(T3F_GUI * pp);
 void t3f_process_gui(T3F_GUI * pp, void * data);
 void t3f_render_gui(T3F_GUI * pp);
 

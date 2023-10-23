@@ -14,6 +14,7 @@ ARCHIVE_HANDLER_OBJECTS = archive_handlers/unzip/unzip.o archive_handlers/unrar/
 APP_COMPANY = tcubedsoftware
 APP_NAME = omo
 APP_TITLE = OMO
+APP_DATA_DIR = $(APP_TITLE)
 APP_VERSION = 0.5.4
 APP_RELEASE = 9
 APP_PUBLISHER = T\ Cubed\ Software
@@ -23,8 +24,9 @@ APP_URL = https://www.tcubedsoftware.com
 APP_OBJECTS = $(T3GUI_OBJECTS) $(CODEC_OBJECTS) $(ARCHIVE_HANDLER_OBJECTS) queue.o library.o md5.o ui/menu_init.o ui/menu_proc.o ui/menu_update_proc.o ui/ui.o ui/dialog_proc.o player.o main.o file_chooser.o constants.o init.o events.o file_helpers.o theme.o ui/shortcut.o ui/queue_list.o ui/library.o ui/tags_dialog.o rtk/io.o rtk/io_allegro.o rtk/midi.o test.o library_helpers.o queue_helpers.o library_cache.o ui/split_track_dialog.o ui/player.o t3net/t3net.o ui/tagger_key_dialog.o ui/new_profile_dialog.o ui/filter_dialog.o cloud.o track.o database.o threads.o profile.o text_helpers.o command_line.o ui/about_dialog.o ui/multi_tags_dialog.o ui/album_tags_dialog.o ui/rebase_song_folder_dialog.o
 APP_LIBS = -ldumb -lgme -logg -lvorbis -lvorbisfile -lFLAC -lmpg123 -ladplug -lbinio -lvgm-audio -lvgm-emu -lvgm-player -lvgm-utils $(T3F_CXX_STDLIB)
 APP_CFLAGS = -O2 -Wall -I. -Icodec_handlers/midia5/MIDIA5 -I$(T3F_PREFIX)/include/binio -I$(T3F_PREFIX)/include/opus
-APP_PACKAGE_DIR = ../packages
+#APP_CXXFLAGS =
 #APP_EXTRA_TARGET =
+APP_PACKAGE_DIR = ../packages
 app_clean:
 #	@
 
@@ -32,6 +34,7 @@ app_clean:
 # Mac OS X stuff #
 ##################
 MACOS_CFLAGS = -I/usr/local/include/binio -fexceptions -DT3NET_NO_LIBCURL
+#MACOS_CXXFLAGS =
 MACOS_PLATFORM_OBJECTS = codec_handlers/avmidiplayer/avmidiplayer.o codec_handlers/avplayer/avplayer.o codec_handlers/midia5/MIDIA5/macos/coremidi.o
 MACOS_PLATFORM_LIBS = -framework AVFoundation -framework AudioUnit
 MACOS_DEPEND_LIBS =

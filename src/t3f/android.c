@@ -32,6 +32,22 @@
 	   _jni_checkException(env); \
 	})
 
+	#define _jni_callObjectMethodV(env, obj, name, sig, args...) ({ \
+	   jclass class_id = _jni_call(env, jclass, GetObjectClass, obj); \
+	   \
+	   jmethodID method_id = _jni_call(env, jmethodID, GetMethodID, class_id, name, sig); \
+		 \
+		 jbyteArray ret = NULL; \
+	   if(method_id == NULL) { \
+	   } else { \
+		  ret = _jni_call(env, jbyteArray, CallObjectMethod, obj, method_id, ##args); \
+	   } \
+	   \
+	   _jni_callv(env, DeleteLocalRef, class_id); \
+		 \
+		 ret; \
+	})
+
 	#define _jni_callVoidMethodV(env, obj, name, sig, args...) ({ \
 	   jclass class_id = _jni_call(env, jclass, GetObjectClass, obj); \
 	   \
@@ -172,11 +188,38 @@ JNI_FUNC(void, MainActivity, nativeOnEditComplete, (JNIEnv *env, jobject obj, js
 			_al_android_get_jnienv(),
 			_al_android_activity_object(),
 			"openURL",
-			"(Ljava/lang/String;)V",
+			"(Ljava/lang/String;)L",
 			urlS
 		);
 		(*env)->DeleteLocalRef(env, urlS);
 	}
+
+	char * t3f_run_url(const char * url)
+	{
+		JNIEnv * env = _al_android_get_jnienv();
+		jstring urlS = (*env)->NewStringUTF(env, url);
+		jbyteArray retB;
+		int retB_size;
+		const jbyte * ret;
+		char * real_ret;
+
+		retB = _jni_callObjectMethodV(
+			_al_android_get_jnienv(),
+			_al_android_activity_object(),
+			"downloadURL",
+			"(Ljava/lang/String;)[B",
+			urlS
+		);
+		retB_size = (*env)->GetArrayLength(env, retB);
+		ret = (*env)->GetByteArrayElements(env, retB, NULL);
+		real_ret = malloc(retB_size);
+		if(real_ret)
+		{
+			memcpy(real_ret, ret, retB_size);
+		}
+		(*env)->ReleaseStringUTFChars(env, retB, ret);
+		return real_ret;
+}
 
 #else
 
@@ -209,4 +252,10 @@ JNI_FUNC(void, MainActivity, nativeOnEditComplete, (JNIEnv *env, jobject obj, js
 		(void) system(command);
 		al_start_timer(t3f_timer);
 	}
+
+	char * t3f_run_url(const char * url)
+	{
+		return NULL;
+	}
+
 #endif

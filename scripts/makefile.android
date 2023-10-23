@@ -1,15 +1,4 @@
 T3F_PLATFORM_NAME = android
-T3F_PLATFORM_OBJECTS = $(ANDROID_PLATFORM_OBJECTS)
-T3F_PLATFORM_LIBS =\
-	-lallegro\
-	-lallegro_audio\
-	-lallegro_image\
-	-lallegro_acodec\
-	-lallegro_font\
-	-lallegro_ttf\
-	-lallegro_primitives\
-	-lallegro_memfile\
-	-lallegro_physfs
 #DEL_COMMAND = rm -f
 #DEL_FOLDER_COMMAND = rm -rf
 
@@ -19,15 +8,37 @@ prepare_platform:
 	@echo Ready to build...
 
 #generate Android package
-android_package: clean_packages build_android $(ANDROID_PLATFORM_TARGET) android_sign
-	@echo Built and signed Android package!
+android_package: clean_packages build_android $(ANDROID_PLATFORM_TARGET)
+ifdef ANDROID_SIGNING_SETTINGS
+	$(ANDROID_JAVA_HOME)/bin/jarsigner $(ANDROID_SIGNING_SETTINGS) ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk $(ANDROID_SIGNING_KEY)
+	mv ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-android-unaligned.apk
+	rm -f ../packages/$(APP_PACKAGE_NAME)-android.apk
+	$(ANDROID_SDK_ROOT)/build-tools/30.0.3/zipalign -v 4 ../packages/$(APP_PACKAGE_NAME)-android-unaligned.apk ../packages/$(APP_PACKAGE_NAME)-android.apk
+	rm ../packages/$(APP_PACKAGE_NAME)-android-unaligned.apk
+	@echo Generated signed APK for general distribution.
+endif
+	@echo Done.
 
-android_package_unsigned: clean_packages build_android $(ANDROID_PLATFORM_TARGET)
-	@echo Built and signed Android package!
+#generate Android app bundle
+android_bundle: clean_packages build_android_bundle $(ANDROID_PLATFORM_TARGET)
+ifdef ANDROID_SIGNING_SETTINGS
+	$(ANDROID_JAVA_HOME)/bin/jarsigner $(ANDROID_SIGNING_SETTINGS) ../packages/$(APP_PACKAGE_NAME)-android-unsigned.aab $(ANDROID_SIGNING_KEY)
+	mv ../packages/$(APP_PACKAGE_NAME)-android-unsigned.aab ../packages/$(APP_PACKAGE_NAME)-android.aab
+	@echo Generated signed AAB for Play Store distribution.
+else
+	@echo "Android app bundle not signed! Must be signed for distribution through Play Store."
+endif
+	@echo Done.
 
-android_sign: ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk
-	@sign ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-android.apk
-	@rm ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk
+android_install: ../packages/$(APP_PACKAGE_NAME)-android.apk
+	$(ANDROID_SDK_ROOT)/platform-tools/adb -d install -r ../packages/$(APP_PACKAGE_NAME)-android.apk
+
+android_debug: ../packages/$(APP_PACKAGE_NAME)-android.apk
+ifdef DEBUG_STRING
+	$(ANDROID_SDK_ROOT)/platform-tools/adb logcat | grep --line-buffered $(DEBUG_STRING)
+else
+	$(ANDROID_SDK_ROOT)/platform-tools/adb logcat
+endif
 
 ../android_temp:
 	@echo Copying template to temporary folder...
@@ -35,14 +46,14 @@ android_sign: ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk
 
 edit_project:
 	@echo Editing project data to match our project definitions...
-	sed -i '' "s|org.liballeg.app|$(APP_ID)|" ../android_temp/app.project/app/src/main/AndroidManifest.xml
+	sed -i '' "s|org.liballeg.app|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/src/main/AndroidManifest.xml
 	sed -i '' "s|APP_ORIENTATION|$(APP_ORIENTATION)|" ../android_temp/app.project/app/src/main/AndroidManifest.xml
 	sed -i '' "s|AllegroActivity|$(APP_TITLE)|" ../android_temp/app.project/app/src/main/res/values/strings.xml
-	sed -i '' "s|APP_PACKAGE|$(APP_ID)|" ../android_temp/app.project/app/build.gradle
+	sed -i '' "s|APP_PACKAGE|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/build.gradle
 	sed -i '' "s|APP_VERSION|$(APP_VERSION)|" ../android_temp/app.project/app/build.gradle
 	sed -i '' "s|APP_RELEASE|$(APP_RELEASE)|" ../android_temp/app.project/app/build.gradle
-	sed -i '' "s|org.liballeg.app|$(APP_ID)|" ../android_temp/app.project/app/src/main/java/org/liballeg/app/MainActivity.java
-	sed -i '' "s|org.liballeg.app|$(APP_ID)|" ../android_temp/app.project/app/src/main/java/org/liballeg/app/EditBoxActivity.java
+	sed -i '' "s|org.liballeg.app|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/src/main/java/org/liballeg/app/MainActivity.java
+	sed -i '' "s|org.liballeg.app|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/src/main/java/org/liballeg/app/EditBoxActivity.java
 
 copy_resources:
 	@echo Copying data to Android project...
@@ -60,23 +71,37 @@ copy_resources:
 
 copy_libs:
 	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=armeabi-v7a copy_libs
-#	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=arm64-v8a copy_libs
+	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=arm64-v8a copy_libs
+	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=x86 copy_libs
+	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=x86_64 copy_libs
 
 create_native_libs:
-	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=armeabi-v7a ANDROID_C_ARCH="-march=armv7-a" ANDROID_HOST=arm-linux-androideabi CFLAGS_ARCH="-mfpu=vfpv3-d16 -mfloat-abi=softfp" LFLAGS_ARCH=-"Wl,--fix-cortex-a8" create_native_lib
-#	make clean
-#	make -f makefile.android_helper ANDROID_ARCHITECTURE=arm64-v8a ANDROID_C_ARCH="" ANDROID_HOST=aarch64-linux-android CFLAGS_ARCH="" LFLAGS_ARCH="" create_native_lib
+	make clean
+	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=armeabi-v7a ANDROID_COMPILER_TARGET=armv7-none-linux-androideabi19 ANDROID_C_ARCH="-march=armv7-a" CFLAGS_ARCH="-mfpu=vfpv3-d16 -mfloat-abi=softfp -mthumb" LFLAGS_ARCH=-"Wl,--fix-cortex-a8" create_native_lib
+	make clean
+	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=arm64-v8a ANDROID_COMPILER_TARGET=aarch64-none-linux-android21 ANDROID_C_ARCH="" CFLAGS_ARCH="" LFLAGS_ARCH="" create_native_lib
+	make clean
+	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=x86 ANDROID_COMPILER_TARGET=i686-none-linux-android19 ANDROID_C_ARCH="" CFLAGS_ARCH="" LFLAGS_ARCH="" create_native_lib
+	make clean
+	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=x86_64 ANDROID_COMPILER_TARGET=x86_64-none-linux-android21 ANDROID_C_ARCH="" CFLAGS_ARCH="" LFLAGS_ARCH="" create_native_lib
 
-#sed info: sed -i requires backup extension argument on OS X, should work fine this
-#          way on other Unix platforms, we should do "sed -i '' -original-new- filename"
-build_android: ../android_temp edit_project copy_resources copy_libs create_native_libs
+create_android_temp:
+	rm -rf ../android_temp
+	cp -a -R -L ../android ../android_temp
+
+build_android: create_android_temp edit_project copy_resources copy_libs create_native_libs
 	@echo Building Android project
-	cd ../android_temp/app.project; ./gradlew build
+	cd ../android_temp/app.project; export ANDROID_HOME=$(ANDROID_SDK_ROOT); export JAVA_HOME=$(ANDROID_JAVA_HOME); ./gradlew build
 	cp ../android_temp/app.project/app/build/outputs/apk/release/app-release-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk
 	rm -rf ../android_temp
+	@echo Unsigned APK generated.
 
-build_temp:
-	mkdir -p ../android_temp
+build_android_bundle: create_android_temp edit_project copy_resources copy_libs create_native_libs
+	@echo Building Android project
+	cd ../android_temp/app.project; export ANDROID_HOME=$(ANDROID_SDK_ROOT); export JAVA_HOME=$(ANDROID_JAVA_HOME); ./gradlew bundle
+	cp ../android_temp/app.project/app/build/outputs/bundle/release/app-release.aab ../packages/$(APP_PACKAGE_NAME)-android-unsigned.aab
+	rm -rf ../android_temp
+	@echo Unsigned AAB generated.
 
 clean_packages:
 	rm -rf ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE).apk

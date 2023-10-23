@@ -55,8 +55,9 @@ typedef struct
 {
 
 	bool active; // is this touch active?
+	bool pressed;
 	bool released;
-    float real_x, real_y; // the actual screen coordinates
+  float real_x, real_y; // the actual screen coordinates
 	float x, y; // coordinates transformed to for a view
 	bool primary;
 
@@ -85,6 +86,8 @@ typedef struct
 #include "tilemap.h"
 #include "vector.h"
 #include "view.h"
+#include "achievements.h"
+#include "steam.h"
 
 extern int t3f_virtual_display_width;
 extern int t3f_virtual_display_height;
@@ -107,11 +110,13 @@ extern bool t3f_mouse_hidden;
 
 extern ALLEGRO_JOYSTICK * t3f_joystick[T3F_MAX_JOYSTICKS];
 extern ALLEGRO_JOYSTICK_STATE t3f_joystick_state[T3F_MAX_JOYSTICKS];
+extern bool t3f_joystick_state_updated[T3F_MAX_JOYSTICKS];
 extern T3F_TOUCH t3f_touch[T3F_MAX_TOUCHES];
 extern ALLEGRO_DISPLAY * t3f_display;
 extern ALLEGRO_TIMER * t3f_timer;
 extern ALLEGRO_EVENT_QUEUE * t3f_queue;
 extern ALLEGRO_CONFIG * t3f_config;
+extern ALLEGRO_CONFIG * t3f_user_data;
 extern ALLEGRO_PATH * t3f_data_path;
 extern ALLEGRO_PATH * t3f_config_path;
 extern ALLEGRO_PATH * t3f_temp_path;
@@ -124,11 +129,13 @@ extern ALLEGRO_COLOR t3f_color_black;
 
 int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_proc)(void * data), void (*render_proc)(void * data), int flags, void * data);
 void t3f_set_option(int option, int value);
+bool t3f_option_is_set(int option);
 int t3f_set_gfx_mode(int w, int h, int flags);
 void t3f_set_clipping_rectangle(int x, int y, int w, int h);
 void t3f_set_event_handler(void (*proc)(ALLEGRO_EVENT * event, void * data));
 void t3f_exit(void);
 bool t3f_save_config(void);
+bool t3f_save_user_data(void);
 void t3f_event_handler(ALLEGRO_EVENT * event);
 void t3f_process_events(bool ignore);
 void t3f_render(bool flip);
