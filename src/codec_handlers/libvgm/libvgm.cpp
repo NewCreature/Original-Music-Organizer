@@ -47,6 +47,89 @@ typedef struct
 	char info_buffer[64];
 } CODEC_DATA;
 
+#ifdef OMO_LIBVGM_WITHOUT_ICONV
+
+	#include <stdlib.h>
+	#include <string.h>
+	#include <stddef.h>
+
+	#include <errno.h>
+
+	#include <vgm/stdtype.h>
+	#include <vgm/utils/StrUtils.h>
+
+	//typedef struct _codepage_conversion CPCONV;
+	struct _codepage_conversion
+	{
+		char* cpFrom;
+		char* cpTo;
+		size_t cpfCharSize;
+		size_t cptCharSize;
+	};
+
+	static size_t GetEncodingCharSize(const char* encoding)
+	{
+		if (! strncasecmp(encoding, "UCS-2", 5) || ! strncasecmp(encoding, "UTF-16", 6))
+			return sizeof(UINT16);
+		else if (! strncasecmp(encoding, "UCS-4", 5) || ! strncasecmp(encoding, "UTF-32", 6))
+			return sizeof(UINT32);
+		else
+			return sizeof(char);
+	}
+
+	static size_t GetStrSize(const char* str, size_t charBytes)
+	{
+		return strlen(str) * charBytes;
+	}
+
+	UINT8 CPConv_Init(CPCONV** retCPC, const char* cpFrom, const char* cpTo)
+	{
+		CPCONV* cpc;
+		
+		cpc = (CPCONV*)calloc(1, sizeof(CPCONV));
+		if (cpc == NULL)
+			return 0xFF;
+		
+		cpc->cpFrom = strdup(cpFrom);
+		cpc->cpTo = strdup(cpTo);
+		cpc->cpfCharSize = GetEncodingCharSize(cpc->cpFrom);
+		cpc->cptCharSize = GetEncodingCharSize(cpc->cpTo);
+		
+		*retCPC = cpc;
+		return 0x00;
+	}
+
+	void CPConv_Deinit(CPCONV* cpc)
+	{
+		free(cpc->cpFrom);
+		free(cpc->cpTo);
+		
+		free(cpc);
+		
+		return;
+	}
+
+	UINT8 CPConv_StrConvert(CPCONV* cpc, size_t* outSize, char** outStr, size_t inSize, const char* inStr)
+	{
+		/* create new buffer if needed */
+		if(cpc->cpfCharSize == cpc->cptCharSize)
+		{
+			*outStr = strdup(inStr);
+		}
+		else if(cpc->cpfCharSize == 2 && cpc->cptCharSize == 1)
+		{
+			ALLEGRO_USTR * out_string = al_ustr_new_from_utf16((uint16_t *)inStr);
+			if(out_string)
+			{
+				*outStr = strdup(al_cstr(out_string));
+				al_ustr_free(out_string);
+			}
+		}
+		*outSize = strlen(*outStr);
+		return 0x00;
+	}
+#endif
+
 static void load_tags(CODEC_DATA * codec_data)
 {
 	const char* const* tagList = codec_data->player->GetTags();
