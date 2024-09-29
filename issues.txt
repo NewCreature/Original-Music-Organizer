@@ -122,6 +122,8 @@ v0.5.5
 
 [ ]Stopping player while paused freezes app.
 
+[ ]Using album tags editor, some tags aren't applied to all selected songs.
+
 [ ]Look into certain NSF files for FDS games not playing back correctly.
 
 [ ]Allow overriding internal loops in libvgm codec handler. If the user sets up
