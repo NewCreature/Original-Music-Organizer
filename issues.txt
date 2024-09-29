@@ -120,6 +120,8 @@ Long Term Goals
 v0.5.5
 ------
 
+[ ]Stopping player while paused freezes app.
+
 [ ]Look into certain NSF files for FDS games not playing back correctly.
 
 [ ]Allow overriding internal loops in libvgm codec handler. If the user sets up
