@@ -8,7 +8,7 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
-static int buf_size = 4096;
+static int buf_size = 1024;
 
 typedef struct
 {
