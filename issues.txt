@@ -120,7 +120,7 @@ Long Term Goals
 v0.5.5
 ------
 
-[ ]Stopping player while paused freezes app.
+[X]Stopping player while paused freezes app.
 
 [ ]Using album tags editor, some tags aren't applied to all selected songs.
 
