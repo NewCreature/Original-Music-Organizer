@@ -206,7 +206,7 @@ static void * adplug_update_thread(ALLEGRO_THREAD * thread, void * arg)
 			{
 				if(codec_data->paused)
 				{
-					memset(fragment, 0, sizeof(short) * buf_size * 2);
+					memset(fragment, 0, sizeof(short) * buf_size);
 				}
 				else
 				{
@@ -262,22 +262,16 @@ static bool codec_pause(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	if(al_set_audio_stream_playing(codec_data->codec_stream, false))
-	{
-		return true;
-	}
-	return false;
+	codec_data->paused = true;
+	return true;
 }
 
 static bool codec_resume(void * data)
 {
 	CODEC_DATA * codec_data = (CODEC_DATA *)data;
 
-	if(al_set_audio_stream_playing(codec_data->codec_stream, true))
-	{
-		return true;
-	}
-	return false;
+	codec_data->paused = false;
+	return true;
 }
 
 static void codec_stop(void * data)
