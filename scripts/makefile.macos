@@ -28,6 +28,7 @@ T3F_PLATFORM_LIBRARIES =\
 	-framework OpenAL\
 	-framework Cocoa\
 	-framework CoreVideo\
+	-framework CoreAudio\
 	$(MACOS_CONFIG_PLATFORM_LIBS)\
 	$(MACOS_CONFIG_DEPEND_LIBS)\
 	$(MACOS_PLATFORM_LIBS)\
