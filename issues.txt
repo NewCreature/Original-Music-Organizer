@@ -6,6 +6,9 @@ Long Term Goals
 
 [ ]Look into missing button graphics on Windows.
 
+   [ ]I believe this is due to a bug in Allegro where a DISPLAY_LOST event is
+      not triggered when it should be on display resize.
+
 [ ]Consider setting the track length if the entered fade time is 0.
 
 [ ]Add per-codec handler gain settings. The main player should multiply the gain
@@ -119,6 +122,8 @@ Long Term Goals
 
 v0.5.5
 ------
+
+[ ]Look into adding Nuked SC-55 codec handler for MIDI playback.
 
 [X]Stopping player while paused freezes app.
 
