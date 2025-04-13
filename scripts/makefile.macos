@@ -33,6 +33,10 @@ T3F_PLATFORM_LIBRARIES =\
 	$(MACOS_CONFIG_DEPEND_LIBS)\
 	$(MACOS_PLATFORM_LIBS)\
 	$(MACOS_DEPEND_LIBS)
+# UniformTypeIdentifiers is new to MacOS 11 and required by the latest Allegro.
+ifndef MACOS_LEGACY_BUILD
+	T3F_PLATFORM_LIBRARIES += -framework UniformTypeIdentifiers
+endif
 DEL_COMMAND = rm -f
 DEL_FOLDER_COMMAND = rm -rf
 SED_COMMAND = sed -i ''
@@ -91,12 +95,12 @@ mac_bundle : ../icons/macos_icon.icns ../macos/Info.plist
 	@echo Application bundle created!
 
 mac_i386:
-	make MACOS_ARCHITECTURES="-arch i386" MACOS_SDK=MacOSX10.13.sdk MACOS_CXX_STDLIB=stdc++ MACOS_MIN_VERSION=-mmacos-version-min=10.6
+	make MACOS_ARCHITECTURES="-arch i386" MACOS_SDK=MacOSX10.13.sdk MACOS_CXX_STDLIB=stdc++ MACOS_MIN_VERSION=-mmacos-version-min=10.6 MACOS_LEGACY_BUILD=1
 	vtool -set-build-version macos 10.6 10.13 ../bin/$(APP_EXE_NAME)$(APP_EXE_SUFFIX) -o ../bin/$(APP_EXE_NAME)$(APP_EXE_SUFFIX)-i386
 	rm ../bin/$(APP_EXE_NAME)$(APP_EXE_SUFFIX)
 
 mac_x86_64:
-	make MACOS_ARCHITECTURES="-arch x86_64" MACOS_SDK=MacOSX10.13.sdk MACOS_CXX_STDLIB=stdc++ MACOS_MIN_VERSION=-mmacos-version-min=10.6
+	make MACOS_ARCHITECTURES="-arch x86_64" MACOS_SDK=MacOSX10.13.sdk MACOS_CXX_STDLIB=stdc++ MACOS_MIN_VERSION=-mmacos-version-min=10.6 MACOS_LEGACY_BUILD=1
 	vtool -set-build-version macos 10.6 10.13 ../bin/$(APP_EXE_NAME)$(APP_EXE_SUFFIX) -o ../bin/$(APP_EXE_NAME)$(APP_EXE_SUFFIX)-x86_64
 	rm ../bin/$(APP_EXE_NAME)$(APP_EXE_SUFFIX)
 
