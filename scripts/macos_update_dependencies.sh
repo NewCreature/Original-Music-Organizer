@@ -17,7 +17,7 @@ fi
 
 START_PATH=$(pwd)
 X86_SDK=MacOSX10.13.sdk
-ARM_SDK=MacOSX11.sdk
+ARM_SDK=MacOSX11.1.sdk
 
 mkdir -p $1
 cd $1
@@ -26,31 +26,42 @@ cd $1
 SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$X86_SDK
 if [ ! -d "libbinio" ];
 then
-  git clone https://github.com/NewCreature/libbinio.git
+  git clone https://github.com/adplug/libbinio.git
 fi
 cd libbinio
 git pull
-make -f makefile.macos universal
-sudo make -f makefile.macos install
+remake_dir _build_x86
+cd _build_x86
+cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=i386\;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6
+make
+cd ..
+SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$ARM_SDK
+remake_dir _build_arm
+cd _build_arm
+cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
+make
+merge_libs src ../_build_x86/src liblibbinio.a
+sudo make install
+cd ..
 cd ..
 
 # adplug
 SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$X86_SDK
 if [ ! -d "adplug" ];
 then
-  git clone https://github.com/NewCreature/adplug.git
+  git clone https://github.com/adplug/adplug.git
 fi
 cd adplug
 git pull
-make -f makefile.macos universal
-sudo make -f makefile.macos install
+make -f $START_PATH/adplug_makefile.macos universal
+sudo make -f $START_PATH/adplug_makefile.macos install
 cd ..
 
 # libgme
 SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$X86_SDK
 if [ ! -d "libgme" ];
 then
-  git clone https://github.com/NewCreature/libgme.git
+  git clone https://github.com/libgme/game-music-emu.git
 fi
 cd libgme
 git pull
@@ -72,7 +83,7 @@ cd ..
 # mpg123
 if [ ! -d "mpg123" ];
 then
-  git clone https://github.com/NewCreature/mpg123.git
+  git clone https://github.com/libsdl-org/mpg123.git
 fi
 cd mpg123
 git pull
