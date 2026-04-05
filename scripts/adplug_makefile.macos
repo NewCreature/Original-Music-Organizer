@@ -1,0 +1,59 @@
+# MacOS Environment Setup
+MACOS_COMPILER_SETTINGS = -I/usr/local/include
+MACOS_LINKER_SETTINGS = -L/usr/local/lib
+MACOS_CC = gcc
+MACOS_CXX = g++
+MACOS_PREFIX = /usr/local
+ifndef CXX_LIB
+	CXX_LIB = libc++
+endif
+ifndef CXX_STD
+	CXX_STD = c++11
+endif
+
+CC = $(MACOS_CC)
+CXX = $(MACOS_CXX)
+CFLAGS = -Dstricmp=strcasecmp -Isrc -I/usr/local/include/binio -O2 $(MACOS_ARCHITECTURES) $(MACOS_COMPILER_SETTINGS) $(MACOS_SYS_ROOT) $(MACOS_MIN_VERSION)
+CXXFLAGS = $(CFLAGS) -stdlib=$(CXX_LIB) -std=$(CXX_STD)
+
+ADPLUG_OBJECTS = src/adlibemu.o src/debug.o src/fmopl.o src/nukedopl.o src/a2m.o src/a2m-v2.o src/adl.o src/adplug.o src/adtrack.o src/amd.o src/analopl.o src/bam.o src/bmf.o src/cff.o src/cmf.o src/cmfmcsop.o src/coktel.o src/composer.o src/d00.o src/database.o src/depack.o src/dfm.o src/diskopl.o src/dmo.o src/dro2.o src/dro.o src/dtm.o src/emuopl.o src/flash.o src/fmc.o src/fprovide.o src/got.o src/herad.o src/hsc.o src/hsp.o src/hybrid.o src/hyp.o src/imf.o src/jbm.o src/kemuopl.o src/ksm.o src/lds.o src/mad.o src/mdi.o src/mid.o src/mkj.o src/msc.o src/mtk.o src/mtr.o src/mus.o src/nemuopl.o src/pis.o src/player.o src/players.o src/plx.o src/protrack.o src/psi.o src/rad2.o src/rat.o src/raw.o src/realopl.o src/rix.o src/rol.o src/s3m.o src/sa2.o src/sixdepack.o src/sng.o src/sop.o src/surroundopl.o src/temuopl.o src/u6m.o src/unlzh.o src/unlzss.o src/unlzw.o src/vgm.o src/woodyopl.o src/xad.o src/xsm.o
+
+libadplug.a: src/version.h $(ADPLUG_OBJECTS)
+	-ar rs libadplug.a $(ADPLUG_OBJECTS)
+
+universal:
+	make -f $(lastword $(MAKEFILE_LIST)) fresh_start
+	make -f $(lastword $(MAKEFILE_LIST)) MACOS_ARCHITECTURES="-arch i386 -arch x86_64" MACOS_SYS_ROOT="-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.13.sdk" MACOS_MIN_VERSION=-mmacosx-version-min=10.6 CXX_STD=c++11 CXX_LIB=libstdc++
+	mv libadplug.a libadplug_x86.a
+	make -f $(lastword $(MAKEFILE_LIST)) clean
+	make -f $(lastword $(MAKEFILE_LIST)) MACOS_ARCHITECTURES="-arch arm64" MACOS_SYS_ROOT="-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk" MACOS_MIN_VERSION=-mmacosx-version-min=11.0 CXX_STD=c++11 CXX_LIB=libc++
+	lipo -create libadplug_x86.a libadplug.a -output libadplug.a
+	rm libadplug_x86.a
+
+src/version.h:
+	echo '#define ADPLUG_VERSION "2.3"' > src/version.h
+
+fresh_start: clean
+	rm -f *.a
+
+clean:
+	rm -rf $(ADPLUG_OBJECTS) src/version.h
+
+install: libadplug.a
+	cp libadplug.a $(MACOS_PREFIX)/lib
+	mkdir -p $(MACOS_PREFIX)/include/adplug
+	cp src/adplug.h $(MACOS_PREFIX)/include/adplug
+	cp src/emuopl.h $(MACOS_PREFIX)/include/adplug
+	cp src/kemuopl.h $(MACOS_PREFIX)/include/adplug
+	cp src/player.h $(MACOS_PREFIX)/include/adplug
+	cp src/silentopl.h $(MACOS_PREFIX)/include/adplug
+	cp src/database.h $(MACOS_PREFIX)/include/adplug
+	cp src/fmopl.h $(MACOS_PREFIX)/include/adplug
+	cp src/nemuopl.h $(MACOS_PREFIX)/include/adplug
+	cp src/players.h $(MACOS_PREFIX)/include/adplug
+	cp src/surroundopl.h $(MACOS_PREFIX)/include/adplug
+	cp src/diskopl.h $(MACOS_PREFIX)/include/adplug
+	cp src/fprovide.h $(MACOS_PREFIX)/include/adplug
+	cp src/opl.h $(MACOS_PREFIX)/include/adplug
+	cp src/realopl.h $(MACOS_PREFIX)/include/adplug
+	cp src/wemuopl.h $(MACOS_PREFIX)/include/adplug
