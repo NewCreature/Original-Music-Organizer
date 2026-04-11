@@ -101,7 +101,7 @@ T3NET_DATA * omo_get_remote_data(const char * url, const T3NET_ARGUMENTS * argum
 	T3NET_DATA * ret;
 
 	al_lock_mutex(cloud_mutex);
-	ret = t3net_get_data(T3NET_CURL_DEFAULT, url, arguments);
+	ret = t3net_get_data(url, arguments, NULL);
 	al_unlock_mutex(cloud_mutex);
 
 	return ret;

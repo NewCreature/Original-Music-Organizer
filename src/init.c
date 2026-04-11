@@ -1,6 +1,6 @@
 #include "t3f/t3f.h"
 #include "t3f/file_utils.h"
-#include "t3net/t3net.h"
+#include "t3net/curl.h"
 #include "instance.h"
 #include "main.h"
 #include "events.h"
@@ -236,7 +236,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	}
 	t3f_set_event_handler(omo_event_handler);
 
-	t3net_setup(NULL, al_path_cstr(t3f_temp_path, '/'));
+	t3net_setup_with_curl(al_path_cstr(t3f_temp_path, '/'));
 	provide_default_urls();
 	migrate_databases();
 	if(!omo_init_cloud())

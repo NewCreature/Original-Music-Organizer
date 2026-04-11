@@ -1,21 +1,9 @@
-#ifndef T3NET_H
-#define T3NET_H
+#ifndef _T3NET_H
+#define _T3NET_H
 
 #define T3NET_TIMEOUT_TIME      10
 #define T3NET_MAX_ARGUMENTS    256
-
-#define T3NET_CURL_LIBCURL       0
-#define T3NET_CURL_SYSTEM        1
-#ifndef T3NET_NO_LIBCURL
-  #define T3NET_CURL_DEFAULT T3NET_CURL_LIBCURL
-#else
-  #define T3NET_CURL_DEFAULT T3NET_CURL_SYSTEM
-#endif
-
-/* A chunk of memory this size will be allocated when retrieving data. Each
-   time the size of the data exceeds this chunk size, the chunk will be
-   reallocated to add this many bytes to the chunk. */
-#define T3NET_DATA_CHUNK_SIZE 4096
+#define T3NET_MAX_POST_DATA    256
 
 typedef struct
 {
@@ -51,23 +39,45 @@ typedef struct
 
 } T3NET_ARGUMENTS;
 
-extern char t3net_server_message[1024];
+typedef struct
+{
+
+    char ** data;
+    int count;
+
+} T3NET_POST_DATA;
 
 /* initialization */
-int t3net_setup(const char * curl_command, const char * temp_dir);
-const char * t3net_get_curl_command(void);
-char * t3net_escape(const char * s);
+int _t3net_setup(int (*url_runner)(const char * url, const char ** post_data, const char * out_path, char ** out_data), void (*exit_proc)(void));
 
-/* internet operations */
+/* utility */
+char * _t3net_load_file(const char * fn);
+int _t3net_run_system_command(char * command, const char * log_file);
+
+/* debug logging */
+int t3net_open_log_file(const char * fn);
+void t3met_close_log_file(void);
+
+/* build arguments list */
 T3NET_ARGUMENTS * t3net_create_arguments(void);
 void t3net_destroy_arguments(T3NET_ARGUMENTS * arguments);
 int t3net_add_argument(T3NET_ARGUMENTS * arguments, const char * key, const char * val);
-char * t3net_get_raw_data(int method, const char * url, const T3NET_ARGUMENTS * arguments);
-T3NET_DATA * t3net_get_data_from_string(const char * s);
-T3NET_DATA * t3net_get_data(int method, const char * url, const T3NET_ARGUMENTS * arguments);
+
+/* build post data */
+T3NET_POST_DATA * t3net_create_post_data(void);
+void t3net_destroy_post_data(T3NET_POST_DATA * post_data);
+int t3net_add_post_data(T3NET_POST_DATA * post_data, const char * data);
+
+/* low-level API */
+int t3net_http_request(const char * url, T3NET_ARGUMENTS * arguments, T3NET_POST_DATA * post_data, char ** out_data);
+T3NET_DATA * t3net_get_dataset(const char * raw_data);
+
+/* high level API */
+int t3net_download(const char * url, T3NET_ARGUMENTS * arguments, T3NET_POST_DATA * post_data, const char * out_path, char * error_out, int error_size);
+T3NET_DATA * t3net_get_data(const char * url, T3NET_ARGUMENTS * arguments, T3NET_POST_DATA * post_data);
 void t3net_destroy_data(T3NET_DATA * data);
 
-/* data set operations */
+/* dataset operations */
 const char * t3net_get_error(T3NET_DATA * data);
 const char * t3net_get_data_entry_field(T3NET_DATA * data, int entry, const char * field_name);
 
