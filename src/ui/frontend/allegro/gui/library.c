@@ -212,8 +212,8 @@ void omo_library_logic(void * data)
 	else if(uip->ui_song_list_element->id1 >= 0)
 	{
 		al_stop_timer(t3f_timer);
-		maybe_stop_player(uip->app);
-		if(prepare_queue(uip->app, uip->selected_song < 0 ? uip->app->library->filtered_song_entry_count : 1))
+		maybe_stop_player(uip);
+		if(prepare_queue(uip, uip->selected_song < 0 ? uip->app->library->filtered_song_entry_count : 1))
 		{
 			if(uip->selected_song < 0)
 			{
@@ -221,7 +221,7 @@ void omo_library_logic(void * data)
 				{
 					omo_add_file_to_queue(uip->app->player->queue, uip->app->library->entry[uip->app->library->filtered_song_entry[i]]->filename, uip->app->library->entry[uip->app->library->filtered_song_entry[i]]->sub_filename, uip->app->library->entry[uip->app->library->filtered_song_entry[i]]->track, true);
 				}
-				omo_menu_playback_shuffle(0, uip->app);
+				omo_menu_playback_shuffle(0, uip);
 			}
 			else
 			{
@@ -233,7 +233,7 @@ void omo_library_logic(void * data)
 				uip->ui_queue_list_element->d2 = 0;
 			}
 			uip->app->spawn_queue_thread = true;
-			maybe_start_player(uip->app);
+			maybe_start_player(uip);
 		}
 		uip->ui_song_list_element->id1 = -1;
 		al_start_timer(t3f_timer);
