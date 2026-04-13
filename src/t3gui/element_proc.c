@@ -1945,7 +1945,7 @@ static void set_selection(T3GUI_ELEMENT * d, int entry, int max)
     else
     {
       clear_selection(d, max);
-      dp2[d->d1] = 1;
+      dp2[entry] = 1;
     }
   }
 }
@@ -1978,14 +1978,10 @@ int t3gui_list_proc(int msg, T3GUI_ELEMENT *d, int c)
       {
         d->ed1 = nelem;
         d->dp2 = malloc(sizeof(char) * nelem);
-        if(d->dp2)
+        dp2 = d->dp2;
+        if(d->d1 < nelem)
         {
-            memset(d->dp2, 0, sizeof(char) * nelem);
-            dp2 = d->dp2;
-            if(d->d1 < nelem)
-            {
-                dp2[d->d1] = 1;
-            }
+            dp2[d->d1] = 1;
         }
       }
       else
