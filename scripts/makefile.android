@@ -1,34 +1,45 @@
 T3F_PLATFORM_NAME = android
-#DEL_COMMAND = rm -f
-#DEL_FOLDER_COMMAND = rm -rf
+DEL_COMMAND = rm -f
+DEL_FOLDER_COMMAND = rm -rf
+PATH_SEPARATOR = /
+PLATFORM_CLEAN = rm -rf $(ANDROID_PLATFORM_OBJECTS)
 
 include makefile.common
 
 prepare_platform:
 	@echo Ready to build...
 
-#generate Android package
-android_package: clean_packages build_android $(ANDROID_PLATFORM_TARGET)
+build_android_apk: source_only_package build_android $(ANDROID_PLATFORM_TARGET)
 ifdef ANDROID_SIGNING_SETTINGS
-	$(ANDROID_JAVA_HOME)/bin/jarsigner $(ANDROID_SIGNING_SETTINGS) ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk $(ANDROID_SIGNING_KEY)
-	mv ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-android-unaligned.apk
-	rm -f ../packages/$(APP_PACKAGE_NAME)-android.apk
-	$(ANDROID_SDK_ROOT)/build-tools/30.0.3/zipalign -v 4 ../packages/$(APP_PACKAGE_NAME)-android-unaligned.apk ../packages/$(APP_PACKAGE_NAME)-android.apk
-	rm ../packages/$(APP_PACKAGE_NAME)-android-unaligned.apk
+	rm -f ../packages/$(APP_PACKAGE_NAME)-android-aligned.apk
+	$(ANDROID_SDK_ROOT)/build-tools/37.0.0-rc1/zipalign -v 4 ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-android-aligned.apk
+	rm ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk
+	$(ANDROID_SIGNING_TOOL) $(ANDROID_SIGNING_SETTINGS) ../packages/$(APP_PACKAGE_NAME)-android-aligned.apk
+	mv ../packages/$(APP_PACKAGE_NAME)-android-aligned.apk ../packages/$(APP_PACKAGE_NAME)-android.apk
 	@echo Generated signed APK for general distribution.
 endif
 	@echo Done.
 
-#generate Android app bundle
-android_bundle: clean_packages build_android_bundle $(ANDROID_PLATFORM_TARGET)
+#generate Android package
+android_apk:
+	make -f ../scripts/makefile.android -I ../scripts build_android_apk
+
+android_debug_apk:
+	make -f ../scripts/makefile.android -I ../scripts build_android_apk CL_CFLAGS="-g -DDEBUGMODE=1" ANDROID_DEBUG_LIBS=true
+
+build_android_aab: build_android_bundle $(ANDROID_PLATFORM_TARGET)
 ifdef ANDROID_SIGNING_SETTINGS
-	$(ANDROID_JAVA_HOME)/bin/jarsigner $(ANDROID_SIGNING_SETTINGS) ../packages/$(APP_PACKAGE_NAME)-android-unsigned.aab $(ANDROID_SIGNING_KEY)
+	$(ANDROID_SIGNING_TOOL) $(ANDROID_SIGNING_SETTINGS) ../packages/$(APP_PACKAGE_NAME)-android-unsigned.aab
 	mv ../packages/$(APP_PACKAGE_NAME)-android-unsigned.aab ../packages/$(APP_PACKAGE_NAME)-android.aab
 	@echo Generated signed AAB for Play Store distribution.
 else
 	@echo "Android app bundle not signed! Must be signed for distribution through Play Store."
 endif
 	@echo Done.
+
+#generate Android app bundle
+android_aab:
+	make -f ../scripts/makefile.android -I ../scripts build_android_aab CL_CFLAGS=-DT3F_ANDROID_GP
 
 android_install: ../packages/$(APP_PACKAGE_NAME)-android.apk
 	$(ANDROID_SDK_ROOT)/platform-tools/adb -d install -r ../packages/$(APP_PACKAGE_NAME)-android.apk
@@ -49,25 +60,35 @@ edit_project:
 	sed -i '' "s|org.liballeg.app|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/src/main/AndroidManifest.xml
 	sed -i '' "s|APP_ORIENTATION|$(APP_ORIENTATION)|" ../android_temp/app.project/app/src/main/AndroidManifest.xml
 	sed -i '' "s|AllegroActivity|$(APP_TITLE)|" ../android_temp/app.project/app/src/main/res/values/strings.xml
+	sed -i '' "s|APP_BG_COLOR|$(APP_BG_COLOR)|" ../android_temp/app.project/app/src/main/res/values/color.xml
 	sed -i '' "s|APP_PACKAGE|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/build.gradle
 	sed -i '' "s|APP_VERSION|$(APP_VERSION)|" ../android_temp/app.project/app/build.gradle
 	sed -i '' "s|APP_RELEASE|$(APP_RELEASE)|" ../android_temp/app.project/app/build.gradle
+	sed -i '' "s|APP_COMPILE_SDK_VERSION|$(ANDROID_SDK_COMPILE_VERSION)|" ../android_temp/app.project/app/build.gradle
+	sed -i '' "s|APP_TARGET_SDK_VERSION|$(ANDROID_SDK_TARGET_VERSION)|" ../android_temp/app.project/app/build.gradle
 	sed -i '' "s|org.liballeg.app|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/src/main/java/org/liballeg/app/MainActivity.java
 	sed -i '' "s|org.liballeg.app|$(APP_ANDROID_PACKAGE)|" ../android_temp/app.project/app/src/main/java/org/liballeg/app/EditBoxActivity.java
 
 copy_resources:
 	@echo Copying data to Android project...
 	cp -a ../bin/data ../android_temp/app.project/app/src/main/assets
-	mkdir -p ../android_temp/app.project/app/src/main/res/drawable
-	cp ../icons/48.png ../android_temp/app.project/app/src/main/res/drawable/icon.png
-	mkdir -p ../android_temp/app.project/app/src/main/res/drawable-hdpi
-	cp ../icons/72.png ../android_temp/app.project/app/src/main/res/drawable-hdpi/icon.png
-	mkdir -p ../android_temp/app.project/app/src/main/res/drawable-ldpi
-	cp ../icons/36.png ../android_temp/app.project/app/src/main/res/drawable-ldpi/icon.png
-	mkdir -p ../android_temp/app.project/app/src/main/res/drawable-mdpi
-	cp ../icons/48.png ../android_temp/app.project/app/src/main/res/drawable-mdpi/icon.png
-	mkdir -p ../android_temp/app.project/app/src/main/res/drawable-xhdpi
-	cp ../icons/96.png ../android_temp/app.project/app/src/main/res/drawable-xhdpi/icon.png
+	cp -a ../docs ../android_temp/app.project/app/src/main/assets
+	cp ../packages/$(APP_NAME)-$(APP_VERSION)-src.tar.gz ../android_temp/app.project/app/src/main/assets
+	mkdir -p ../android_temp/app.project/app/src/main/res/mipmap
+	cp ../icons/48.png ../android_temp/app.project/app/src/main/res/mipmap/ic_launcher.png
+	cp ../icons/48_padded.png ../android_temp/app.project/app/src/main/res/mipmap/ic_foreground.png
+	mkdir -p ../android_temp/app.project/app/src/main/res/mipmap-hdpi
+	cp ../icons/72.png ../android_temp/app.project/app/src/main/res/mipmap-hdpi/ic_launcher.png
+	cp ../icons/72_padded.png ../android_temp/app.project/app/src/main/res/mipmap-hdpi/ic_foreground.png
+	mkdir -p ../android_temp/app.project/app/src/main/res/mipmap-ldpi
+	cp ../icons/36.png ../android_temp/app.project/app/src/main/res/mipmap-ldpi/ic_launcher.png
+	cp ../icons/36_padded.png ../android_temp/app.project/app/src/main/res/mipmap-ldpi/ic_foreground.png
+	mkdir -p ../android_temp/app.project/app/src/main/res/mipmap-mdpi
+	cp ../icons/48.png ../android_temp/app.project/app/src/main/res/mipmap-mdpi/ic_launcher.png
+	cp ../icons/48_padded.png ../android_temp/app.project/app/src/main/res/mipmap-mdpi/ic_foreground.png
+	mkdir -p ../android_temp/app.project/app/src/main/res/mipmap-xhdpi
+	cp ../icons/96.png ../android_temp/app.project/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+	cp ../icons/96_padded.png ../android_temp/app.project/app/src/main/res/mipmap-xhdpi/ic_foreground.png
 
 copy_libs:
 	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=armeabi-v7a copy_libs
@@ -76,13 +97,13 @@ copy_libs:
 	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=x86_64 copy_libs
 
 create_native_libs:
-	make clean
-	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=armeabi-v7a ANDROID_COMPILER_TARGET=armv7-none-linux-androideabi19 ANDROID_C_ARCH="-march=armv7-a" CFLAGS_ARCH="-mfpu=vfpv3-d16 -mfloat-abi=softfp -mthumb" LFLAGS_ARCH=-"Wl,--fix-cortex-a8" create_native_lib
-	make clean
+	make -f ../scripts/makefile.android -I ../scripts clean
+	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=armeabi-v7a ANDROID_COMPILER_TARGET=armv7-none-linux-androideabi21 ANDROID_C_ARCH="-march=armv7-a" CFLAGS_ARCH="-mfpu=vfpv3-d16 -mfloat-abi=softfp -mthumb" LFLAGS_ARCH=-"Wl,--fix-cortex-a8" create_native_lib
+	make -f ../scripts/makefile.android -I ../scripts clean
 	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=arm64-v8a ANDROID_COMPILER_TARGET=aarch64-none-linux-android21 ANDROID_C_ARCH="" CFLAGS_ARCH="" LFLAGS_ARCH="" create_native_lib
-	make clean
-	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=x86 ANDROID_COMPILER_TARGET=i686-none-linux-android19 ANDROID_C_ARCH="" CFLAGS_ARCH="" LFLAGS_ARCH="" create_native_lib
-	make clean
+	make -f ../scripts/makefile.android -I ../scripts clean
+	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=x86 ANDROID_COMPILER_TARGET=i686-none-linux-android21 ANDROID_C_ARCH="" CFLAGS_ARCH="" LFLAGS_ARCH="" create_native_lib
+	make -f ../scripts/makefile.android -I ../scripts clean
 	make -f ../scripts/makefile.android_helper -I ../scripts ANDROID_ARCHITECTURE=x86_64 ANDROID_COMPILER_TARGET=x86_64-none-linux-android21 ANDROID_C_ARCH="" CFLAGS_ARCH="" LFLAGS_ARCH="" create_native_lib
 
 create_android_temp:
@@ -91,17 +112,17 @@ create_android_temp:
 
 build_android: create_android_temp edit_project copy_resources copy_libs create_native_libs
 	@echo Building Android project
-	cd ../android_temp/app.project; export ANDROID_HOME=$(ANDROID_SDK_ROOT); export JAVA_HOME=$(ANDROID_JAVA_HOME); ./gradlew build
+	cd ../android_temp/app.project; export ANDROID_HOME=$(ANDROID_SDK_ROOT); export JAVA_HOME=$(ANDROID_JAVA_HOME); ./gradlew --stop; ./gradlew build; ./gradlew --stop
 	cp ../android_temp/app.project/app/build/outputs/apk/release/app-release-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-android-unsigned.apk
 	rm -rf ../android_temp
 	@echo Unsigned APK generated.
 
 build_android_bundle: create_android_temp edit_project copy_resources copy_libs create_native_libs
 	@echo Building Android project
-	cd ../android_temp/app.project; export ANDROID_HOME=$(ANDROID_SDK_ROOT); export JAVA_HOME=$(ANDROID_JAVA_HOME); ./gradlew bundle
+	cd ../android_temp/app.project; export ANDROID_HOME=$(ANDROID_SDK_ROOT); export JAVA_HOME=$(ANDROID_JAVA_HOME); ./gradlew --stop; ./gradlew bundle; ./gradlew --stop
 	cp ../android_temp/app.project/app/build/outputs/bundle/release/app-release.aab ../packages/$(APP_PACKAGE_NAME)-android-unsigned.aab
 	rm -rf ../android_temp
 	@echo Unsigned AAB generated.
 
-clean_packages:
-	rm -rf ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE)-unsigned.apk ../packages/$(APP_PACKAGE_NAME)-$(ANDROID_ARCHITECTURE).apk
+android_packages: clean_packages android_apk android_aab
+	@echo Successfully built packages for Android Google Play Store and standalone distribution.

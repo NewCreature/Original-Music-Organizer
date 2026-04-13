@@ -57,10 +57,10 @@ void omo_tagger_key_dialog_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	if(t3f_key[ALLEGRO_KEY_ESCAPE])
+	if(t3f_key_pressed(ALLEGRO_KEY_ESCAPE))
 	{
 		omo_close_tagger_key_dialog(app->ui, app);
-		t3f_key[ALLEGRO_KEY_ESCAPE] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_ESCAPE);
 	}
 	if(app->button_pressed == 0)
 	{
@@ -73,7 +73,7 @@ void omo_tagger_key_dialog_logic(void * data)
 		}
 		omo_close_tagger_key_dialog(app->ui, app);
 		app->button_pressed = -1;
-		t3f_key[ALLEGRO_KEY_ENTER] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_ENTER);
 	}
 	else if(app->button_pressed == 1)
 	{

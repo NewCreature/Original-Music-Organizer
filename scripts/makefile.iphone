@@ -1,54 +1,115 @@
-T3F_PLATFORM_NAME = iOS
-CC = gcc
-CFLAGS = $(APP_CFLAGS) $(T3F_CFLAGS) $(IPHONE_ARCHITECTURES) $(IPHONE_COMPILER_SETTINGS) $(IPHONE_SYS_ROOT) $(IPHONE_MIN_VERSION) $(APP_CFLAGS) $(IPHONE_CFLAGS) $(IPHONE_CONFIG_CFLAGS)
-CXX = g++
-CXXFLAGS = $(CFLAGS) $(IPHONE_CONFIG_CXXFLAGS)
-LFLAGS = $(IPHONE_LINKER_SETTINGS) $(IPHONE_ARCHITECTURES) $(IPHONE_SYS_ROOT) $(IPHONE_MIN_VERSION)
-ALLEGRO_SUFFIX = $(IPHONE_CONFIG_ALLEGRO_SUFFIX)
-T3F_PLATFORM_OBJECTS = t3f/menu.o $(IPHONE_PLATFORM_OBJECTS)
-T3F_PLATFORM_LIBS =\
+T3F_PREFIX = /usr/local
+T3F_PLATFORM_NAME = ios
+T3F_PLATFORM_ARCHITECTURE = any
+T3F_CXX_STDLIB = -l$(IOS_CXX_STDLIB)
+CC = $(IOS_CC)
+CFLAGS = $(APP_CFLAGS) $(T3F_CFLAGS) $(CL_CFLAGS) $(IOS_ARCHITECTURES) $(IOS_CONFIG_CFLAGS) $(IOS_SYS_ROOT) $(IOS_MIN_VERSION) $(IOS_CXX_STANDARD) $(APP_CFLAGS) $(IOS_CFLAGS) -I$(IOS_CONFIG_PREFIX)/include
+CXX = $(IOS_CXX)
+CXXFLAGS = $(APP_CXXFLAGS) $(IOS_CXXFLAGS) $(CFLAGS) $(IOS_CONFIG_CXXFLAGS) -stdlib=lib$(IOS_CXX_STDLIB)
+LFLAGS = $(IOS_CONFIG_LFLAGS) $(IOS_ARCHITECTURES) $(IOS_SYS_ROOT) $(IOS_MIN_VERSION) -L$(IOS_CONFIG_PREFIX)/lib -stdlib=lib$(IOS_CXX_STDLIB)
+ALLEGRO_SUFFIX = $(IOS_CONFIG_ALLEGRO_SUFFIX)
+PKG_CONFIG_OPTIONS = $(IOS_CONFIG_PKG_CONFIG_OPTIONS)
+T3F_PLATFORM_OBJECTS = t3f/menu.o $(IOS_PLATFORM_OBJECTS)
+T3F_PLATFORM_LIBRARIES =\
+	-lallegro$(ALLEGRO_SUFFIX)\
+	-lallegro_audio$(ALLEGRO_SUFFIX)\
+	-lallegro_image$(ALLEGRO_SUFFIX)\
+	-lallegro_acodec$(ALLEGRO_SUFFIX)\
+	-lallegro_font$(ALLEGRO_SUFFIX)\
+	-lallegro_ttf$(ALLEGRO_SUFFIX)\
+	-lallegro_primitives$(ALLEGRO_SUFFIX)\
+	-lallegro_color$(ALLEGRO_SUFFIX)\
+	-lallegro_memfile$(ALLEGRO_SUFFIX)\
+	-lallegro_dialog$(ALLEGRO_SUFFIX)\
+	-lallegro_main$(ALLEGRO_SUFFIX)\
 	-framework IOKit\
 	-framework AudioToolbox\
 	-framework OpenGLES\
 	-framework OpenAL\
-	-framework CoreGraphics\
-	-framework Foundation\
-	-framework QuartzCore\
-	-framework UIKit\
-	-framework MobileCoreServices\
-	-lallegro_dialog$(ALLEGRO_SUFFIX)\
-	-lallegro_main$(ALLEGRO_SUFFIX)\
-	$(IPHONE_CONFIG_PLATFORM_LIBS)\
-	$(IPHONE_CONFIG_DEPEND_LIBS)\
-	$(IPHONE_PLATFORM_LIBS)\
-	$(IPHONE_DEPEND_LIBS)
-PLATFORM_TARGET = $(APP_PACKAGE_DIR)/$(APP_TITLE).app
+  -framework CoreGraphics\
+  -framework Foundation\
+  -framework QuartzCore\
+  -framework UIKit\
+  -framework MobileCoreServices\
+	-framework CoreAudio\
+	-framework CoreVideo\
+	$(IOS_CONFIG_PLATFORM_LIBS)\
+	$(IOS_CONFIG_DEPEND_LIBS)\
+	$(IOS_PLATFORM_LIBS)\
+	$(IOS_DEPEND_LIBS)
 DEL_COMMAND = rm -f
 DEL_FOLDER_COMMAND = rm -rf
 SED_COMMAND = sed -i ''
 PLATFORM_CLEAN = rm -rf $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 COPY_COMMAND = cp
+PATH_SEPARATOR = /
 
 include makefile.common
 
 prepare_platform:
 	@echo Ready to build...
 
-$(APP_PACKAGE_DIR)/$(APP_TITLE).app : $(APP_EXE_NAME)
+../ios/Info.plist: ../ios/default_Info.plist
+	@cp ../ios/default_Info.plist ../ios/Info.plist
+
+../ios/entitlements.plist: ../ios/default_entitlements.plist
+	@cp ../ios/default_entitlements.plist ../ios/entitlements.plist
+
+../icons/ios_icon.icns: ../icons/16.png ../icons/32.png ../icons/64.png ../icons/128.png ../icons/256.png ../icons/512.png ../icons/1024.png
+	@mkdir -p temp.iconset
+	@cp ../icons/16.png temp.iconset/icon_16x16.png
+	@cp ../icons/32.png temp.iconset/icon_16x16@2x.png
+	@cp ../icons/32.png temp.iconset/icon_32x32.png
+	@cp ../icons/64.png temp.iconset/icon_32x32@2x.png
+	@cp ../icons/64.png temp.iconset/icon_64x64.png
+	@cp ../icons/128.png temp.iconset/icon_64x64@2x.png
+	@cp ../icons/128.png temp.iconset/icon_128x128.png
+	@cp ../icons/256.png temp.iconset/icon_128x128@2x.png
+	@cp ../icons/256.png temp.iconset/icon_256x256.png
+	@cp ../icons/512.png temp.iconset/icon_256x256@2x.png
+	@cp ../icons/512.png temp.iconset/icon_512x512.png
+	@cp ../icons/1024.png temp.iconset/icon_512x512@2x.png
+	@iconutil --convert icns temp.iconset -o ../icons/ios_icon.icns
+	@rm -rf temp.iconset
+
+ios_bundle : $(APP_EXE_NAME) ../icons/ios_icon.icns ../ios/Info.plist
 	@$(DEL_FOLDER_COMMAND) $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@mkdir $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@cp $(APP_EXE_NAME) $(APP_PACKAGE_DIR)/$(APP_TITLE).app/$(APP_TITLE)
-	@cp ../icons/macos_icon.icns $(APP_PACKAGE_DIR)/$(APP_TITLE).app/$(APP_TITLE).icns
+	@cp ../ios/blobs/$(T3F_PLATFORM_ARCHITECTURE)/* $(APP_PACKAGE_DIR)/$(APP_TITLE).app
+	@mv ../icons/ios_icon.icns $(APP_PACKAGE_DIR)/$(APP_TITLE).app/$(APP_TITLE).icns
 	@cp -a ../bin/data $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@cp -a ../docs $(APP_PACKAGE_DIR)/$(APP_TITLE).app
-	@cp ../iphone/Info.plist $(APP_PACKAGE_DIR)/$(APP_TITLE).app
-	@cp ../iphone/Pkginfo $(APP_PACKAGE_DIR)/$(APP_TITLE).app
+	@cp ../ios/Info.plist $(APP_PACKAGE_DIR)/$(APP_TITLE).app
 	@sed -i '' "s|T3F_APP_EXECUTABLE|$(APP_TITLE)|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Info.plist
 	@sed -i '' "s|T3F_APP_ICON|$(APP_TITLE).icns|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Info.plist
 	@sed -i '' "s|T3F_APP_DISPLAY_NAME|$(APP_TITLE)|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Info.plist
 	@sed -i '' "s|T3F_APP_VERSION|$(APP_VERSION)|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Info.plist
 	@sed -i '' "s|T3F_APP_PACKAGE|$(APP_ID)|" $(APP_PACKAGE_DIR)/$(APP_TITLE).app/Info.plist
+	@rm $(APP_PACKAGE_DIR)/$(APP_TITLE).app/binaries.here
 	@echo Application bundle created!
 
-iphone_package: $(APP_PACKAGE_DIR)/$(APP_TITLE).app
-	@echo iPhone package created!
+ios_sign_bundle: $(APP_PACKAGE_DIR)/$(APP_TITLE).app ../ios/entitlements.plist
+ifdef IOS_CONFIG_APPLE_TEAM_ID
+	xattr -cr $(APP_PACKAGE_DIR)/$(APP_TITLE).app
+	codesign -s "$(IOS_CONFIG_CERT_NAME)" --timestamp --options runtime -f --entitlements ../ios/entitlements.plist --deep $(APP_PACKAGE_DIR)/$(APP_TITLE).app
+else
+	@echo Bundle not signed, missing credentials in 'makefile.config'.
+endif
+
+ios_notarize_bundle:
+ifdef IOS_CONFIG_APPLE_TEAM_ID
+	ditto -c -k --keepParent $(APP_PACKAGE_DIR)/$(APP_TITLE).app $(APP_PACKAGE_DIR)/$(APP_TITLE).zip
+	xcode-select -p > _xcode_dir.txt
+	sudo xcode-select -s $(IOS_CONFIG_XCODE_PATH)
+	xcrun notarytool submit $(APP_PACKAGE_DIR)/$(APP_TITLE).zip --apple-id $(IOS_CONFIG_APPLE_ID) --team-id $(IOS_CONFIG_APPLE_TEAM_ID) --password $(IOS_CONFIG_APPLE_ID_PASSWORD) --wait
+	xcrun stapler staple $(APP_PACKAGE_DIR)/$(APP_TITLE).app
+	sudo xcode-select -s `cat _xcode_dir.txt`
+	rm _xcode_dir.txt
+	rm $(APP_PACKAGE_DIR)/$(APP_TITLE).zip
+else
+	@echo Not notarized, missing credentials in 'makefile.config'.
+endif
+
+ios_sign_and_notarize_bundle: ios_sign_bundle ios_notarize_bundle
+	@echo Done.

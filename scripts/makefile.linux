@@ -2,7 +2,7 @@ T3F_PREFIX = /usr/local
 T3F_PLATFORM_NAME = linux
 T3F_PLATFORM_ARCHITECTURE = `uname -m`
 CC = gcc
-CFLAGS = $(T3F_CFLAGS) $(APP_CFLAGS) $(LINUX_CFLAGS) $(LINUX_CONFIG_CFLAGS)
+CFLAGS = $(T3F_CFLAGS) $(APP_CFLAGS) $(CL_CFLAGS) $(LINUX_CFLAGS) $(LINUX_CONFIG_CFLAGS)
 CXXFLAGS = $(APP_CXXFLAGS) $(CFLAGS) $(LINUX_CONFIG_CXXFLAGS)
 LFLAGS = -Wl,-rpath='$$ORIGIN'
 CONFIG_ENVIRONMENT = test
@@ -19,6 +19,7 @@ T3F_PLATFORM_LIBRARIES = \
 	`pkg-config $(PKG_CONFIG_OPTIONS) allegro_primitives$(ALLEGRO_SUFFIX)-5`\
 	`pkg-config $(PKG_CONFIG_OPTIONS) allegro_color$(ALLEGRO_SUFFIX)-5`\
 	`pkg-config $(PKG_CONFIG_OPTIONS) allegro_memfile$(ALLEGRO_SUFFIX)-5`\
+	`pkg-config $(PKG_CONFIG_OPTIONS) allegro_physfs$(ALLEGRO_SUFFIX)-5`\
 	`pkg-config $(PKG_CONFIG_OPTIONS) allegro_dialog$(ALLEGRO_SUFFIX)-5`\
 	$(LINUX_CONFIG_GTK_LIBS)\
 	$(LINUX_CONFIG_PLATFORM_LIBS)\
@@ -89,3 +90,9 @@ install_flatpak:
 	@$(SED_COMMAND) 's|T3F_APP_VERSION|$(APP_VERSION)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml
 	@$(SED_COMMAND) 's|T3F_APP_PUBLISHER|$(APP_PUBLISHER)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml
 	@$(SED_COMMAND) 's|T3F_APP_URL|$(APP_URL)|' $(INSTALL_PREFIX)/share/metainfo/$(APP_ID).metainfo.xml
+
+binary_package: binary_package_common
+	@echo Successfully built distributable binary package for the current platform.
+
+steam_packages: steam_packages_common
+	@echo Sucessfully built Steam packages for the current platform.

@@ -1,9 +1,11 @@
 package org.liballeg.app;
 import org.liballeg.android.AllegroActivity;
+import android.os.Build;
 import android.content.Intent;
 import android.net.Uri;
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import java.net.URL;
 import java.util.Scanner;
 import java.io.*;
@@ -146,5 +148,22 @@ public class MainActivity extends AllegroActivity
         {
         }
         return null;
+    }
+
+    public void ResetBackgroundColor()
+    {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+        {
+            runOnUiThread(
+                new Runnable()
+                {
+                    @Override public void run()
+                    {
+                        View view = getWindow().getDecorView();
+                        view.setBackgroundColor(getResources().getColor(R.color.app_default_color));
+                    }
+                }
+            );
+        }
     }
 }

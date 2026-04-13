@@ -1,5 +1,7 @@
 #include "t3f.h"
 #include "view.h"
+#include "mouse.h"
+#include "touch.h"
 
 T3F_VIEW * t3f_default_view = NULL;
 T3F_VIEW * t3f_current_view = NULL;
@@ -22,17 +24,27 @@ void t3f_adjust_view(T3F_VIEW * vp, float ox, float oy, float w, float h, float 
 	vp->need_update = true;
 }
 
-T3F_VIEW * t3f_create_view(float ox, float oy, float w, float h, float vpx, float vpy, int flags)
+T3F_VIEW * t3f_create_view(T3F_VIEW * parent, float ox, float oy, float w, float h, float vpx, float vpy, int flags)
 {
 	T3F_VIEW * vp = al_malloc(sizeof(T3F_VIEW));
 	if(!vp)
 	{
 		return NULL;
 	}
+	vp->parent = parent;
 	vp->virtual_width = t3f_virtual_display_width;
 	vp->virtual_height = t3f_virtual_display_height;
+	vp->aspect_min = 0.0;
+	vp->aspect_max = 0.0;
 	t3f_adjust_view(vp, ox, oy, w, h, vpx, vpy, flags);
 	return vp;
+}
+
+void t3f_constrain_view_aspect_ratio(T3F_VIEW * vp, float min, float max)
+{
+	vp->aspect_min = min;
+	vp->aspect_max = max;
+	vp->need_update = true;
 }
 
 void t3f_set_view_virtual_dimensions(T3F_VIEW * vp, int w, int h)
@@ -40,6 +52,96 @@ void t3f_set_view_virtual_dimensions(T3F_VIEW * vp, int w, int h)
 	vp->virtual_width = w;
 	vp->virtual_height = h;
 	vp->need_update = true;
+}
+
+static void _t3f_setup_view_transformation_letterbox(T3F_VIEW * view, float view_ratio, float virtual_display_ratio)
+{
+	/* need to adjust y */
+	if(view_ratio < virtual_display_ratio)
+	{
+		view->scale_x = view->width / (float)view->virtual_width;
+		view->scale_y = view->scale_x;
+		view->translate_x = view->offset_x + 0.0;
+		view->translate_y = view->offset_y + (view->height - view->width / virtual_display_ratio) / 2.0;
+	}
+	else
+	{
+		view->scale_y = view->height / (float)view->virtual_height;
+		view->scale_x = view->scale_y;
+		view->translate_x = view->offset_x + (view->width - view->height * virtual_display_ratio) / 2.0;
+		view->translate_y = view->offset_y + 0.0;
+	}
+	view->left = 0;
+	view->top = 0;
+	view->bottom = view->virtual_height;
+	view->right = view->virtual_width;
+}
+
+static void _t3f_setup_view_transformation_letterbox_fill(T3F_VIEW * view, float view_ratio, float virtual_display_ratio)
+{
+	float min_size;
+
+	/* constrain the view ratio */
+	if(view_ratio < view->aspect_min)
+	{
+		view_ratio = view->aspect_min;
+	}
+	else if(view_ratio > view->aspect_max)
+	{
+		view_ratio = view->aspect_max;
+	}
+	min_size = view->width;
+	view->scale_x = min_size / (float)view->virtual_width;
+	view->scale_y = view->scale_x;
+	view->left = 0.0;
+	view->top = 0.0;
+	view->translate_x = 0.0;
+	view->translate_y = (view->offset_y + view->height) / 2.0 - (view->virtual_height * view->scale_y) / 2.0;
+	view->bottom = view->virtual_height - view->top;
+	view->right = view->virtual_width - view->left;
+}
+
+static void _t3f_setup_view_transformation_fillscreen(T3F_VIEW * view, float view_ratio, float virtual_display_ratio)
+{
+	if(view->aspect_min > 0.0)
+	{
+		if(view_ratio < view->aspect_min)
+		{
+			_t3f_setup_view_transformation_letterbox_fill(view, view_ratio, virtual_display_ratio);
+			return;
+		}
+	}
+	if(view->aspect_max > 0.0)
+	{
+		if(view_ratio > view->aspect_max)
+		{
+			_t3f_setup_view_transformation_letterbox(view, view_ratio, virtual_display_ratio);
+			return;
+		}
+	}
+	/* need to adjust y */
+	if(view_ratio >= virtual_display_ratio)
+	{
+		view->scale_x = view->width / (float)view->virtual_width;
+		view->scale_y = view->scale_x;
+		view->left = 0.0;
+		view->top = -(view->height - view->width / virtual_display_ratio) / 2.0;
+		view->translate_x = view->offset_x + 0.0;
+		view->translate_y = view->offset_y - view->top;
+	}
+	else
+	{
+		view->scale_y = view->height / (float)view->virtual_height;
+		view->scale_x = view->scale_y;
+		view->left = -(view->width - view->height * virtual_display_ratio) / 2.0;
+		view->top = 0.0;
+		view->translate_x = view->offset_x - view->left;
+		view->translate_y = view->offset_y + 0.0;
+	}
+	view->left /= view->scale_x;
+	view->top /= view->scale_y;
+	view->bottom = view->virtual_height - view->top;
+	view->right = view->virtual_width - view->left;
 }
 
 static void t3f_get_view_transformation(T3F_VIEW * view)
@@ -59,62 +161,22 @@ static void t3f_get_view_transformation(T3F_VIEW * view)
 	}
 	else if(view->flags & T3F_FORCE_ASPECT)
 	{
-		view_ratio = view->height / view->width;
-		virtual_display_ratio = (float)view->virtual_height / (float)view->virtual_width;
+		view_ratio = view->width / view->height;
+		virtual_display_ratio = (float)view->virtual_width / (float)view->virtual_height;
 
 		if(view->flags & T3F_FILL_SCREEN)
 		{
-			/* need to adjust y */
-			if(view_ratio <= virtual_display_ratio)
-			{
-				view->scale_x = view->width / (float)view->virtual_width;
-				view->scale_y = view->scale_x;
-				view->left = 0.0;
-				view->top = -(view->height - view->width * virtual_display_ratio) / 2.0;
-				view->translate_x = view->offset_x + 0.0;
-				view->translate_y = view->offset_y - view->top;
-			}
-			else
-			{
-				view->scale_y = view->height / (float)view->virtual_height;
-				view->scale_x = view->scale_y;
-				view->left = -(view->width - view->height / virtual_display_ratio) / 2.0;
-				view->top = 0.0;
-				view->translate_x = view->offset_x - view->left;
-				view->translate_y = view->offset_y + 0.0;
-			}
-			view->left /= view->scale_x;
-			view->top /= view->scale_y;
-			view->bottom = view->virtual_height - view->top;
-			view->right = view->virtual_width - view->left;
+			_t3f_setup_view_transformation_fillscreen(view, view_ratio, virtual_display_ratio);
 		}
 		else
 		{
-			/* need to adjust y */
-			if(view_ratio > virtual_display_ratio)
-			{
-				view->scale_x = view->width / (float)view->virtual_width;
-				view->scale_y = view->scale_x;
-				view->translate_x = view->offset_x + 0.0;
-				view->translate_y = view->offset_y + (view->height - view->width * virtual_display_ratio) / 2.0;
-			}
-			else
-			{
-				view->scale_y = view->height / (float)view->virtual_height;
-				view->scale_x = view->scale_y;
-				view->translate_x = view->offset_x + (view->width - view->height / virtual_display_ratio) / 2.0;
-				view->translate_y = view->offset_y + 0.0;
-			}
-			view->left = 0;
-			view->top = 0;
-			view->bottom = view->virtual_height;
-			view->right = view->virtual_width;
+			_t3f_setup_view_transformation_letterbox(view, view_ratio, virtual_display_ratio);
 		}
 	}
 	else
 	{
-		view->translate_x = 0.0;
-		view->translate_y = 0.0;
+		view->translate_x = view->offset_x;
+		view->translate_y = view->offset_y;
 		view->scale_x = view->width / (float)view->virtual_width;
 		view->scale_y = view->height / (float)view->virtual_height;
 		view->left = 0;
@@ -124,71 +186,64 @@ static void t3f_get_view_transformation(T3F_VIEW * view)
 	}
 }
 
-/* combine a base view with another view to generate a transformation */
-static void t3f_select_views(T3F_VIEW * base_view, T3F_VIEW * view)
+void t3f_select_view(T3F_VIEW * vp)
 {
+	T3F_VIEW * current_view;
+	T3F_VIEW * last_view = NULL;
 	bool regenerate_transformation = false;
 	float translate_x = 0.0;
 	float translate_y = 0.0;
 	float scale_x = 1.0;
 	float scale_y = 1.0;
+	float parent_scale_x;
+	float parent_scale_y;
 
+	/* flush drawing cache (ensures clipping applies properly) */
 	if(al_is_bitmap_drawing_held())
 	{
 		al_hold_bitmap_drawing(false);
 		al_hold_bitmap_drawing(true);
 	}
-	if(!base_view)
+
+	/* if any view in the lineage is dirty, regenerate transformation */
+	current_view = vp;
+	while(current_view)
 	{
-		base_view = t3f_default_view;
+		current_view->child = last_view;
+		last_view = current_view;
+		if(current_view->need_update)
+		{
+			t3f_get_view_transformation(current_view);
+			regenerate_transformation = true;
+		}
+		current_view = current_view->parent;
 	}
 
-	/* generate scaling and positioning for base_view */
-	if(base_view->need_update)
-	{
-		t3f_get_view_transformation(base_view);
-		regenerate_transformation = true;
-	}
-
-	/* generate scaling and positioning for view */
-	if(view && view->need_update)
-	{
-		t3f_get_view_transformation(view);
-		regenerate_transformation = true;
-		view->need_update = false;
-	}
-
-	/* select the desired view */
-	if(view && view != base_view)
-	{
-		translate_x = base_view->translate_x + view->translate_x * base_view->scale_x;
-		translate_y = base_view->translate_y + view->translate_y * base_view->scale_y;
-		scale_x = base_view->scale_x * view->scale_x;
-		scale_y = base_view->scale_y * view->scale_y;
-		t3f_current_view = view;
-	}
-	else
-	{
-		translate_x = base_view->translate_x;
-		translate_y = base_view->translate_y;
-		scale_x = base_view->scale_x;
-		scale_y = base_view->scale_y;
-		t3f_current_view = base_view;
-	}
-
-	/* create transformation from base_view and view offset and scale */
 	if(regenerate_transformation)
 	{
-		al_build_transform(&t3f_current_view->transform, translate_x, translate_y, scale_x, scale_y, 0.0);
+		/* determine final translation and scale */
+		current_view = last_view;
+		parent_scale_x = 1.0;
+		parent_scale_y = 1.0;
+		while(current_view)
+		{
+			if(current_view->parent)
+			{
+				parent_scale_x *= current_view->parent->scale_x;
+				parent_scale_y *= current_view->parent->scale_y;
+			}
+			translate_x += current_view->translate_x * parent_scale_x;
+			translate_y += current_view->translate_y * parent_scale_y;
+			scale_x *= current_view->scale_x;
+			scale_y *= current_view->scale_y;
+			al_build_transform(&current_view->transform, translate_x, translate_y, scale_x, scale_y, 0.0);
+			current_view->need_update = false;
+			current_view = current_view->child;
+		}
 	}
-	al_copy_transform(&t3f_current_transform, &t3f_current_view->transform);
-	al_use_transform(&t3f_current_transform);
+	al_use_transform(&vp->transform);
+	t3f_current_view = vp;
 	t3f_set_clipping_rectangle(0, 0, 0, 0);
-}
-
-void t3f_select_view(T3F_VIEW * sp)
-{
-	t3f_select_views(t3f_default_view, sp);
 }
 
 T3F_VIEW * t3f_get_current_view(void)
@@ -247,52 +302,69 @@ float t3f_project_y(float y, float z)
 	}
 }
 
+/* apply a transformation to render starting at (x, y, z) */
+void t3f_set_view_render_offset(float x, float y, float z)
+{
+	float final_x, final_y, final_x2, final_y2;
+	float final_scale_x, final_scale_y;
+	ALLEGRO_TRANSFORM new_transform;
+
+	final_x = t3f_project_x(x, z);
+	final_y = t3f_project_y(y, z);
+	final_x2 = t3f_project_x(x + 1.0, z);
+	final_y2 = t3f_project_y(y + 1.0, z);
+	al_transform_coordinates(&t3f_current_view->transform, &final_x, &final_y);
+	al_transform_coordinates(&t3f_current_view->transform, &final_x2, &final_y2);
+	final_scale_x = final_x2 - final_x;
+	final_scale_y = final_y2 - final_y;
+	al_build_transform(&new_transform, final_x, final_y, final_scale_x, final_scale_y, 0.0);
+	al_use_transform(&new_transform);
+}
+
 void t3f_select_input_view(T3F_VIEW * vp)
 {
 	T3F_VIEW * old_view = t3f_current_view;
+	T3F_VIEW * current_view;
+	T3F_VIEW * last_view = NULL;
 	float translate_x = 0.0;
 	float translate_y = 0.0;
 	float scale_x = 1.0;
 	float scale_y = 1.0;
-	int i;
+	bool regenerate_transformation = false;
 
-	if(vp->need_update)
+	current_view = vp;
+	while(current_view)
+	{
+		current_view->child = last_view;
+		last_view = current_view;
+		if(current_view->need_update)
+		{
+			t3f_get_view_transformation(current_view);
+			regenerate_transformation = true;
+		}
+		current_view = current_view->parent;
+	}
+
+	if(regenerate_transformation)
 	{
 		t3f_select_view(vp);
-		t3f_current_view = old_view;
+		t3f_select_view(old_view);
 	}
-
-	if(vp && vp != t3f_default_view)
-	{
-		translate_x = t3f_default_view->translate_x + vp->translate_x * t3f_default_view->scale_x;
-		translate_y = t3f_default_view->translate_y + vp->translate_y * t3f_default_view->scale_y;
-		scale_x = t3f_default_view->scale_x * vp->scale_x;
-		scale_y = t3f_default_view->scale_y * vp->scale_y;
-	}
-	else
-	{
-		translate_x = t3f_default_view->translate_x;
-		translate_y = t3f_default_view->translate_y;
-		scale_x = t3f_default_view->scale_x;
-		scale_y = t3f_default_view->scale_y;
-	}
+	al_transform_coordinates(&vp->transform, &translate_x, &translate_y);
+	al_transform_coordinates(&vp->transform, &scale_x, &scale_y);
+	scale_x -= translate_x;
+	scale_y -= translate_y;
 
 	/* get new mouse coordinates */
 	if(t3f_flags & T3F_USE_MOUSE)
 	{
-		t3f_mouse_x = (t3f_real_mouse_x - translate_x) / scale_x;
-		t3f_mouse_y = (t3f_real_mouse_y - translate_y) / scale_y;
-		t3f_touch[0].x = (t3f_touch[0].real_x - translate_x) / scale_x;
-		t3f_touch[0].y = (t3f_touch[0].real_y - translate_y) / scale_y;
+		_t3f_update_mouse_pos(translate_x, scale_x, translate_y, scale_y);
+		_t3f_update_touch_pos(0, translate_x, scale_x, translate_y, scale_y);
 	}
 
 	/* get new touch coordinates */
 	if(t3f_flags & T3F_USE_TOUCH)
 	{
-		for(i = 1; i < T3F_MAX_TOUCHES; i++)
-		{
-			t3f_touch[i].x = (t3f_touch[i].real_x - translate_x) / scale_x;
-			t3f_touch[i].y = (t3f_touch[i].real_y - translate_y) / scale_y;
-		}
+		_t3f_update_touch_pos(-1, translate_x, scale_x, translate_y, scale_y);
 	}
 }

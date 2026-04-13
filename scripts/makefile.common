@@ -10,10 +10,6 @@ include makefile.defines
 include makefile.default_config
 include makefile.config
 
-DEMO_DIR = ../../$(APP_NAME)_demo
-DEMO_DATA = $(DEMO_DIR)/bin/data
-#DEMO_DELETE =
-
 T3F_OBJECTS = $(T3F_CORE_OBJECTS) $(T3F_PLATFORM_OBJECTS)
 
 APP_SOURCE_FILES = $(T3F_OBJECTS:.o=.c)
@@ -28,12 +24,33 @@ APP_TEMP_DIR = ../temp/$(APP_PACKAGE_NAME)
 all : $(APP_EXE_NAME) $(T3F_PLATFORM_TARGET) $(APP_EXTRA_TARGET)
 	@echo All targets built!
 
+t3f/font.o : t3f/font.c t3f/font_allegro.inc t3f/font_t3f.inc
+	gcc $(CFLAGS) -c -o t3f/font.o t3f/font.c
+
 finish:
 	@\:
 
 reset_config:
 	rm makefile.config
 	make finish
+
+show_details:
+	@echo ""
+	@echo "APP_COMPANY:         $(APP_COMPANY)"
+	@echo "APP_NAME:            $(APP_NAME)"
+	@echo "APP_TITLE:           $(APP_TITLE)"
+	@echo "APP_DATA_DIR:        $(APP_DATA_DIR)"
+	@echo "APP_VERSION:         $(APP_VERSION)"
+	@echo "APP_RELEASE:         $(APP_RELEASE)"
+	@echo "APP_PUBLISHER:       $(APP_PUBLISHER)"
+	@echo "APP_COPYRIGHT:       $(APP_COPYRIGHT)"
+	@echo "APP_ANDROID_PACKAGE: $(APP_ANDROID_PACKAGE)"
+	@echo "APP_ORIENTATION:     $(APP_ORIENTATION)"
+	@echo "APP_URL:             $(APP_URL)"
+	@echo "APP_STEAM_ID:        $(APP_STEAM_ID)"
+	@echo "APP_OBJECTS:         $(APP_OBJECTS)"
+	@echo "APP_PACKAGE_DIR:     $(APP_PACKAGE_DIR)"
+	@echo ""
 
 $(APP_EXE_NAME) : prepare_platform $(T3F_OBJECTS) $(APP_OBJECTS)
 	$(CC) $(LFLAGS) $(CONFIG_LFLAGS) $(T3F_OBJECTS) $(APP_OBJECTS) $(APP_LIBS) $(T3F_LIBRARIES) $(DEPEND_LIBS) -o $(APP_EXE_NAME)
@@ -48,6 +65,12 @@ makefile.config:
 
 ../docs/changelog:
 	touch ../docs/changelog
+
+../icons/windows_icon.ico: ../icons/16.png ../icons/24.png ../icons/32.png ../icons/48.png ../icons/256.png ../tools/makeicon$(EXE_SUFFIX)
+	../tools/makeicon$(EXE_SUFFIX) -o ../icons/windows_icon.ico ../icons/16.png ../icons/24.png ../icons/32.png ../icons/48.png ../icons/64.png ../icons/256.png
+
+../icons/linux_icons.zip:
+	zip -9 -j ../icons/linux_icons.zip ../icons/*.png
 
 release: ../changes.txt ../docs/changelog
 	mv ../docs/changelog ../changelog
@@ -65,27 +88,30 @@ clean: app_clean
 	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(T3F_OBJECTS))
 	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(APP_OBJECTS))
 	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(APP_EXE_NAME)$(EXE_SUFFIX))
+	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),../tools/makeicon$(EXE_SUFFIX))
 ifdef APP_EXTRA_TARGET
 	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(APP_EXTRA_TARGET))
 endif
-	@$(DEL_COMMAND) $(subst /,$(PATH_SEPARATOR),$(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME))
 	@echo Cleanup complete!
 
 clean_packages:
-	@echo Cleaning up old paclages...
+	@echo Cleaning up old packages...
 	@rm -f $(APP_PACKAGE_DIR)/*.tar.gz
 	@rm -f $(APP_PACKAGE_DIR)/*.zip
 	@rm -f $(APP_PACKAGE_DIR)/*.apk
+	@rm -f $(APP_PACKAGE_DIR)/*.aab
 	@rm -f $(APP_PACKAGE_DIR)/*.dmg
 	@rm -rf $(APP_PACKAGE_DIR)/*.app
+	@rm -rf $(APP_PACKAGE_DIR)/*.idsig
+	@rm -rf $(APP_PACKAGE_DIR)/*/
 
 #create tar.gz package for source code distribution
-package: clean clean_packages
-	$(shell rm -rf $(APP_TEMP_DIR); mkdir -p $(APP_TEMP_DIR); cp -a -R -L "../bin" $(APP_TEMP_DIR); cp -a -R -L "../src" $(APP_TEMP_DIR); cp -a -R -L "../scripts" $(APP_TEMP_DIR); cp -a -R -L "../docs" $(APP_TEMP_DIR); cp -a -R -L "../android" $(APP_TEMP_DIR); cp -a -R -L "../debian" $(APP_TEMP_DIR); cp -a -R -L "../linux" $(APP_TEMP_DIR);  cp -a -R -L "../macos" $(APP_TEMP_DIR); cp -a -R -L  "../windows" $(APP_TEMP_DIR); cp -a -R -L "../icons" $(APP_TEMP_DIR); cp -a -R -L "../iphone" $(APP_TEMP_DIR); cp -a -R -L "../graphics_src" $(APP_TEMP_DIR); cp -a -R -L "../packages" $(APP_TEMP_DIR); cp -a -R -L "../misc" $(APP_TEMP_DIR); cp "../changes.txt" $(APP_TEMP_DIR); cp "../issues.txt" $(APP_TEMP_DIR); cd ../temp; rm -f $(APP_PACKAGE_FILENAME); export COPY_EXTENDED_ATTRIBUTES_DISABLE=true; export COPYFILE_DISABLE=true; tar --exclude="." --exclude=".DS_Store" --exclude="old" $(PACKAGE_EXCLUSIONS) --dereference -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
+source_package: clean clean_packages
+	$(shell rm -rf $(APP_TEMP_DIR); mkdir -p $(APP_TEMP_DIR); cp -a -R -L "../bin" $(APP_TEMP_DIR); cp -a -R -L "../src" $(APP_TEMP_DIR); cp -a -R -L "../scripts" $(APP_TEMP_DIR); cp -a -R -L "../docs" $(APP_TEMP_DIR); cp -a -R -L "../android" $(APP_TEMP_DIR); cp -a -R -L "../debian" $(APP_TEMP_DIR); cp -a -R -L "../linux" $(APP_TEMP_DIR); cp -a -R -L "../macos" $(APP_TEMP_DIR); cp -a -R -L "../tools" $(APP_TEMP_DIR); cp -a -R -L  "../windows" $(APP_TEMP_DIR); cp -a -R -L "../icons" $(APP_TEMP_DIR); cp -a -R -L "../iphone" $(APP_TEMP_DIR); cp -a -R -L "../graphics_src" $(APP_TEMP_DIR); cp -a -R -L "../packages" $(APP_TEMP_DIR); cp -a -R -L "../misc" $(APP_TEMP_DIR); cp "../changes.txt" $(APP_TEMP_DIR); cp "../issues.txt" $(APP_TEMP_DIR); cd ../temp; rm -f $(APP_PACKAGE_FILENAME); export COPY_EXTENDED_ATTRIBUTES_DISABLE=true; export COPYFILE_DISABLE=true; tar --exclude="." --exclude=".DS_Store" --exclude="old" --exclude="makefile.config" $(PACKAGE_EXCLUSIONS) --dereference -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
 	@echo Package successfully created!
 
 source_only_package: clean clean_packages
-	$(shell rm -rf $(APP_TEMP_DIR); mkdir -p $(APP_TEMP_DIR); mkdir -p $(APP_TEMP_DIR)/bin/data; cp ../bin/data/t3f.dat $(APP_TEMP_DIR)/bin/data; cp -a -R -L "../src" $(APP_TEMP_DIR); cp -a -R -L "../scripts" $(APP_TEMP_DIR); cp -a -R -L "../docs" $(APP_TEMP_DIR); cp -a -R -L "../android" $(APP_TEMP_DIR); cp -a -R -L "../debian" $(APP_TEMP_DIR); cp -a -R -L "../linux" $(APP_TEMP_DIR); cp -a -R -L "../macos" $(APP_TEMP_DIR); cp -a -R -L  "../windows" $(APP_TEMP_DIR); cp -a -R -L "../icons" $(APP_TEMP_DIR); cp -a -R -L "../iphone" $(APP_TEMP_DIR); cp -a -R -L "../graphics_src" $(APP_TEMP_DIR); cp -a -R -L "../packages" $(APP_TEMP_DIR); cp -a -R -L "../misc" $(APP_TEMP_DIR); cp "../changes.txt" $(APP_TEMP_DIR); cp "../issues.txt" $(APP_TEMP_DIR); cd ../temp; rm -f $(APP_PACKAGE_FILENAME); export COPY_EXTENDED_ATTRIBUTES_DISABLE=true; export COPYFILE_DISABLE=true; tar --exclude="." --exclude=".DS_Store" --exclude="old" $(PACKAGE_EXCLUSIONS) --dereference -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
+	$(shell rm -rf $(APP_TEMP_DIR); mkdir -p $(APP_TEMP_DIR); mkdir -p $(APP_TEMP_DIR)/bin/data; cp ../bin/data/t3f.dat $(APP_TEMP_DIR)/bin/data; cp -a -R -L "../src" $(APP_TEMP_DIR); cp -a -R -L "../scripts" $(APP_TEMP_DIR); cp -a -R -L "../docs" $(APP_TEMP_DIR); cp -a -R -L "../android" $(APP_TEMP_DIR); cp -a -R -L "../debian" $(APP_TEMP_DIR); cp -a -R -L "../linux" $(APP_TEMP_DIR); cp -a -R -L "../macos" $(APP_TEMP_DIR); cp -a -R -L "../tools" $(APP_TEMP_DIR); cp -a -R -L  "../windows" $(APP_TEMP_DIR); cp -a -R -L "../icons" $(APP_TEMP_DIR); cp -a -R -L "../iphone" $(APP_TEMP_DIR); cp -a -R -L "../graphics_src" $(APP_TEMP_DIR); cp -a -R -L "../packages" $(APP_TEMP_DIR); cp -a -R -L "../misc" $(APP_TEMP_DIR); cp "../changes.txt" $(APP_TEMP_DIR); cp "../issues.txt" $(APP_TEMP_DIR); cd ../temp; rm -f $(APP_PACKAGE_FILENAME); export COPY_EXTENDED_ATTRIBUTES_DISABLE=true; export COPYFILE_DISABLE=true; tar --exclude="." --exclude=".DS_Store" --exclude="old" --exclude="makefile.config" $(PACKAGE_EXCLUSIONS) --dereference -czf $(APP_PACKAGE_DIR)/$(APP_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
 	@echo Package successfully created!
 
 binary_package_temp: $(APP_EXE_NAME)
@@ -94,8 +120,9 @@ binary_package_temp: $(APP_EXE_NAME)
 	@mkdir ../temp
 	@mkdir ../temp/$(APP_PACKAGE_NAME)
 	@echo "Copy app data..."
-	@rsync -avq --exclude=".*" --exclude="src/" --exclude="android/" --exclude="debian/" --exclude="iphone/" --exclude="linux/" --exclude="macos/" --exclude="misc/" --exclude="packages/" --exclude="scripts/" --exclude="temp/" --exclude="windows/" --exclude="graphics_src/" --exclude="changes.txt" --exclude="issues.txt" ../ ../temp/$(APP_PACKAGE_NAME)
+	@rsync -avq --exclude=".*" --exclude="temp/" ../ ../temp/$(APP_PACKAGE_NAME)
 	@cp ../$(T3F_PLATFORM_NAME)/blobs/$(T3F_PLATFORM_ARCHITECTURE)/* ../temp/$(APP_PACKAGE_NAME)/bin
+	@rm -rf ../temp/$(APP_PACKAGE_NAME)/src ../temp/$(APP_PACKAGE_NAME)/android ../temp/$(APP_PACKAGE_NAME)/debian ../temp/$(APP_PACKAGE_NAME)/icons ../temp/$(APP_PACKAGE_NAME)/ios ../temp/$(APP_PACKAGE_NAME)/linux ../temp/$(APP_PACKAGE_NAME)/macos ../temp/$(APP_PACKAGE_NAME)/misc ../temp/$(APP_PACKAGE_NAME)/scripts ../temp/$(APP_PACKAGE_NAME)/tools ../temp/$(APP_PACKAGE_NAME)/packages ../temp/$(APP_PACKAGE_NAME)/windows ../temp/$(APP_PACKAGE_NAME)/graphics_src ../temp/$(APP_PACKAGE_NAME)/changes.txt ../temp/$(APP_PACKAGE_NAME)/issues.txt $(APP_PACKAGE_EXCLUDE_FILES)
 	@rm -f ../temp/$(APP_PACKAGE_NAME)/bin/binaries.here
 	@echo "Make install script..."
 	@cp ../misc/binary_install.sh ../temp/$(APP_PACKAGE_NAME)/install.sh
@@ -109,40 +136,72 @@ binary_package_temp: $(APP_EXE_NAME)
 	@$(SED_COMMAND) 's|T3F_APP_DIR|$(DEBIAN_DIR)|' ../temp/$(APP_PACKAGE_NAME)/uninstall.sh
 	@$(SED_COMMAND) 's|T3F_APP_CATEGORIES|$(DEBIAN_DESKTOP_CATEGORIES)|' ../temp/$(APP_PACKAGE_NAME)/uninstall.sh
 
-binary_package: binary_package_temp
+binary_package_common: clean steam_cleanup binary_package_temp
 	@echo "Build archive..."
 	$(shell cd ../temp; tar -czf $(APP_PACKAGE_DIR)/$(APP_BINARY_PACKAGE_FILENAME) $(APP_PACKAGE_NAME); cd ..; rm -rf temp)
 
-#make a copy of the source tree with non-demo data deleted
-demo_copy:
-	mkdir $(DEMO_DIR)
-	cp -a -R -L ../* $(DEMO_DIR)
+#make a copy of the source tree with non-repackaged data deleted
+repackage_copy:
+ifndef APP_REPACKAGE_DIR
+	@echo Usage: make repackage APP_REPACKAGE_DIR=path
+	@test
+else
+	rm -rf $(APP_REPACKAGE_DIR)
+	mkdir $(APP_REPACKAGE_DIR)
+	cp -a -R -L ../* $(APP_REPACKAGE_DIR)
+	touch -c $(APP_REPACKAGE_DIR)/macos/Info.plist
+	touch -c $(APP_REPACKAGE_DIR)/macos/entitlements.plist
+endif
 
-demo_clean:
-	rm -rf $(DEMO_DIR)/workspace
-	rm -rf $(DEMO_DELETE)
+repackage_clean:
+	rm -rf $(APP_REPACKAGE_DIR)/workspace
+	rm -rf $(APP_REPACKAGE_DIR)/alt
+ifdef APP_REPACKAGE_DELETE
+	rm -rf $(APP_REPACKAGE_DELETE)
+endif
 
-demo_edit:
-	$(SED_COMMAND) 's|= $(APP_NAME)|= $(APP_NAME)-demo|' $(DEMO_DIR)/src/makefile.defines
-	$(SED_COMMAND) 's|$(subst $(SPACE),\$(SPACE),$(APP_TITLE))|$(subst $(SPACE),\$(SPACE),$(APP_TITLE))\\$(SPACE)Demo|' $(DEMO_DIR)/src/makefile.defines
-	$(SED_COMMAND) 's|$(APP_ID)|$(APP_ID)demo|' $(DEMO_DIR)/src/makefile.defines
-	$(SED_COMMAND) 's|$(APP_NAME)|$(APP_NAME)-demo|' $(DEMO_DIR)/docs/changelog
+repackage_fetch_alternate_files:
+ifdef APP_REPACKAGE_ROOT
+	cp -R $(APP_REPACKAGE_ROOT)/* $(APP_REPACKAGE_DIR)
+else
+	@test 0
+endif
 
-demo_edit_gp:
-	$(SED_COMMAND) 's|CFLAGS = |CFLAGS = -DT3F_ANDROID_GP |' $(DEMO_DIR)/src/makefile.android_helper
-	mv $(DEMO_DIR) $(DEMO_DIR)_gp
+repackage_edit:
+	$(SED_COMMAND) 's|= $(APP_NAME)|= $(APP_REPACKAGE_NAME)|' $(APP_REPACKAGE_DIR)/src/makefile.defines
+	$(SED_COMMAND) 's|TITLE = $(APP_TITLE)|TITLE = $(APP_REPACKAGE_TITLE)|' $(APP_REPACKAGE_DIR)/src/makefile.defines
+	$(SED_COMMAND) 's|= $(APP_ANDROID_PACKAGE)|= $(APP_REPACKAGE_PACKAGE)|' $(APP_REPACKAGE_DIR)/src/makefile.defines
+	$(SED_COMMAND) 's|$(APP_NAME)|$(APP_REPACKAGE_NAME)|' $(APP_REPACKAGE_DIR)/docs/changelog
 
-demo: clean demo_copy demo_clean demo_edit
+repackage_root: clean clean_packages repackage_copy repackage_fetch_alternate_files repackage_clean repackage_edit
 
-demo_gp: demo demo_edit_gp
+../tools/makeicon$(EXE_SUFFIX): ../tools/makeicon.o
+	$(CC) $(LFLAGS) ../tools/makeicon.o $(T3F_LIBRARIES) -o ../tools/makeicon
 
-../windows/makeicon$(EXE_SUFFIX): ../windows/makeicon.o
-	$(CC) $(LFLAGS) ../windows/makeicon.o $(T3F_LIBRARIES) -o ../windows/makeicon
-
-data_package: source_only_package
+data_package_helper:
 	rm -f $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-data.zip
 	cd ../bin && touch data/steam.dat && zip -9 -r $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-data.zip data -x data/.\* && rm data/steam.dat && cd ../ && zip -9 -r packages/$(APP_NAME)-$(APP_VERSION)-data.zip docs && cd packages && zip -9 $(APP_NAME)-$(APP_VERSION)-data.zip $(APP_NAME)-$(APP_VERSION)-src.tar.gz
+
+data_package: source_only_package steam_touch data_package_helper steam_cleanup
+	@echo Data backage successfully created.
+
+steam_touch:
+	touch ../bin/data/steam.dat
+
+steam_cleanup:
+	rm -rf ../bin/data/steam.dat
 
 steam_binary_package: $(APP_EXE_NAME)
 	rm -f $(APP_PACKAGE_DIR)/$(APP_PACKAGE_NAME)-$(T3F_PLATFORM_NAME)-binaries.zip
 	cd ../bin && zip -9 $(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-$(T3F_PLATFORM_NAME)-binaries.zip * -x data\*; cd ../$(T3F_PLATFORM_NAME)/blobs/$(T3F_PLATFORM_ARCHITECTURE) && zip -9 -r ../../$(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-$(T3F_PLATFORM_NAME)-binaries.zip * -x binaries.here || true
+ifndef CONFIG_STEAMWORKS_SDK_PATH
+	@echo If your build links to Steam libraries, please define 'CONFIG_STEAMWORKS_SDK_PATH' as the path to the root of the Steamworks SDK. If you are not building for Windows, define 'CONFIG_STEAMWORKS_PLATFORM' as the name of the platform \(osx or linux64\).
+else
+	cd $(CONFIG_STEAMWORKS_SDK_PATH)/redistributable_bin/$(CONFIG_STEAMWORKS_PLATFORM) && zip -9 -r "$(PWD)/$(APP_PACKAGE_DIR)/$(APP_NAME)-$(APP_VERSION)-$(T3F_PLATFORM_NAME)-binaries.zip" *.dll *.so *.dylib || true
+endif
+
+steam_packages_common: data_package all steam_binary_package
+	@echo Successfully created Steam data and binary packages for the the current platform.
+
+steam_assets: ../icons/macos_icon.icns ../icons/windows_icon.ico ../icons/linux_icons.zip
+	@echo Successfully generated assets for Steam store page.

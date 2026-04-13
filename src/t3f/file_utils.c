@@ -2,36 +2,36 @@
 
 bool t3f_scan_files(const char * path, bool (*process_file)(const char * fn, bool isfolder, void * data), bool subdir, void * data)
 {
-	ALLEGRO_FS_ENTRY * dir;
-	ALLEGRO_FS_ENTRY * fp;
+	ALLEGRO_FS_ENTRY * dir = NULL;
+	ALLEGRO_FS_ENTRY * fp = NULL;
 	char cname[1024] = {0};
 
 	/* ignore ./ and ../ path entries */
 	strcpy(cname, path);
-    if(strlen(cname) > 0)
+  if(strlen(cname) > 0)
+  {
+  	if(cname[strlen(cname) - 1] == '/')
     {
-        if(cname[strlen(cname) - 1] == '/')
-        {
-            if(subdir)
-            {
-                if(cname[strlen(cname) - 2] == '.')
-                {
-                    return false;
-                }
-            }
-            cname[strlen(cname) - 1] = 0;
-        }
-    }
+			if(subdir)
+			{
+				if(cname[strlen(cname) - 2] == '.')
+				{
+					goto fail;
+				}
+			}
+			cname[strlen(cname) - 1] = 0;
+		}
+	}
 
 //	printf("!Looking in %s\n", cname);
 	dir = al_create_fs_entry(cname);
 	if(!dir)
 	{
-		return false;
+		goto fail;
 	}
 	if(!al_open_directory(dir))
 	{
-		return false;
+		goto fail;
 	}
 //	printf("Looking in %s\n", cname);
 	while(1)
@@ -44,21 +44,40 @@ bool t3f_scan_files(const char * path, bool (*process_file)(const char * fn, boo
 //		name = al_path_to_string(al_get_entry_name(fp), '/');
 		if(al_get_fs_entry_mode(fp) & ALLEGRO_FILEMODE_ISDIR)
 		{
-			if(process_file(al_get_fs_entry_name(fp), true, data))
+			if(!process_file(al_get_fs_entry_name(fp), true, data))
 			{
+				goto fail;
 			}
-			t3f_scan_files(al_get_fs_entry_name(fp), process_file, true, data);
+			if(!t3f_scan_files(al_get_fs_entry_name(fp), process_file, true, data))
+			{
+				goto fail;
+			}
 		}
 		else
 		{
-            if(process_file(al_get_fs_entry_name(fp), false, data))
+      if(!process_file(al_get_fs_entry_name(fp), false, data))
 			{
+				goto fail;
 			}
 		}
 		al_destroy_fs_entry(fp);
 	}
 	al_destroy_fs_entry(dir);
-    return true;
+
+  return true;
+
+	fail:
+	{
+		if(dir)
+		{
+			al_destroy_fs_entry(dir);
+		}
+		if(fp)
+		{
+			al_destroy_fs_entry(fp);
+		}
+		return false;
+	}
 }
 
 typedef struct

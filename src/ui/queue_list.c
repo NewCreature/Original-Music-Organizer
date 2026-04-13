@@ -214,9 +214,6 @@ void omo_queue_list_logic(void * data)
 			if(OMO_KEY_CTRL)
 			{
 				omo_menu_file_play_folder(0, data);
-				t3f_key[ALLEGRO_KEY_COMMAND] = 0;
-				t3f_key[ALLEGRO_KEY_LCTRL] = 0;
-				t3f_key[ALLEGRO_KEY_RCTRL] = 0;
 			}
 			else
 			{
@@ -229,9 +226,6 @@ void omo_queue_list_logic(void * data)
 			if(OMO_KEY_CTRL)
 			{
 				omo_menu_file_queue_folder(0, data);
-				t3f_key[ALLEGRO_KEY_COMMAND] = 0;
-				t3f_key[ALLEGRO_KEY_LCTRL] = 0;
-				t3f_key[ALLEGRO_KEY_RCTRL] = 0;
 			}
 			else
 			{

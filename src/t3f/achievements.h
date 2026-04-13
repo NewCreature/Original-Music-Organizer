@@ -1,15 +1,25 @@
 #ifndef T3F_ACHIEVEMENTS_H
 #define T3F_ACHIEVEMENTS_H
 
+#define T3F_ACHIEVEMENTS_STATE_NONE     0 // initial state
+#define T3F_ACHIEVEMENTS_STATE_UNSTORED 1 // unstored changes
+#define T3F_ACHIEVEMENTS_STATE_STORING  2 // storing in progress
+#define T3F_ACHIEVEMENTS_STATE_STORED   3 // storing successful
+#define T3F_ACHIEVEMENTS_STATE_ERROR    4
+
 typedef struct
 {
 
+  /* definition */
   char * steam_id;
   char * name;
   char * description;
   int steps;
-  int step;
   bool hidden;
+
+  /* state */
+  int step;
+  int store_state; // for Steam integration
 
 } T3F_ACHIEVEMENT_ENTRY;
 
@@ -18,7 +28,8 @@ typedef struct
 
   T3F_ACHIEVEMENT_ENTRY * entry;
   int entries;
-  bool modified; // note that something in the list has been modified
+  bool updated;
+  int store_entry;
 
 } T3F_ACHIEVEMENTS_LIST;
 

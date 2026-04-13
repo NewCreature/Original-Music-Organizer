@@ -43,12 +43,12 @@ void omo_shortcut_logic(void * data)
 	bool restart_player = false;
 	int i;
 
-	if(t3f_key[ALLEGRO_KEY_L])
+	if(t3f_key_pressed(ALLEGRO_KEY_L))
 	{
 		omo_toggle_library_view(app);
-		t3f_key[ALLEGRO_KEY_L] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_L);
 	}
-	if(t3f_key[ALLEGRO_KEY_T] && app->library)
+	if(t3f_key_pressed(ALLEGRO_KEY_T) && app->library)
 	{
 		app->ui->tags_queue_entry = -1;
 		if(app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
@@ -63,14 +63,14 @@ void omo_shortcut_logic(void * data)
 		{
 			omo_menu_library_edit_album_tags(0, app);
 		}
-		t3f_key[ALLEGRO_KEY_T] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_T);
 	}
-	if(t3f_key[ALLEGRO_KEY_Z])
+	if(t3f_key_pressed(ALLEGRO_KEY_Z))
 	{
 		app->button_pressed = 0;
-		t3f_key[ALLEGRO_KEY_Z] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_Z);
 	}
-	if(t3f_key[ALLEGRO_KEY_X])
+	if(t3f_key_pressed(ALLEGRO_KEY_X))
 	{
 		if(app->player->queue_pos != app->ui->ui_queue_list_element->d1)
 		{
@@ -79,7 +79,7 @@ void omo_shortcut_logic(void * data)
 			omo_start_player(app->player);
 		}
 	}
-	if(t3f_key[ALLEGRO_KEY_C])
+	if(t3f_key_pressed(ALLEGRO_KEY_C))
 	{
 		if(app->player->state == OMO_PLAYER_STATE_PLAYING)
 		{
@@ -89,19 +89,19 @@ void omo_shortcut_logic(void * data)
 		{
 			omo_resume_player(app->player);
 		}
-		t3f_key[ALLEGRO_KEY_C] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_C);
 	}
-	if(t3f_key[ALLEGRO_KEY_V])
+	if(t3f_key_pressed(ALLEGRO_KEY_V))
 	{
 		omo_stop_player(app->player);
-		t3f_key[ALLEGRO_KEY_V] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_V);
 	}
-	if(t3f_key[ALLEGRO_KEY_B])
+	if(t3f_key_pressed(ALLEGRO_KEY_B))
 	{
 		app->button_pressed = 3;
-		t3f_key[ALLEGRO_KEY_B] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_B);
 	}
-	if(t3f_key[ALLEGRO_KEY_DELETE])
+	if(t3f_key_pressed(ALLEGRO_KEY_DELETE))
 	{
 		if(app->player->queue && app->ui->ui_queue_list_element->d1 < app->player->queue->entry_count)
 		{
@@ -140,9 +140,9 @@ void omo_shortcut_logic(void * data)
 				app->player->queue = NULL;
 			}
 		}
-		t3f_key[ALLEGRO_KEY_DELETE] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_DELETE);
 	}
-	if(t3f_key[ALLEGRO_KEY_S])
+	if(t3f_key_pressed(ALLEGRO_KEY_S))
 	{
 		if(app->ui->ui_artist_list_element->flags & D_GOTFOCUS || app->ui->ui_album_list_element->flags & D_GOTFOCUS || app->ui->ui_song_list_element->flags & D_GOTFOCUS)
 		{
@@ -153,6 +153,6 @@ void omo_shortcut_logic(void * data)
 		{
 			omo_menu_playback_shuffle(0, app);
 		}
-		t3f_key[ALLEGRO_KEY_S] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_S);
 	}
 }

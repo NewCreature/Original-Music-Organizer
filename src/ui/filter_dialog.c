@@ -196,10 +196,10 @@ void omo_filter_dialog_logic(void * data)
 	bool clear = false;
 	int i;
 
-	if(t3f_key[ALLEGRO_KEY_ESCAPE])
+	if(t3f_key_pressed(ALLEGRO_KEY_ESCAPE))
 	{
 		omo_close_filter_dialog(app->ui, app);
-		t3f_key[ALLEGRO_KEY_ESCAPE] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_ESCAPE);
 	}
 	if(app->button_pressed == 0)
 	{
@@ -249,7 +249,7 @@ void omo_filter_dialog_logic(void * data)
 		}
 		omo_close_filter_dialog(app->ui, app);
 		app->button_pressed = -1;
-		t3f_key[ALLEGRO_KEY_ENTER] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_ENTER);
 	}
 	else if(app->button_pressed == 1)
 	{

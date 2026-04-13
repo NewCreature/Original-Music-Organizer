@@ -865,7 +865,7 @@ int omo_menu_view_basic(int id, void * data)
 		al_set_config_value(t3f_config, "Settings", "library_view_height", buf);
 		al_set_config_value(t3f_config, "Settings", "last_view", "basic");
 
-		if(!t3f_key[ALLEGRO_KEY_LCTRL] && !t3f_key[ALLEGRO_KEY_RCTRL] && !t3f_key[ALLEGRO_KEY_COMMAND] && v_x && v_y && v_width && v_height)
+		if(!t3f_key_pressed(ALLEGRO_KEY_LCTRL) && !t3f_key_pressed(ALLEGRO_KEY_RCTRL) && !t3f_key_pressed(ALLEGRO_KEY_COMMAND) && v_x && v_y && v_width && v_height)
 		{
 			c_x = atoi(v_x);
 			c_y = atoi(v_y);
@@ -935,7 +935,7 @@ int omo_menu_view_library(int id, void * data)
 		al_set_config_value(t3f_config, "Settings", "basic_view_height", buf);
 		al_set_config_value(t3f_config, "Settings", "last_view", "library");
 
-		if(!t3f_key[ALLEGRO_KEY_LCTRL] && !t3f_key[ALLEGRO_KEY_RCTRL] && !t3f_key[ALLEGRO_KEY_COMMAND] && v_x && v_y && v_width && v_height)
+		if(!t3f_key_pressed(ALLEGRO_KEY_LCTRL) && !t3f_key_pressed(ALLEGRO_KEY_RCTRL) && !t3f_key_pressed(ALLEGRO_KEY_COMMAND) && v_x && v_y && v_width && v_height)
 		{
 			c_x = atoi(v_x);
 			c_y = atoi(v_y);

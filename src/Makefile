@@ -31,20 +31,14 @@ endif
 top:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts all
 
-static:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM)_static -I ../scripts all
-
 clean:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts clean
-
-clean_all:
-	$(MAKE) -f ../makefile.$(SYSTEM) -I ../scripts clean
 
 release:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts release
 
-package:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts package
+source_package:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts source_package
 
 source_only_package:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts source_only_package
@@ -55,11 +49,17 @@ binary_package:
 debian_package:
 	$(MAKE) -f ../scripts/makefile.debian -I ../scripts debian_package
 
-android_package:
-	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_package
+android_apk:
+	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_apk
 
-android_bundle:
-	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_bundle
+android_debug_apk:
+	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_debug_apk
+
+android_aab:
+	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_aab
+
+android_packages:
+	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_packages
 
 android_install:
 	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_install
@@ -67,8 +67,14 @@ android_install:
 android_debug:
 	$(MAKE) -f ../scripts/makefile.android -I ../scripts android_debug
 
-windows_package:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts windows_zip
+mac_i386:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_i386
+
+mac_x86_64:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_x86_64
+
+mac_arm64:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_arm64
 
 mac_universal_bundle:
 	$(MAKE) -f ../scripts/makefile.macos -I ../scripts mac_universal_bundle
@@ -76,23 +82,27 @@ mac_universal_bundle:
 mac_bundle:
 	$(MAKE) -f ../scripts/makefile.macos -I ../scripts mac_bundle
 
-mac_package:
-	$(MAKE) -f ../scripts/makefile.macos -I ../scripts mac_package
-
-iphone_package:
-	$(MAKE) -f ../scripts/makefile.iphone -I ../scripts iphone_package
+ios_bundle:
+	$(MAKE) -f ../scripts/makefile.iphone -I ../scripts ios_bundle
 
 flatpak:
 	$(MAKE) -f ../scripts/makefile.flatpak -I ../scripts flatpak
 
-demo:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts demo
+repackage_root:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts repackage_root
 
-demo_gp:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts demo_gp
+repackage:
+ifdef REPACKAGE_TARGET
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts repackage_$(REPACKAGE_TARGET)
+else
+	@echo Usage: make repackage REPACKAGE_TARGET=target
+endif
+
+windows_icon:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts ../icons/windows_icon.ico
 
 makeicon:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts ../windows/makeicon
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts ../tools/makeicon
 
 reset_config:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts reset_config
@@ -112,29 +122,28 @@ install_flatpak:
 data_package:
 	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts data_package
 
-steam_binary_package:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts steam_binary_package SYSTEM=$(SYSTEM)
+steam_packages:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts steam_packages CL_STEAM_BUILD=1
 
-mac_sign_bundle:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_sign_bundle
+steam_test:
+	$(MAKE) CL_STEAM_BUILD=1
 
-mac_notarize_bundle:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_notarize_bundle
+steam_assets:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts steam_assets
 
-mac_sign_and_notarize_bundle:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_sign_and_notarize_bundle
+help:
+	@echo "\nRun 'make' without arguments to build en executable for the current plaform."
+	@echo "\nTargets available on all platforms:\n"
+	@echo "  clean:               Clean up files produced by the build process."
+	@echo "  release:             Update 'docs/changelog' based on data in 'changes.txt'."
+	@echo "  source_package:      Create source code package with bundled data."
+	@echo "  source_only_package: Create source code package without bundled data."
+	@echo "  binary_package:      Create data and binary executable standalone package\n                       suitable for distrubition."
+	@echo "  steam_packages:      Create data and binary packages suitable for distribution\n                       through Steam."
+	@echo "  android_packages:    Create Android APK for standalone distribution and\n                       Android AAB for distribution through the Google Play\n                       Store."
+	@echo "\nLinux-only targets:\n"
+	@echo "  install:             Install application onto the system."
+	@echo "  uninstall:           Uninstall appplication from the system.\n"
 
-mac_sign_package:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_sign_package
-
-mac_steam_package:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_steam_package
-
-mac_i386:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_i386
-
-mac_x86_64:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_x86_64
-
-mac_arm64:
-	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts mac_arm64
+show_details:
+	$(MAKE) -f ../scripts/makefile.$(SYSTEM) -I ../scripts show_details

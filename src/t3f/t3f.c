@@ -33,41 +33,20 @@
 	#include "windows.h"
 #endif
 #ifdef T3F_PNG
-	#include "png.h"
+	#include "internal_png.h"
 #endif
+#include "mouse.h"
+#include "keyboard.h"
+#include "touch.h"
 
 /* display data */
 int t3f_virtual_display_width = 0;
 int t3f_virtual_display_height = 0;
 
-/* keyboard data */
-bool t3f_key[ALLEGRO_KEY_MAX] = {false};
-int t3f_key_buffer[T3F_KEY_BUFFER_MAX] = {0};
-int t3f_key_buffer_keys = 0;
-
-/* mouse data */
-static bool t3f_mouse_moved = false;
-int t3f_real_mouse_x = 0;
-int t3f_real_mouse_y = 0;
-float t3f_mouse_x = 0;
-float t3f_mouse_y = 0;
-int t3f_mouse_z = 0;
-int t3f_mouse_dx = 0;
-int t3f_mouse_dy = 0;
-int t3f_mouse_dz = 0;
-bool t3f_mouse_button[16] = {0};
-bool t3f_mouse_hidden = false;
-
 /* joystick data */
 ALLEGRO_JOYSTICK * t3f_joystick[T3F_MAX_JOYSTICKS] = {NULL};
 ALLEGRO_JOYSTICK_STATE t3f_joystick_state[T3F_MAX_JOYSTICKS];
 bool t3f_joystick_state_updated[T3F_MAX_JOYSTICKS] = {false};
-
-/* touch data */
-T3F_TOUCH t3f_touch[T3F_MAX_TOUCHES];
-
-//ALLEGRO_TRANSFORM t3f_base_transform;
-ALLEGRO_TRANSFORM t3f_current_transform;
 
 /* blender data */
 ALLEGRO_STATE t3f_state_stack[T3F_MAX_STACK];
@@ -78,9 +57,8 @@ int t3f_requested_flags = 0;
 int t3f_flags = 0;
 int t3f_option[T3F_MAX_OPTIONS] = {0};
 static int _t3f_logic_ticks = 0;
-static bool _t3f_mouse_warped = false;
-static float _t3f_mouse_warp_x = 0.0;
-static float _t3f_mouse_warp_y = 0.0;
+static double _t3f_last_timer_tick_timestamp = 0.0;
+static double _t3f_timer_tick_minimum_time = 0.0;
 
 void (*t3f_logic_proc)(void * data) = NULL;
 void (*t3f_render_proc)(void * data) = NULL;
@@ -147,64 +125,6 @@ void t3f_setup_directories(ALLEGRO_PATH * final)
 	{
 		al_destroy_path(working_path[i]);
 	}
-}
-
-bool t3f_save_bitmap_f(ALLEGRO_FILE * fp, ALLEGRO_BITMAP * bp)
-{
-	ALLEGRO_FILE * tfp = NULL;;
-	ALLEGRO_PATH * path = NULL;
-	int i, size = 0;
-	bool ret = false;
-
-	path = al_clone_path(t3f_data_path);
-	if(path)
-	{
-		al_set_path_filename(path, "t3saver.png");
-		if(al_save_bitmap(al_path_cstr(path, '/'), bp))
-		{
-			tfp = al_fopen(al_path_cstr(path, '/'), "rb");
-			if(tfp)
-			{
-				size = al_fsize(tfp);
-				al_fwrite32le(fp, size);
-				for(i = 0; i < size; i++)
-				{
-					al_fputc(fp, al_fgetc(tfp));
-				}
-				ret = true;
-				al_fclose(tfp);
-			}
-			al_remove_filename(al_path_cstr(path, '/'));
-		}
-		al_destroy_path(path);
-	}
-	return ret;
-}
-
-/* imports a bitmap from within the source file, reads size, creates mem buffer,
- * loads from that buffer */
-ALLEGRO_BITMAP * t3f_load_bitmap_f(ALLEGRO_FILE * fp)
-{
-	ALLEGRO_BITMAP * bp = NULL;
-	ALLEGRO_FILE * tfp = NULL;
-	int size = al_fread32le(fp);
-	char * buffer = NULL;
-	if(size > 0)
-	{
-		buffer = al_malloc(size);
-		if(buffer)
-		{
-			al_fread(fp, buffer, size);
-			tfp = al_open_memfile(buffer, size, "rb");
-			if(tfp)
-			{
-				bp = al_load_bitmap_f(tfp, ".png");
-				al_fclose(tfp);
-			}
-			al_free(buffer);
-		}
-	}
-	return bp;
 }
 
 static void t3f_get_options(void)
@@ -479,14 +399,14 @@ int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_pro
 	}
 	if(flags & T3F_USE_KEYBOARD)
 	{
-		if(al_install_keyboard())
+		if(_t3f_initialize_keyboard())
 		{
 			t3f_flags |= T3F_USE_KEYBOARD;
 		}
 	}
 	if(flags & T3F_USE_MOUSE)
 	{
-		if(al_install_mouse())
+		if(_t3f_initialize_mouse())
 		{
 			t3f_flags |= T3F_USE_MOUSE;
 		}
@@ -499,10 +419,13 @@ int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_pro
 		}
 	}
 
-	memset(t3f_touch, 0, sizeof(T3F_TOUCH) * T3F_MAX_TOUCHES);
+	if(!_t3f_initialize_touch_data())
+	{
+		return 0;
+	}
 	if(flags & T3F_USE_TOUCH)
 	{
-		if(al_install_touch_input())
+		if(_t3f_initialize_touch())
 		{
 			t3f_flags |= T3F_USE_TOUCH;
 		}
@@ -511,6 +434,8 @@ int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_pro
 	#ifndef ALLEGRO_ANDROID
 		al_init_native_dialog_addon();
 	#endif
+
+	_t3f_initialize_resource_manager(1024);
 
 	strcpy(t3f_window_title, name);
 	al_set_new_window_title(t3f_window_title);
@@ -521,6 +446,7 @@ int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_pro
 		printf("Failed to create timer!\n");
 		return 0;
 	}
+	_t3f_timer_tick_minimum_time = (1.000 / fps) / 2.0;
 
 	t3f_queue = al_create_event_queue();
 	if(!t3f_queue)
@@ -568,7 +494,7 @@ int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_pro
 	if(!(t3f_flags & T3F_NO_DISPLAY))
 	{
 		/* create a default view */
-		t3f_default_view = t3f_create_view(0, 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), t3f_virtual_display_width / 2, t3f_virtual_display_height / 2, t3f_flags);
+		t3f_default_view = t3f_create_view(NULL, 0, 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), t3f_virtual_display_width / 2, t3f_virtual_display_height / 2, t3f_flags);
 		if(!t3f_default_view)
 		{
 			printf("Failed to create default view!\n");
@@ -590,6 +516,17 @@ int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_pro
 
 	/* locate user resources */
 	t3f_locate_resource("data/t3f.dat");
+
+	/* initialize subsystems */
+	if(!_t3f_init_bitmap_system())
+	{
+		return 0;
+	}
+	if(!_t3f_init_animation_system())
+	{
+		return 0;
+	}
+	_t3f_reset_android_bg_color();
 
 	return 1;
 }
@@ -636,7 +573,16 @@ static int t3f_set_new_gfx_mode(int w, int h, int flags)
 {
 	char val[128] = {0};
 	int ret = 1;
+	int new_flags = 0;
 
+	if(flags & T3F_USE_FULLSCREEN)
+	{
+		new_flags = ALLEGRO_FULLSCREEN_WINDOW;
+	}
+	if(flags & T3F_RESIZABLE)
+	{
+		new_flags = ALLEGRO_RESIZABLE;
+	}
 	if(flags & T3F_RESIZABLE)
 	{
 		if(!(t3f_flags & T3F_RESIZABLE))
@@ -699,9 +645,60 @@ static int t3f_set_new_gfx_mode(int w, int h, int flags)
 		}
 	}
 
+	/* destroy old display and create a new one if operation failed in some way */
+	if(ret != 1)
+	{
+		t3f_unload_atlases();
+		t3f_unload_resources();
+		al_destroy_display(t3f_display);
+		al_set_new_display_flags(new_flags);
+		t3f_display = al_create_display(w, h);
+		if(t3f_display)
+		{
+			t3f_reload_resources();
+			t3f_rebuild_atlases();
+			ret = 1;
+		}
+		if(flags & T3F_USE_FULLSCREEN)
+		{
+			t3f_flags |= T3F_USE_FULLSCREEN;
+		}
+		else
+		{
+			t3f_flags &= ~T3F_USE_FULLSCREEN;
+		}
+		if(flags & T3F_RESIZABLE)
+		{
+			t3f_flags |= T3F_RESIZABLE;
+		}
+		else
+		{
+			t3f_flags &= ~T3F_RESIZABLE;
+		}
+	}
+	else
+	{
+		#ifdef ALLEGRO_WINDOWS
+			if(!(t3f_flags & T3F_USE_OPENGL))
+			{
+				t3f_unload_atlases();
+				t3f_unload_resources();
+				t3f_reload_resources();
+				t3f_rebuild_atlases();
+			}
+		#endif
+	}
+
 	/* update settings if we successfully set the new mode */
 	if(ret == 1)
 	{
+		if(flags & T3F_RESET_DISPLAY)
+		{
+			t3f_default_view->virtual_width = w;
+			t3f_default_view->virtual_height = h;
+			t3f_virtual_display_width = w;
+			t3f_virtual_display_height = h;
+		}
 		handle_view_resize();
 		if(t3f_flags & T3F_USE_FULLSCREEN)
 		{
@@ -732,6 +729,7 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 	int dw, dh;
 	int ret = 1;
 	bool restore_pos = false;
+	ALLEGRO_MONITOR_INFO monitor_info;
 
 	bool fsw_supported = true;
 	#ifdef ALLEGRO_ANDROID
@@ -778,15 +776,23 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 		{
 			t3f_flags |= T3F_NO_SCALE;
 		}
-		/* if we are using console (for a server, for instance) don't create display */
-		if(w > h)
+		if(flags & T3F_ANY_ORIENTATION)
 		{
-			al_set_new_display_option(ALLEGRO_SUPPORTED_ORIENTATIONS, ALLEGRO_DISPLAY_ORIENTATION_LANDSCAPE, ALLEGRO_REQUIRE);
+			al_set_new_display_option(ALLEGRO_SUPPORTED_ORIENTATIONS, ALLEGRO_DISPLAY_ORIENTATION_ALL, ALLEGRO_REQUIRE);
+			t3f_flags |= T3F_ANY_ORIENTATION;
 		}
 		else
 		{
-			al_set_new_display_option(ALLEGRO_SUPPORTED_ORIENTATIONS, ALLEGRO_DISPLAY_ORIENTATION_PORTRAIT, ALLEGRO_REQUIRE);
+			if(w > h)
+			{
+				al_set_new_display_option(ALLEGRO_SUPPORTED_ORIENTATIONS, ALLEGRO_DISPLAY_ORIENTATION_LANDSCAPE, ALLEGRO_REQUIRE);
+			}
+			else
+			{
+				al_set_new_display_option(ALLEGRO_SUPPORTED_ORIENTATIONS, ALLEGRO_DISPLAY_ORIENTATION_PORTRAIT, ALLEGRO_REQUIRE);
+			}
 		}
+		/* if we are using console (for a server, for instance) don't create display */
 		cvalue = al_get_config_value(t3f_config, "T3F", "force_fullscreen");
 		cvalue2 = al_get_config_value(t3f_config, "T3F", "force_window");
 		if(((flags & T3F_USE_FULLSCREEN || (cvalue && !strcmp(cvalue, "true"))) && !(cvalue2 && !strcmp(cvalue2, "true"))) || no_windowed)
@@ -813,6 +819,26 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 		else
 		{
 			t3f_flags &= ~T3F_RESIZABLE;
+		}
+		cvalue = al_get_config_value(t3f_config, "T3F", "disable_aa");
+		if(cvalue && !strcmp(cvalue, "true"))
+		{
+			flags &= ~T3F_ANTIALIASING;
+		}
+		cvalue = al_get_config_value(t3f_config, "T3F", "enable_aa");
+		if(cvalue && !strcmp(cvalue, "false"))
+		{
+			flags &= ~T3F_ANTIALIASING;
+		}
+		if((cvalue && !strcmp(cvalue, "true")) || (flags & T3F_ANTIALIASING))
+		{
+			al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
+			al_set_new_display_option(ALLEGRO_SAMPLES, 4, ALLEGRO_SUGGEST);
+			t3f_flags |= T3F_ANTIALIASING;
+		}
+		else
+		{
+			t3f_flags &= ~T3F_ANTIALIASING;
 		}
 		cvalue = al_get_config_value(t3f_config, "T3F", "force_opengl");
 		if((cvalue && !strcmp(cvalue, "true")) || (flags & T3F_USE_OPENGL))
@@ -876,6 +902,17 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 			dw = 800;
 			dh = 480;
 		#endif
+		/* ensure window is small enough for display */
+    al_get_monitor_info(0, &monitor_info);
+		if(dw > monitor_info.x2 - monitor_info.x1)
+		{
+			dw = monitor_info.x2 - monitor_info.x1;
+		}
+		if(dh > monitor_info.y2 - monitor_info.y1)
+		{
+			dh = monitor_info.y2 - monitor_info.y1;
+		}
+
 		cvalue = al_get_config_value(t3f_config, "T3F", "save_window_pos");
 		if(cvalue)
 		{
@@ -908,6 +945,8 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 				dflags |= ALLEGRO_RESIZABLE;
 			}
 			al_set_new_display_flags(dflags);
+			al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 0, ALLEGRO_SUGGEST);
+			al_set_new_display_option(ALLEGRO_SAMPLES, 0, ALLEGRO_SUGGEST);
 			t3f_display = al_create_display(dw, dh);
 			if(!t3f_display)
 			{
@@ -963,7 +1002,7 @@ void t3f_set_clipping_rectangle(int x, int y, int w, int h)
 	}
 
 	/* convert virtual screen coordinates to real display coordinates */
-	al_transform_coordinates(&t3f_current_transform, &ox, &oy);
+	al_transform_coordinates(&t3f_current_view->transform, &ox, &oy);
 	if(w != 0 && h != 0)
 	{
 		tx = x;
@@ -978,8 +1017,8 @@ void t3f_set_clipping_rectangle(int x, int y, int w, int h)
 		twx = t3f_current_view->right;
 		twy = t3f_current_view->bottom;
 	}
-	al_transform_coordinates(&t3f_current_transform, &tx, &ty);
-	al_transform_coordinates(&t3f_current_transform, &twx, &twy);
+	al_transform_coordinates(&t3f_current_view->transform, &tx, &ty);
+	al_transform_coordinates(&t3f_current_view->transform, &twx, &twy);
 	al_set_clipping_rectangle(tx + 0.5, ty + 0.5, twx - tx + 0.5, twy - ty + 0.5);
 }
 
@@ -990,15 +1029,16 @@ void t3f_set_event_handler(void (*proc)(ALLEGRO_EVENT * event, void * data))
 
 bool t3f_save_config(void)
 {
-	const ALLEGRO_FILE_INTERFACE * old_interface;
+	ALLEGRO_STATE old_state;
 	bool ret = false;
 
 	if(t3f_config)
 	{
-		old_interface = al_get_new_file_interface();
+		al_store_state(&old_state, ALLEGRO_STATE_NEW_FILE_INTERFACE);
+		al_set_standard_fs_interface();
 		al_set_standard_file_interface();
 		ret = al_save_config_file(t3f_config_filename, t3f_config);
-		al_set_new_file_interface(old_interface);
+		al_restore_state(&old_state);
 	}
 
 	return ret;
@@ -1006,15 +1046,16 @@ bool t3f_save_config(void)
 
 bool t3f_save_user_data(void)
 {
-	const ALLEGRO_FILE_INTERFACE * old_interface;
+	ALLEGRO_STATE old_state;
 	bool ret = false;
 
 	if(t3f_user_data)
 	{
-		old_interface = al_get_new_file_interface();
+		al_store_state(&old_state, ALLEGRO_STATE_NEW_FILE_INTERFACE);
+		al_set_standard_fs_interface();
 		al_set_standard_file_interface();
 		ret = al_save_config_file(t3f_user_data_filename, t3f_user_data);
-		al_set_new_file_interface(old_interface);
+		al_restore_state(&old_state);
 	}
 
 	return ret;
@@ -1038,109 +1079,6 @@ float t3f_distance(float x1, float y1, float x2, float y2)
 	float dx = x2 - x1;
 	float dy = y2 - y1;
 	return sqrt(dx * dx + dy * dy);
-}
-
-void t3f_clear_keys(void)
-{
-	t3f_key_buffer_keys = 0;
-}
-
-bool t3f_add_key(int key)
-{
-	if(t3f_key_buffer_keys < T3F_KEY_BUFFER_MAX)
-	{
-		t3f_key_buffer[t3f_key_buffer_keys] = key;
-		t3f_key_buffer_keys++;
-		return true;
-	}
-	return false;
-}
-
-int t3f_read_key(int flags)
-{
-	int rkey = 0;
-	if(t3f_key_buffer_keys > 0)
-	{
-		t3f_key_buffer_keys--;
-		rkey = t3f_key_buffer[t3f_key_buffer_keys];
-		if(flags & T3F_KEY_BUFFER_FORCE_LOWER)
-		{
-			if(rkey >= 'A' && rkey <= 'Z')
-			{
-				rkey += 'a' - 'A';
-			}
-		}
-		else if(flags & T3F_KEY_BUFFER_FORCE_UPPER)
-		{
-			if(rkey >= 'a' && rkey <= 'z')
-			{
-				rkey -= 'a' - 'A';
-			}
-		}
-	}
-	return rkey;
-}
-
-bool t3f_key_pressed(void)
-{
-	return t3f_key_buffer_keys > 0;
-}
-
-bool t3f_get_mouse_mickeys(int * x, int * y, int * z)
-{
-	if(t3f_mouse_moved)
-	{
-		if(x)
-		{
-			*x = t3f_mouse_dx - t3f_mouse_x;
-			t3f_mouse_dx = t3f_mouse_x;
-		}
-		if(y)
-		{
-			*y = t3f_mouse_dy - t3f_mouse_y;
-			t3f_mouse_dy = t3f_mouse_y;
-		}
-		if(z)
-		{
-			*z = t3f_mouse_dz - t3f_mouse_z;
-			t3f_mouse_dz = t3f_mouse_z;
-		}
-		t3f_mouse_moved = false;
-		return true;
-	}
-	return false;
-}
-
-static void _t3f_update_mouse_xy(float x, float y)
-{
-	t3f_real_mouse_x = x;
-	t3f_real_mouse_y = y;
-	t3f_touch[0].real_x = x;
-	t3f_touch[0].real_y = y;
-	t3f_select_input_view(t3f_current_view);
-}
-
-/* set the mouse coordinate to (x, y) in the currently active view */
-void t3f_set_mouse_xy(float x, float y)
-{
-	al_transform_coordinates(&t3f_current_view->transform, &x, &y);
-	al_set_mouse_xy(t3f_display, x, y);
-	_t3f_update_mouse_xy(x, y);
-	_t3f_mouse_warped = true;
-	_t3f_mouse_warp_x = x;
-	_t3f_mouse_warp_y = y;
-}
-
-void t3f_clear_touch_data(void)
-{
-	int i;
-
-	for(i = 0; i < T3F_MAX_TOUCHES; i++)
-	{
-		t3f_touch[i].active = false;
-		t3f_touch[i].pressed = false;
-		t3f_touch[i].released = false;
-	}
 }
 
 bool t3f_push_state(int flags)
@@ -1237,6 +1175,9 @@ bool t3f_copy_file(const char * src, const char * dest)
 
 void t3f_event_handler(ALLEGRO_EVENT * event)
 {
+	_t3f_handle_keyboard_event(event);
+	_t3f_handle_mouse_event(event);
+	_t3f_handle_touch_event(event);
 	switch(event->type)
 	{
 
@@ -1258,6 +1199,17 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 			#ifndef ALLEGRO_ANDROID
 				t3f_handle_menu_resize();
 			#endif
+			#ifdef ALLEGRO_WINDOWS
+				if(!(t3f_flags & T3F_USE_OPENGL))
+				{
+					al_stop_timer(t3f_timer);
+					t3f_unload_atlases();
+					t3f_unload_resources();
+					t3f_reload_resources();
+					t3f_rebuild_atlases();
+					al_start_timer(t3f_timer);
+				}
+			#endif
 			handle_view_resize();
 			sprintf(val, "%d", al_get_display_width(t3f_display));
 			al_set_config_value(t3f_config, "T3F", "display_width", val);
@@ -1268,114 +1220,17 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 
 		case ALLEGRO_EVENT_DISPLAY_FOUND:
 		{
+			al_stop_timer(t3f_timer);
 			t3f_unload_atlases();
 			t3f_unload_resources();
 			t3f_reload_resources();
 			t3f_rebuild_atlases();
+			al_start_timer(t3f_timer);
 			break;
 		}
 
-		/* key was pressed or repeated */
-		case ALLEGRO_EVENT_KEY_DOWN:
+		case ALLEGRO_EVENT_DISPLAY_ORIENTATION:
 		{
-			t3f_key[event->keyboard.keycode] = 1;
-			#ifdef ALLEGRO_MACOSX
-				if(event->keyboard.keycode == ALLEGRO_KEY_LSHIFT)
-				{
-					t3f_key[ALLEGRO_KEY_RSHIFT] = 1;
-				}
-			#endif
-			break;
-		}
-
-		/* key was released */
-		case ALLEGRO_EVENT_KEY_UP:
-		{
-			t3f_key[event->keyboard.keycode] = 0;
-			#ifdef ALLEGRO_MACOSX
-				if(event->keyboard.keycode == ALLEGRO_KEY_LSHIFT)
-				{
-					t3f_key[ALLEGRO_KEY_RSHIFT] = 0;
-				}
-			#endif
-			break;
-		}
-
-		/* a character was entered */
-		case ALLEGRO_EVENT_KEY_CHAR:
-		{
-			if(event->keyboard.unichar != -1)
-			{
-				t3f_add_key(event->keyboard.unichar);
-			}
-			if(event->keyboard.repeat)
-			{
-				t3f_key[event->keyboard.keycode] = 1;
-			}
-			break;
-		}
-
-		case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-		{
-			t3f_mouse_button[event->mouse.button - 1] = 1;
-			t3f_real_mouse_x = event->mouse.x;
-			t3f_real_mouse_y = event->mouse.y;
-			t3f_mouse_z = event->mouse.z;
-
-			t3f_touch[0].active = true;
-			t3f_touch[0].pressed = true;
-			t3f_touch[0].real_x = t3f_real_mouse_x;
-			t3f_touch[0].real_y = t3f_real_mouse_y;
-			t3f_touch[0].primary = true;
-			break;
-		}
-		case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
-		{
-			t3f_mouse_button[event->mouse.button - 1] = 0;
-			t3f_real_mouse_x = event->mouse.x;
-			t3f_real_mouse_y = event->mouse.y;
-			t3f_mouse_z = event->mouse.z;
-
-			t3f_touch[0].active = false;
-			t3f_touch[0].real_x = t3f_real_mouse_x;
-			t3f_touch[0].real_y = t3f_real_mouse_y;
-			t3f_touch[0].released = true;
-			break;
-		}
-		case ALLEGRO_EVENT_MOUSE_AXES:
-		{
-			t3f_real_mouse_x = event->mouse.x;
-			t3f_real_mouse_y = event->mouse.y;
-			t3f_mouse_z = event->mouse.z;
-
-			if(t3f_touch[0].active)
-			{
-				t3f_touch[0].real_x = t3f_real_mouse_x;
-				t3f_touch[0].real_y = t3f_real_mouse_y;
-			}
-			t3f_mouse_moved = true;
-			break;
-		}
-		case ALLEGRO_EVENT_MOUSE_WARPED:
-		{
-			t3f_real_mouse_x = event->mouse.x;
-			t3f_real_mouse_y = event->mouse.y;
-
-			if(t3f_touch[0].active)
-			{
-				t3f_touch[0].real_x = t3f_real_mouse_x;
-				t3f_touch[0].real_y = t3f_real_mouse_y;
-			}
-			break;
-		}
-		case ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY:
-		{
-			t3f_mouse_hidden = true;
-			break;
-		}
-		case ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY:
-		{
-			t3f_mouse_hidden = false;
 			break;
 		}
 
@@ -1408,33 +1263,6 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 				t3f_joystick_state_updated[jn] = true;
 			}
 			_t3f_input_handle_joystick_event(event);
-			break;
-		}
-
-		case ALLEGRO_EVENT_TOUCH_BEGIN:
-		{
-			t3f_touch[event->touch.id + 1].active = true;
-			t3f_touch[event->touch.id + 1].real_x = event->touch.x;
-			t3f_touch[event->touch.id + 1].real_y = event->touch.y;
-			t3f_touch[event->touch.id + 1].primary = event->touch.primary;
-			t3f_touch[event->touch.id + 1].pressed = true;
-			break;
-		}
-
-		case ALLEGRO_EVENT_TOUCH_MOVE:
-		{
-			t3f_touch[event->touch.id + 1].real_x = event->touch.x;
-			t3f_touch[event->touch.id + 1].real_y = event->touch.y;
-			break;
-		}
-
-		case ALLEGRO_EVENT_TOUCH_END:
-		case ALLEGRO_EVENT_TOUCH_CANCEL:
-		{
-			t3f_touch[event->touch.id + 1].active = false;
-			t3f_touch[event->touch.id + 1].real_x = event->touch.x;
-			t3f_touch[event->touch.id + 1].real_y = event->touch.y;
-			t3f_touch[event->touch.id + 1].released = true;
 			break;
 		}
 
@@ -1478,7 +1306,11 @@ void t3f_event_handler(ALLEGRO_EVENT * event)
 		/* this keeps your program running */
 		case ALLEGRO_EVENT_TIMER:
 		{
-			_t3f_logic_ticks++;
+			if(event->any.timestamp - _t3f_last_timer_tick_timestamp >= _t3f_timer_tick_minimum_time)
+			{
+				_t3f_last_timer_tick_timestamp = event->any.timestamp;
+				_t3f_logic_ticks++;
+			}
 			break;
 		}
 	}
@@ -1498,7 +1330,7 @@ void t3f_render(bool flip)
 			al_clear_to_color(al_map_rgb_f(0.0, 0.0, 0.0));
 			t3f_select_view(t3f_current_view);
 		}
-		al_use_transform(&t3f_current_transform);
+		al_use_transform(&t3f_current_view->transform);
 		t3f_render_proc(t3f_app_data);
 		if(flip)
 		{
@@ -1555,11 +1387,6 @@ void t3f_run(void)
 			t3f_event_handler(&event);
 		}
 
-		if(_t3f_mouse_warped)
-		{
-			_t3f_update_mouse_xy(_t3f_mouse_warp_x, _t3f_mouse_warp_y);
-			_t3f_mouse_warped = false;
-		}
 		for(i = 0; i < _t3f_logic_ticks && !t3f_quit; i++)
 		{
 			t3f_android_support_helper();
@@ -1597,6 +1424,9 @@ void t3f_finish(void)
 {
 	t3f_save_config();
 	t3f_save_user_data();
+	_t3f_exit_animation_system();
+	_t3f_exit_bitmap_system();
+	_t3f_uninitialize_resource_manager();
 	if(t3f_timer)
 	{
 		al_destroy_timer(t3f_timer);
@@ -1609,7 +1439,20 @@ void t3f_finish(void)
 	{
 		al_destroy_event_queue(t3f_queue);
 	}
-	t3f_stop_music();
+	if(t3f_flags & T3F_USE_SOUND)
+	{
+		t3f_stop_music();
+		_t3f_clean_up_sound_data();
+	}
+	if(t3f_flags & T3F_USE_KEYBOARD)
+	{
+		_t3f_uninitialize_keyboard();
+	}
+	if(t3f_flags & T3F_USE_MOUSE)
+	{
+		_t3f_uninitialize_mouse();
+	}
+	_t3f_uninitialize_touch_data();
 	if(t3f_developer_name)
 	{
 		free(t3f_developer_name);

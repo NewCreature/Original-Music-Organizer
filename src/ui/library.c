@@ -40,7 +40,7 @@ static void maybe_stop_player(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	if(!t3f_key[ALLEGRO_KEY_LSHIFT] && !t3f_key[ALLEGRO_KEY_RSHIFT])
+	if(!t3f_key_held(ALLEGRO_KEY_LSHIFT) && !t3f_key_held(ALLEGRO_KEY_RSHIFT))
 	{
 		switch(app->player->state)
 		{
@@ -58,7 +58,7 @@ static void maybe_start_player(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	if(!t3f_key[ALLEGRO_KEY_LSHIFT] && !t3f_key[ALLEGRO_KEY_RSHIFT])
+	if(!t3f_key_held(ALLEGRO_KEY_LSHIFT) && !t3f_key_held(ALLEGRO_KEY_RSHIFT))
 	{
 		app->player->queue_pos = 0;
 		omo_start_player(app->player);
@@ -70,7 +70,7 @@ static bool prepare_queue(void * data, int count)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	int final_count = count;
 
-	if(t3f_key[ALLEGRO_KEY_LSHIFT] || t3f_key[ALLEGRO_KEY_RSHIFT])
+	if(!t3f_key_held(ALLEGRO_KEY_LSHIFT) && !t3f_key_held(ALLEGRO_KEY_RSHIFT))
 	{
 		if(app->player->queue)
 		{
@@ -192,7 +192,7 @@ void omo_library_logic(void * data)
 	{
 		queue_song_list(app, app->library);
 		app->ui->ui_artist_list_element->id1 = -1;
-		if(!(t3f_key[ALLEGRO_KEY_LSHIFT] || t3f_key[ALLEGRO_KEY_RSHIFT]))
+		if(!t3f_key_held(ALLEGRO_KEY_LSHIFT) && !t3f_key_held(ALLEGRO_KEY_RSHIFT))
 		{
 			app->ui->ui_queue_list_element->d1 = 0;
 			app->ui->ui_queue_list_element->d2 = 0;
@@ -202,7 +202,7 @@ void omo_library_logic(void * data)
 	{
 		queue_song_list(app, app->library);
 		app->ui->ui_album_list_element->id1 = -1;
-		if(!(t3f_key[ALLEGRO_KEY_LSHIFT] || t3f_key[ALLEGRO_KEY_RSHIFT]))
+		if(!t3f_key_held(ALLEGRO_KEY_LSHIFT) && !t3f_key_held(ALLEGRO_KEY_RSHIFT))
 		{
 			app->ui->ui_queue_list_element->d1 = 0;
 			app->ui->ui_queue_list_element->d2 = 0;
@@ -226,7 +226,7 @@ void omo_library_logic(void * data)
 			{
 				omo_add_file_to_queue(app->player->queue, app->library->entry[app->library->filtered_song_entry[app->ui->selected_song]]->filename, app->library->entry[app->library->filtered_song_entry[app->ui->selected_song]]->sub_filename, app->library->entry[app->library->filtered_song_entry[app->ui->selected_song]]->track, true);
 			}
-			if(!(t3f_key[ALLEGRO_KEY_LSHIFT] || t3f_key[ALLEGRO_KEY_RSHIFT]))
+			if(!t3f_key_held(ALLEGRO_KEY_LSHIFT) && !t3f_key_held(ALLEGRO_KEY_RSHIFT))
 			{
 				app->ui->ui_queue_list_element->d1 = 0;
 				app->ui->ui_queue_list_element->d2 = 0;
@@ -254,7 +254,7 @@ void omo_library_logic(void * data)
 		app->ui->apply_song_search_filter = false;
 	}
 
-	if(t3f_key[ALLEGRO_KEY_ENTER])
+	if(t3f_key_pressed(ALLEGRO_KEY_ENTER))
 	{
 		if(app->ui->ui_artist_search_element->flags & D_GOTFOCUS)
 		{
@@ -280,9 +280,9 @@ void omo_library_logic(void * data)
 				app->ui->ui_song_list_element->d1 = 1;
 			}
 		}
-		t3f_key[ALLEGRO_KEY_ENTER] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_ENTER);
 	}
-	else if(t3f_key[ALLEGRO_KEY_TAB])
+	else if(t3f_key_pressed(ALLEGRO_KEY_TAB))
 	{
 		if(app->ui->ui_artist_search_element->flags & D_GOTFOCUS)
 		{

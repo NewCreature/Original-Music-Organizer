@@ -87,20 +87,20 @@ void omo_tags_dialog_logic(void * data)
 	const char * val;
 	int i;
 
-	if(t3f_key[ALLEGRO_KEY_ESCAPE])
+	if(t3f_key_pressed(ALLEGRO_KEY_ESCAPE))
 	{
 		omo_close_tags_dialog(app->ui, app);
-		t3f_key[ALLEGRO_KEY_ESCAPE] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_ESCAPE);
 	}
-	if((t3f_key[ALLEGRO_KEY_LCTRL] || t3f_key[ALLEGRO_KEY_RCTRL] || t3f_key[ALLEGRO_KEY_COMMAND]) && t3f_key[ALLEGRO_KEY_C])
+	if((t3f_key_held(ALLEGRO_KEY_LCTRL) || t3f_key_held(ALLEGRO_KEY_RCTRL) || t3f_key_held(ALLEGRO_KEY_COMMAND)) && t3f_key_pressed(ALLEGRO_KEY_C))
 	{
 		omo_menu_edit_copy_tags(0, data);
-		t3f_key[ALLEGRO_KEY_C] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_C);
 	}
-	else if((t3f_key[ALLEGRO_KEY_LCTRL] || t3f_key[ALLEGRO_KEY_RCTRL] || t3f_key[ALLEGRO_KEY_COMMAND]) && t3f_key[ALLEGRO_KEY_V])
+	else if((t3f_key_held(ALLEGRO_KEY_LCTRL) || t3f_key_held(ALLEGRO_KEY_RCTRL) || t3f_key_held(ALLEGRO_KEY_COMMAND)) && t3f_key_pressed(ALLEGRO_KEY_V))
 	{
 		omo_menu_edit_paste_tags(0, data);
-		t3f_key[ALLEGRO_KEY_V] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_V);
 	}
 
 	if(app->button_pressed == 0)
@@ -179,7 +179,7 @@ void omo_tags_dialog_logic(void * data)
 			app->destroy_library_lists_cache = true;
 		}
 		app->button_pressed = -1;
-		t3f_key[ALLEGRO_KEY_ENTER] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_ENTER);
 	}
 	else if(app->button_pressed == 1)
 	{

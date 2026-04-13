@@ -1,6 +1,7 @@
 #include <allegro5/allegro5.h>
 #include "t3f.h"
 #include "controller.h"
+#include "keyboard.h"
 
 static char t3f_binding_return_name[256] = {0};
 static char t3f_controller_return_name[256] = {0};
@@ -505,7 +506,7 @@ void t3f_read_controller(T3F_CONTROLLER * cp)
 		{
 			case T3F_CONTROLLER_BINDING_KEY:
 			{
-				if(t3f_key[cp->binding[i].button])
+				if(t3f_key_held(cp->binding[i].button))
 				{
 					cp->state[i].down = true;
 				}

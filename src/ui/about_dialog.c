@@ -64,10 +64,10 @@ void omo_about_dialog_logic(void * data)
 {
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 
-	if(t3f_key[ALLEGRO_KEY_ESCAPE])
+	if(t3f_key_pressed(ALLEGRO_KEY_ESCAPE))
 	{
 		omo_close_about_dialog(app->ui, app);
-		t3f_key[ALLEGRO_KEY_ESCAPE] = 0;
+		t3f_use_key_press(ALLEGRO_KEY_ESCAPE);
 	}
 	if(app->button_pressed >= 0)
 	{

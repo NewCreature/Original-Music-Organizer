@@ -1,5 +1,5 @@
-#ifndef T3F_PNG_H
-#define T3F_PNG_H
+#ifndef T3F_INTERNAL_PNG_H
+#define T3F_INTERNAL_PNG_H
 
 #include "t3f.h"
 

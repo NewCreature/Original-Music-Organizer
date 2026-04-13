@@ -7,13 +7,17 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <application
         android:label="@string/app_name"
-        android:debuggable="false" android:icon="@drawable/icon">
+        android:theme="@style/Theme.AppTheme"
+        android:debuggable="false"
+        android:installLocation="auto"
+        android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="APP_ORIENTATION"
-            android:configChanges="screenLayout|uiMode|orientation">
+            android:configChanges="screenLayout|uiMode|orientation"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -25,7 +29,8 @@
             android:launchMode="standard"
             android:screenOrientation="behind"
             android:theme="@android:style/Theme.Holo.Dialog"
-            android:configChanges="screenLayout|uiMode|orientation">
+            android:configChanges="screenLayout|uiMode|orientation"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>

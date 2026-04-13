@@ -15,6 +15,7 @@ T3F_ACHIEVEMENTS_LIST * t3f_create_achievements_list(int entries)
   {
     goto fail;
   }
+  memset(achievements_list->entry, 0, sizeof(T3F_ACHIEVEMENT_ENTRY) * entries);
   achievements_list->entries = entries;
 
   return achievements_list;
@@ -89,8 +90,12 @@ bool t3f_set_achievement_details(T3F_ACHIEVEMENTS_LIST * achievements_list, int 
 
 void t3f_update_achievement_progress(T3F_ACHIEVEMENTS_LIST * achievements_list, int entry, int step)
 {
-  achievements_list->entry[entry].step = step;
-  achievements_list->modified = true;
+  if(achievements_list->entry[entry].step != step)
+  {
+    achievements_list->entry[entry].step = step;
+    achievements_list->entry[entry].store_state = T3F_ACHIEVEMENTS_STATE_UNSTORED;
+    achievements_list->updated = true;
+  }
 }
 
 bool t3f_achievement_gotten(T3F_ACHIEVEMENTS_LIST * achievements_list, int entry)
@@ -109,6 +114,9 @@ void t3f_save_achievements_data(T3F_ACHIEVEMENTS_LIST * achievements_list, ALLEG
     sprintf(buf, "entry_%d_step", i);
     sprintf(buf2, "%d", achievements_list->entry[i].step);
     al_set_config_value(config, section, buf, buf2);
+    sprintf(buf, "entry_%d_store_step", i);
+    sprintf(buf2, "%d", achievements_list->entry[i].store_state);
+    al_set_config_value(config, section, buf, buf2);
   }
 }
 
@@ -125,6 +133,18 @@ void t3f_load_achievements_data(T3F_ACHIEVEMENTS_LIST * achievements_list, ALLEG
     if(val)
     {
       achievements_list->entry[i].step = atoi(val);
+    }
+    sprintf(buf, "entry_%d_store_step", i);
+    val = al_get_config_value(config, section, buf);
+    if(val)
+    {
+      achievements_list->entry[i].store_state = atoi(val);
+
+      /* mark list as updated if achievement is unstored */
+      if(achievements_list->entry[i].store_state == T3F_ACHIEVEMENTS_STATE_UNSTORED || achievements_list->entry[i].store_state == T3F_ACHIEVEMENTS_STATE_STORING)
+      {
+        achievements_list->updated = true;
+      }
     }
   }
 }

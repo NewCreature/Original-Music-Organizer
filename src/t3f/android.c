@@ -1,4 +1,7 @@
 #include "t3f.h"
+#ifdef ALLEGRO_WINDOWS
+	#include <windows.h>
+#endif
 
 /* The code below is from a supposedly working implementation. We should derive
    our implementation from it and see if we can actually find our
@@ -194,14 +197,14 @@ JNI_FUNC(void, MainActivity, nativeOnEditComplete, (JNIEnv *env, jobject obj, js
 		(*env)->DeleteLocalRef(env, urlS);
 	}
 
-	char * t3f_run_url(const char * url)
+	int t3f_run_url(const char * url, const char ** post_data, const char * out_path, char ** out_data)
 	{
 		JNIEnv * env = _al_android_get_jnienv();
 		jstring urlS = (*env)->NewStringUTF(env, url);
 		jbyteArray retB;
 		int retB_size;
 		const jbyte * ret;
-		char * real_ret;
+		int real_ret = 0;
 
 		retB = _jni_callObjectMethodV(
 			_al_android_get_jnienv(),
@@ -210,18 +213,27 @@ JNI_FUNC(void, MainActivity, nativeOnEditComplete, (JNIEnv *env, jobject obj, js
 			"(Ljava/lang/String;)[B",
 			urlS
 		);
-		retB_size = (*env)->GetArrayLength(env, retB);
-		ret = (*env)->GetByteArrayElements(env, retB, NULL);
-		real_ret = malloc(retB_size);
-		if(real_ret)
+		if(retB)
 		{
-			memcpy(real_ret, ret, retB_size);
+			retB_size = (*env)->GetArrayLength(env, retB);
+			ret = (*env)->GetByteArrayElements(env, retB, NULL);
+			*out_data = malloc(retB_size);
+			if(*out_data)
+			{
+				memcpy(*out_data, ret, retB_size);
+			}
+			(*env)->ReleaseStringUTFChars(env, retB, ret);
+			return 1;
 		}
-		(*env)->ReleaseStringUTFChars(env, retB, ret);
-		return real_ret;
-}
+		return 0;
+	}
 
-#else
+	void _t3f_reset_android_bg_color(void)
+	{
+		_jni_callVoidMethodV(_al_android_get_jnienv(), _al_android_activity_object(), "ResetBackgroundColor", "()V");
+	}
+
+	#else
 
 	void t3f_android_support_helper(void)
 	{
@@ -235,27 +247,31 @@ JNI_FUNC(void, MainActivity, nativeOnEditComplete, (JNIEnv *env, jobject obj, js
 	{
 	}
 
+	void _t3f_reset_android_bg_color(void)
+	{
+	}
+
 	void t3f_open_url(const char *url)
 	{
 		char command[256] = {0};
 
 		#ifdef ALLEGRO_WINDOWS
-			snprintf(command, 256, "start %s", url);
+			ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL);
 		#else
 			#ifdef ALLEGRO_MACOSX
 				snprintf(command, 256, "open %s", url);
 			#else
 				snprintf(command, 256, "xdg-open %s", url);
 			#endif
+			al_stop_timer(t3f_timer);
+			(void) system(command);
+			al_start_timer(t3f_timer);
 		#endif
-		al_stop_timer(t3f_timer);
-		(void) system(command);
-		al_start_timer(t3f_timer);
 	}
 
-	char * t3f_run_url(const char * url)
+	int t3f_run_url(const char * url, const char ** post_data, const char * out_path, char ** out_data)
 	{
-		return NULL;
+		return 0;
 	}
 
 #endif
