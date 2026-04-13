@@ -581,7 +581,7 @@ int omo_menu_library_add_profile(int id, void * data)
 {
 	OMO_UI * uip = (OMO_UI *)data;
 
-	omo_open_new_profile_dialog( uip, data);
+	omo_open_new_profile_dialog(uip, data);
 
 	return 1;
 }
