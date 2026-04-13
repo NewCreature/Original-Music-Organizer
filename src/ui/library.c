@@ -70,7 +70,7 @@ static bool prepare_queue(void * data, int count)
 	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	int final_count = count;
 
-	if(!t3f_key_held(ALLEGRO_KEY_LSHIFT) && !t3f_key_held(ALLEGRO_KEY_RSHIFT))
+	if(t3f_key_held(ALLEGRO_KEY_LSHIFT) || t3f_key_held(ALLEGRO_KEY_RSHIFT))
 	{
 		if(app->player->queue)
 		{
