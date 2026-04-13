@@ -118,6 +118,7 @@ void omo_file_chooser_logic(void * data)
 
 	if(uip->app->file_chooser && uip->app->file_chooser_done)
 	{
+		printf("fc\n");
 		if(al_get_native_file_dialog_count(uip->app->file_chooser))
 		{
 			al_set_config_value(t3f_config, "Settings", "last_music_filename", al_get_native_file_dialog_path(uip->app->file_chooser, 0));

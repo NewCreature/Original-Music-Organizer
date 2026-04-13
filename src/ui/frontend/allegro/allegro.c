@@ -21,6 +21,7 @@
 #include "gui/player.h"
 #include "instance.h"
 #include "init.h"
+#include "gui/file_chooser.h"
 
 #define OMO_BEZEL_TOP    1
 #define OMO_BEZEL_BOTTOM 2
@@ -304,6 +305,7 @@ static void frontend_logic(void * data, int flags)
   int volume_pos;
   bool disable_shortcuts = false;
 
+  omo_file_chooser_logic(frontend_data->ui);
   omo_library_pre_gui_logic(frontend_data->ui);
   if(frontend_data->ui->app->player->queue)
   {

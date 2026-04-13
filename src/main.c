@@ -33,7 +33,6 @@ void omo_logic(void * data)
 	{
 		default:
 		{
-			omo_file_chooser_logic(data);
 			omo_player_logic(app->player, app->library, app->archive_handler_registry, app->codec_handler_registry, app->player_temp_path);
 			if(app->player->new_tags)
 			{
