@@ -62,7 +62,7 @@ static void * frontend_init(void * app_instance, int flags)
 	}
   omo_set_window_constraints(frontend_data->ui, frontend_data->ui->app->library_view);
 	t3gui_show_dialog(frontend_data->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app_instance);
-  if(!omo_setup_menus(frontend_data->ui->app))
+  if(!omo_setup_menus(frontend_data->ui))
 	{
 		printf("Error setting up menus!\n");
     goto fail;
