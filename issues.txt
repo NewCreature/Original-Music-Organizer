@@ -135,7 +135,7 @@ v0.6
 [ ]Make available condec handlers be configurable. We want to be able to
    disable certain handlers in case of license incompatibility.
 
-[ ]Crash when selecting 'Shuffle All'.
+[X]Crash when selecting 'Shuffle All'.
 
 
 v0.5.5
