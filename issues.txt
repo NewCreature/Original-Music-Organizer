@@ -120,6 +120,24 @@ Long Term Goals
 [ ]Add support for Amiga XPK compressed files.
 
 
+v0.6
+----
+
+[ ]Fully separate UI code from player code.
+
+   [ ]Initialize T3F with no display.
+
+   [ ]Create a display to use with the Allegro frontend when that frontend is
+      initialized.
+
+[ ]Add curses-based UI.
+
+[ ]Make available condec handlers be configurable. We want to be able to
+   disable certain handlers in case of license incompatibility.
+
+[ ]Crash when selecting 'Shuffle All'.
+
+
 v0.5.5
 ------
 
