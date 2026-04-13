@@ -1,8 +1,8 @@
-#include "../t3f/t3f.h"
+#include "t3f/t3f.h"
 
-#include "../instance.h"
-#include "../library_helpers.h"
-#include "../text_helpers.h"
+#include "instance.h"
+#include "library_helpers.h"
+#include "text_helpers.h"
 #include "queue_list.h"
 
 static char buffer[1024] = {0};

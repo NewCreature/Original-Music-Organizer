@@ -1,0 +1,144 @@
+#include "t3f/t3f.h"
+
+#include "instance.h"
+#include "menu_proc.h"
+#include "menu_update_proc.h"
+#include "profile.h"
+#include "ui.h"
+
+void omo_clear_profile_menu(OMO_UI * uip)
+{
+	int i;
+
+	/* remove all items except Default */
+	for(i = 0; i < omo_get_profile_count(); i++)
+	{
+		al_remove_menu_item(uip->menu[OMO_MENU_PROFILE], -4);
+	}
+}
+
+void omo_update_profile_menu(OMO_UI * uip)
+{
+	const char * val;
+	int i;
+
+	/* add menu items for all profiles */
+	for(i = 0; i < omo_get_profile_count(); i++)
+	{
+		val = omo_get_profile(i);
+		if(val)
+		{
+			uip->profile_select_id[i + 1] = t3f_add_menu_item(uip->menu[OMO_MENU_PROFILE], val, ALLEGRO_MENU_ITEM_CHECKBOX, NULL, omo_menu_library_select_profile, omo_menu_library_profile_update_proc);
+		}
+	}
+	i = omo_get_current_profile();
+	uip->selected_profile_id = uip->profile_select_id[i + 1];
+}
+
+bool omo_setup_menus(OMO_UI * uip)
+{
+	uip->menu[OMO_MENU_PROFILE] = al_create_menu();
+	if(!uip->menu[OMO_MENU_PROFILE])
+	{
+		return false;
+	}
+	t3f_add_menu_item(uip->menu[OMO_MENU_PROFILE], "Add", 0, NULL, omo_menu_library_add_profile, omo_menu_base_update_proc);
+	uip->profile_delete_id = t3f_add_menu_item(uip->menu[OMO_MENU_PROFILE], "Remove", 0, NULL, omo_menu_library_remove_profile, omo_menu_library_profile_delete_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_PROFILE], NULL, 0, NULL, NULL, NULL);
+	uip->profile_select_id[0] = t3f_add_menu_item(uip->menu[OMO_MENU_PROFILE], "Default", ALLEGRO_MENU_ITEM_CHECKBOX, NULL, omo_menu_library_select_profile, omo_menu_library_profile_update_proc);
+	omo_clear_profile_menu(uip);
+	omo_update_profile_menu(uip);
+
+	uip->menu[OMO_MENU_FILE] = al_create_menu();
+	if(!uip->menu[OMO_MENU_FILE])
+	{
+		return false;
+	}
+	t3f_add_menu_item(uip->menu[OMO_MENU_FILE], "Play Files", 0, NULL, omo_menu_file_play_files, omo_menu_base_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_FILE], "Queue Files", 0, NULL, omo_menu_file_queue_files, omo_menu_base_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_FILE], "Play Folder", 0, NULL, omo_menu_file_play_folder, omo_menu_base_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_FILE], "Queue Folder", 0, NULL, omo_menu_file_queue_folder, omo_menu_base_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_FILE], "Save Playlist", 0, NULL, omo_menu_file_save_playlist, omo_menu_playlist_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_FILE], "Get Tagger Key", 0, NULL, omo_menu_file_get_tagger_key, omo_menu_base_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_FILE], "Load Theme", 0, NULL, omo_menu_file_load_theme, omo_menu_base_update_proc);
+	#ifndef ALLEGRO_MACOSX
+		t3f_add_menu_item(uip->menu[OMO_MENU_FILE], NULL, 0, NULL, NULL, NULL);
+		t3f_add_menu_item(uip->menu[OMO_MENU_FILE], "Exit", 0, NULL, omo_menu_file_exit, NULL);
+	#endif
+
+	uip->menu[OMO_MENU_PLAYER] = al_create_menu();
+	if(!uip->menu[OMO_MENU_PLAYER])
+	{
+		return false;
+	}
+	t3f_add_menu_item(uip->menu[OMO_MENU_PLAYER], "Previous Track", 0, NULL, omo_menu_playback_previous_track, omo_menu_playback_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_PLAYER], "Play", 0, NULL, omo_menu_playback_play, omo_menu_playback_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_PLAYER], "Pause", 0, NULL, omo_menu_playback_pause, omo_menu_playback_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_PLAYER], "Stop", 0, NULL, omo_menu_playback_stop, omo_menu_playback_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_PLAYER], "Next Track", 0, NULL, omo_menu_playback_next_track, omo_menu_playback_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_PLAYER], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_PLAYER], "Shuffle", 0, NULL, omo_menu_playback_shuffle, omo_menu_playback_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_PLAYER], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_PLAYER], "Find Song", 0, NULL, omo_menu_playback_find_track, omo_menu_playback_find_track_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_PLAYER], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_PLAYER], "Split Song", 0, NULL, omo_menu_playback_split_track, omo_menu_playback_edit_tags_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_PLAYER], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_PLAYER], "Edit Song Tags", 0, NULL, omo_menu_playback_edit_tags, omo_menu_playback_edit_tags_update_proc);
+
+	uip->menu[OMO_MENU_LIBRARY] = al_create_menu();
+	if(!uip->menu[OMO_MENU_LIBRARY])
+	{
+		return false;
+	}
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], "Profile", 0, uip->menu[OMO_MENU_PROFILE], NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], "Add Library Folder", 0, NULL, omo_menu_library_add_folder, omo_menu_base_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], "Clear Library Folders", 0, NULL, omo_menu_library_clear_folders, omo_menu_base_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], "Rescan Library Folders", 0, NULL, omo_menu_library_rescan_folders, omo_menu_base_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], "Import File Database", 0, NULL, omo_menu_library_import_file_database, omo_menu_base_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], "Import Entry Database", 0, NULL, omo_menu_library_import_entry_database, omo_menu_base_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], "Rebase Song Folder", 0, NULL, omo_menu_library_rebase_song_folder, omo_menu_base_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], "Edit Filter", 0, NULL, omo_menu_library_edit_filter, omo_menu_base_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], "Submit Library Tags", 0, NULL, omo_menu_library_submit_tags, omo_menu_cloud_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], "Retrieve Library Tags", 0, NULL, omo_menu_library_retrieve_tags, omo_menu_cloud_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], "Split Song", 0, NULL, omo_menu_library_split_track, omo_menu_library_edit_tags_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], NULL, 0, NULL, NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], "Edit Song Tags", 0, NULL, omo_menu_library_edit_tags, omo_menu_library_edit_tags_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_LIBRARY], "Edit Album Tags", 0, NULL, omo_menu_library_edit_album_tags, omo_menu_library_edit_album_tags_update_proc);
+
+	uip->menu[OMO_MENU_VIEW] = al_create_menu();
+	if(!uip->menu[OMO_MENU_VIEW])
+	{
+		return false;
+	}
+	t3f_add_menu_item(uip->menu[OMO_MENU_VIEW], "Basic", ALLEGRO_MENU_ITEM_CHECKBOX, NULL, omo_menu_view_basic, omo_menu_view_basic_update_proc);
+	t3f_add_menu_item(uip->menu[OMO_MENU_VIEW], "Library", ALLEGRO_MENU_ITEM_CHECKBOX, NULL, omo_menu_view_library, omo_menu_view_library_update_proc);
+
+	uip->menu[OMO_MENU_HELP] = al_create_menu();
+	if(!uip->menu[OMO_MENU_HELP])
+	{
+		return false;
+	}
+	t3f_add_menu_item(uip->menu[OMO_MENU_HELP], "About", 0, NULL, omo_menu_help_about, NULL);
+
+	uip->menu[OMO_MENU_MAIN] = al_create_menu();
+	if(!uip->menu[OMO_MENU_MAIN])
+	{
+		return false;
+	}
+	t3f_add_menu_item(uip->menu[OMO_MENU_MAIN], "File", 0, uip->menu[OMO_MENU_FILE], NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_MAIN], "View", 0, uip->menu[OMO_MENU_VIEW], NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_MAIN], "Player", 0, uip->menu[OMO_MENU_PLAYER], NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_MAIN], "Library", 0, uip->menu[OMO_MENU_LIBRARY], NULL, NULL);
+	t3f_add_menu_item(uip->menu[OMO_MENU_MAIN], "Help", 0, uip->menu[OMO_MENU_HELP], NULL, NULL);
+
+	return true;
+}

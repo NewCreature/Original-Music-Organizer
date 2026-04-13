@@ -1,13 +1,14 @@
-#include "../t3f/t3f.h"
-#include "../t3f/file.h"
-#include "../t3net/t3net.h"
-#include "../instance.h"
-#include "../constants.h"
-#include "../queue_helpers.h"
-#include "../library_helpers.h"
-#include "../profile.h"
+#include "t3f/t3f.h"
+#include "t3f/file.h"
+#include "t3net/t3net.h"
+#include "instance.h"
+#include "constants.h"
+#include "queue_helpers.h"
+#include "library_helpers.h"
+#include "profile.h"
 #include "menu_init.h"
 #include "dialog_proc.h"
+#include "ui.h"
 
 bool omo_open_rebase_song_folder_dialog(OMO_UI * uip, void * data)
 {
@@ -47,26 +48,26 @@ void omo_close_rebase_song_folder_dialog(OMO_UI * uip, void * data)
 
 void omo_rebase_song_folder_dialog_logic(void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(t3f_key_pressed(ALLEGRO_KEY_ESCAPE))
 	{
-		omo_close_rebase_song_folder_dialog(app->ui, app);
+		omo_close_rebase_song_folder_dialog(uip, uip->app);
 		t3f_use_key_press(ALLEGRO_KEY_ESCAPE);
 	}
-	if(app->button_pressed == 0)
+	if(uip->app->button_pressed == 0)
 	{
-		if(strlen(app->ui->rebase_song_folder_text))
+		if(strlen(uip->rebase_song_folder_text))
 		{
-			omo_rebase_library_file_database(app->library, al_get_config_value(t3f_config, "Settings", "base_path"), app->ui->rebase_song_folder_text);
+			omo_rebase_library_file_database(uip->app->library, al_get_config_value(t3f_config, "Settings", "base_path"), uip->rebase_song_folder_text);
 		}
-		omo_close_rebase_song_folder_dialog(app->ui, app);
-		app->button_pressed = -1;
+		omo_close_rebase_song_folder_dialog(uip, uip->app);
+		uip->app->button_pressed = -1;
 		t3f_use_key_press(ALLEGRO_KEY_ENTER);
 	}
-	else if(app->button_pressed == 1)
+	else if(uip->app->button_pressed == 1)
 	{
-		omo_close_rebase_song_folder_dialog(app->ui, app);
-		app->button_pressed = -1;
+		omo_close_rebase_song_folder_dialog(uip, uip->app);
+		uip->app->button_pressed = -1;
 	}
 }

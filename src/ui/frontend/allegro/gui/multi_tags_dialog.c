@@ -1,12 +1,13 @@
-#include "../t3f/t3f.h"
-#include "../instance.h"
-#include "../constants.h"
-#include "../queue_helpers.h"
-#include "../library_helpers.h"
-#include "../cloud.h"
-#include "../threads.h"
+#include "t3f/t3f.h"
+#include "instance.h"
+#include "constants.h"
+#include "queue_helpers.h"
+#include "library_helpers.h"
+#include "cloud.h"
+#include "threads.h"
 #include "dialog_proc.h"
 #include "menu_proc.h"
+#include "ui.h"
 
 bool omo_open_multi_tags_dialog(OMO_UI * uip, void * data)
 {
@@ -75,7 +76,7 @@ void omo_close_multi_tags_dialog(OMO_UI * uip, void * data)
 
 void omo_multi_tags_dialog_logic(void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 	bool update_artists = false;
 	bool update_albums = false;
 	bool update_songs = false;
@@ -86,7 +87,7 @@ void omo_multi_tags_dialog_logic(void * data)
 
 	if(t3f_key_pressed(ALLEGRO_KEY_ESCAPE))
 	{
-		omo_close_multi_tags_dialog(app->ui, app);
+		omo_close_multi_tags_dialog(uip, uip->app);
 		t3f_use_key_press(ALLEGRO_KEY_ESCAPE);
 	}
 	if((t3f_key_held(ALLEGRO_KEY_LCTRL) || t3f_key_held(ALLEGRO_KEY_RCTRL) || t3f_key_held(ALLEGRO_KEY_COMMAND)) && t3f_key_pressed(ALLEGRO_KEY_C))
@@ -100,25 +101,25 @@ void omo_multi_tags_dialog_logic(void * data)
 		t3f_use_key_press(ALLEGRO_KEY_V);
 	}
 
-	if(app->button_pressed == 0)
+	if(uip->app->button_pressed == 0)
 	{
-		if(app->library_view)
+		if(uip->app->library_view)
 		{
-			val = ui_artist_list_proc(app->ui->ui_artist_list_element->d1, NULL, NULL, app);
+			val = ui_artist_list_proc(uip->ui_artist_list_element->d1, NULL, NULL, uip->app);
 			if(val)
 			{
-				strcpy(app->edit_artist, val);
+				strcpy(uip->app->edit_artist, val);
 			}
-			val = ui_album_list_proc(app->ui->ui_album_list_element->d1, NULL, NULL, app);
+			val = ui_album_list_proc(uip->ui_album_list_element->d1, NULL, NULL, uip->app);
 			if(val)
 			{
-				strcpy(app->edit_album, val);
+				strcpy(uip->app->edit_album, val);
 			}
 		}
-		strcpy(app->edit_song_id, app->ui->tags_entry);
+		strcpy(uip->app->edit_song_id, uip->tags_entry);
 		for(i = 0; i < OMO_MAX_TAG_TYPES; i++)
 		{
-			if(app->ui->tag_enabled[i] && strcmp(app->ui->tags_text[i], app->ui->original_tags_text[i]))
+			if(uip->tag_enabled[i] && strcmp(uip->tags_text[i], uip->original_tags_text[i]))
 			{
 				if(!strcmp(omo_tag_type[i], "Artist"))
 				{
@@ -144,18 +145,18 @@ void omo_multi_tags_dialog_logic(void * data)
 					update_albums = true;
 					update_songs = true;
 				}
-				for(j = 0; j < app->player->queue->entry_count; j++)
+				for(j = 0; j < uip->app->player->queue->entry_count; j++)
 				{
-					if(omo_queue_item_selected(app->ui->ui_queue_list_element, j))
+					if(omo_queue_item_selected(uip->ui_queue_list_element, j))
 					{
-						id = omo_get_queue_entry_id(app->player->queue, j, app->library);
-						if(strlen(app->ui->tags_text[i]) == 0)
+						id = omo_get_queue_entry_id(uip->app->player->queue, j, uip->app->library);
+						if(strlen(uip->tags_text[i]) == 0)
 						{
-							omo_remove_database_key(app->library->entry_database, id, omo_tag_type[i]);
+							omo_remove_database_key(uip->app->library->entry_database, id, omo_tag_type[i]);
 						}
 						else
 						{
-							omo_set_database_value(app->library->entry_database, id, omo_tag_type[i], app->ui->tags_text[i]);
+							omo_set_database_value(uip->app->library->entry_database, id, omo_tag_type[i], uip->tags_text[i]);
 						}
 					}
 				}
@@ -164,44 +165,44 @@ void omo_multi_tags_dialog_logic(void * data)
 		}
 		if(update_tags)
 		{
-			for(j = 0; j < app->player->queue->entry_count; j++)
+			for(j = 0; j < uip->app->player->queue->entry_count; j++)
 			{
-				if(omo_queue_item_selected(app->ui->ui_queue_list_element, j))
+				if(omo_queue_item_selected(uip->ui_queue_list_element, j))
 				{
-					id = omo_get_queue_entry_id(app->player->queue, j, app->library);
-					omo_set_database_value(app->library->entry_database, id, "Submitted", "false");
+					id = omo_get_queue_entry_id(uip->app->player->queue, j, uip->app->library);
+					omo_set_database_value(uip->app->library->entry_database, id, "Submitted", "false");
 				}
 			}
-			omo_spawn_cloud_thread(app);
+			omo_spawn_cloud_thread(uip->app);
 		}
-		omo_discard_entry_backup(app->library);
-		omo_close_multi_tags_dialog(app->ui, app);
-		if(app->ui->tags_queue_entry >= 0)
+		omo_discard_entry_backup(uip->app->library);
+		omo_close_multi_tags_dialog(uip, uip->app);
+		if(uip->tags_queue_entry >= 0)
 		{
-			for(j = 0; j < app->player->queue->entry_count; j++)
+			for(j = 0; j < uip->app->player->queue->entry_count; j++)
 			{
-				if(omo_queue_item_selected(app->ui->ui_queue_list_element, j))
+				if(omo_queue_item_selected(uip->ui_queue_list_element, j))
 				{
-					omo_get_queue_entry_tags(app->player->queue, j, app->library);
+					omo_get_queue_entry_tags(uip->app->player->queue, j, uip->app->library);
 				}
 			}
 		}
 		else
 		{
-			app->spawn_queue_thread = true;
+			uip->app->spawn_queue_thread = true;
 		}
 		if(update_artists || update_albums || update_songs)
 		{
-			app->spawn_library_lists_thread = true;
-			app->destroy_library_lists_cache = true;
+			uip->app->spawn_library_lists_thread = true;
+			uip->app->destroy_library_lists_cache = true;
 		}
-		app->button_pressed = -1;
+		uip->app->button_pressed = -1;
 		t3f_use_key_press(ALLEGRO_KEY_ENTER);
 	}
-	else if(app->button_pressed == 1)
+	else if(uip->app->button_pressed == 1)
 	{
-		omo_restore_entry_tags(app->library);
-		omo_close_multi_tags_dialog(app->ui, app);
-		app->button_pressed = -1;
+		omo_restore_entry_tags(uip->app->library);
+		omo_close_multi_tags_dialog(uip, uip->app);
+		uip->app->button_pressed = -1;
 	}
 }

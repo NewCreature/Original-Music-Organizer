@@ -1,11 +1,12 @@
-#include "../t3f/t3f.h"
-#include "../t3gui/t3gui.h"
-#include "../t3gui/resource.h"
-#include "../instance.h"
+#include "t3f/t3f.h"
+#include "t3gui/t3gui.h"
+#include "t3gui/resource.h"
+#include "instance.h"
 #include "ui.h"
 #include "dialog_proc.h"
-#include "../constants.h"
-#include "../profile.h"
+#include "constants.h"
+#include "profile.h"
+#include "theme.h"
 
 #define OMO_BEZEL_TOP    1
 #define OMO_BEZEL_BOTTOM 2
@@ -15,6 +16,67 @@
 static const int default_bezel = 8;
 static const int default_slider_size = 16;
 static const int default_button_size = 32;
+
+void omo_set_window_constraints(OMO_UI * uip, bool library_view)
+{
+	int min_width = 0;
+	int min_height = 0;
+	int new_width, new_height;
+	int bitmap_index[6] = {OMO_THEME_BITMAP_PREVIOUS_TRACK, OMO_THEME_BITMAP_PLAY, OMO_THEME_BITMAP_STOP, OMO_THEME_BITMAP_NEXT_TRACK, OMO_THEME_BITMAP_OPEN, OMO_THEME_BITMAP_ADD};
+	int i;
+
+	/* calculate miminum width for current theme */
+	for(i = 0; i < 6; i++)
+	{
+		if(uip->main_theme->bitmap[bitmap_index[i]])
+		{
+			min_width += al_get_bitmap_width(uip->main_theme->bitmap[bitmap_index[i]]) + 4;
+		}
+		else
+		{
+			if(uip->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0])
+			{
+				min_width += al_get_text_width(uip->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0], uip->main_theme->text[bitmap_index[i]]) + 4;
+			}
+		}
+	}
+	if(library_view)
+	{
+		min_width *= 4;
+	}
+	min_width += 16; // borders
+	if(library_view)
+	{
+		min_width += 24;
+	}
+
+	/* calculate minimum height for current theme */
+	if(uip->main_theme->bitmap[0])
+	{
+		min_height += al_get_bitmap_height(uip->main_theme->bitmap[0]) + 4;
+	}
+	else
+	{
+		if(uip->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0])
+		{
+			min_height += al_get_font_line_height(uip->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0]) + 4;
+		}
+	}
+	if(uip->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0])
+	{
+		min_height += al_get_font_line_height(uip->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0]) * 8;
+	}
+	min_height += 24; // borders
+
+	al_set_window_constraints(t3f_display, min_width, min_height, 0, 0);
+	if(al_get_display_width(t3f_display) < min_width || al_get_display_height(t3f_display) < min_height)
+	{
+		new_width = al_get_display_width(t3f_display) < min_width ? min_width : al_get_display_width(t3f_display);
+		new_height = al_get_display_height(t3f_display) < min_height ? min_height : al_get_display_height(t3f_display);
+		al_resize_display(t3f_display, new_width, new_height);
+		omo_resize_ui(uip, library_view ? 1 : 0, new_width, new_height);
+	}
+}
 
 /* adjust the passed rectangle for flags */
 static void setup_module_box(OMO_THEME * tp, int * x, int * y, int * w, int * h, int flags)
@@ -481,22 +543,32 @@ bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void 
 	return false;
 }
 
-OMO_UI * omo_create_ui(void)
+OMO_UI * omo_create_ui(APP_INSTANCE * app)
 {
-	OMO_UI * uip;
+	OMO_UI * uip = NULL;
 
 	uip = malloc(sizeof(OMO_UI));
-	if(uip)
+	if(!uip)
 	{
-		memset(uip, 0, sizeof(OMO_UI));
-		if(!load_ui_data(uip))
-		{
-			printf("failed to load UI data\n");
-			free(uip);
-			return NULL;
-		}
+		goto fail;
+	}
+	memset(uip, 0, sizeof(OMO_UI));
+	uip->app = app;
+	if(!load_ui_data(uip))
+	{
+		printf("failed to load UI data\n");
+		goto fail;
 	}
 	return uip;
+
+	fail:
+	{
+		if(uip)
+		{
+			free(uip);
+		}
+		return NULL;
+	}
 }
 
 void omo_destroy_ui(OMO_UI * uip)

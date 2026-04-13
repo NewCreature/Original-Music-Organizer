@@ -1,12 +1,13 @@
-#include "../t3f/t3f.h"
-#include "../t3f/file.h"
-#include "../instance.h"
-#include "../constants.h"
-#include "../queue_helpers.h"
-#include "../library_helpers.h"
-#include "../cloud.h"
-#include "../threads.h"
+#include "t3f/t3f.h"
+#include "t3f/file.h"
+#include "instance.h"
+#include "constants.h"
+#include "queue_helpers.h"
+#include "library_helpers.h"
+#include "cloud.h"
+#include "threads.h"
 #include "dialog_proc.h"
+#include "ui.h"
 
 bool omo_open_split_track_dialog(OMO_UI * uip, void * data)
 {
@@ -46,33 +47,33 @@ void omo_close_split_track_dialog(OMO_UI * uip, void * data)
 
 void omo_split_track_dialog_logic(void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(t3f_key_pressed(ALLEGRO_KEY_ESCAPE))
 	{
-		omo_close_split_track_dialog(app->ui, app);
+		omo_close_split_track_dialog(uip, uip->app);
 		t3f_use_key_press(ALLEGRO_KEY_ESCAPE);
 	}
-	if(app->button_pressed == 0)
+	if(uip->app->button_pressed == 0)
 	{
-		if(strcmp(app->ui->original_split_track_text, app->ui->split_track_text))
+		if(strcmp(uip->original_split_track_text, uip->split_track_text))
 		{
-			omo_split_track(app->library, app->ui->split_track_fn, app->ui->split_track_text);
-			omo_set_database_value(app->library->entry_database, app->ui->split_track_entry, "Submitted", "false");
-			omo_spawn_cloud_thread(app);
-			omo_save_library(app->library);
-			app->spawn_library_thread = true;
-			app->destroy_library_lists_cache = true;
+			omo_split_track(uip->app->library, uip->split_track_fn, uip->split_track_text);
+			omo_set_database_value(uip->app->library->entry_database, uip->split_track_entry, "Submitted", "false");
+			omo_spawn_cloud_thread(uip->app);
+			omo_save_library(uip->app->library);
+			uip->app->spawn_library_thread = true;
+			uip->app->destroy_library_lists_cache = true;
 		}
-		omo_discard_entry_backup(app->library);
-		omo_close_split_track_dialog(app->ui, app);
-		app->button_pressed = -1;
+		omo_discard_entry_backup(uip->app->library);
+		omo_close_split_track_dialog(uip, uip->app);
+		uip->app->button_pressed = -1;
 		t3f_use_key_press(ALLEGRO_KEY_ENTER);
 	}
-	else if(app->button_pressed == 1)
+	else if(uip->app->button_pressed == 1)
 	{
-		omo_restore_entry_tags(app->library);
-		omo_close_split_track_dialog(app->ui, app);
-		app->button_pressed = -1;
+		omo_restore_entry_tags(uip->app->library);
+		omo_close_split_track_dialog(uip, uip->app);
+		uip->app->button_pressed = -1;
 	}
 }

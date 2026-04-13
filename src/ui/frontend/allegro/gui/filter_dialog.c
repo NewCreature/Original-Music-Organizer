@@ -1,13 +1,14 @@
-#include "../t3f/t3f.h"
-#include "../t3f/file.h"
-#include "../t3net/t3net.h"
-#include "../instance.h"
-#include "../constants.h"
-#include "../queue_helpers.h"
-#include "../library_helpers.h"
-#include "../profile.h"
+#include "t3f/t3f.h"
+#include "t3f/file.h"
+#include "t3net/t3net.h"
+#include "instance.h"
+#include "constants.h"
+#include "queue_helpers.h"
+#include "library_helpers.h"
+#include "profile.h"
 #include "menu_init.h"
 #include "dialog_proc.h"
+#include "ui.h"
 
 typedef struct
 {
@@ -77,7 +78,6 @@ static int sort_types(const void *e1, const void *e2)
 
 bool omo_open_filter_dialog(OMO_UI * uip, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
 	static TYPE_LIST types;
 	char section_buffer[1024];
 	const char * val;
@@ -95,19 +95,19 @@ bool omo_open_filter_dialog(OMO_UI * uip, void * data)
 
 	/* get type list */
 	types.types = 0;
-	for(i = 0; i < app->codec_handler_registry->codec_handlers; i++)
+	for(i = 0; i < uip->app->codec_handler_registry->codec_handlers; i++)
 	{
-		for(j = 0; j < app->codec_handler_registry->codec_handler[i].types; j++)
+		for(j = 0; j < uip->app->codec_handler_registry->codec_handler[i].types; j++)
 		{
-			if(!find_type(app->codec_handler_registry->codec_handler[i].type[j], &types))
+			if(!find_type(uip->app->codec_handler_registry->codec_handler[i].type[j], &types))
 			{
-				types.type[types.types] = app->codec_handler_registry->codec_handler[i].type[j];
+				types.type[types.types] = uip->app->codec_handler_registry->codec_handler[i].type[j];
 				types.types++;
 			}
 		}
 	}
 	qsort(types.type, types.types, sizeof(char *), sort_types);
-	omo_get_profile_section(app->library_config, omo_get_profile(omo_get_current_profile()), section_buffer);
+	omo_get_profile_section(uip->app->library_config, omo_get_profile(omo_get_current_profile()), section_buffer);
 	val = al_get_config_value(t3f_config, section_buffer, "filter");
 	if(val)
 	{
@@ -188,7 +188,7 @@ void omo_close_filter_dialog(OMO_UI * uip, void * data)
 
 void omo_filter_dialog_logic(void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 	char section_buffer[1024];
 	char filter_buffer[1024];
 	bool first = true;
@@ -198,42 +198,42 @@ void omo_filter_dialog_logic(void * data)
 
 	if(t3f_key_pressed(ALLEGRO_KEY_ESCAPE))
 	{
-		omo_close_filter_dialog(app->ui, app);
+		omo_close_filter_dialog(uip, uip->app);
 		t3f_use_key_press(ALLEGRO_KEY_ESCAPE);
 	}
-	if(app->button_pressed == 0)
+	if(uip->app->button_pressed == 0)
 	{
-		omo_get_profile_section(app->library_config, omo_get_profile(omo_get_current_profile()), section_buffer);
-		for(i = 0; i < app->ui->filter_types; i++)
+		omo_get_profile_section(uip->app->library_config, omo_get_profile(omo_get_current_profile()), section_buffer);
+		for(i = 0; i < uip->filter_types; i++)
 		{
-			if(!(app->ui->filter_type_element[i]->flags & D_SELECTED))
+			if(!(uip->filter_type_element[i]->flags & D_SELECTED))
 			{
 				break;
 			}
 		}
-		if(i >= app->ui->filter_types)
+		if(i >= uip->filter_types)
 		{
 			al_remove_config_key(t3f_config, section_buffer, "filter");
 			clear = true;
 		}
 		strcpy(filter_buffer, "");
-		for(i = 0; i < app->ui->filter_types; i++)
+		for(i = 0; i < uip->filter_types; i++)
 		{
-			if(app->ui->filter_type_selected[i] && !(app->ui->filter_type_element[i]->flags & D_SELECTED))
+			if(uip->filter_type_selected[i] && !(uip->filter_type_element[i]->flags & D_SELECTED))
 			{
 				changed = true;
 			}
-			else if(!app->ui->filter_type_selected[i] && (app->ui->filter_type_element[i]->flags & D_SELECTED))
+			else if(!uip->filter_type_selected[i] && (uip->filter_type_element[i]->flags & D_SELECTED))
 			{
 				changed = true;
 			}
-			if(app->ui->filter_type_element[i]->flags & D_SELECTED)
+			if(uip->filter_type_element[i]->flags & D_SELECTED)
 			{
 				if(!first)
 				{
 					strcat(filter_buffer, ";");
 				}
-				strcat(filter_buffer, app->ui->filter_type_element[i]->dp);
+				strcat(filter_buffer, uip->filter_type_element[i]->dp);
 				first = false;
 			}
 		}
@@ -243,17 +243,17 @@ void omo_filter_dialog_logic(void * data)
 			{
 				al_set_config_value(t3f_config, section_buffer, "filter", filter_buffer);
 			}
-			omo_cancel_library_setup(app);
+			omo_cancel_library_setup(uip->app);
 			omo_clear_library_cache();
-			app->spawn_library_thread = true;
+			uip->app->spawn_library_thread = true;
 		}
-		omo_close_filter_dialog(app->ui, app);
-		app->button_pressed = -1;
+		omo_close_filter_dialog(uip, uip->app);
+		uip->app->button_pressed = -1;
 		t3f_use_key_press(ALLEGRO_KEY_ENTER);
 	}
-	else if(app->button_pressed == 1)
+	else if(uip->app->button_pressed == 1)
 	{
-		omo_close_filter_dialog(app->ui, app);
-		app->button_pressed = -1;
+		omo_close_filter_dialog(uip, uip->app);
+		uip->app->button_pressed = -1;
 	}
 }

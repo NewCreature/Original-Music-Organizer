@@ -3,13 +3,8 @@
 #include "t3net/curl.h"
 #include "instance.h"
 #include "main.h"
-#include "events.h"
-#include "ui/menu_init.h"
-#include "ui/tags_dialog.h"
-#include "ui/split_track_dialog.h"
-#include "ui/tagger_key_dialog.h"
-#include "ui/new_profile_dialog.h"
-#include "ui/filter_dialog.h"
+#include "ui/frontend/allegro/gui/events.h"
+#include "ui/frontend/allegro/allegro.h"
 #include "file_helpers.h"
 #include "test.h"
 #include "library_helpers.h"
@@ -18,6 +13,8 @@
 #include "profile.h"
 #include "command_line.h"
 #include "cloud.h"
+#include "theme.h"
+#include "instance.h"
 
 #include "archive_handlers/unzip/unzip.h"
 #include "archive_handlers/unrar/unrar.h"
@@ -76,67 +73,6 @@ static bool setup_temp_folders(APP_INSTANCE * app)
 		return false;
 	}
 	return true;
-}
-
-void omo_set_window_constraints(APP_INSTANCE * app)
-{
-	int min_width = 0;
-	int min_height = 0;
-	int new_width, new_height;
-	int bitmap_index[6] = {OMO_THEME_BITMAP_PREVIOUS_TRACK, OMO_THEME_BITMAP_PLAY, OMO_THEME_BITMAP_STOP, OMO_THEME_BITMAP_NEXT_TRACK, OMO_THEME_BITMAP_OPEN, OMO_THEME_BITMAP_ADD};
-	int i;
-
-	/* calculate miminum width for current theme */
-	for(i = 0; i < 6; i++)
-	{
-		if(app->ui->main_theme->bitmap[bitmap_index[i]])
-		{
-			min_width += al_get_bitmap_width(app->ui->main_theme->bitmap[bitmap_index[i]]) + 4;
-		}
-		else
-		{
-			if(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0])
-			{
-				min_width += al_get_text_width(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0], app->ui->main_theme->text[bitmap_index[i]]) + 4;
-			}
-		}
-	}
-	if(app->library_view)
-	{
-		min_width *= 4;
-	}
-	min_width += 16; // borders
-	if(app->library_view)
-	{
-		min_width += 24;
-	}
-
-	/* calculate minimum height for current theme */
-	if(app->ui->main_theme->bitmap[0])
-	{
-		min_height += al_get_bitmap_height(app->ui->main_theme->bitmap[0]) + 4;
-	}
-	else
-	{
-		if(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0])
-		{
-			min_height += al_get_font_line_height(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0]) + 4;
-		}
-	}
-	if(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0])
-	{
-		min_height += al_get_font_line_height(app->ui->ui_queue_list_element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0]) * 8;
-	}
-	min_height += 24; // borders
-
-	al_set_window_constraints(t3f_display, min_width, min_height, 0, 0);
-	if(al_get_display_width(t3f_display) < min_width || al_get_display_height(t3f_display) < min_height)
-	{
-		new_width = al_get_display_width(t3f_display) < min_width ? min_width : al_get_display_width(t3f_display);
-		new_height = al_get_display_height(t3f_display) < min_height ? min_height : al_get_display_height(t3f_display);
-		al_resize_display(t3f_display, new_width, new_height);
-		omo_resize_ui(app->ui, app->library_view ? 1 : 0, new_width, new_height);
-	}
 }
 
 void omo_configure_codec_handlers(APP_INSTANCE * app)
@@ -309,16 +245,6 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		return false;
 	}
 
-	if(!omo_setup_menus(app))
-	{
-		printf("Error setting up menus!\n");
-		return false;
-	}
-	val = al_get_config_value(t3f_config, "Settings", "disable_menu");
-	if(!val || strcmp(val, "true"))
-	{
-		t3f_attach_menu(app->menu[OMO_MENU_MAIN]);
-	}
 	val = al_get_config_value(t3f_config, "Settings", "prefetch_tags");
 	if(val && !strcmp(val, "false"))
 	{
@@ -338,12 +264,6 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		app->disable_cloud_syncing = false;
 	}
 
-	app->ui = omo_create_ui();
-	if(!app->ui)
-	{
-		printf("Error settings up dialogs!\n");
-		return false;
-	}
 	t3f_srand(&app->rng_state, time(0));
 	app->state = 0;
 	app->button_pressed = -1;
@@ -353,14 +273,11 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	{
 		app->library_view = true;
 	}
-	if(!omo_create_main_dialog(app->ui, app->library_view ? 1 : 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), app))
+	app->frontend = omo_get_allegro_frontend(app, app->library_view ? OMO_ALLEGRO_UI_FLAG_LIBRARY_VIEW : 0);
+	if(!app->frontend)
 	{
-		printf("Unable to create main dialog!\n");
 		return false;
 	}
-
-	omo_set_window_constraints(app);
-	t3gui_show_dialog(app->ui->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, app);
 
 	/* set up library */
 	if(app->test_mode >= 0)
@@ -379,16 +296,6 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 				if(val)
 				{
 					app->player->queue_pos = atoi(val);
-					app->ui->ui_queue_list_element->d1 = app->player->queue_pos;
-					val = al_get_config_value(t3f_config, "Settings", "queue_scroll_position");
-					if(val)
-					{
-						app->ui->ui_queue_list_element->d2 = atoi(val);
-					}
-					else
-					{
-						app->ui->ui_queue_list_element->d2 = app->ui->ui_queue_list_element->d1;
-					}
 					val = al_get_config_value(t3f_config, "Settings", "queue_track_position");
 					if(val)
 					{
@@ -429,6 +336,7 @@ void omo_exit(APP_INSTANCE * app)
 	char buffer[1024];
 	char buf[32] = {0};
 
+	app->frontend->exit(app->frontend->data);
 	al_remove_filename(t3f_get_filename(t3f_data_path, "omo.queue", buffer, 1024));
 	al_remove_config_key(t3f_config, "Settings", "queue_position");
 	al_remove_config_key(t3f_config, "Settings", "queue_scroll_position");
@@ -438,8 +346,6 @@ void omo_exit(APP_INSTANCE * app)
 		{
 			sprintf(buf, "%d", app->player->queue_pos);
 			al_set_config_value(t3f_config, "Settings", "queue_position", buf);
-			sprintf(buf, "%d", app->ui->ui_queue_list_element->d2);
-			al_set_config_value(t3f_config, "Settings", "queue_scroll_position", buf);
 		}
 	}
 	t3f_save_config();
@@ -451,30 +357,4 @@ void omo_exit(APP_INSTANCE * app)
 		al_destroy_thread(app->cloud_thread);
 	}
 	t3f_remove_directory(t3f_get_filename(t3f_data_path, "temp", buffer, 1024));
-	if(app->ui->tags_popup_dialog)
-	{
-		omo_close_tags_dialog(app->ui, app);
-	}
-	if(app->ui->multi_tags_popup_dialog)
-	{
-		omo_close_tags_dialog(app->ui, app);
-	}
-	if(app->ui->split_track_popup_dialog)
-	{
-		omo_close_split_track_dialog(app->ui, app);
-	}
-	if(app->ui->tagger_key_popup_dialog)
-	{
-		omo_close_tagger_key_dialog(app->ui, app);
-	}
-	if(app->ui->new_profile_popup_dialog)
-	{
-		omo_close_new_profile_dialog(app->ui, app);
-	}
-	if(app->ui->filter_popup_dialog)
-	{
-		omo_close_filter_dialog(app->ui, app);
-	}
-	t3gui_close_dialog(app->ui->ui_dialog);
-	omo_destroy_ui(app->ui);
 }

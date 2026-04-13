@@ -1,13 +1,14 @@
-#include "../t3f/t3f.h"
-#include "../t3f/file.h"
-#include "../t3net/t3net.h"
-#include "../instance.h"
-#include "../constants.h"
-#include "../queue_helpers.h"
-#include "../library_helpers.h"
-#include "../profile.h"
+#include "t3f/t3f.h"
+#include "t3f/file.h"
+#include "t3net/t3net.h"
+#include "instance.h"
+#include "constants.h"
+#include "queue_helpers.h"
+#include "library_helpers.h"
+#include "profile.h"
 #include "menu_init.h"
 #include "dialog_proc.h"
+#include "ui.h"
 
 bool omo_open_new_profile_dialog(OMO_UI * uip, void * data)
 {
@@ -47,35 +48,35 @@ void omo_close_new_profile_dialog(OMO_UI * uip, void * data)
 
 void omo_new_profile_dialog_logic(void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(t3f_key_pressed(ALLEGRO_KEY_ESCAPE))
 	{
-		omo_close_new_profile_dialog(app->ui, app);
+		omo_close_new_profile_dialog(uip, uip->app);
 		t3f_use_key_press(ALLEGRO_KEY_ESCAPE);
 	}
-	if(app->button_pressed == 0)
+	if(uip->app->button_pressed == 0)
 	{
-		if(strlen(app->ui->new_profile_text))
+		if(strlen(uip->new_profile_text))
 		{
 			omo_clear_profile_menu(data);
-			if(omo_add_profile(app->ui->new_profile_text))
+			if(omo_add_profile(uip->new_profile_text))
 			{
-				if(omo_setup_profile(app->ui->new_profile_text))
+				if(omo_setup_profile(uip->new_profile_text))
 				{
 					omo_set_current_profile(omo_get_profile_count() - 1);
-					app->spawn_library_thread = true;
+					uip->app->spawn_library_thread = true;
 				}
 			}
 			omo_update_profile_menu(data);
 		}
-		omo_close_new_profile_dialog(app->ui, app);
-		app->button_pressed = -1;
+		omo_close_new_profile_dialog(uip, uip->app);
+		uip->app->button_pressed = -1;
 		t3f_use_key_press(ALLEGRO_KEY_ENTER);
 	}
-	else if(app->button_pressed == 1)
+	else if(uip->app->button_pressed == 1)
 	{
-		omo_close_new_profile_dialog(app->ui, app);
-		app->button_pressed = -1;
+		omo_close_new_profile_dialog(uip, uip->app);
+		uip->app->button_pressed = -1;
 	}
 }

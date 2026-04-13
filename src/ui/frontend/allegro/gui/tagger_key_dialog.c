@@ -1,12 +1,13 @@
-#include "../t3f/t3f.h"
-#include "../t3f/file.h"
-#include "../t3net/t3net.h"
-#include "../instance.h"
-#include "../constants.h"
-#include "../queue_helpers.h"
-#include "../library_helpers.h"
-#include "../cloud.h"
+#include "t3f/t3f.h"
+#include "t3f/file.h"
+#include "t3net/t3net.h"
+#include "instance.h"
+#include "constants.h"
+#include "queue_helpers.h"
+#include "library_helpers.h"
+#include "cloud.h"
 #include "dialog_proc.h"
+#include "ui.h"
 
 bool omo_open_tagger_key_dialog(OMO_UI * uip, void * data)
 {
@@ -55,29 +56,29 @@ void omo_close_tagger_key_dialog(OMO_UI * uip, void * data)
 
 void omo_tagger_key_dialog_logic(void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(t3f_key_pressed(ALLEGRO_KEY_ESCAPE))
 	{
-		omo_close_tagger_key_dialog(app->ui, app);
+		omo_close_tagger_key_dialog(uip, uip->app);
 		t3f_use_key_press(ALLEGRO_KEY_ESCAPE);
 	}
-	if(app->button_pressed == 0)
+	if(uip->app->button_pressed == 0)
 	{
-		if(strlen(app->ui->tagger_key_text))
+		if(strlen(uip->tagger_key_text))
 		{
-			if(strcmp(app->ui->original_tagger_key_text, app->ui->tagger_key_text))
+			if(strcmp(uip->original_tagger_key_text, uip->tagger_key_text))
 			{
-				omo_get_tagger_key(app->ui->tagger_key_text);
+				omo_get_tagger_key(uip->tagger_key_text);
 			}
 		}
-		omo_close_tagger_key_dialog(app->ui, app);
-		app->button_pressed = -1;
+		omo_close_tagger_key_dialog(uip, uip->app);
+		uip->app->button_pressed = -1;
 		t3f_use_key_press(ALLEGRO_KEY_ENTER);
 	}
-	else if(app->button_pressed == 1)
+	else if(uip->app->button_pressed == 1)
 	{
-		omo_close_tagger_key_dialog(app->ui, app);
-		app->button_pressed = -1;
+		omo_close_tagger_key_dialog(uip, uip->app);
+		uip->app->button_pressed = -1;
 	}
 }

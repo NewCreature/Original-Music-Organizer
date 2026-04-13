@@ -1631,79 +1631,25 @@ void omo_rebase_library_file_database(OMO_LIBRARY * lp, const char * base_path, 
 	}
 }
 
-static void fix_scroll_position(T3GUI_ELEMENT * element, int entries)
-{
-	int visible = element->h / al_get_font_line_height(element->theme->state[T3GUI_ELEMENT_STATE_NORMAL].font[0]) - 1;
-
-	if(entries > visible)
-	{
-		element->d2 = element->d1;
-		if(element->d2 + visible > entries)
-		{
-			element->d2 = entries - visible;
-		}
-	}
-}
-
 bool omo_find_track(APP_INSTANCE * app, const char * track_id)
 {
-	const char * artist;
-	const char * album;
-	const char * disambiguation;
-	int i;
-
-	strcpy(app->ui->ui_artist_search_element->dp, "");
-	strcpy(app->ui->ui_album_search_element->dp, "");
-	strcpy(app->ui->ui_song_search_element->dp, "");
 	omo_filter_library_artist_list(app->library, NULL);
 	omo_filter_library_album_list(app->library, NULL);
 	omo_filter_library_song_list(app->library, NULL);
 	omo_get_library_song_list(app->library, "All Artists", "All Albums", NULL);
 	if(track_id)
 	{
-		app->ui->ui_artist_list_element->d1 = 0;
-		app->ui->ui_artist_list_element->d2 = 0;
-		app->ui->ui_album_list_element->d1 = 0;
-		app->ui->ui_album_list_element->d2 = 0;
-		app->ui->ui_song_list_element->d1 = 0;
-		app->ui->ui_song_list_element->d2 = 0;
-		artist = omo_get_database_value(app->library->entry_database, track_id, "Artist");
-		if(artist)
+		app->find_track_id = track_id;
+		app->find_track_artist = omo_get_database_value(app->library->entry_database, track_id, "Artist");
+		if(app->find_track_artist)
 		{
-			for(i = 0; i < app->library->artist_entry_count; i++)
-			{
-				if(!strcmp(artist, app->library->artist_entry[i]))
-				{
-					app->ui->ui_artist_list_element->d1 = i;
-					fix_scroll_position(app->ui->ui_artist_list_element, app->library->artist_entry_count);
-					break;
-				}
-			}
-			omo_get_library_album_list(app->library, artist);
+			omo_get_library_album_list(app->library, app->find_track_artist);
 		}
-		album = omo_get_database_value(app->library->entry_database, track_id, "Album");
-		disambiguation = omo_get_database_value(app->library->entry_database, track_id, "Disambiguation");
-		if(album)
+		app->find_track_album = omo_get_database_value(app->library->entry_database, track_id, "Album");
+		app->find_track_disambiguation = omo_get_database_value(app->library->entry_database, track_id, "Disambiguation");
+		if(app->find_track_album)
 		{
-			for(i = 0; i < app->library->album_entry_count; i++)
-			{
-				if(!strcmp(album, app->library->album_entry[i].name) && (disambiguation ? !strcmp(disambiguation, app->library->album_entry[i].disambiguation) : 1))
-				{
-					app->ui->ui_album_list_element->d1 = i;
-					fix_scroll_position(app->ui->ui_album_list_element, app->library->album_entry_count);
-					break;
-				}
-			}
-			omo_get_library_song_list(app->library, artist ? artist : "All Artists", album, disambiguation);
-		}
-		for(i = 0; i < app->library->song_entry_count; i++)
-		{
-			if(!strcmp(app->library->entry[app->library->song_entry[i]]->id, track_id))
-			{
-				app->ui->ui_song_list_element->d1 = i + 1;
-				fix_scroll_position(app->ui->ui_song_list_element, app->library->song_entry_count);
-				break;
-			}
+			omo_get_library_song_list(app->library, app->find_track_artist ? app->find_track_artist : "All Artists", app->find_track_album, app->find_track_disambiguation);
 		}
 	}
 	return true;

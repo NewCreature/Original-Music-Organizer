@@ -1,12 +1,13 @@
-#include "../t3f/t3f.h"
-#include "../instance.h"
+#include "t3f/t3f.h"
+#include "instance.h"
+#include "ui.h"
 
 /* called by other update procs */
 int omo_menu_base_update_disable_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
-	if(app->ui->tags_popup_dialog || app->ui->multi_tags_popup_dialog || app->ui->split_track_popup_dialog || app->ui->tagger_key_popup_dialog || app->ui->new_profile_popup_dialog || app->ui->filter_popup_dialog)
+	if(uip->tags_popup_dialog || uip->multi_tags_popup_dialog || uip->split_track_popup_dialog || uip->tagger_key_popup_dialog || uip->new_profile_popup_dialog || uip->filter_popup_dialog)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
 		return 0;
@@ -17,9 +18,9 @@ int omo_menu_base_update_disable_proc(ALLEGRO_MENU * mp, int item, void * data)
 /* called by any menu items without their own update ogic */
 int omo_menu_base_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
-	if(app->ui->tags_popup_dialog || app->ui->multi_tags_popup_dialog || app->ui->split_track_popup_dialog || app->ui->tagger_key_popup_dialog || app->ui->new_profile_popup_dialog || app->ui->filter_popup_dialog)
+	if(uip->tags_popup_dialog || uip->multi_tags_popup_dialog || uip->split_track_popup_dialog || uip->tagger_key_popup_dialog || uip->new_profile_popup_dialog || uip->filter_popup_dialog)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
 		return 0;
@@ -33,13 +34,13 @@ int omo_menu_base_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 
 int omo_menu_playlist_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
-	else if(app->player->queue && app->player->queue->entry_count > 0)
+	else if(uip->app->player->queue && uip->app->player->queue->entry_count > 0)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
 		return 0;
@@ -53,13 +54,13 @@ int omo_menu_playlist_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 
 int omo_menu_playback_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
-	if(app->player->queue)
+	if(uip->app->player->queue)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
 	}
@@ -72,13 +73,13 @@ int omo_menu_playback_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 
 int omo_menu_playback_find_track_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
-	if(app->library && app->library->loaded && app->library_view && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
+	if(uip->app->library && uip->app->library->loaded && uip->app->library_view && uip->ui_queue_list_element->flags & D_GOTFOCUS)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
 	}
@@ -91,13 +92,13 @@ int omo_menu_playback_find_track_update_proc(ALLEGRO_MENU * mp, int item, void *
 
 int omo_menu_playback_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
-	if(app->library && app->player->queue && app->ui->ui_queue_list_element->flags & D_GOTFOCUS)
+	if(uip->app->library && uip->app->player->queue && uip->ui_queue_list_element->flags & D_GOTFOCUS)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
 	}
@@ -110,13 +111,13 @@ int omo_menu_playback_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * 
 
 int omo_menu_library_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
-	if(app->library && app->library_view && app->ui->ui_song_list_element->d1 > 0 && app->ui->ui_song_list_element->flags & D_GOTFOCUS)
+	if(uip->app->library && uip->app->library_view && uip->ui_song_list_element->d1 > 0 && uip->ui_song_list_element->flags & D_GOTFOCUS)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
 	}
@@ -129,13 +130,13 @@ int omo_menu_library_edit_tags_update_proc(ALLEGRO_MENU * mp, int item, void * d
 
 int omo_menu_library_profile_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
-	if(item == app->selected_profile_id)
+	if(item == uip->selected_profile_id)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_CHECKED);
 	}
@@ -148,13 +149,13 @@ int omo_menu_library_profile_update_proc(ALLEGRO_MENU * mp, int item, void * dat
 
 int omo_menu_library_profile_delete_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
-	if(app->selected_profile_id == app->profile_select_id[0])
+	if(uip->selected_profile_id == uip->profile_select_id[0])
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_DISABLED);
 	}
@@ -167,13 +168,13 @@ int omo_menu_library_profile_delete_update_proc(ALLEGRO_MENU * mp, int item, voi
 
 int omo_menu_library_edit_album_tags_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
-	if(app->library && app->library_view && app->ui->ui_album_list_element->d1 > 1 && app->ui->ui_album_list_element->flags & D_GOTFOCUS)
+	if(uip->app->library && uip->app->library_view && uip->ui_album_list_element->d1 > 1 && uip->ui_album_list_element->flags & D_GOTFOCUS)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_ENABLED);
 	}
@@ -186,7 +187,7 @@ int omo_menu_library_edit_album_tags_update_proc(ALLEGRO_MENU * mp, int item, vo
 
 int omo_menu_cloud_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 	const char * val;
 
 	if(!omo_menu_base_update_disable_proc(mp, item, data))
@@ -194,7 +195,7 @@ int omo_menu_cloud_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 		return 0;
 	}
 	val = al_get_config_value(t3f_config, "Settings", "tagger_id");
-	if(app->library && val)
+	if(uip->app->library && val)
 	{
 		t3f_set_menu_item_flags(mp, item, 0);
 	}
@@ -207,13 +208,13 @@ int omo_menu_cloud_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 
 int omo_menu_view_basic_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
-	if(app->library_view)
+	if(uip->app->library_view)
 	{
 		t3f_set_menu_item_flags(mp, item, 0);
 	}
@@ -226,13 +227,13 @@ int omo_menu_view_basic_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 
 int omo_menu_view_library_update_proc(ALLEGRO_MENU * mp, int item, void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(!omo_menu_base_update_disable_proc(mp, item, data))
 	{
 		return 0;
 	}
-	if(app->library_view)
+	if(uip->app->library_view)
 	{
 		t3f_set_menu_item_flags(mp, item, ALLEGRO_MENU_ITEM_CHECKED);
 	}

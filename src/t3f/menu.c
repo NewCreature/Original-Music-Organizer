@@ -13,6 +13,12 @@ static bool t3f_menus_allowed = true;
 static int _display_width = 0;
 static int _display_height = 0;
 static bool _menu_resize_flag = false;
+static void * _t3f_menu_data = NULL;
+
+void t3f_set_menu_data(void * data)
+{
+  _t3f_menu_data = data;
+}
 
 void t3f_reset_menus(void)
 {
@@ -50,23 +56,31 @@ void t3f_set_menu_item_flags(ALLEGRO_MENU * mp, int item, int flags)
 
 int t3f_process_menu_click(int id, void * data)
 {
-    if(t3f_menus_allowed)
+  if(_t3f_menu_data)
+  {
+    data = _t3f_menu_data;
+  }
+  if(t3f_menus_allowed)
+  {
+    if(id < t3f_current_menu_id)
     {
-        if(id < t3f_current_menu_id)
-        {
-            if(t3f_menu_proc[id])
-            {
-                return t3f_menu_proc[id](id, data);
-            }
-        }
+      if(t3f_menu_proc[id])
+      {
+        return t3f_menu_proc[id](id, data);
+      }
     }
-    return 0;
+  }
+  return 0;
 }
 
 void t3f_update_menus(void * data)
 {
   int i;
 
+  if(_t3f_menu_data)
+  {
+    data = _t3f_menu_data;
+  }
   if(t3f_refresh_menus_needed)
   {
     for(i = 0; i < t3f_current_menu_id; i++)

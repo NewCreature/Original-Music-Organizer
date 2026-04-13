@@ -2,6 +2,8 @@
 #define OMO_UI_H
 
 #include "theme.h"
+#include "defines.h"
+#include "instance.h"
 
 #define OMO_UI_MAX_TAGS            16
 #define OMO_UI_MAX_TAG_LENGTH    1024
@@ -19,6 +21,8 @@ typedef struct
 
 typedef struct
 {
+	APP_INSTANCE * app;
+
 	/* main dialog */
 	T3GUI_DIALOG * ui_dialog;
 	T3GUI_ELEMENT * ui_queue_list_box_element;
@@ -103,9 +107,17 @@ typedef struct
 	OMO_THEME * main_theme;
 	char ui_button_text[6][8];
 
+	ALLEGRO_MENU * menu[OMO_MAX_MENUS];
+
+	int profile_select_id[OMO_MAX_PROFILES];
+	int profile_delete_id;
+	int selected_profile_id;
+	char tags_clipboard[OMO_MAX_TAG_TYPES][OMO_UI_MAX_TAG_LENGTH];
+
 } OMO_UI;
 
-OMO_UI * omo_create_ui(void);
+void omo_set_window_constraints(OMO_UI * uip, bool library_view);
+OMO_UI * omo_create_ui(APP_INSTANCE * app);
 void omo_destroy_ui(OMO_UI * uip);
 void omo_resize_ui(OMO_UI * uip, int mode, int width, int height);
 bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void * data);

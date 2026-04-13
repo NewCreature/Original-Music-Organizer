@@ -10,15 +10,14 @@
 #include "queue.h"
 #include "library.h"
 #include "player.h"
-#include "ui/ui.h"
+#include "ui/frontend/frontend.h"
 #include "file_helpers.h"
 
 /* structure to hold all of our app-specific data */
 typedef struct
 {
 
-	OMO_UI * ui;
-	ALLEGRO_MENU * menu[OMO_MAX_MENUS];
+	OMO_FRONTEND * frontend;
 	ALLEGRO_FILECHOOSER * file_chooser;
 	int file_chooser_mode;
 	bool file_chooser_done;
@@ -31,16 +30,12 @@ typedef struct
 	char edit_album[256];
 	char edit_disambiguation[256];
 	char edit_song_id[256];
-	int profile_select_id[OMO_MAX_PROFILES];
-	int profile_delete_id;
-	int selected_profile_id;
 
 	OMO_ARCHIVE_HANDLER_REGISTRY * archive_handler_registry;
 	OMO_CODEC_HANDLER_REGISTRY * codec_handler_registry;
 	char file_database_fn[1024];
 	char entry_database_fn[1024];
 	char test_path[1024];
-	char tags_clipboard[OMO_MAX_TAG_TYPES][OMO_UI_MAX_TAG_LENGTH];
 	ALLEGRO_CONFIG * library_config;
 	OMO_LIBRARY * library;
 	OMO_LIBRARY * loading_library;
@@ -54,6 +49,10 @@ typedef struct
 	char cloud_url[256];
 	bool prefetch_tags;
 	bool disable_cloud_syncing;
+	const char * find_track_artist;
+	const char * find_track_album;
+	const char * find_track_disambiguation;
+	const char * find_track_id;
 
 	ALLEGRO_PATH * library_temp_path;
 	ALLEGRO_PATH * queue_temp_path;

@@ -1,14 +1,15 @@
-#include "../t3f/t3f.h"
+#include "t3f/t3f.h"
 #ifdef ALLEGRO_WINDOWS
 	#include "t3f/windows.h"
 #endif
-#include "../instance.h"
-#include "../constants.h"
-#include "../queue_helpers.h"
-#include "../library_helpers.h"
-#include "../cloud.h"
+#include "instance.h"
+#include "constants.h"
+#include "queue_helpers.h"
+#include "library_helpers.h"
+#include "cloud.h"
 #include "dialog_proc.h"
 #include "menu_proc.h"
+#include "ui.h"
 
 static char text_line_2[256] = {0};
 
@@ -62,16 +63,16 @@ void omo_close_about_dialog(OMO_UI * uip, void * data)
 
 void omo_about_dialog_logic(void * data)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
+	OMO_UI * uip = (OMO_UI *)data;
 
 	if(t3f_key_pressed(ALLEGRO_KEY_ESCAPE))
 	{
-		omo_close_about_dialog(app->ui, app);
+		omo_close_about_dialog(uip, uip->app);
 		t3f_use_key_press(ALLEGRO_KEY_ESCAPE);
 	}
-	if(app->button_pressed >= 0)
+	if(uip->app->button_pressed >= 0)
 	{
-		omo_close_about_dialog(app->ui, app);
-		app->button_pressed = -1;
+		omo_close_about_dialog(uip, uip->app);
+		uip->app->button_pressed = -1;
 	}
 }
