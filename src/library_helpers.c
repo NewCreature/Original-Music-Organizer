@@ -508,22 +508,31 @@ static bool omo_scan_library_folders(APP_INSTANCE * app)
 				omo_save_library(app->loading_library);
 			}
 		}
-		omo_allocate_library(app->loading_library, app->loading_library_file_helper_data.file_count);
-		for(j = 0; j < c; j++)
+		if(app->loading_library_file_helper_data.file_count > 0)
 		{
-			if(app->loading_library_file_helper_data.cancel_scan)
+			omo_allocate_library(app->loading_library, app->loading_library_file_helper_data.file_count);
+			for(j = 0; j < c; j++)
 			{
-				app->loading_library_file_helper_data.scan_done = true;
-				return false;
+				if(app->loading_library_file_helper_data.cancel_scan)
+				{
+					app->loading_library_file_helper_data.scan_done = true;
+					return false;
+				}
+				val = get_library_folder(app->library_config, j, buffer, 1024);
+				if(val)
+				{
+					sprintf(app->status_bar_text, "Scanning folder %d of %d...", j + 1, c);
+					t3f_scan_files(val, omo_add_file, false, &app->loading_library_file_helper_data);
+					omo_save_library(app->loading_library);
+					sprintf(app->status_bar_text, "Saving progress...");
+				}
 			}
-			val = get_library_folder(app->library_config, j, buffer, 1024);
-			if(val)
-			{
-				sprintf(app->status_bar_text, "Scanning folder %d of %d...", j + 1, c);
-				t3f_scan_files(val, omo_add_file, false, &app->loading_library_file_helper_data);
-				omo_save_library(app->loading_library);
-				sprintf(app->status_bar_text, "Saving progress...");
-			}
+		}
+		else
+		{
+			omo_destroy_library(app->loading_library);
+			app->loading_library = NULL;
+			return false;
 		}
 	}
 	return true;
@@ -1087,6 +1096,7 @@ static bool omo_setup_library_helper(APP_INSTANCE * app)
 	/* scan library paths */
 	if(!omo_scan_library_folders(app))
 	{
+		app->loading_library_file_helper_data.scan_done = true;
 		return false;
 	}
 	if(!app->loading_library_file_helper_data.cancel_scan)

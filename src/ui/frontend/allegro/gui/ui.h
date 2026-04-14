@@ -113,6 +113,7 @@ typedef struct
 	int profile_delete_id;
 	int selected_profile_id;
 	char tags_clipboard[OMO_MAX_TAG_TYPES][OMO_UI_MAX_TAG_LENGTH];
+	char status_bar_text[1024];
 
 } OMO_UI;
 
