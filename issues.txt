@@ -135,6 +135,11 @@ v0.6
 [ ]Make available condec handlers be configurable. We want to be able to
    disable certain handlers in case of license incompatibility.
 
+[ ]Make library scanning more robust.
+
+   [ ]Audit scanning and cacheing related functions to ensure we don't try to
+      allocate 0-sized arrays.
+
 [X]Crash when selecting 'Shuffle All'.
 
 
