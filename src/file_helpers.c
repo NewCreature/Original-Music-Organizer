@@ -321,7 +321,7 @@ bool omo_count_file(const char * fn, bool isfolder, void * data)
 
 	if(isfolder)
 	{
-		return false;
+		return true;
 	}
 	if(file_helper_data->cancel_scan)
 	{
@@ -369,7 +369,7 @@ bool omo_count_file(const char * fn, bool isfolder, void * data)
 		}
 	}
 
-	return false;
+	return true;
 }
 
 static bool flag_tracks_for_repair(OMO_FILE_HELPER_DATA * fhd, const char * fn, int entry)
@@ -464,7 +464,7 @@ bool omo_add_file(const char * fn, bool isfolder, void * data)
 
 	if(isfolder)
 	{
-		return false;
+		return true;
 	}
 	if(file_helper_data->cancel_scan)
 	{
@@ -560,7 +560,7 @@ bool omo_add_file(const char * fn, bool isfolder, void * data)
 
 	if(ret == 2)
 	{
-		return false;
+		return true;
 	}
 	return true;
 }
