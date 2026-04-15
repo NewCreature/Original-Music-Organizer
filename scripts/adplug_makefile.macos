@@ -26,7 +26,7 @@ universal:
 	make -f $(lastword $(MAKEFILE_LIST)) MACOS_ARCHITECTURES="-arch i386 -arch x86_64" MACOS_SYS_ROOT="-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.13.sdk" MACOS_MIN_VERSION=-mmacosx-version-min=10.6 CXX_STD=c++11 CXX_LIB=libstdc++
 	mv libadplug.a libadplug_x86.a
 	make -f $(lastword $(MAKEFILE_LIST)) clean
-	make -f $(lastword $(MAKEFILE_LIST)) MACOS_ARCHITECTURES="-arch arm64" MACOS_SYS_ROOT="-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk" MACOS_MIN_VERSION=-mmacosx-version-min=11.0 CXX_STD=c++11 CXX_LIB=libc++
+	make -f $(lastword $(MAKEFILE_LIST)) MACOS_ARCHITECTURES="-arch arm64" MACOS_SYS_ROOT="-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk" MACOS_MIN_VERSION=-mmacosx-version-min=11.0 CXX_STD=c++11 CXX_LIB=libc++
 	lipo -create libadplug_x86.a libadplug.a -output libadplug.a
 	rm libadplug_x86.a
 

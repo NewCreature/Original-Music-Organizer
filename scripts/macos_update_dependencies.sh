@@ -17,7 +17,7 @@ fi
 
 START_PATH=$(pwd)
 X86_SDK=MacOSX10.13.sdk
-ARM_SDK=MacOSX11.1.sdk
+ARM_SDK=MacOSX.sdk
 
 mkdir -p $1
 cd $1
@@ -32,7 +32,7 @@ cd libbinio
 git pull
 remake_dir _build_x86
 cd _build_x86
-cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=i386\;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6
+cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=i386\;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_CXX_FLAGS=-stdlib=libstdc++
 make
 cd ..
 SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$ARM_SDK
@@ -59,21 +59,21 @@ cd ..
 
 # libgme
 SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$X86_SDK
-if [ ! -d "libgme" ];
+if [ ! -d "game-music-emu" ];
 then
   git clone https://github.com/libgme/game-music-emu.git
 fi
-cd libgme
+cd game-music-emu
 git pull
 remake_dir _build_x86
 cd _build_x86
-cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=i386\;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6
+cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=i386\;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_CXX_FLAGS=-stdlib=libstdc++ -DGME_BUILD_SHARED=OFF
 make
 cd ..
 SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$ARM_SDK
 remake_dir _build_arm
 cd _build_arm
-cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
+cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 -DGME_BUILD_SHARED=OFF
 make
 merge_libs gme ../_build_x86/gme libgme.a
 sudo make install
@@ -110,7 +110,7 @@ cd libvgm
 git pull
 remake_dir _build_x86
 cd _build_x86
-cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=i386\;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DBUILD_PLAYER=OFF -DBUILD_VGM2WAV=OFF -DUTIL_CHARCNV_ICONV=OFF -DUTIL_CHARCNV_WINAPI=OFF -DUTIL_CHARSET_CONV=OFF
+cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=i386\;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DBUILD_PLAYER=OFF -DBUILD_VGM2WAV=OFF -DUTIL_CHARCNV_ICONV=OFF -DUTIL_CHARCNV_WINAPI=OFF -DUTIL_CHARSET_CONV=OFF  -DCMAKE_CXX_FLAGS=-stdlib=libstdc++
 make
 cd ..
 SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$ARM_SDK
