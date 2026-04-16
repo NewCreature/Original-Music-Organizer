@@ -491,18 +491,6 @@ int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_pro
 	}
 	al_register_event_source(t3f_queue, al_get_timer_event_source(t3f_timer));
 
-	if(!(t3f_flags & T3F_NO_DISPLAY))
-	{
-		/* create a default view */
-		t3f_default_view = t3f_create_view(NULL, 0, 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), t3f_virtual_display_width / 2, t3f_virtual_display_height / 2, t3f_flags);
-		if(!t3f_default_view)
-		{
-			printf("Failed to create default view!\n");
-			return 0;
-		}
-		t3f_select_view(t3f_default_view);
-	}
-
 	t3f_color_white = al_map_rgba_f(1.0, 1.0, 1.0, 1.0);
 	t3f_color_black = al_map_rgba_f(0.0, 0.0, 0.0, 1.0);
 	al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
@@ -738,6 +726,7 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 		bool no_windowed = false;
 	#endif
 
+	t3f_flags &= ~T3F_NO_DISPLAY;
 	if(flags & T3F_USE_FIXED_PIPELINE)
 	{
 		dflags = 0;
@@ -958,6 +947,18 @@ int t3f_set_gfx_mode(int w, int h, int flags)
 		al_register_event_source(t3f_queue, al_get_display_event_source(t3f_display));
 		t3f_virtual_display_width = w;
 		t3f_virtual_display_height = h;
+		/* create a default view */
+		if(!t3f_default_view)
+		{
+			t3f_default_view = t3f_create_view(NULL, 0, 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), t3f_virtual_display_width / 2, t3f_virtual_display_height / 2, t3f_flags);
+			if(!t3f_default_view)
+			{
+				printf("Failed to create default view!\n");
+				return 0;
+			}
+		}
+		t3f_select_view(t3f_default_view);
+
 		al_set_window_title(t3f_display, t3f_window_title);
 		if(restore_pos)
 		{
