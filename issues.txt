@@ -125,10 +125,15 @@ v0.6
 
 [ ]Fully separate UI code from player code.
 
-   [ ]Initialize T3F with no display.
+   [X]Initialize T3F with no display.
 
-   [ ]Create a display to use with the Allegro frontend when that frontend is
+   [X]Create a display to use with the Allegro frontend when that frontend is
       initialized.
+
+   [ ]Add a way to destroy the default display so we can properly switch from
+      the Allegro frontend to something else.
+
+[ ]Crash when exiting.
 
 [ ]Add curses-based UI.
 
