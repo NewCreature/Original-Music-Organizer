@@ -554,6 +554,16 @@ OMO_UI * omo_create_ui(APP_INSTANCE * app)
 	}
 	memset(uip, 0, sizeof(OMO_UI));
 	uip->app = app;
+	if(!t3f_set_gfx_mode(640, 480, T3F_RESIZABLE | T3F_USE_MENU | T3F_USE_OPENGL | T3F_USE_FIXED_PIPELINE))
+	{
+		goto fail;
+	}
+	if(!t3gui_init())
+	{
+		printf("Error initializing T3GUI!\n");
+		goto fail;
+	}
+	al_set_mouse_wheel_precision(120);
 	if(!load_ui_data(uip))
 	{
 		printf("failed to load UI data\n");
