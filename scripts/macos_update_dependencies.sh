@@ -36,11 +36,11 @@ fi
 # check arguments
 for arg in "$@";
 do
-  if [ $arg = --libbinio_onle ]; then
+  if [ $arg = --libbinio_only ]; then
     disable_all
     BUILD_LIBBINIO=1
   fi
-  if [ $arg = --adplug_onle ]; then
+  if [ $arg = --adplug_only ]; then
     disable_all
     BUILD_ADPLUG=1
   fi
