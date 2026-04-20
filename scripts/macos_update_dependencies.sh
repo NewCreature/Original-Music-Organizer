@@ -1,5 +1,15 @@
 #!/bin/bash
 
+START_PATH=$(pwd)
+X86_SDK=MacOSX10.13.sdk
+ARM_SDK=MacOSX.sdk
+
+BUILD_LIBBINIO=1
+BUILD_ADPLUG=1
+BUILD_GME=1
+BUILD_MPG123=1
+BUILD_LIBVGM=1
+
 function merge_libs() {
   lipo -create $1/$3 $2/$3 -output $1/$3
   rm -f $2/$3
@@ -10,121 +20,160 @@ function remake_dir() {
   mkdir $1
 }
 
-if [ "$#" -ne 1 ]; then
+function disable_all() {
+  BUILD_LIBBINIO=0
+  BUILD_ADPLUG=0
+  BUILD_GME=0
+  BUILD_MPG123=0
+  BUILD_LIBVGM=0
+}
+
+if [ "$#" -le 0 ]; then
   echo "Usage: macos_update_dependencies <path>"
   exit 1
 fi
 
-START_PATH=$(pwd)
-X86_SDK=MacOSX10.13.sdk
-ARM_SDK=MacOSX.sdk
+# check arguments
+for arg in "$@";
+do
+  if [ $arg = --libbinio_onle ]; then
+    disable_all
+    BUILD_LIBBINIO=1
+  fi
+  if [ $arg = --adplug_onle ]; then
+    disable_all
+    BUILD_ADPLUG=1
+  fi
+  if [ $arg = --gme_only ]; then
+    disable_all
+    BUILD_GME=1
+  fi
+  if [ $arg = --mpg123_only ]; then
+    disable_all
+    BUILD_MPG123=1
+  fi
+  if [ $arg = --libvgm_only ]; then
+    disable_all
+    BUILD_LIBVGM=1
+  fi
+done
 
 mkdir -p $1
 cd $1
 
 # libbinio
-SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$X86_SDK
-if [ ! -d "libbinio" ];
-then
-  git clone https://github.com/adplug/libbinio.git
+if [ $BUILD_LIBBINIO -eq 1 ]; then
+  SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$X86_SDK
+  if [ ! -d "libbinio" ];
+  then
+    git clone https://github.com/adplug/libbinio.git
+  fi
+  cd libbinio
+  git pull
+  remake_dir _build_x86
+  cd _build_x86
+  cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=i386\;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_CXX_FLAGS=-stdlib=libstdc++
+  make
+  cd ..
+  SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$ARM_SDK
+  remake_dir _build_arm
+  cd _build_arm
+  cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
+  make
+  merge_libs src ../_build_x86/src liblibbinio.a
+  sudo make install
+  cd ..
+  cd ..
 fi
-cd libbinio
-git pull
-remake_dir _build_x86
-cd _build_x86
-cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=i386\;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_CXX_FLAGS=-stdlib=libstdc++
-make
-cd ..
-SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$ARM_SDK
-remake_dir _build_arm
-cd _build_arm
-cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
-make
-merge_libs src ../_build_x86/src liblibbinio.a
-sudo make install
-cd ..
-cd ..
 
 # adplug
-SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$X86_SDK
-if [ ! -d "adplug" ];
-then
-  git clone https://github.com/adplug/adplug.git
+if [ $BUILD_ADPLUG -eq 1 ]; then
+  SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$X86_SDK
+  if [ ! -d "adplug" ];
+  then
+    git clone https://github.com/adplug/adplug.git
+  fi
+  cd adplug
+  git pull
+  make -f $START_PATH/adplug_makefile.macos universal
+  sudo make -f $START_PATH/adplug_makefile.macos install
+  cd ..
 fi
-cd adplug
-git pull
-make -f $START_PATH/adplug_makefile.macos universal
-sudo make -f $START_PATH/adplug_makefile.macos install
-cd ..
 
 # libgme
-SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$X86_SDK
-if [ ! -d "game-music-emu" ];
-then
-  git clone https://github.com/libgme/game-music-emu.git
+if [ $BUILD_GME -eq 1 ]; then
+  SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$X86_SDK
+  if [ ! -d "game-music-emu" ];
+  then
+    git clone https://github.com/libgme/game-music-emu.git
+  fi
+  cd game-music-emu
+  git pull
+  remake_dir _build_x86
+  cd _build_x86
+  cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=i386\;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_CXX_FLAGS=-stdlib=libstdc++ -DGME_BUILD_SHARED=OFF
+  make
+  cd ..
+  SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$ARM_SDK
+  remake_dir _build_arm
+  cd _build_arm
+  cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 -DGME_BUILD_SHARED=OFF
+  make
+  merge_libs gme ../_build_x86/gme libgme.a
+  sudo make install
+  cd ..
+  cd ..
 fi
-cd game-music-emu
-git pull
-remake_dir _build_x86
-cd _build_x86
-cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=i386\;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_CXX_FLAGS=-stdlib=libstdc++ -DGME_BUILD_SHARED=OFF
-make
-cd ..
-SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$ARM_SDK
-remake_dir _build_arm
-cd _build_arm
-cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 -DGME_BUILD_SHARED=OFF
-make
-merge_libs gme ../_build_x86/gme libgme.a
-sudo make install
-cd ..
-cd ..
 
 # mpg123
-if [ ! -d "mpg123" ];
-then
-  git clone https://github.com/libsdl-org/mpg123.git
+if [ $BUILD_MPG123 -eq 1 ]; then
+  if [ ! -d "mpg123" ];
+  then
+    git clone https://github.com/libsdl-org/mpg123.git
+  fi
+  cd mpg123
+  git pull
+  ./configure CFLAGS="-arch i386 -arch x86_64 -isysroot /Library/Developer/CommandLineTools/SDKs/$X86_SDK -mmacos-version-min=10.6" --enable-shared=no --enable-static=yes --with-cpu=generic
+  make
+  mv src/libmpg123/.libs/libmpg123.a libmpg123.a
+  make clean
+  echo ---------------------------------
+  echo ---------------------------------
+  ./configure CFLAGS="-arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/$ARM_SDK -mmacos-version-min=11.0" --enable-shared=no --enable-static=yes --with-cpu=generic --host=`uname -m`-apple-darwin
+  make
+  merge_libs src/libmpg123/.libs . libmpg123.a
+  sudo cp src/libmpg123/mpg123.h /usr/local/include
+  sudo cp src/libmpg123/.libs/libmpg123.a /usr/local/libs
+  cd ..
 fi
-cd mpg123
-git pull
-./configure CFLAGS="-arch i386 -arch x86_64 -isysroot /Library/Developer/CommandLineTools/SDKs/$X86_SDK -mmacos-version-min=10.6" --enable-shared=no --enable-static=yes --with-cpu=generic
-make
-mv src/libmpg123/.libs/libmpg123.a libmpg123.a
-make clean
-echo ---------------------------------
-echo ---------------------------------
-./configure CFLAGS="-arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/$ARM_SDK -mmacos-version-min=11.0" --enable-shared=no --enable-static=yes --with-cpu=generic --host=`uname -m`-apple-darwin
-make
-merge_libs src/libmpg123/.libs . libmpg123.a
-sudo cp src/libmpg123/mpg123.h /usr/local/include
-sudo cp src/libmpg123/.libs/libmpg123.a /usr/local/libs
-cd ..
 
 # libvgm
-SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$X86_SDK
-if [ ! -d "libvgm" ];
-then
-  git clone https://github.com/ValleyBell/libvgm.git
+if [ $BUILD_LIBVGM -eq 1 ]; then
+  SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$X86_SDK
+  if [ ! -d "libvgm" ];
+  then
+    git clone https://github.com/ValleyBell/libvgm.git
+  fi
+  cd libvgm
+  git pull
+  remake_dir _build_x86
+  cd _build_x86
+  cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=i386\;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DBUILD_PLAYER=OFF -DBUILD_VGM2WAV=OFF -DUTIL_CHARCNV_ICONV=OFF -DUTIL_CHARCNV_WINAPI=OFF -DUTIL_CHARSET_CONV=OFF  -DCMAKE_CXX_FLAGS=-stdlib=libstdc++
+  make
+  cd ..
+  SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$ARM_SDK
+  remake_dir _build_arm
+  cd _build_arm
+  cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 -DBUILD_PLAYER=OFF -DBUILD_VGM2WAV=OFF -DUTIL_CHARCNV_ICONV=OFF -DUTIL_CHARCNV_WINAPI=OFF -DUTIL_CHARSET_CONV=OFF
+  make
+  merge_libs bin ../_build_x86/bin libvgm-audio.a
+  merge_libs bin ../_build_x86/bin libvgm-emu.a
+  merge_libs bin ../_build_x86/bin libvgm-player.a
+  merge_libs bin ../_build_x86/bin libvgm-utils.a
+  sudo make install
+  cd ..
+  cd ..
 fi
-cd libvgm
-git pull
-remake_dir _build_x86
-cd _build_x86
-cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=i386\;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DBUILD_PLAYER=OFF -DBUILD_VGM2WAV=OFF -DUTIL_CHARCNV_ICONV=OFF -DUTIL_CHARCNV_WINAPI=OFF -DUTIL_CHARSET_CONV=OFF  -DCMAKE_CXX_FLAGS=-stdlib=libstdc++
-make
-cd ..
-SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$ARM_SDK
-remake_dir _build_arm
-cd _build_arm
-cmake .. -DCMAKE_OSX_SYSROOT=$SDK_PATH -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 -DBUILD_PLAYER=OFF -DBUILD_VGM2WAV=OFF -DUTIL_CHARCNV_ICONV=OFF -DUTIL_CHARCNV_WINAPI=OFF -DUTIL_CHARSET_CONV=OFF
-make
-merge_libs bin ../_build_x86/bin libvgm-audio.a
-merge_libs bin ../_build_x86/bin libvgm-emu.a
-merge_libs bin ../_build_x86/bin libvgm-player.a
-merge_libs bin ../_build_x86/bin libvgm-utils.a
-sudo make install
-cd ..
-cd ..
 
 # return to original location
 cd $START_PATH
