@@ -65,7 +65,9 @@ FRONTEND_OBJECTS = \
   ui/frontend/allegro/gui/album_tags_dialog.o\
   ui/frontend/allegro/gui/rebase_song_folder_dialog.o\
   ui/frontend/allegro/allegro.o\
-  ui/frontend/allegro/gui/ui.o
+  ui/frontend/allegro/gui/ui.o\
+  ui/frontend/galaxy_of_music/galaxy_of_music.o\
+  ui/frontend/galaxy_of_music/galaxy.o
 
 OMO_OBJECTS = \
   queue.o\
