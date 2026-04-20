@@ -305,8 +305,21 @@ static void frontend_logic(void * data, int flags)
   int seek_flags;
   int volume_pos;
   bool disable_shortcuts = false;
+  bool was_search = false;
 
   omo_file_chooser_logic(frontend_data->ui);
+  if(frontend_data->ui->ui_artist_search_element->flags & D_GOTFOCUS)
+  {
+    was_search = true;
+  }
+  else if(frontend_data->ui->ui_album_search_element->flags & D_GOTFOCUS)
+  {
+    was_search = true;
+  }
+  else if(frontend_data->ui->ui_song_search_element->flags & D_GOTFOCUS)
+  {
+    was_search = true;
+  }
   omo_library_pre_gui_logic(frontend_data->ui);
   if(frontend_data->ui->app->player->queue)
   {
@@ -388,6 +401,10 @@ static void frontend_logic(void * data, int flags)
     omo_queue_list_logic(frontend_data->ui);
     if(!disable_shortcuts)
     {
+      if(was_search)
+      {
+        t3f_clear_key_states();
+      }
       omo_shortcut_logic(frontend_data->ui);
     }
     omo_player_ui_logic(frontend_data->ui);
