@@ -5,6 +5,7 @@
 #include "main.h"
 #include "ui/frontend/allegro/gui/events.h"
 #include "ui/frontend/allegro/allegro.h"
+#include "ui/frontend/galaxy_of_music/galaxy_of_music.h"
 #include "file_helpers.h"
 #include "test.h"
 #include "library_helpers.h"
@@ -266,7 +267,20 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	{
 		app->library_view = true;
 	}
-	app->frontend = omo_get_allegro_frontend(app, 0);
+
+	/* initialize frontend */
+	val = al_get_config_value(t3f_config, "Settings", "frontend");
+	if(val)
+	{
+		if(!strcmp(val, "Galaxy of Music"))
+		{
+			app->frontend = omo_get_galaxy_of_music_frontend(app, 0);
+		}
+	}
+	if(!app->frontend)
+	{
+		app->frontend = omo_get_allegro_frontend(app, 0);
+	}
 	if(!app->frontend)
 	{
 		return false;
