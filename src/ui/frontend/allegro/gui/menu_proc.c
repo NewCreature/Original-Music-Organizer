@@ -885,7 +885,7 @@ int omo_menu_view_basic(int id, void * data)
 		uip->app->library_view = false;
 		al_resize_display(t3f_display, c_width, c_height);
 		al_set_window_position(t3f_display, c_x, c_y);
-		omo_create_main_dialog( uip, 0, c_width, c_height, uip->app);
+		omo_create_main_dialog(uip, 0, c_width, c_height, uip->app);
 		omo_set_window_constraints(uip, uip->app->library_view);
 		t3gui_show_dialog(uip->ui_dialog, t3f_queue, T3GUI_PLAYER_CLEAR | T3GUI_PLAYER_NO_ESCAPE, uip->app);
 	}
