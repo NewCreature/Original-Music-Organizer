@@ -12,7 +12,7 @@ typedef struct
   char * name;
   int type;
   float size;
-  float x, y;
+  float x, y, z;
   ALLEGRO_COLOR color;
 
 } GOM_BODY;

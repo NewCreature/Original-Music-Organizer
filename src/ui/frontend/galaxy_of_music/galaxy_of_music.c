@@ -8,15 +8,23 @@
 typedef struct
 {
 
+  float x, y, z;
+
+} GOM_CAMERA;
+
+typedef struct
+{
+
   APP_INSTANCE * app;
   T3F_BITMAP * bitmap[GOM_MAX_BITMAPS];
   GOM_GALAXY * galaxy;
+  GOM_CAMERA camera;
 
 } OMO_FRONTEND_DATA;
 
 static bool _gom_load_data(OMO_FRONTEND_DATA * frontend)
 {
-  frontend->bitmap[GOM_BITMAP_STAR] = t3f_load_bitmap("data/galaxy_of_music/star.png", 0, false);
+  frontend->bitmap[GOM_BITMAP_STAR] = t3f_load_bitmap("data/galaxy_of_music/star.png", T3F_BITMAP_FLAG_PADDED, false);
   if(!frontend->bitmap[GOM_BITMAP_STAR])
   {
     goto fail;
@@ -66,6 +74,7 @@ static void * _frontend_init(void * app_instance, int flags)
   {
     goto fail;
   }
+  t3f_get_mouse_mickeys(NULL, NULL, NULL);
 
   return frontend_data;
 
@@ -79,15 +88,18 @@ static void * _frontend_init(void * app_instance, int flags)
 static void _frontend_logic(void * data, int flags)
 {
   OMO_FRONTEND_DATA * frontend_data = (OMO_FRONTEND_DATA *)data;
+  int z_diff = 0;
 
   /* generate galaxy as soon as library is available */
   if(!frontend_data->galaxy)
   {
-    if(frontend_data->app->library && frontend_data->app->library_thread && !frontend_data->app->cloud_thread)
+    if(frontend_data->app->library && !frontend_data->app->library_thread)
     {
       frontend_data->galaxy = gom_create_galaxy(frontend_data->app->library);
     }
   }
+  t3f_get_mouse_mickeys(NULL, NULL, &z_diff);
+  frontend_data->camera.z += z_diff;
   if(t3f_key_pressed(ALLEGRO_KEY_ESCAPE))
   {
     t3f_exit();
@@ -98,10 +110,17 @@ static void _frontend_logic(void * data, int flags)
 static void _frontend_render(void * data, int flags)
 {
   OMO_FRONTEND_DATA * frontend_data = (OMO_FRONTEND_DATA *)data;
+  int i;
 
   if(frontend_data->galaxy)
   {
     al_clear_to_color(t3f_color_black);
+    al_hold_bitmap_drawing(true);
+    for(i = 0; i < frontend_data->galaxy->star_count; i++)
+    {
+      t3f_draw_bitmap(frontend_data->bitmap[GOM_BITMAP_STAR], t3f_color_white, frontend_data->galaxy->star[i]->body.x - frontend_data->camera.x, frontend_data->galaxy->star[i]->body.y - frontend_data->camera.y, frontend_data->galaxy->star[i]->body.z - frontend_data->camera.z, 0);
+    }
+    al_hold_bitmap_drawing(false);
   }
   else
   {
