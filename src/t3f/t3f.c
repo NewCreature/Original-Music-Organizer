@@ -63,6 +63,7 @@ static double _t3f_timer_tick_minimum_time = 0.0;
 void (*t3f_logic_proc)(void * data) = NULL;
 void (*t3f_render_proc)(void * data) = NULL;
 static void * t3f_app_data = NULL;
+static void * _t3f_event_data = NULL;
 
 ALLEGRO_DISPLAY * t3f_display = NULL;
 ALLEGRO_TIMER * t3f_timer = NULL;
@@ -501,6 +502,7 @@ int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_pro
 	t3f_logic_proc = logic_proc;
 	t3f_render_proc = render_proc;
 	t3f_app_data = data;
+	_t3f_event_data = t3f_app_data;
 
 	/* locate user resources */
 	t3f_locate_resource("data/t3f.dat");
@@ -517,6 +519,11 @@ int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_pro
 	_t3f_reset_android_bg_color();
 
 	return 1;
+}
+
+void t3f_set_event_data(void * data)
+{
+	_t3f_event_data = data;
 }
 
 void t3f_set_option(int option, int value)
@@ -1351,7 +1358,7 @@ void t3f_process_events(bool ignore)
 		{
 			if(t3f_event_handler_proc)
 			{
-				t3f_event_handler_proc(&event, t3f_app_data);
+				t3f_event_handler_proc(&event, _t3f_event_data);
 			}
 			else
 			{
@@ -1381,7 +1388,7 @@ void t3f_run(void)
 		al_wait_for_event(t3f_queue, &event);
 		if(t3f_event_handler_proc)
 		{
-			t3f_event_handler_proc(&event, t3f_app_data);
+			t3f_event_handler_proc(&event, _t3f_event_data);
 		}
 		else
 		{

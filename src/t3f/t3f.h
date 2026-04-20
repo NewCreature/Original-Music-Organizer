@@ -101,6 +101,7 @@ extern ALLEGRO_COLOR t3f_color_white;
 extern ALLEGRO_COLOR t3f_color_black;
 
 int t3f_initialize(const char * name, int w, int h, double fps, void (*logic_proc)(void * data), void (*render_proc)(void * data), int flags, void * data);
+void t3f_set_event_data(void * data);
 void t3f_set_option(int option, int value);
 bool t3f_option_is_set(int option);
 int t3f_set_gfx_mode(int w, int h, int flags);
