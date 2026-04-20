@@ -329,39 +329,39 @@ static void frontend_logic(void * data, int flags)
   }
   if(frontend_data->ui->tags_popup_dialog)
   {
-    omo_tags_dialog_logic(data);
+    omo_tags_dialog_logic(frontend_data->ui);
   }
   else if(frontend_data->ui->multi_tags_popup_dialog)
   {
-    omo_multi_tags_dialog_logic(data);
+    omo_multi_tags_dialog_logic(frontend_data->ui);
   }
   else if(frontend_data->ui->album_tags_popup_dialog)
   {
-    omo_album_tags_dialog_logic(data);
+    omo_album_tags_dialog_logic(frontend_data->ui);
   }
   else if(frontend_data->ui->split_track_popup_dialog)
   {
-    omo_split_track_dialog_logic(data);
+    omo_split_track_dialog_logic(frontend_data->ui);
   }
   else if(frontend_data->ui->tagger_key_popup_dialog)
   {
-    omo_tagger_key_dialog_logic(data);
+    omo_tagger_key_dialog_logic(frontend_data->ui);
   }
   else if(frontend_data->ui->new_profile_popup_dialog)
   {
-    omo_new_profile_dialog_logic(data);
+    omo_new_profile_dialog_logic(frontend_data->ui);
   }
   else if(frontend_data->ui->rebase_song_folder_popup_dialog)
   {
-    omo_rebase_song_folder_dialog_logic(data);
+    omo_rebase_song_folder_dialog_logic(frontend_data->ui);
   }
   else if(frontend_data->ui->filter_popup_dialog)
   {
-    omo_filter_dialog_logic(data);
+    omo_filter_dialog_logic(frontend_data->ui);
   }
   else if(frontend_data->ui->about_popup_dialog)
   {
-    omo_about_dialog_logic(data);
+    omo_about_dialog_logic(frontend_data->ui);
   }
   else
   {
