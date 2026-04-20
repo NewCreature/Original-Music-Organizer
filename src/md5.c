@@ -325,6 +325,12 @@ void str2md5(const char *str, int length, char * out)
 	}
 }
 
+const char * md5_string(const char * str)
+{
+	str2md5(str, strlen(str), md5_hash_string);
+	return md5_hash_string;
+}
+
 const char * md5_file(const char * fn)
 {
 	FILE * fp;
