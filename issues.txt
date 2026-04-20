@@ -147,6 +147,17 @@ v0.6
 
 [X]Crash when selecting 'Shuffle All'.
 
+[ ]Finish Galaxy of Music interface.
+
+   [ ]Implement star view.
+
+      [ ]Clicking a star should zoom into that star and show all planets and
+         moons associated with that star.
+
+   [ ]Implement planet view.
+
+   [ ]Implement moon view.
+
 
 v0.5.5
 ------
