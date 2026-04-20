@@ -808,7 +808,7 @@ static char * get_old_selection(void * data)
 	bool multi;
 	char * ret;
 
-	ui_queue_list_proc(-1, &nelem, &multi, data);
+	ui_queue_list_proc(-1, &nelem, &multi, uip->app);
 	ret = malloc(sizeof(char) * nelem);
 	if(ret)
 	{
@@ -823,7 +823,7 @@ static void put_old_selection(void * data, char * in)
 	int nelem;
 	bool multi;
 
-	ui_queue_list_proc(-1, &nelem, &multi, data);
+	ui_queue_list_proc(-1, &nelem, &multi, uip->app);
 	memcpy(uip->ui_queue_list_element->dp2, in, sizeof(char) * nelem);
 	free(in);
 }
