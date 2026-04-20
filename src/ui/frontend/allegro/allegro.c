@@ -85,6 +85,7 @@ static void * frontend_init(void * app_instance, int flags)
   {
     frontend_data->ui->ui_queue_list_element->d2 = frontend_data->ui->ui_queue_list_element->d1;
   }
+  t3f_set_event_data(frontend_data->ui);
   t3f_set_menu_data(frontend_data->ui);
 
   return frontend_data;
