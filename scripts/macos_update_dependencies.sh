@@ -103,11 +103,17 @@ fi
 # libgme
 if [ $BUILD_GME -eq 1 ]; then
   SDK_PATH=/Library/Developer/CommandLineTools/SDKs/$X86_SDK
-  if [ ! -d "game-music-emu" ];
+  # official repo doesn't build with older SDK
+  #if [ ! -d "game-music-emu" ];
+  #then
+  #  git clone https://github.com/libgme/game-music-emu.git
+  #fi
+  #cd game-music-emu
+  if [ ! -d "libgme" ];
   then
-    git clone https://github.com/libgme/game-music-emu.git
+    git clone https://github.com/NewCreature/libgme.git
   fi
-  cd game-music-emu
+  cd libgme
   git pull
   remake_dir _build_x86
   cd _build_x86
@@ -142,8 +148,7 @@ if [ $BUILD_MPG123 -eq 1 ]; then
   ./configure CFLAGS="-arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/$ARM_SDK -mmacos-version-min=11.0" --enable-shared=no --enable-static=yes --with-cpu=generic --host=`uname -m`-apple-darwin
   make
   merge_libs src/libmpg123/.libs . libmpg123.a
-  sudo cp src/libmpg123/mpg123.h /usr/local/include
-  sudo cp src/libmpg123/.libs/libmpg123.a /usr/local/libs
+  sudo make install
   cd ..
 fi
 
