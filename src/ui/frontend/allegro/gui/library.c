@@ -181,8 +181,8 @@ void omo_library_logic(void * data)
 		}
 		else
 		{
-			val2 = uip->app->library->album_entry[uip->ui_album_list_element->d1].name;
-			val3 = uip->app->library->album_entry[uip->ui_album_list_element->d1].disambiguation;
+			val2 = uip->app->library->filtered_album_entry[uip->ui_album_list_element->d1].name;
+			val3 = uip->app->library->filtered_album_entry[uip->ui_album_list_element->d1].disambiguation;
 		}
 		al_stop_timer(t3f_timer);
 		omo_get_library_song_list(uip->app->library, val, val2, val3);
