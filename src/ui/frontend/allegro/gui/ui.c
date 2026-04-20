@@ -494,10 +494,8 @@ static bool omo_add_player_elements(OMO_UI * uip, void * data)
 	return true;
 }
 
-bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void * data)
+bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height)
 {
-	APP_INSTANCE * app = (APP_INSTANCE *)data;
-
 	if(uip->ui_dialog)
 	{
 		t3gui_destroy_dialog(uip->ui_dialog);
@@ -510,7 +508,7 @@ bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void 
 	uip->ui_queue_list_box_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_BOX], t3gui_box_proc, 0, 0, width, height, 0, 0, 0, 0, NULL, NULL, NULL);
 	if(mode == 0)
 	{
-		omo_add_player_elements(uip, data);
+		omo_add_player_elements(uip, uip->app);
 		resize_dialogs(uip, mode, width, height);
 		return true;
 	}
@@ -525,18 +523,18 @@ bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void 
 		uip->ui_queue_list_box_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_WINDOW_BOX], t3gui_box_proc, 0, 0, width, height, 0, 0, 0, 0, NULL, NULL, NULL);
 
 		uip->ui_artist_search_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_edit_proc, 8, 0, 320 - 16, al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 4, 0, 0, 256, 0, uip->artist_search_text, NULL, NULL);
-		uip->ui_artist_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, D_SETFOCUS, 0, 0, ui_artist_list_proc, NULL, data);
+		uip->ui_artist_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, D_SETFOCUS, 0, 0, ui_artist_list_proc, NULL, uip->app);
 
 		uip->ui_album_search_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_edit_proc, 8, 0, 320 - 16, al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 4, 0, 0, 256, 0, uip->album_search_text, NULL, NULL);
-		uip->ui_album_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, 0, 0, 0, ui_album_list_proc, NULL, data);
+		uip->ui_album_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, 0, 0, 0, ui_album_list_proc, NULL, uip->app);
 
 		uip->ui_song_search_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_edit_proc, 8, 0, 320 - 16, al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]) + 4, 0, 0, 256, 0, uip->song_search_text, NULL, NULL);
-		uip->ui_song_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, 0, 0, 0, ui_song_list_proc, NULL, data);
+		uip->ui_song_list_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_list_proc, 8, 8, width - 16, height - 16, 0, 0, 0, 0, ui_song_list_proc, NULL, uip->app);
 
-		uip->ui_status_bar_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, 8, 8, 32, al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]), 0, 0, 0, 0, (void *)app->status_bar_text, NULL, NULL);
+		uip->ui_status_bar_element = t3gui_dialog_add_element(uip->ui_dialog, uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX], t3gui_text_proc, 8, 8, 32, al_get_font_line_height(uip->main_theme->gui_theme[OMO_THEME_GUI_THEME_LIST_BOX]->state[0].font[0]), 0, 0, 0, 0, (void *)uip->app->status_bar_text, NULL, NULL);
 
 		/* create queue list and controls */
-		omo_add_player_elements(uip, data);
+		omo_add_player_elements(uip, uip->app);
 		resize_dialogs(uip, mode, width, height);
 		return true;
 	}

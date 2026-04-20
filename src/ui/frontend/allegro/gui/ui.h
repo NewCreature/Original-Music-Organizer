@@ -121,7 +121,7 @@ void omo_set_window_constraints(OMO_UI * uip, bool library_view);
 OMO_UI * omo_create_ui(APP_INSTANCE * app);
 void omo_destroy_ui(OMO_UI * uip);
 void omo_resize_ui(OMO_UI * uip, int mode, int width, int height);
-bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height, void * data);
+bool omo_create_main_dialog(OMO_UI * uip, int mode, int width, int height);
 
 OMO_UI_POPUP_DIALOG * omo_create_popup_dialog(const char * theme_file, int w, int h, void * data);
 void omo_close_popup_dialog(OMO_UI_POPUP_DIALOG * dp);

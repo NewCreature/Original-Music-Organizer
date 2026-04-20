@@ -284,7 +284,7 @@ void omo_file_chooser_logic(void * data)
 						{
 							uip->app->library_view = true;
 						}
-						if(!omo_create_main_dialog(uip, uip->app->library_view ? 1 : 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), uip->app))
+						if(!omo_create_main_dialog(uip, uip->app->library_view ? 1 : 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display)))
 						{
 							printf("Unable to create main dialog!\n");
 						}

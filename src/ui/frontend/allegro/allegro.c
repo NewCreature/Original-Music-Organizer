@@ -56,7 +56,7 @@ static void * frontend_init(void * app_instance, int flags)
   {
     goto fail;
   }
-  if(!omo_create_main_dialog(frontend_data->ui, frontend_data->ui->app->library_view ? 1 : 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display), app_instance))
+  if(!omo_create_main_dialog(frontend_data->ui, frontend_data->ui->app->library_view ? 1 : 0, al_get_display_width(t3f_display), al_get_display_height(t3f_display)))
 	{
 		printf("Unable to create main dialog!\n");
     goto fail;
