@@ -36,7 +36,7 @@ typedef struct {
 	MD5_u32plus block[16];
 } MD5_CTX;
 
-const char * md5_string(const char * fn);
+const char * md5_string(const char * str);
 const char * md5_file(const char * fn);
 
 #endif
