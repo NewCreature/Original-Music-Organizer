@@ -1,8 +1,5 @@
 include makefile.include
-
-T3GUI_OBJECTS = t3gui/dialog.o t3gui/element_proc.o t3gui/nine_patch.o t3gui/player.o t3gui/resource.o t3gui/t3gui.o t3gui/theme.o t3gui/unicode.o
-CODEC_OBJECTS = codec_handlers/dumba5/DUMBA5/dumba5.o codec_handlers/dumba5/dumba5.o codec_handlers/allegro_acodec/allegro_acodec.o codec_handlers/gme/gme.o codec_handlers/mp3a5/MP3A5/mp3a5.o codec_handlers/mp3a5/mp3a5.o codec_handlers/midia5/MIDIA5/midia5.o codec_handlers/midia5/midia5.o codec_handlers/adplug/adplug.o codec_handlers/stsound/StSoundLibrary/YmMusic.o codec_handlers/stsound/StSoundLibrary/Ym2149Ex.o codec_handlers/stsound/StSoundLibrary/YmUserInterface.o codec_handlers/stsound/StSoundLibrary/Ymload.o codec_handlers/stsound/StSoundLibrary/LZH/LzhLib.o codec_handlers/stsound/StSoundLibrary/digidrum.o codec_handlers/stsound/stsound.o codec_handlers/libvgm/libvgm.o codec_handlers/codec_handler.o codec_handlers/registry.o
-ARCHIVE_HANDLER_OBJECTS = archive_handlers/unzip/unzip.o archive_handlers/unrar/unrar.o archive_handlers/archive_handler.o archive_handlers/registry.o
+include makefile.objects
 
 #########################
 # application variables #
@@ -21,7 +18,7 @@ APP_PUBLISHER = T\ Cubed\ Software
 APP_COPYRIGHT = Copyright\ (C)\ 2023\ T\ Cubed\ Software
 APP_ANDROID_PACKAGE = com.tcubedsoftware.omo
 APP_URL = https://www.tcubedsoftware.com
-APP_OBJECTS = $(T3GUI_OBJECTS) $(CODEC_OBJECTS) $(ARCHIVE_HANDLER_OBJECTS) queue.o library.o md5.o ui/frontend/allegro/gui/menu_init.o ui/frontend/allegro/gui/menu_proc.o ui/frontend/allegro/gui/menu_update_proc.o ui/frontend/allegro/gui/dialog_proc.o player.o main.o ui/frontend/allegro/gui/file_chooser.o constants.o init.o ui/frontend/allegro/gui/events.o file_helpers.o theme.o ui/frontend/allegro/gui/shortcut.o ui/frontend/allegro/gui/queue_list.o ui/frontend/allegro/gui/library.o ui/frontend/allegro/gui/tags_dialog.o rtk/io.o rtk/io_allegro.o rtk/midi.o test.o library_helpers.o queue_helpers.o library_cache.o ui/frontend/allegro/gui/split_track_dialog.o ui/frontend/allegro/gui/player.o t3net/t3net.o t3net/curl.o ui/frontend/allegro/gui/tagger_key_dialog.o ui/frontend/allegro/gui/new_profile_dialog.o ui/frontend/allegro/gui/filter_dialog.o cloud.o track.o database.o threads.o profile.o text_helpers.o command_line.o ui/frontend/allegro/gui/about_dialog.o ui/frontend/allegro/gui/multi_tags_dialog.o ui/frontend/allegro/gui/album_tags_dialog.o ui/frontend/allegro/gui/rebase_song_folder_dialog.o ui/frontend/allegro/allegro.o ui/frontend/allegro/gui/ui.o
+APP_OBJECTS = $(T3GUI_OBJECTS) $(T3NET_OBJECTS) $(RTK_OBJECTS) $(ARCHIVE_HANDLER_OBJECTS) $(CODEC_HANDLER_OBJECTS) $(FRONTEND_OBJECTS) $(OMO_OBJECTS)
 APP_LIBS = -ldumb -lgme -logg -lvorbis -lvorbisfile -lFLAC -lmpg123 -ladplug -lbinio -lvgm-audio -lvgm-emu -lvgm-player -lvgm-utils $(T3F_CXX_STDLIB)
 APP_CFLAGS = -O2 -Wall -I. -Icodec_handlers/midia5/MIDIA5 -I$(T3F_PREFIX)/include/binio -I$(T3F_PREFIX)/include/opus
 #APP_CXXFLAGS =

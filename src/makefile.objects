@@ -1,0 +1,90 @@
+T3GUI_OBJECTS = \
+  t3gui/dialog.o\
+  t3gui/element_proc.o\
+  t3gui/nine_patch.o\
+  t3gui/player.o\
+  t3gui/resource.o\
+  t3gui/t3gui.o\
+  t3gui/theme.o\
+  t3gui/unicode.o
+
+T3NET_OBJECTS = \
+  t3net/t3net.o\
+  t3net/curl.o
+
+RTK_OBJECTS = \
+  rtk/io.o\
+  rtk/io_allegro.o\
+  rtk/midi.o
+
+ARCHIVE_HANDLER_OBJECTS = \
+  archive_handlers/unzip/unzip.o\
+  archive_handlers/unrar/unrar.o\
+  archive_handlers/archive_handler.o\
+  archive_handlers/registry.o
+
+CODEC_HANDLER_OBJECTS = \
+  codec_handlers/dumba5/DUMBA5/dumba5.o\
+  codec_handlers/dumba5/dumba5.o\
+  codec_handlers/allegro_acodec/allegro_acodec.o\
+  codec_handlers/gme/gme.o\
+  codec_handlers/mp3a5/MP3A5/mp3a5.o\
+  codec_handlers/mp3a5/mp3a5.o\
+  codec_handlers/midia5/MIDIA5/midia5.o\
+  codec_handlers/midia5/midia5.o\
+  codec_handlers/adplug/adplug.o\
+  codec_handlers/stsound/StSoundLibrary/YmMusic.o\
+  codec_handlers/stsound/StSoundLibrary/Ym2149Ex.o\
+  codec_handlers/stsound/StSoundLibrary/YmUserInterface.o\
+  codec_handlers/stsound/StSoundLibrary/Ymload.o\
+  codec_handlers/stsound/StSoundLibrary/LZH/LzhLib.o\
+  codec_handlers/stsound/StSoundLibrary/digidrum.o\
+  codec_handlers/stsound/stsound.o\
+  codec_handlers/libvgm/libvgm.o\
+  codec_handlers/codec_handler.o\
+  codec_handlers/registry.o
+
+FRONTEND_OBJECTS = \
+  ui/frontend/allegro/gui/menu_init.o\
+  ui/frontend/allegro/gui/menu_proc.o\
+  ui/frontend/allegro/gui/menu_update_proc.o\
+  ui/frontend/allegro/gui/dialog_proc.o\
+  ui/frontend/allegro/gui/file_chooser.o\
+  ui/frontend/allegro/gui/events.o\
+  ui/frontend/allegro/gui/shortcut.o\
+  ui/frontend/allegro/gui/queue_list.o\
+  ui/frontend/allegro/gui/library.o\
+  ui/frontend/allegro/gui/tags_dialog.o\
+  ui/frontend/allegro/gui/split_track_dialog.o\
+  ui/frontend/allegro/gui/player.o\
+  ui/frontend/allegro/gui/tagger_key_dialog.o\
+  ui/frontend/allegro/gui/new_profile_dialog.o\
+  ui/frontend/allegro/gui/filter_dialog.o\
+  ui/frontend/allegro/gui/about_dialog.o\
+  ui/frontend/allegro/gui/multi_tags_dialog.o\
+  ui/frontend/allegro/gui/album_tags_dialog.o\
+  ui/frontend/allegro/gui/rebase_song_folder_dialog.o\
+  ui/frontend/allegro/allegro.o\
+  ui/frontend/allegro/gui/ui.o
+
+OMO_OBJECTS = \
+  queue.o\
+  library.o\
+  md5.o\
+  player.o\
+  main.o\
+  constants.o\
+  init.o\
+  file_helpers.o\
+  theme.o\
+  test.o\
+  library_helpers.o\
+  queue_helpers.o\
+  library_cache.o\
+  cloud.o\
+  track.o\
+  database.o\
+  threads.o\
+  profile.o\
+  text_helpers.o\
+  command_line.o
