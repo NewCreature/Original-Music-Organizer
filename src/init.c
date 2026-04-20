@@ -266,7 +266,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 	{
 		app->library_view = true;
 	}
-	app->frontend = omo_get_allegro_frontend(app, app->library_view ? OMO_ALLEGRO_UI_FLAG_LIBRARY_VIEW : 0);
+	app->frontend = omo_get_allegro_frontend(app, 0);
 	if(!app->frontend)
 	{
 		return false;
