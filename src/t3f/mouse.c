@@ -110,6 +110,7 @@ void _t3f_handle_mouse_event(ALLEGRO_EVENT * event)
 			}
 			_t3f_mouse_state->dx += event->mouse.dx;
 			_t3f_mouse_state->dy += event->mouse.dy;
+			_t3f_mouse_state->dz += event->mouse.dz;
 			break;
 		}
 		case ALLEGRO_EVENT_MOUSE_WARPED:
