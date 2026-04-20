@@ -680,4 +680,5 @@ void omo_close_popup_dialog(OMO_UI_POPUP_DIALOG * dp)
 	omo_destroy_theme(dp->theme);
 	al_destroy_display(dp->display);
 	free(dp);
+	t3f_clear_key_states();
 }
