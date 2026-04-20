@@ -46,7 +46,7 @@ void omo_shortcut_logic(void * data)
 
 	if(t3f_key_pressed(ALLEGRO_KEY_L))
 	{
-		omo_toggle_library_view(uip->app);
+		omo_toggle_library_view(uip);
 		t3f_use_key_press(ALLEGRO_KEY_L);
 	}
 	if(t3f_key_pressed(ALLEGRO_KEY_T) && uip->app->library)
