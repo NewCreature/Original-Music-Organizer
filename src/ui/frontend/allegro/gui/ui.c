@@ -449,13 +449,13 @@ static bool load_ui_data(OMO_UI * uip)
 	val = al_get_config_value(t3f_config, "Settings", "theme");
 	if(!val)
 	{
-		val = "data/themes/basic/omo_theme.ini";
+		val = "data/allegro/themes/basic/omo_theme.ini";
 	}
 	uip->main_theme = omo_load_theme(val, 0, font_size);
 	if(!uip->main_theme)
 	{
 		al_remove_config_key(t3f_config, "Settings", "theme");
-		uip->main_theme = omo_load_theme("data/themes/basic/omo_theme.ini", 0, font_size);
+		uip->main_theme = omo_load_theme("data/allegro/themes/basic/omo_theme.ini", 0, font_size);
 		if(!uip->main_theme)
 		{
 			return false;
