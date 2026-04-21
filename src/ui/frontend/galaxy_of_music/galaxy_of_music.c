@@ -52,6 +52,10 @@ static void _frontend_exit(void * data)
         t3f_destroy_bitmap(frontend_data->bitmap[i]);
       }
     }
+    if(frontend_data->galaxy)
+    {
+      gom_destroy_galaxy(frontend_data->galaxy);
+    }
     free(frontend_data);
   }
 }
