@@ -24,8 +24,8 @@ typedef struct
 
 static bool _gom_load_data(OMO_FRONTEND_DATA * frontend)
 {
-  frontend->bitmap[GOM_BITMAP_STAR] = t3f_load_bitmap("data/galaxy_of_music/star.png", T3F_BITMAP_FLAG_PADDED, false);
-  if(!frontend->bitmap[GOM_BITMAP_STAR])
+  frontend->bitmap[GOM_BITMAP_STAR_FAR] = t3f_load_bitmap("data/galaxy_of_music/star_far.png", T3F_BITMAP_FLAG_PADDED, false);
+  if(!frontend->bitmap[GOM_BITMAP_STAR_FAR])
   {
     goto fail;
   }
@@ -118,7 +118,7 @@ static void _frontend_render(void * data, int flags)
     al_hold_bitmap_drawing(true);
     for(i = 0; i < frontend_data->galaxy->star_count; i++)
     {
-      t3f_draw_bitmap(frontend_data->bitmap[GOM_BITMAP_STAR], t3f_color_white, frontend_data->galaxy->star[i]->body.x - frontend_data->camera.x, frontend_data->galaxy->star[i]->body.y - frontend_data->camera.y, frontend_data->galaxy->star[i]->body.z - frontend_data->camera.z, 0);
+      t3f_draw_bitmap(frontend_data->bitmap[GOM_BITMAP_STAR_FAR], t3f_color_white, frontend_data->galaxy->star[i]->body.x - frontend_data->camera.x, frontend_data->galaxy->star[i]->body.y - frontend_data->camera.y, frontend_data->galaxy->star[i]->body.z - frontend_data->camera.z, 0);
     }
     al_hold_bitmap_drawing(false);
   }
