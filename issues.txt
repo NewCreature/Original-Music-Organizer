@@ -123,6 +123,8 @@ Long Term Goals
 v0.6
 ----
 
+[ ]Library doesn't update after adding new music to folder.
+
 [ ]Tag dialogs close immediately and control doesn't return to the main window.
 
 [ ]Fully separate UI code from player code.
