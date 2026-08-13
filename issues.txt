@@ -119,6 +119,22 @@ Long Term Goals
 
 [ ]Add support for Amiga XPK compressed files.
 
+[ ]Add curses-based UI.
+
+[ ]Finish Galaxy of Music interface.
+
+   [ ]Implement star view.
+
+      [ ]Clicking a star should zoom into that star and show all planets and
+         moons associated with that star.
+
+   [ ]Implement planet view.
+
+   [ ]Implement moon view.
+
+[ ]Make available condec handlers be configurable. We want to be able to
+   disable certain handlers in case of license incompatibility.
+
 
 v0.6
 ----
@@ -139,28 +155,12 @@ v0.6
 
 [ ]Crash when exiting.
 
-[ ]Add curses-based UI.
-
-[ ]Make available condec handlers be configurable. We want to be able to
-   disable certain handlers in case of license incompatibility.
-
 [ ]Make library scanning more robust.
 
    [ ]Audit scanning and cacheing related functions to ensure we don't try to
       allocate 0-sized arrays.
 
 [X]Crash when selecting 'Shuffle All'.
-
-[ ]Finish Galaxy of Music interface.
-
-   [ ]Implement star view.
-
-      [ ]Clicking a star should zoom into that star and show all planets and
-         moons associated with that star.
-
-   [ ]Implement planet view.
-
-   [ ]Implement moon view.
 
 
 v0.5.5
