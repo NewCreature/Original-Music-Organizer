@@ -581,7 +581,7 @@ int omo_menu_library_add_profile(int id, void * data)
 {
 	OMO_UI * uip = (OMO_UI *)data;
 
-	omo_open_new_profile_dialog(uip, data);
+	omo_open_new_profile_dialog(uip, uip->app);
 
 	return 1;
 }
@@ -696,7 +696,7 @@ int omo_menu_library_edit_filter(int id, void * data)
 {
 	OMO_UI * uip = (OMO_UI *)data;
 
-	omo_open_filter_dialog( uip, data);
+	omo_open_filter_dialog( uip, uip->app);
 
 	return 1;
 }
