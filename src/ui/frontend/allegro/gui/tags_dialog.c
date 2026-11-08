@@ -181,7 +181,6 @@ void omo_tags_dialog_logic(void * data)
 		}
 		uip->app->button_pressed = -1;
 		t3f_use_key_press(ALLEGRO_KEY_ENTER);
-		printf("accept\n");
 	}
 	else if(uip->app->button_pressed == 1)
 	{
