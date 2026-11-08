@@ -139,6 +139,8 @@ Long Term Goals
 v0.6
 ----
 
+[ ]File selectors not working when running from bundle on MacOS.
+
 [ ]Library doesn't update after adding new music to folder.
 
 [X]Tag dialogs close immediately and control doesn't return to the main window.
