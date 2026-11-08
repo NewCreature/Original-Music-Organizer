@@ -139,6 +139,8 @@ Long Term Goals
 v0.6
 ----
 
+[ ]Add profile dialog doesn't confirm/cancel properly.
+
 [ ]File selectors not working when running from bundle on MacOS.
 
 [ ]Library doesn't update after adding new music to folder.
