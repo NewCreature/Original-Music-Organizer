@@ -30,7 +30,7 @@ app_clean:
 ##################
 # Mac OS X stuff #
 ##################
-MACOS_CFLAGS = -I/usr/local/include/binio -fexceptions -DT3NET_NO_LIBCURL
+MACOS_CFLAGS = -I/usr/local/include/binio -fexceptions
 #MACOS_CXXFLAGS =
 MACOS_PLATFORM_OBJECTS = codec_handlers/avmidiplayer/avmidiplayer.o codec_handlers/avplayer/avplayer.o codec_handlers/midia5/MIDIA5/macos/coremidi.o
 MACOS_PLATFORM_LIBS = -framework AVFoundation -framework AudioUnit
@@ -40,7 +40,7 @@ MACOS_DEPEND_LIBS =
 ###############
 # Linux stuff #
 ###############
-LINUX_CFLAGS = -I/usr/local/include/binio -DT3NET_NO_LIBCURL
+LINUX_CFLAGS = -I/usr/local/include/binio
 LINUX_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/unix/alsa.o
 #LINUX_PLATFORM_LIBS =
 LINUX_DEPEND_LIBS = -lasound -lstdc++ -lz
@@ -52,7 +52,7 @@ LINUX_DEPEND_LIBS = -lasound -lstdc++ -lz
 LINUX_STATIC_CFLAGS = -I/usr/local/include/binio
 LINUX_STATIC_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/unix/alsa.o
 #LINUX_STATIC_PLATFORM_LIBS =
-LINUX_STATIC_DEPEND_LIBS = -larchive -lcurl
+LINUX_STATIC_DEPEND_LIBS = -larchive
 #LINUX_STATIC_PLATFORM_TARGET =
 
 ##############################
@@ -61,7 +61,7 @@ LINUX_STATIC_DEPEND_LIBS = -larchive -lcurl
 MINGW_CROSS_CFLAGS = -DCURL_STATICLIB
 MINGW_CROSS_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/windows/midiout.o
 #MINGW_CROSS_PLATFORM_LIBS =
-MINGW_CROSS_DEPEND_LIBS = -larchive_static -lcurl -lwldap32
+MINGW_CROSS_DEPEND_LIBS = -larchive_static -lwldap32
 #MINGW_CROSS_PLATFORM_TARGET =
 
 ###############
@@ -70,13 +70,13 @@ MINGW_CROSS_DEPEND_LIBS = -larchive_static -lcurl -lwldap32
 MINGW_CFLAGS = -DCURL_STATICLIB -IC:\\MinGW\include\binio
 MINGW_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/windows/midiout.o
 #MINGW_PLATFORM_LIBS =
-MINGW_DEPEND_LIBS = -larchive_static -lcurl -lwldap32
+MINGW_DEPEND_LIBS = -larchive_static -lwldap32
 #MINGW_PLATFORM_TARGET =
 
 ##############
 # MSYS stuff #
 ##############
-MSYS_CFLAGS = -DT3NET_NO_LIBCURL -DALLEGRO_STATICLINK -DFLAC__NO_DLL
+MSYS_CFLAGS = -DALLEGRO_STATICLINK -DFLAC__NO_DLL
 MSYS_PLATFORM_OBJECTS = codec_handlers/midia5/MIDIA5/windows/midiout.o
 #MSYS_PLATFORM_LIBS =
 MSYS_DEPEND_LIBS = -larchive
@@ -87,7 +87,7 @@ MSYS_DEPEND_LIBS = -larchive
 #################
 #ANDROID_CFLAGS =
 #ANDROID_PLATFORM_OBJECTS =
-ANDROID_PLATFORM_LIBS = -lcurl
+ANDROID_PLATFORM_LIBS =
 #ANDROID_DEPEND_LIBS =
 #ANDROID_PLATFORM_TARGET =
 
