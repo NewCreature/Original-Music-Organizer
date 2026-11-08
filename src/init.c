@@ -172,6 +172,7 @@ bool omo_initialize(APP_INSTANCE * app, int argc, char * argv[])
 		return false;
 	}
 	t3f_set_event_handler(omo_event_handler);
+	t3f_open_debug_log(t3f_get_filename(t3f_data_path, "debug.log", buffer, 1024));
 
 	t3net_setup_with_curl(al_path_cstr(t3f_temp_path, '/'));
 	provide_default_urls();
