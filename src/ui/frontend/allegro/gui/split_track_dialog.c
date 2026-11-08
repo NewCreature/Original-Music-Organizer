@@ -19,7 +19,7 @@ bool omo_open_split_track_dialog(OMO_UI * uip, void * data)
 	val = al_get_config_value(t3f_config, "Settings", "theme");
 	if(!val)
 	{
-		val = "data/themes/basic/omo_theme.ini";
+		val = "data/allegro/themes/basic/omo_theme.ini";
 	}
 	uip->split_track_popup_dialog = omo_create_popup_dialog(val, 320, h, data);
 	if(uip->split_track_popup_dialog)

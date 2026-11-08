@@ -20,7 +20,7 @@ bool omo_open_rebase_song_folder_dialog(OMO_UI * uip, void * data)
 	val = al_get_config_value(t3f_config, "Settings", "theme");
 	if(!val)
 	{
-		val = "data/themes/basic/omo_theme.ini";
+		val = "data/allegro/themes/basic/omo_theme.ini";
 	}
 	uip->rebase_song_folder_popup_dialog = omo_create_popup_dialog(val, 320, h, data);
 	if(uip->rebase_song_folder_popup_dialog)
