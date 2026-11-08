@@ -754,7 +754,7 @@ bool omo_queue_file(const char * fn, bool isfolder, void * data)
 
 	if(isfolder)
 	{
-		return false;
+		return true;
 	}
 	if(file_helper_data->cancel_scan)
 	{
@@ -903,7 +903,7 @@ bool omo_queue_file(const char * fn, bool isfolder, void * data)
 		}
 	}
 
-	return false;
+	return true;
 }
 
 void omo_clear_library_cache(void)
